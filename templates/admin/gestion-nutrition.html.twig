@@ -1,0 +1,1049 @@
+﻿{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Gestion alimentation | Fitopia{% endblock %}
+
+{% block stylesheets %}
+<style>
+  :root {
+    --nutri-bg-soft: #f4f8f7;
+    --nutri-card: #ffffff;
+    --nutri-border: #dbe7e3;
+    --nutri-text: #0f172a;
+    --nutri-muted: #64748b;
+    --nutri-green-900: #0b3a3d;
+    --nutri-green-700: #0f7a5f;
+    --nutri-green-500: #1db487;
+  }
+  .agenda-hero {
+    background: linear-gradient(135deg, #0b3a3d 0%, #0d5b50 55%, #0f7a5f 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 18px 50px rgba(14, 30, 37, 0.18);
+    position: relative;
+    overflow: hidden;
+  }
+  .agenda-hero::after {
+    content: "";
+    position: absolute;
+    right: -60px;
+    top: -60px;
+    width: 180px;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+  }
+  .agenda-hero h2 {
+    font-weight: 800;
+    margin: 0 0 0.4rem;
+  }
+  .agenda-hero p {
+    margin: 0;
+    opacity: 0.9;
+  }
+  .option-grid {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .option-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 12px 30px rgba(14, 30, 37, 0.08);
+    border: 1px solid #eef2f6;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+  }
+  .option-card.selected {
+    border-color: #0f7a5f;
+    box-shadow: 0 0 0 3px rgba(15, 122, 95, 0.15);
+  }
+  .panel {
+    margin-top: 2rem;
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.75rem;
+    border: 1px solid #eef2f6;
+    box-shadow: 0 12px 30px rgba(14, 30, 37, 0.08);
+    display: none;
+    transform: translateY(12px);
+    opacity: 0;
+    transition: all 0.25s ease;
+  }
+  .panel.active {
+    display: block;
+    transform: translateY(0);
+    opacity: 1;
+  }
+  .panel h3 {
+    margin-top: 0;
+    font-weight: 800;
+  }
+  .panel .muted { color: #6b7280; }
+  .form-wrap {
+    background: linear-gradient(180deg, #ffffff 0%, #f9fcfb 100%);
+    border-radius: 18px;
+    border: 1px solid var(--nutri-border);
+    padding: 1.25rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 10px 28px rgba(10, 44, 37, 0.08);
+  }
+  .icon-input {
+    position: relative;
+  }
+  .icon-input i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #0f7a5f;
+  }
+  .icon-input input,
+  .icon-input textarea,
+  .icon-input select {
+    padding-left: 38px;
+  }
+  .form-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #0b3a3d 0%, #0d5b50 55%, #0f7a5f 100%);
+    color: #fff;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .form-hero strong { font-weight: 700; }
+  .form-label {
+    font-weight: 600;
+    color: #0f172a;
+  }
+  .form-control {
+    border-radius: 12px;
+    border: 1px solid #d8e4df;
+    background: #ffffff;
+    min-height: 44px;
+  }
+  .form-control:focus {
+    border-color: #14b88a;
+    box-shadow: 0 0 0 3px rgba(20, 184, 138, 0.16);
+  }
+  .nutri-form {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 0.9rem;
+  }
+  .form-section {
+    grid-column: span 12;
+    border: 1px solid var(--nutri-border);
+    border-radius: 14px;
+    background: var(--nutri-card);
+    padding: 0.95rem;
+  }
+  .section-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--nutri-green-900);
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+  }
+  .section-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 0.8rem;
+  }
+  .field-span-6 { grid-column: span 6; }
+  .field-span-4 { grid-column: span 4; }
+  .field-span-3 { grid-column: span 3; }
+  .field-span-12 { grid-column: span 12; }
+  .field-card {
+    margin: 0;
+    border: 1px solid #e6efeb;
+    border-radius: 12px;
+    background: #fcfefd;
+    padding: 0.7rem 0.75rem 0.6rem;
+  }
+  .field-card label {
+    margin-bottom: 0.4rem;
+    color: var(--nutri-text);
+    font-weight: 700;
+  }
+  .submit-row {
+    grid-column: span 12;
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 0.2rem;
+  }
+  .success-toast {
+    background: #e6fffa;
+    color: #0b3a3d;
+    border: 1px solid #b7f3ea;
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem;
+    animation: popIn 0.5s ease;
+  }
+  @keyframes popIn {
+    from { transform: translateY(-8px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    padding: 1rem 1.05rem;
+    border: 1px solid #dce9e4;
+    border-radius: 14px;
+    margin-bottom: 0.75rem;
+    background: linear-gradient(180deg, #ffffff 0%, #f7fcfa 100%);
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.05);
+  }
+  .list-item-head {
+    display: grid;
+    gap: 0.32rem;
+  }
+  .list-item-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0f172a;
+  }
+  .list-meta {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.86rem;
+  }
+  .list-tags {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+  .list-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .edit-form-shell {
+    display: none;
+    margin: -0.2rem 0 1rem;
+    border: 1px solid #dce9e4;
+    border-radius: 14px;
+    background: #fbfefd;
+  }
+  .badge {
+    background: #0f7a5f;
+    color: #fff;
+    border-radius: 999px;
+    padding: 0.23rem 0.62rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .action-btn {
+    background: linear-gradient(135deg, var(--nutri-green-900) 0%, var(--nutri-green-700) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 0.58rem 1.05rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 8px 20px rgba(11, 58, 61, 0.24);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .action-btn:hover {
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba(11, 58, 61, 0.28);
+  }
+  .danger-btn {
+    background: linear-gradient(135deg, #b42318 0%, #dc2626 100%);
+    box-shadow: 0 10px 22px rgba(180, 35, 24, 0.22);
+  }
+  .danger-btn:hover {
+    box-shadow: 0 12px 24px rgba(180, 35, 24, 0.3);
+  }
+  #panel-explore > h3,
+  #panel-update > h3,
+  #panel-delete > h3 {
+    margin-bottom: 0.3rem;
+  }
+  .feed-card {
+    border: 1px solid #dce9e4;
+    border-radius: 14px;
+    padding: 1rem 1.05rem;
+    margin-bottom: 0.78rem;
+    background: #ffffff;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.05);
+  }
+  .explore-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    background: #f8fcfb;
+    border: 1px solid #dce9e4;
+    border-radius: 14px;
+    padding: 0.7rem;
+  }
+  .explore-toolbar input, .explore-toolbar select {
+    border-radius: 10px;
+    border: 1px solid #d9e6e2;
+    background: #ffffff;
+    padding: 0.58rem 0.75rem;
+    font-size: 0.9rem;
+    min-height: 42px;
+  }
+  .explore-toolbar .stats-btn {
+    background: linear-gradient(135deg, #128465 0%, #16a377 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 0.58rem 1rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .explore-toolbar .stats-btn:hover { opacity: 0.94; }
+  #explore-list,
+  #explore-fallback {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+  }
+  .feed-head {
+    display: grid;
+    gap: 0.3rem;
+  }
+  .feed-title {
+    margin: 0;
+    font-size: 1rem;
+    color: #0f172a;
+    font-weight: 800;
+  }
+  .feed-meta {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.86rem;
+  }
+  .feed-footer {
+    margin-top: 0.7rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .pagination-explore {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 1rem;
+    border: 1px solid #dce9e4;
+    border-radius: 12px;
+    background: #f8fcfb;
+    padding: 0.45rem 0.55rem;
+    width: fit-content;
+  }
+  .pagination-explore button {
+    background: #0f7a5f;
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    padding: 0.44rem 0.82rem;
+    cursor: pointer;
+    font-weight: 700;
+  }
+  .pagination-explore button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .feed-card .pdf-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #b42318;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+    text-decoration: none;
+    margin-top: 0.5rem;
+  }
+  .feed-card .pdf-btn:hover { opacity: 0.9; color: #fff; }
+  .stats-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+  }
+  .stats-modal.active { display: flex; }
+  .stats-modal-content {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    max-width: 480px;
+    width: 90%;
+  }
+  .stats-modal-content h4 { margin-top: 0; }
+  .option-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px rgba(14, 30, 37, 0.15);
+  }
+  .option-card h4 {
+    margin-top: 0;
+    font-weight: 700;
+  }
+  .option-card p {
+    color: #6b7280;
+  }
+  .option-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: #e6f0ee;
+    color: #0b3a3d;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+  }
+  .label-valid { color: #0f7a5f !important; }
+  .label-invalid { color: #b42318 !important; }
+  @media (max-width: 991px) {
+    .option-grid {
+      grid-template-columns: 1fr;
+    }
+    .field-span-6,
+    .field-span-4,
+    .field-span-3 {
+      grid-column: span 12;
+    }
+    #explore-list,
+    #explore-fallback {
+      grid-template-columns: 1fr;
+    }
+    .list-item {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    .list-actions {
+      width: 100%;
+      justify-content: flex-end;
+    }
+    .submit-row {
+      justify-content: stretch;
+    }
+    .submit-row .action-btn {
+      width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+  <div class="agenda-hero">
+    <h2>Gestion des repas</h2>
+    <p>Créez, modifiez ou supprimez les repas enregistrés dans le système.</p>
+  </div>
+
+  <div class="option-grid">
+    {# Par défaut, on sélectionne "Créer un repas" pour afficher immédiatement le formulaire #}
+    <div class="option-card{% if currentTab == 'create' %} selected{% endif %}" data-action="create">
+      <div class="option-icon"><i class="fa fa-plus"></i></div>
+      <h4>Créer un repas</h4>
+      <p>Ajoutez un nouveau repas pour un utilisateur.</p>
+    </div>
+    <div class="option-card{% if currentTab == 'update' %} selected{% endif %}" data-action="update">
+      <div class="option-icon"><i class="fa fa-refresh"></i></div>
+      <h4>Modifier un repas</h4>
+      <p>Mettez à jour les informations d'un repas existant.</p>
+    </div>
+    <div class="option-card{% if currentTab == 'delete' %} selected{% endif %}" data-action="delete">
+      <div class="option-icon"><i class="fa fa-trash"></i></div>
+      <h4>Supprimer un repas</h4>
+      <p>Supprimez un repas de la base de données.</p>
+    </div>
+    <div class="option-card{% if currentTab == 'explore' %} selected{% endif %}" data-action="explore">
+      <div class="option-icon"><i class="fa fa-cutlery"></i></div>
+      <h4>Explorer les repas</h4>
+      <p>Consultez la liste de tous les repas enregistrés.</p>
+    </div>
+  </div>
+
+{% set items = items|default([]) %}
+{% set currentTab = currentTab|default('create') %}
+
+  {% for label, messages in app.flashes %}
+    {% for message in messages %}
+      <div class="success-toast" style="{% if label == 'error' %}background:#fee2e2;color:#991b1b;border-color:#fecaca;{% elseif label == 'warning' %}background:#fef3c7;color:#92400e;border-color:#fde68a;{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endfor %}
+
+  {# Panneau "Créer un repas" affiché par défaut #}
+  <div id="panel-create" class="panel{% if currentTab == 'create' %} active{% endif %}">
+    <h3>Créer un repas</h3>
+    <p class="muted">Ajoutez un nouveau repas pour un utilisateur.</p>
+    <div class="form-wrap">
+      <div class="form-hero">
+        <div>Vous êtes connecté en tant que <strong>{{ app.user ? app.user.userIdentifier : 'Admin' }}</strong></div>
+        <div><i class="fa fa-cutlery"></i></div>
+      </div>
+      {{ form_start(repasForm, {'attr': {'class': 'js-repas-form nutri-form'}}) }}
+        <div class="form-section">
+          <div class="section-title"><i class="fa fa-info-circle"></i> Informations principales</div>
+          <div class="section-grid">
+            <div class="field-card field-span-6 js-validate-group" data-rule="required">
+              {{ form_label(repasForm.user) }}
+              <div class="icon-input">
+                <i class="fa fa-user"></i>
+                {{ form_widget(repasForm.user, {'attr': {'class': 'form-control'}}) }}
+              </div>
+              {{ form_errors(repasForm.user) }}
+            </div>
+            <div class="field-card field-span-6 js-validate-group" data-rule="dateFuture">
+              {{ form_label(repasForm.dateRepas) }}
+              <div class="icon-input">
+                <i class="fa fa-calendar"></i>
+                {{ form_widget(repasForm.dateRepas, {'attr': {'class': 'form-control'}}) }}
+              </div>
+              {{ form_errors(repasForm.dateRepas) }}
+            </div>
+            <div class="field-card field-span-6 js-validate-group" data-rule="required">
+              {{ form_label(repasForm.typeRepas) }}
+              <div class="icon-input">
+                <i class="fa fa-clock-o"></i>
+                {{ form_widget(repasForm.typeRepas, {'attr': {'class': 'form-control'}}) }}
+              </div>
+              {{ form_errors(repasForm.typeRepas) }}
+            </div>
+            <div class="field-card field-span-6 js-validate-group" data-rule="lettersNoHtml">
+              {{ form_label(repasForm.nomRepas) }}
+              <div class="icon-input">
+                <i class="fa fa-cutlery"></i>
+                {{ form_widget(repasForm.nomRepas, {'attr': {'class': 'form-control'}}) }}
+              </div>
+              {{ form_errors(repasForm.nomRepas) }}
+            </div>
+            <div class="field-card field-span-12 js-validate-group" data-rule="max20NoHtml">
+              {{ form_label(repasForm.commentaire) }}
+              <div class="icon-input">
+                <i class="fa fa-comment"></i>
+                {{ form_widget(repasForm.commentaire, {'attr': {'class': 'form-control'}}) }}
+              </div>
+              {{ form_errors(repasForm.commentaire) }}
+            </div>
+            <div class="field-card field-span-12">
+              {{ form_label(repasForm.regime) }}
+              <div class="icon-input">
+                <i class="fa fa-heart"></i>
+                {{ form_widget(repasForm.regime, {'attr': {'class': 'form-control'}}) }}
+              </div>
+              {{ form_errors(repasForm.regime) }}
+            </div>
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="section-title"><i class="fa fa-bar-chart"></i> Valeurs nutritionnelles</div>
+          <div class="section-grid">
+            <div class="field-card field-span-3 js-validate-group" data-rule="positiveNumber">
+              {{ form_label(repasForm.calories) }}
+              <div class="icon-input">
+                <i class="fa fa-fire"></i>
+                {{ form_widget(repasForm.calories, {'attr': {'class': 'form-control'}}) }}
+              </div>
+              {{ form_errors(repasForm.calories) }}
+            </div>
+            <div class="field-card field-span-3 js-validate-group" data-rule="positiveNumber">
+              {{ form_label(repasForm.proteines) }}
+              <div class="icon-input">
+                <i class="fa fa-leaf"></i>
+                {{ form_widget(repasForm.proteines, {'attr': {'class': 'form-control'}}) }}
+              </div>
+              {{ form_errors(repasForm.proteines) }}
+            </div>
+            <div class="field-card field-span-3 js-validate-group" data-rule="positiveNumber">
+              {{ form_label(repasForm.glucides) }}
+              <div class="icon-input">
+                <i class="fa fa-circle-o"></i>
+                {{ form_widget(repasForm.glucides, {'attr': {'class': 'form-control'}}) }}
+              </div>
+              {{ form_errors(repasForm.glucides) }}
+            </div>
+            <div class="field-card field-span-3 js-validate-group" data-rule="positiveNumber">
+              {{ form_label(repasForm.lipides) }}
+              <div class="icon-input">
+                <i class="fa fa-tint"></i>
+                {{ form_widget(repasForm.lipides, {'attr': {'class': 'form-control'}}) }}
+              </div>
+              {{ form_errors(repasForm.lipides) }}
+            </div>
+          </div>
+        </div>
+        <div class="submit-row">
+          <button class="action-btn" type="submit">Créer le repas</button>
+        </div>
+      {{ form_end(repasForm) }}
+    </div>
+  </div>
+
+  <div id="panel-update" class="panel{% if currentTab == 'update' %} active{% endif %}">
+    <h3>Modifier un repas</h3>
+    {% if items is empty %}
+      <p class="muted">Aucun repas disponible pour le moment.</p>
+    {% else %}
+      {% for item in items %}
+        <div class="list-item">
+          <div class="list-item-head">
+            <p class="list-item-title">{{ item.nomRepas }}</p>
+            <p class="list-meta">{{ item.date }} · {{ item.email }}</p>
+            <div class="list-tags">
+              <span class="badge">{{ item.typeRepas }}</span>
+              <span class="badge">{{ item.calories|default(0) }} kcal</span>
+            </div>
+          </div>
+          <div class="list-actions">
+            <button class="action-btn js-edit-toggle" type="button" data-repas-id="{{ item.id }}">Modifier</button>
+          </div>
+        </div>
+        <div class="form-wrap edit-form-shell" id="edit-form-{{ item.id }}">
+          {{ form_start(editForms[item.id], {'attr': {'class': 'js-repas-form'}}) }}
+            <div class="mb-3 js-validate-group" data-rule="required">
+              {{ form_label(editForms[item.id].user) }}
+              <div class="icon-input">
+                <i class="fa fa-user"></i>
+                {{ form_widget(editForms[item.id].user, {'attr': {'class': 'form-control'}}) }}
+              </div>
+            </div>
+            <div class="mb-3 js-validate-group" data-rule="dateFuture">
+              {{ form_label(editForms[item.id].dateRepas) }}
+              <div class="icon-input">
+                <i class="fa fa-calendar"></i>
+                {{ form_widget(editForms[item.id].dateRepas, {'attr': {'class': 'form-control'}}) }}
+              </div>
+            </div>
+            <div class="mb-3 js-validate-group" data-rule="required">
+              {{ form_label(editForms[item.id].typeRepas) }}
+              <div class="icon-input">
+                <i class="fa fa-clock-o"></i>
+                {{ form_widget(editForms[item.id].typeRepas, {'attr': {'class': 'form-control'}}) }}
+              </div>
+            </div>
+            <div class="mb-3 js-validate-group" data-rule="lettersNoHtml">
+              {{ form_label(editForms[item.id].nomRepas) }}
+              <div class="icon-input">
+                <i class="fa fa-cutlery"></i>
+                {{ form_widget(editForms[item.id].nomRepas, {'attr': {'class': 'form-control'}}) }}
+              </div>
+            </div>
+            <div class="mb-3 js-validate-group" data-rule="positiveNumber">
+              {{ form_label(editForms[item.id].calories) }}
+              <div class="icon-input">
+                <i class="fa fa-fire"></i>
+                {{ form_widget(editForms[item.id].calories, {'attr': {'class': 'form-control'}}) }}
+              </div>
+            </div>
+            <div class="mb-3 js-validate-group" data-rule="positiveNumber">
+              {{ form_label(editForms[item.id].proteines) }}
+              <div class="icon-input">
+                <i class="fa fa-leaf"></i>
+                {{ form_widget(editForms[item.id].proteines, {'attr': {'class': 'form-control'}}) }}
+              </div>
+            </div>
+            <div class="mb-3 js-validate-group" data-rule="positiveNumber">
+              {{ form_label(editForms[item.id].glucides) }}
+              <div class="icon-input">
+                <i class="fa fa-circle-o"></i>
+                {{ form_widget(editForms[item.id].glucides, {'attr': {'class': 'form-control'}}) }}
+              </div>
+            </div>
+            <div class="mb-3 js-validate-group" data-rule="positiveNumber">
+              {{ form_label(editForms[item.id].lipides) }}
+              <div class="icon-input">
+                <i class="fa fa-tint"></i>
+                {{ form_widget(editForms[item.id].lipides, {'attr': {'class': 'form-control'}}) }}
+              </div>
+            </div>
+            <div class="mb-3 js-validate-group" data-rule="max20NoHtml">
+              {{ form_label(editForms[item.id].commentaire) }}
+              <div class="icon-input">
+                <i class="fa fa-comment"></i>
+                {{ form_widget(editForms[item.id].commentaire, {'attr': {'class': 'form-control'}}) }}
+              </div>
+            </div>
+            <div class="mb-3">
+              {{ form_label(editForms[item.id].regime) }}
+              <div class="icon-input">
+                <i class="fa fa-heart"></i>
+                {{ form_widget(editForms[item.id].regime, {'attr': {'class': 'form-control'}}) }}
+              </div>
+            </div>
+            <button class="action-btn" type="submit">Enregistrer</button>
+          {{ form_end(editForms[item.id]) }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  <div id="panel-delete" class="panel{% if currentTab == 'delete' %} active{% endif %}">
+    <h3>Supprimer un repas</h3>
+    {% if items is empty %}
+      <p class="muted">Aucun repas disponible à supprimer.</p>
+    {% else %}
+      {% for item in items %}
+        <div class="list-item">
+          <div class="list-item-head">
+            <p class="list-item-title">{{ item.nomRepas }}</p>
+            <p class="list-meta">{{ item.date }} · {{ item.email }}</p>
+            <div class="list-tags">
+              <span class="badge">{{ item.typeRepas }}</span>
+              <span class="badge">{{ item.calories|default(0) }} kcal</span>
+            </div>
+          </div>
+          <form method="post" action="{{ path('admin_nutrition_repas_delete', {'id': item.id}) }}" class="list-actions">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete_repas_' ~ item.id) }}">
+            <button class="action-btn danger-btn" type="submit">Supprimer</button>
+          </form>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  <div id="panel-explore" class="panel{% if currentTab == 'explore' %} active{% endif %}">
+    <h3>Explorer les repas</h3>
+    {% if items is empty %}
+      <p class="muted">Aucun repas enregistré pour le moment.</p>
+    {% else %}
+      <div class="explore-toolbar">
+        <select id="explore-sort" title="Tri des repas">
+          <option value="date-desc">Date récente ↓</option>
+          <option value="date-asc">Date ancienne ↑</option>
+          <option value="calories-asc">Calories ↑</option>
+          <option value="calories-desc">Calories ↓</option>
+        </select>
+        <input type="text" id="explore-search" placeholder="Rechercher nom, email, type..." style="min-width:240px;">
+        <select id="explore-filter" title="Filtrer par type">
+          <option value="">Tous les types</option>
+          <option value="petit_de">Petit-déjeuner</option>
+          <option value="breakfast">Breakfast</option>
+          <option value="dejeuner">Déjeuner</option>
+          <option value="diner">Dîner</option>
+          <option value="evening">Evening</option>
+          <option value="collat">Collation</option>
+          <option value="extra_meal">Extra meal</option>
+        </select>
+        <button type="button" class="stats-btn" id="explore-stats-btn"><i class="fa fa-pie-chart"></i> Statistiques</button>
+      </div>
+      {# Conteneur rempli par JavaScript si disponible #}
+      <div id="explore-list"></div>
+
+      {# Fallback serveur : liste simple des repas si le JS ne fonctionne pas #}
+      <div id="explore-fallback">
+        {% for item in items %}
+          <div class="feed-card">
+            <div class="feed-head">
+              <p class="feed-title">{{ item.nomRepas }}</p>
+              <p class="feed-meta">{{ item.email ?: '-' }} · <span class="badge">{{ item.typeRepas }}</span> · {{ item.calories|default(0) }} kcal</p>
+            </div>
+            <div class="feed-footer">
+              <small class="muted">{{ item.date }}</small>
+              <a href="{{ path('admin_nutrition_repas_pdf', {'id': item.id}) }}" class="pdf-btn" target="_blank"><i class="fa fa-file-pdf-o"></i> Exporter PDF</a>
+            </div>
+          </div>
+        {% else %}
+          <p class="muted">Aucun repas enregistré pour le moment.</p>
+        {% endfor %}
+      </div>
+      <div class="pagination-explore" id="explore-pagination" style="display:none;">
+        <button type="button" id="explore-prev">‹ Préc.</button>
+        <span id="explore-page-info">Page 1</span>
+        <button type="button" id="explore-next">Suiv. ›</button>
+      </div>
+      <template id="explore-card-tpl">
+        <div class="feed-card" data-id="" data-nom="" data-type="" data-calories="" data-email="" data-date="">
+          <div class="feed-head">
+            <p class="feed-title card-nom"></p>
+            <p class="feed-meta">
+              <span class="card-email"></span> · <span class="badge card-type"></span> · <span class="card-calories"></span> kcal
+            </p>
+          </div>
+          <div class="feed-footer">
+            <small class="muted card-date"></small>
+            <a href="#" class="pdf-btn" target="_blank"><i class="fa fa-file-pdf-o"></i> Exporter PDF</a>
+          </div>
+        </div>
+      </template>
+      <script type="application/json" id="explore-data">{{ items|json_encode|raw }}</script>
+      <div id="stats-modal" class="stats-modal">
+        <div class="stats-modal-content">
+          <h4>Répartition des repas par type</h4>
+          <canvas id="stats-pie-chart" width="400" height="300"></canvas>
+          <div style="margin-top:1rem;">
+            <button type="button" class="action-btn" id="stats-modal-close">Fermer</button>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.option-card');
+    const panels = {
+      create: document.getElementById('panel-create'),
+      update: document.getElementById('panel-update'),
+      delete: document.getElementById('panel-delete'),
+      explore: document.getElementById('panel-explore'),
+    };
+    const editToggles = document.querySelectorAll('.js-edit-toggle');
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        cards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        Object.values(panels).forEach(p => p.classList.remove('active'));
+        const key = card.getAttribute('data-action');
+        if (panels[key]) {
+          panels[key].classList.add('active');
+        }
+      });
+    });
+    editToggles.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-repas-id');
+        const form = document.getElementById('edit-form-' + id);
+        if (!form) return;
+        const isHidden = window.getComputedStyle(form).display === 'none';
+        form.style.display = isHidden ? 'block' : 'none';
+      });
+    });
+
+    // Validator dynamique (classe de validation)
+    const Validator = {
+      noHtml: (v) => !/[<>]/.test(String(v || '')),
+      required: (v, el) => {
+        if (el && el.tagName === 'SELECT') return (v || '') !== '';
+        return String(v || '').trim() !== '';
+      },
+      dateFuture: (v) => {
+        if (!v) return false;
+        const d = new Date(v);
+        return !isNaN(d.getTime()) && d.getTime() >= Date.now();
+      },
+      lettersNoHtml: (v) => {
+        const s = String(v || '');
+        if (/[<>]/.test(s)) return false;
+        if (s.trim() === '') return false;
+        return /^[a-zA-Z\u00C0-\u024F\s'-]+$/.test(s);
+      },
+      positiveNumber: (v) => {
+        const s = String(v || '').trim();
+        if (s === '') return true;
+        const n = parseFloat(s);
+        return !isNaN(n) && n > 0 && Number.isInteger(n);
+      },
+      max20NoHtml: (v) => {
+        const s = String(v || '');
+        if (/[<>]/.test(s)) return false;
+        return s.length <= 20;
+      },
+      validate: (rule, value, el) => {
+        switch (rule) {
+          case 'required': return Validator.required(value, el);
+          case 'dateFuture': return Validator.dateFuture(value);
+          case 'lettersNoHtml': return Validator.lettersNoHtml(value);
+          case 'positiveNumber': return Validator.positiveNumber(value);
+          case 'max20NoHtml': return Validator.max20NoHtml(value);
+          default: return true;
+        }
+      }
+    };
+
+    function runValidation(group) {
+      const rule = group.dataset.rule;
+      const label = group.querySelector('label');
+      const control = group.querySelector('.icon-input input, .icon-input select, .icon-input textarea');
+      if (!label || !control) return;
+      const value = control.value;
+      const valid = Validator.validate(rule, value, control);
+      label.classList.remove('label-valid', 'label-invalid');
+      if (value !== '' || rule === 'required') {
+        label.classList.add(valid ? 'label-valid' : 'label-invalid');
+      }
+    }
+
+    document.addEventListener('input', (e) => {
+      const group = e.target.closest('.js-validate-group');
+      if (group) runValidation(group);
+    });
+    document.addEventListener('change', (e) => {
+      const group = e.target.closest('.js-validate-group');
+      if (group) runValidation(group);
+    });
+
+    document.querySelectorAll('.js-repas-form').forEach(form => {
+      form.querySelectorAll('.js-validate-group').forEach(runValidation);
+      form.addEventListener('submit', (e) => {
+        let allValid = true;
+        form.querySelectorAll('.js-validate-group').forEach(g => {
+          runValidation(g);
+          const lbl = g.querySelector('label');
+          if (lbl && lbl.classList.contains('label-invalid')) allValid = false;
+        });
+        if (!allValid) e.preventDefault();
+      });
+    });
+
+    // Explore: sort, search, filter, pagination, stats, PDF
+    const exploreDataEl = document.getElementById('explore-data');
+    if (exploreDataEl) {
+      const allItems = JSON.parse(exploreDataEl.textContent);
+      const listEl = document.getElementById('explore-list');
+      const tpl = document.getElementById('explore-card-tpl');
+      const pdfBasePath = '{{ path('admin_nutrition_repas_pdf', { id: 0 }) }}';
+      const PAGE_SIZE = 10;
+
+      let sortOrder = 'date-desc';
+      let searchText = '';
+      let filterType = '';
+      let currentPage = 1;
+
+      function getFilteredSorted() {
+        let items = [...allItems];
+        if (searchText) {
+          const q = searchText.toLowerCase();
+          items = items.filter(i => {
+            const nom = (i.nomRepas || '').toLowerCase();
+            const email = (i.email || '').toLowerCase();
+            const type = (i.typeRepas || '').toLowerCase();
+            const calories = String(i.calories ?? '').toLowerCase();
+            const date = (i.date || '').toLowerCase();
+            return nom.includes(q) || email.includes(q) || type.includes(q) || calories.includes(q) || date.includes(q);
+          });
+        }
+        if (filterType) {
+          items = items.filter(i => i.typeRepas === filterType);
+        }
+        items.sort((a, b) => {
+          if (sortOrder === 'date-asc' || sortOrder === 'date-desc') {
+            const ta = new Date(a.dateRaw || a.date || 0).getTime();
+            const tb = new Date(b.dateRaw || b.date || 0).getTime();
+            return sortOrder === 'date-asc' ? ta - tb : tb - ta;
+          }
+          const asc = sortOrder === 'calories-asc';
+          const ca = a.calories ?? 0;
+          const cb = b.calories ?? 0;
+          return asc ? ca - cb : cb - ca;
+        });
+        return items;
+      }
+
+      function render() {
+        const items = getFilteredSorted();
+        const total = items.length;
+        const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+        currentPage = Math.min(currentPage, totalPages);
+        const start = (currentPage - 1) * PAGE_SIZE;
+        const pageItems = items.slice(start, start + PAGE_SIZE);
+
+        listEl.innerHTML = '';
+        // On masque le fallback serveur dès que le rendu JS est actif
+        const fb = document.getElementById('explore-fallback');
+        if (fb) {
+          fb.style.display = 'none';
+        }
+        pageItems.forEach(item => {
+          const card = tpl.content.cloneNode(true);
+          const root = card.querySelector('.feed-card');
+          root.dataset.id = item.id;
+          root.querySelector('.card-nom').textContent = item.nomRepas || '-';
+          root.querySelector('.card-email').textContent = item.email || '-';
+          root.querySelector('.card-type').textContent = item.typeRepas || '-';
+          root.querySelector('.card-calories').textContent = item.calories ?? 0;
+          root.querySelector('.card-date').textContent = item.date || '-';
+          const pdfLink = root.querySelector('.pdf-btn');
+          pdfLink.href = pdfBasePath.replace('/0', '/' + item.id);
+          listEl.appendChild(card);
+        });
+
+        const paginationEl = document.getElementById('explore-pagination');
+        if (total > 0) {
+          paginationEl.style.display = 'flex';
+          paginationEl.querySelector('#explore-page-info').textContent = 'Page ' + currentPage + ' / ' + totalPages;
+          paginationEl.querySelector('#explore-prev').disabled = currentPage <= 1;
+          paginationEl.querySelector('#explore-next').disabled = currentPage >= totalPages;
+        } else {
+          paginationEl.style.display = 'none';
+          listEl.innerHTML = '<p class="muted">Aucun repas ne correspond aux critères.</p>';
+        }
+      }
+
+      document.getElementById('explore-sort').addEventListener('change', e => {
+        sortOrder = e.target.value;
+        currentPage = 1;
+        render();
+      });
+      document.getElementById('explore-search').addEventListener('input', e => {
+        searchText = (e.target.value || '').trim();
+        currentPage = 1;
+        render();
+      });
+      document.getElementById('explore-filter').addEventListener('change', e => {
+        filterType = (e.target.value || '').trim();
+        currentPage = 1;
+        render();
+      });
+      document.getElementById('explore-prev').addEventListener('click', () => {
+        if (currentPage > 1) { currentPage--; render(); }
+      });
+      document.getElementById('explore-next').addEventListener('click', () => {
+        const items = getFilteredSorted();
+        const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+        if (currentPage < totalPages) { currentPage++; render(); }
+      });
+
+      document.getElementById('explore-stats-btn').addEventListener('click', () => {
+        const items = getFilteredSorted();
+        const byType = {};
+        items.forEach(i => {
+          const t = i.typeRepas || 'Autre';
+          byType[t] = (byType[t] || 0) + 1;
+        });
+        const labels = Object.keys(byType);
+        const data = Object.values(byType);
+        const colors = ['#0b3a3d', '#0d5b50', '#0f7a5f', '#1a9b6b', '#2bb87a', '#3dd58a'];
+        const modal = document.getElementById('stats-modal');
+        modal.classList.add('active');
+        const canvas = document.getElementById('stats-pie-chart');
+        const ctx = canvas.getContext('2d');
+        if (window.statsChart) window.statsChart.destroy();
+        window.statsChart = new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: labels,
+            datasets: [{ data: data, backgroundColor: colors.slice(0, labels.length) }]
+          },
+          options: { responsive: true }
+        });
+      });
+
+      document.getElementById('stats-modal-close').addEventListener('click', () => {
+        document.getElementById('stats-modal').classList.remove('active');
+      });
+      document.getElementById('stats-modal').addEventListener('click', e => {
+        if (e.target.id === 'stats-modal') e.target.classList.remove('active');
+      });
+
+      render();
+    }
+  });
+</script>
+{% endblock %}
+

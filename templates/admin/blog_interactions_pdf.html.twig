@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: #1f2937; }
+    h2 { margin: 0 0 8px; color: #0b3a3d; }
+    .meta { margin: 0 0 14px; color: #6b7280; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #d1d5db; padding: 6px 8px; text-align: left; vertical-align: top; }
+    th { background: #eef6f4; }
+  </style>
+</head>
+<body>
+  <h2>Admin Blog Interactions Report</h2>
+  <p class="meta">Generated on {{ "now"|date("Y-m-d H:i") }}</p>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Type</th><th>User</th><th>Post ID</th><th>Comment</th><th>Date</th></tr>
+    </thead>
+    <tbody>
+      {% for it in interactions %}
+        <tr>
+          <td>#{{ it.id }}</td>
+          <td>{{ it.interactionType }}</td>
+          <td>{{ it.userEmail }}</td>
+          <td>{{ it.targetId }}</td>
+          <td>{{ it.commentText }}</td>
+          <td>{{ it.createdAt ? it.createdAt|date('Y-m-d H:i') : '-' }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6">No rows</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

@@ -1,0 +1,162 @@
+{% extends 'shop/base.html.twig' %}
+
+{% block title %}Paiement par Carte - Fitopia Supplements{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/cart.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/checkout.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/payment.css') }}">
+{% endblock %}
+
+{% block body %}
+    <!-- Payment Section -->
+    <section class="payment-section">
+        <div class="container">
+            <div class="checkout-steps">
+                <div class="step completed">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Panier</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="step completed">
+                    <i class="fas fa-user"></i>
+                    <span>Informations</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="step active">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Paiement</span>
+                </div>
+            </div>
+
+            <div class="payment-layout">
+                <!-- Payment Form -->
+                <div class="payment-main">
+                    <div class="payment-header">
+                        <i class="fas fa-credit-card"></i>
+                        <h2>Paiement sécurisé par carte</h2>
+                        <p>Vos informations sont cryptées et sécurisées</p>
+                    </div>
+
+                    <form id="paymentForm" class="payment-form">
+                        <div class="form-group">
+                            <label for="cardNumber">Numéro de carte *</label>
+                            <div class="card-input-wrapper">
+                                <input type="text" id="cardNumber" name="cardNumber" 
+                                       placeholder="1234 5678 9012 3456" 
+                                       maxlength="19" required>
+                                <div class="card-icons">
+                                    <i class="fab fa-cc-visa"></i>
+                                    <i class="fab fa-cc-mastercard"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cardName">Nom sur la carte *</label>
+                            <input type="text" id="cardName" name="cardName" 
+                                   placeholder="JOHN DOE" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="expiryDate">Date d'expiration *</label>
+                                <input type="text" id="expiryDate" name="expiryDate" 
+                                       placeholder="MM/AA" maxlength="5" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cvv">CVV *</label>
+                                <input type="text" id="cvv" name="cvv" 
+                                       placeholder="123" maxlength="3" required>
+                            </div>
+                        </div>
+
+                        <div class="security-info">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Paiement 100% sécurisé avec cryptage SSL</span>
+                        </div>
+
+                        <div class="form-actions">
+                            <a href="{{ path('app_shop_checkout') }}" class="back-btn">
+                                <i class="fas fa-arrow-left"></i> Retour
+                            </a>
+                            <button type="submit" class="submit-payment-btn">
+                                <i class="fas fa-lock"></i> Payer maintenant
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Payment Summary -->
+                <aside class="payment-summary">
+                    <h3>Résumé du paiement</h3>
+                    <div class="payment-info">
+                        <div class="info-row">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Paiement sécurisé</span>
+                        </div>
+                        <div class="info-row">
+                            <i class="fas fa-lock"></i>
+                            <span>Cryptage SSL 256-bit</span>
+                        </div>
+                        <div class="info-row">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Garantie de remboursement</span>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Get order number from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderNumber = urlParams.get('order');
+
+        // Format card number input
+        $('#cardNumber').on('input', function() {
+            let value = $(this).val().replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            $(this).val(formattedValue);
+        });
+
+        // Format expiry date
+        $('#expiryDate').on('input', function() {
+            let value = $(this).val().replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            $(this).val(value);
+        });
+
+        // Only allow numbers in CVV
+        $('#cvv').on('input', function() {
+            $(this).val($(this).val().replace(/\D/g, ''));
+        });
+
+        // Submit payment (simulated)
+        $('#paymentForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            // Simulate payment processing
+            const btn = $('.submit-payment-btn');
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Traitement...');
+            
+            setTimeout(function() {
+                // Redirect to success page
+                if (orderNumber) {
+                    window.location.href = '{{ path('app_shop_order_success', {orderNumber: '__ORDER__'}) }}'.replace('__ORDER__', orderNumber);
+                } else {
+                    alert('Numéro de commande manquant');
+                    btn.prop('disabled', false).html('<i class="fas fa-lock"></i> Payer maintenant');
+                }
+            }, 2000);
+        });
+    </script>
+{% endblock %}
+

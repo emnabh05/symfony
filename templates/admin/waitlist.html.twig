@@ -1,0 +1,134 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Admin Waitlist | Fitopia{% endblock %}
+
+{% block body %}
+<h1 class="page-title">Smart Waitlist Management</h1>
+
+{% for message in app.flashes('success') %}
+  <div class="alert alert-success">{{ message }}</div>
+{% endfor %}
+{% for message in app.flashes('error') %}
+  <div class="alert alert-danger">{{ message }}</div>
+{% endfor %}
+{% for message in app.flashes('info') %}
+  <div class="alert alert-info">{{ message }}</div>
+{% endfor %}
+
+<div class="card mb-3">
+  <h3>Selectionner un evenement</h3>
+  <form method="get" action="{{ path('admin_waitlist') }}" class="d-flex gap-2 flex-wrap">
+    <select name="eventId" class="form-control" style="max-width:420px;" onchange="this.form.submit()">
+      {% for event in events %}
+        <option value="{{ event.id }}" {{ selectedEvent and event.id == selectedEvent.id ? 'selected' : '' }}>
+          #{{ event.id }} - {{ event.titre }} ({{ event.dateEvent|date('Y-m-d') }})
+        </option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-outline-primary" type="submit">Charger</button>
+    <a class="btn btn-outline-secondary" href="{{ path('admin_events') }}">Retour admin events</a>
+  </form>
+</div>
+
+{% if not selectedEvent %}
+  <div class="alert alert-warning">Aucun evenement disponible.</div>
+{% else %}
+  <div class="card mb-3">
+    <h3>{{ selectedEvent.titre }}</h3>
+    <p class="text-muted mb-2">
+      Capacite max: <strong>{{ selectedEvent.capacite }}</strong> |
+      Places restantes: <strong>{{ remainingPlaces }}</strong> |
+      EN_ATTENTE: <strong>{{ pendingCount }}</strong> |
+      INVITE: <strong>{{ inviteCount }}</strong>
+    </p>
+    <div class="d-flex gap-2 flex-wrap">
+      <form method="post" action="{{ path('admin_events_waitlist_invite_next', {id: selectedEvent.id}) }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('admin_events_waitlist_invite_' ~ selectedEvent.id) }}">
+        <input type="hidden" name="_redirect" value="waitlist">
+        <button class="btn btn-primary btn-sm" type="submit">Inviter le prochain</button>
+      </form>
+      <form method="post" action="{{ path('admin_events_waitlist_expire', {id: selectedEvent.id}) }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('admin_events_waitlist_expire_' ~ selectedEvent.id) }}">
+        <input type="hidden" name="_redirect" value="waitlist">
+        <button class="btn btn-outline-secondary btn-sm" type="submit">Nettoyer expires</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <h3>File d attente</h3>
+    {% if entries is empty %}
+      <p class="text-muted mb-0">Aucune entree waitlist pour cet evenement.</p>
+    {% else %}
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Invited</th>
+              <th>Expires</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in entries %}
+              <tr>
+                <td>{{ entry.nom }}</td>
+                <td>{{ entry.email }}</td>
+                <td>{{ entry.status }}</td>
+                <td>{{ entry.createdAt ? entry.createdAt|date('Y-m-d H:i') : '-' }}</td>
+                <td>{{ entry.invitedAt ? entry.invitedAt|date('Y-m-d H:i') : '-' }}</td>
+                <td>{{ entry.expiresAt ? entry.expiresAt|date('Y-m-d H:i') : '-' }}</td>
+                <td>
+                  {% if entry.status in ['EN_ATTENTE', 'INVITE'] %}
+                    <form method="post" action="{{ path('admin_events_waitlist_cancel', {id: entry.id}) }}">
+                      <input type="hidden" name="_token" value="{{ csrf_token('admin_events_waitlist_cancel_' ~ entry.id) }}">
+                      <input type="hidden" name="_redirect" value="waitlist">
+                      <button class="btn btn-outline-danger btn-sm" type="submit">Annuler</button>
+                    </form>
+                  {% else %}
+                    <span class="text-muted">-</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </div>
+{% endif %}
+
+<div class="card">
+  <h3>Dernieres promotions</h3>
+  {% if latestPromotions is empty %}
+    <p class="text-muted mb-0">Aucune promotion waitlist confirmee.</p>
+  {% else %}
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Participant</th>
+            <th>Evenement</th>
+            <th>Date/heure</th>
+            <th>Statut final</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for promotion in latestPromotions %}
+            <tr>
+              <td>{{ promotion.nom }} ({{ promotion.email }})</td>
+              <td>{{ promotion.event ? promotion.event.titre : 'N/A' }}</td>
+              <td>{{ promotion.invitedAt ? promotion.invitedAt|date('Y-m-d H:i') : (promotion.createdAt ? promotion.createdAt|date('Y-m-d H:i') : '-') }}</td>
+              <td>{{ promotion.status }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

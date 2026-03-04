@@ -1,0 +1,204 @@
+﻿{% set currentRoute = app.request.attributes.get('_route') %}
+{% set profileActive = currentRoute starts with 'app_profile' %}
+
+<style>
+  #ftco-navbar.fitopia-navbar-modern {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e5ecea;
+    box-shadow: 0 6px 18px rgba(16, 38, 45, 0.04);
+  }
+
+  .fitopia-navbar-modern .container {
+    max-width: 1320px;
+  }
+
+  .fitopia-navbar-modern .navbar-brand {
+    margin-right: 1.25rem;
+  }
+
+  .fitopia-navbar-modern .navbar-brand img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+  }
+
+  .fitopia-navbar-modern .navbar-nav {
+    align-items: center;
+    gap: .2rem;
+  }
+
+  .fitopia-navbar-modern .nav-link {
+    color: #18333f !important;
+    font-weight: 600;
+    padding: .9rem .8rem !important;
+    border-bottom: 2px solid transparent;
+    transition: color .18s ease, border-color .18s ease;
+  }
+
+  .fitopia-navbar-modern .nav-link:hover {
+    color: #0f7a5f !important;
+  }
+
+  .fitopia-navbar-modern .nav-item.active > .nav-link {
+    color: #0f7a5f !important;
+    border-bottom-color: #0f7a5f;
+  }
+
+  .fitopia-navbar-modern .fitopia-nav-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+  }
+
+  .fitopia-navbar-modern .fitopia-login-link {
+    color: #0f7a5f;
+    font-weight: 700;
+    border: 1px solid #b9e0d3;
+    border-radius: 999px;
+    padding: .46rem .95rem;
+    text-decoration: none;
+    transition: all .18s ease;
+  }
+
+  .fitopia-navbar-modern .fitopia-login-link:hover {
+    background: #edf8f4;
+    color: #0d624c;
+    text-decoration: none;
+  }
+
+  .fitopia-navbar-modern .fitopia-logout-link {
+    color: #b42340;
+    border-color: #f2ccd6;
+  }
+
+  .fitopia-navbar-modern .fitopia-logout-link:hover {
+    background: #fff1f4;
+    color: #9d1737;
+  }
+
+  .fitopia-navbar-modern .fitopia-user-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    max-width: 280px;
+    border: 1px solid #d4e3df;
+    border-radius: 999px;
+    padding: .38rem .72rem;
+    color: #1f3a46 !important;
+    font-weight: 600;
+    text-decoration: none;
+    background: #fff;
+  }
+
+  .fitopia-navbar-modern .fitopia-user-toggle span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .fitopia-navbar-modern .fitopia-user-toggle:hover,
+  .fitopia-navbar-modern .fitopia-user-toggle:focus {
+    background: #f5faf8;
+    color: #0f7a5f !important;
+    text-decoration: none;
+  }
+
+  @media (max-width: 991px) {
+    .fitopia-navbar-modern .navbar-nav {
+      align-items: stretch;
+      padding-top: .35rem;
+    }
+
+    .fitopia-navbar-modern .nav-link {
+      padding: .48rem .2rem !important;
+      border-bottom: 0;
+    }
+
+    .fitopia-navbar-modern .fitopia-nav-right {
+      margin-left: 0;
+      margin-top: .35rem;
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    .fitopia-navbar-modern .fitopia-user-toggle,
+    .fitopia-navbar-modern .fitopia-login-link {
+      width: 100%;
+      border-radius: 10px;
+      justify-content: space-between;
+      padding: .55rem .75rem;
+    }
+  }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar fitopia-navbar-modern ftco-navbar-light" id="ftco-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="{{ path('home') }}">
+      <img src="{{ asset('images/logo.png') }}" alt="Fitopia Logo">
+    </a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#ftco-nav" aria-controls="ftco-nav"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="fa fa-bars"></span> Menu
+    </button>
+
+    <div class="collapse navbar-collapse" id="ftco-nav">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item{% if currentRoute == 'home' %} active{% endif %}">
+          <a href="{{ path('home') }}" class="nav-link">Home</a>
+        </li>
+        <li class="nav-item{% if currentRoute == 'about' %} active{% endif %}">
+          <a href="{{ path('about') }}" class="nav-link">About Fitopia</a>
+        </li>
+
+        {% if app.user %}
+          <li class="nav-item{% if currentRoute == 'diet_planner' or currentRoute starts with 'diet_' %} active{% endif %}">
+            <a class="nav-link" href="{{ path('diet_planner') }}" id="diet-planner-btn">Diet &amp; Eating Planner</a>
+          </li>
+          <li class="nav-item{% if currentRoute starts with 'fitness_planner' %} active{% endif %}">
+            <a class="nav-link" href="{{ path('fitness_planner') }}" id="fitness-planner-btn">Fitness Planner</a>
+          </li>
+          <li class="nav-item{% if currentRoute starts with 'app_supplement_' or currentRoute starts with 'app_shop_' %} active{% endif %}">
+            <a class="nav-link" href="{{ path('app_supplement_index') }}" id="supplements-btn">Supplements Shop</a>
+          </li>
+          <li class="nav-item{% if currentRoute == 'events' or currentRoute starts with 'events_' %} active{% endif %}">
+            <a class="nav-link" href="{{ path('events') }}" id="events-btn">Events</a>
+          </li>
+          <li class="nav-item{% if currentRoute starts with 'explore_' %} active{% endif %}">
+            <a class="nav-link" href="{{ path('explore_forums_blogs') }}">Forums &amp; Blogs</a>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="diet-planner-guest-btn">Diet &amp; Eating Planner</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="fitness-planner-guest-btn">Fitness Planner</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="supplements-guest-btn">Supplements Shop</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="events-guest-btn">Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="explore-guest-btn">Forums &amp; Blogs</a>
+          </li>
+        {% endif %}
+      </ul>
+
+      <div class="fitopia-nav-right">
+        {% if app.user %}
+          <a class="fitopia-user-toggle{% if profileActive %} active{% endif %}" href="{{ path('app_profile') }}">
+            <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+            <span>{{ app.user.userIdentifier }}</span>
+          </a>
+          <a class="fitopia-login-link fitopia-logout-link" href="{{ path('app_logout') }}" id="global-logout-btn">Logout</a>
+        {% else %}
+          <a href="{{ path('app_login') }}" class="fitopia-login-link">Get Started</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>

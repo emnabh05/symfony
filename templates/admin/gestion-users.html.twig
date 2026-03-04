@@ -1,0 +1,620 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Gestion utilisateur | Fitopia{% endblock %}
+
+{% block stylesheets %}
+<style>
+  .agenda-hero {
+    background: linear-gradient(135deg, #0b3a3d 0%, #0d5b50 55%, #0f7a5f 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 18px 50px rgba(14, 30, 37, 0.18);
+    position: relative;
+    overflow: hidden;
+  }
+  .agenda-hero::after {
+    content: "";
+    position: absolute;
+    right: -60px;
+    top: -60px;
+    width: 180px;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+  }
+  .agenda-hero h2 { margin: 0 0 0.4rem; font-weight: 800; }
+  .agenda-hero p { margin: 0; opacity: 0.9; }
+  .hero-stats {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+  .hero-chip {
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 999px;
+    padding: 0.32rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .option-grid {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .option-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 12px 30px rgba(14, 30, 37, 0.08);
+    border: 1px solid #eef2f6;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .option-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(15,122,95,0.05), rgba(11,58,61,0));
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .option-card.selected {
+    border-color: #0f7a5f;
+    box-shadow: 0 0 0 3px rgba(15, 122, 95, 0.15);
+  }
+  .option-card:hover {
+    transform: translateY(-4px);
+    border-color: #d2e5e1;
+    box-shadow: 0 18px 40px rgba(14, 30, 37, 0.14);
+  }
+  .option-card:hover::before { opacity: 1; }
+  .option-card > * { position: relative; z-index: 1; }
+  .option-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: #e6f0ee;
+    color: #0b3a3d;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+  }
+  .panel {
+    margin-top: 2rem;
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.75rem;
+    border: 1px solid #eef2f6;
+    box-shadow: 0 12px 30px rgba(14, 30, 37, 0.08);
+    display: none;
+    transform: translateY(12px);
+    opacity: 0;
+    transition: all 0.25s ease;
+  }
+  .panel.active { display: block; transform: translateY(0); opacity: 1; }
+  .panel h3 {
+    margin-top: 0;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: #0b3a3d;
+  }
+  .panel h3 i {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: #e9f7f2;
+    color: #0f7a5f;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+  }
+  .muted { color: #6b7280; }
+  .form-wrap {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #e6eef6;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 10px 26px rgba(14, 30, 37, 0.07);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+  }
+  .form-wrap:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(14, 30, 37, 0.11);
+  }
+  .form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+  .form-row.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .form-control, .btn { border-radius: 10px; }
+  .form-control {
+    border: 1px solid #d6e0ea;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .form-control:focus {
+    border-color: #0f7a5f;
+    box-shadow: 0 0 0 3px rgba(15, 122, 95, 0.12);
+  }
+  label {
+    font-weight: 700;
+    color: #3a4b5c;
+    font-size: 0.86rem;
+    margin-bottom: 0.2rem;
+  }
+  .btn-primary {
+    background: #0b3a3d;
+    border-color: #0b3a3d;
+    font-weight: 700;
+    box-shadow: 0 6px 16px rgba(11, 58, 61, 0.22);
+  }
+  .btn-primary:hover { background: #0f7a5f; border-color: #0f7a5f; }
+  .btn-outline-primary, .btn-outline-danger {
+    font-weight: 700;
+    border-width: 1.5px;
+  }
+  .list-item {
+    border: 1px solid #e6eef6;
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.75rem;
+    background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: itemIn .28s ease both;
+  }
+  .list-item:hover {
+    transform: translateX(2px);
+    box-shadow: 0 10px 22px rgba(14, 30, 37, 0.08);
+  }
+  .list-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .badge-soft {
+    display: inline-block;
+    border-radius: 999px;
+    background: #e9f7f2;
+    color: #0f7a5f;
+    font-size: 0.72rem;
+    padding: 0.2rem 0.55rem;
+    font-weight: 700;
+  }
+  .success-toast {
+    background: #e6fffa;
+    color: #0b3a3d;
+    border: 1px solid #b7f3ea;
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem;
+  }
+  .error-toast {
+    background: #fff1f1;
+    color: #a11b1b;
+    border: 1px solid #f7c9c9;
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem;
+  }
+  .table-wrap { overflow-x: auto; }
+  .table-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0.6rem 0 0.8rem;
+    flex-wrap: wrap;
+  }
+  .toolbar-search, .toolbar-sort {
+    border: 1px solid #d6e0ea;
+    border-radius: 10px;
+    padding: 0.42rem 0.62rem;
+    font-size: 0.85rem;
+    background: #fff;
+  }
+  .toolbar-search { min-width: 230px; }
+  .toolbar-sort { min-width: 190px; }
+  .toolbar-export {
+    border: 1px solid #c8d7ee;
+    background: #f0f5ff;
+    color: #1f3f68;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.84rem;
+    padding: 0.42rem 0.78rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e6eef6;
+    background: #fff;
+  }
+  th, td {
+    border-bottom: 1px solid #eef2f6;
+    padding: 0.62rem 0.55rem;
+    text-align: left;
+    font-size: 0.9rem;
+  }
+  th { background: #f4f8fb; color: #1e3042; font-weight: 800; }
+  tbody tr { transition: background-color 0.2s ease; }
+  tbody tr:hover { background: #f8fcfb; }
+  @keyframes itemIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (max-width: 991px) {
+    .option-grid { grid-template-columns: 1fr; }
+    .form-row, .form-row.three { grid-template-columns: 1fr; }
+    .hero-stats { display: grid; grid-template-columns: 1fr; gap: 0.45rem; }
+    .table-toolbar { justify-content: stretch; }
+    .toolbar-search, .toolbar-sort, .toolbar-export { width: 100%; min-width: 0; }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+{% set managedUsers = managedUsers|default([]) %}
+
+  <div class="agenda-hero">
+    <h2>User Management</h2>
+    <p>Admin can create, update, delete, and explore all user accounts.</p>
+    <div class="hero-stats">
+      <span class="hero-chip"><i class="fa fa-users"></i> {{ managedUsers|length }} users</span>
+      <span class="hero-chip"><i class="fa fa-user-secret"></i> {{ managedUsers|filter(u => 'ROLE_ADMIN' in u.roles)|length }} admins</span>
+    </div>
+  </div>
+
+  {% for message in app.flashes('success') %}
+    <div class="success-toast">{{ message }}</div>
+  {% endfor %}
+  {% for message in app.flashes('error') %}
+    <div class="error-toast">{{ message }}</div>
+  {% endfor %}
+
+  <div class="option-grid">
+    <div class="option-card" data-action="create">
+      <div class="option-icon"><i class="fa fa-plus"></i></div>
+      <h4>Create users</h4>
+      <p class="muted">Add a new user account directly from admin.</p>
+    </div>
+    <div class="option-card" data-action="update">
+      <div class="option-icon"><i class="fa fa-refresh"></i></div>
+      <h4>Update users</h4>
+      <p class="muted">Edit account details and optional password.</p>
+    </div>
+    <div class="option-card" data-action="delete">
+      <div class="option-icon"><i class="fa fa-trash"></i></div>
+      <h4>Delete users</h4>
+      <p class="muted">Remove accounts securely.</p>
+    </div>
+    <div class="option-card" data-action="explore">
+      <div class="option-icon"><i class="fa fa-globe"></i></div>
+      <h4>Explore all users</h4>
+      <p class="muted">Search, sort, and export user records.</p>
+    </div>
+  </div>
+
+  <div id="panel-create" class="panel">
+    <h3><i class="fa fa-user-plus"></i> Create users</h3>
+    <p class="muted">Create a new user account.</p>
+
+    <div class="form-wrap">
+      <form method="post" action="{{ path('admin_users_add') }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('admin_users_add') }}">
+        <div class="form-row three">
+          <div><label>Email</label><input class="form-control" name="email" type="email" required></div>
+          <div><label>Username</label><input class="form-control" name="username" required></div>
+          <div><label>Password</label><input class="form-control" name="password" type="password" minlength="6" required></div>
+        </div>
+        <div class="form-row">
+          <div><label>First Name</label><input class="form-control" name="first_name" required></div>
+          <div><label>Last Name</label><input class="form-control" name="last_name" required></div>
+        </div>
+        <div class="form-row three">
+          <div><label>Phone</label><input class="form-control" name="phone" required></div>
+          <div><label>Birth Date</label><input class="form-control" name="birth_date" type="date" required></div>
+          <div>
+            <label>Gender</label>
+            <select class="form-control" name="gender" required>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Role</label>
+            <select class="form-control" name="role" required>
+              <option value="ROLE_USER">User</option>
+              <option value="ROLE_ADMIN">Admin</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary mt-2" type="submit"><i class="fa fa-check"></i> Create User</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="panel-update" class="panel">
+    <h3><i class="fa fa-refresh"></i> Update users</h3>
+    <p class="muted">Edit user information and roles.</p>
+
+    {% for user in managedUsers %}
+      <div class="list-item">
+        <div class="list-head" style="width:100%;">
+          <div>
+            <strong>#{{ user.id }} - {{ user.email }}</strong>
+            <div class="muted">{{ user.firstName }} {{ user.lastName }} | {{ user.username }} | {{ user.phone }}</div>
+          </div>
+          <button class="btn btn-outline-primary btn-sm js-toggle" data-target="user-form-{{ user.id }}"><i class="fa fa-pencil"></i> Edit</button>
+        </div>
+        <form id="user-form-{{ user.id }}" method="post" action="{{ path('admin_users_update', {'id': user.id}) }}" style="display:none;margin-top:0.8rem;">
+          <input type="hidden" name="_token" value="{{ csrf_token('admin_users_update_' ~ user.id) }}">
+          <div class="form-row three">
+            <div><label>Email</label><input class="form-control" name="email" type="email" value="{{ user.email }}" required></div>
+            <div><label>Username</label><input class="form-control" name="username" value="{{ user.username }}" required></div>
+            <div><label>New Password (optional)</label><input class="form-control" name="password" type="password" minlength="6"></div>
+          </div>
+          <div class="form-row">
+            <div><label>First Name</label><input class="form-control" name="first_name" value="{{ user.firstName }}" required></div>
+            <div><label>Last Name</label><input class="form-control" name="last_name" value="{{ user.lastName }}" required></div>
+          </div>
+          <div class="form-row three">
+            <div><label>Phone</label><input class="form-control" name="phone" value="{{ user.phone }}" required></div>
+            <div><label>Birth Date</label><input class="form-control" name="birth_date" type="date" value="{{ user.birthDate|date('Y-m-d') }}" required></div>
+            <div>
+              <label>Gender</label>
+              <select class="form-control" name="gender" required>
+                <option value="male" {% if user.gender == 'male' %}selected{% endif %}>Male</option>
+                <option value="female" {% if user.gender == 'female' %}selected{% endif %}>Female</option>
+                <option value="other" {% if user.gender == 'other' %}selected{% endif %}>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Role</label>
+              <select class="form-control" name="role" required>
+                <option value="ROLE_USER" {% if 'ROLE_ADMIN' not in user.roles %}selected{% endif %}>User</option>
+                <option value="ROLE_ADMIN" {% if 'ROLE_ADMIN' in user.roles %}selected{% endif %}>Admin</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm mt-2" type="submit"><i class="fa fa-save"></i> Save User</button>
+        </form>
+      </div>
+    {% else %}
+      <p class="muted">No users found.</p>
+    {% endfor %}
+  </div>
+
+  <div id="panel-delete" class="panel">
+    <h3><i class="fa fa-trash"></i> Delete users</h3>
+    <p class="muted">Delete accounts and associated data.</p>
+
+    {% for user in managedUsers %}
+      <div class="list-item">
+        <div class="list-head" style="width:100%;">
+          <div>
+            <strong>#{{ user.id }} - {{ user.email }}</strong>
+            <div class="muted">{{ user.firstName }} {{ user.lastName }} | {{ user.username }}</div>
+          </div>
+          <form method="post" action="{{ path('admin_users_delete', {'id': user.id}) }}" onsubmit="return confirm('Delete this user account?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('admin_users_delete_' ~ user.id) }}">
+            <button class="btn btn-outline-danger btn-sm" type="submit"><i class="fa fa-trash"></i> Delete</button>
+          </form>
+        </div>
+      </div>
+    {% else %}
+      <p class="muted">No users found.</p>
+    {% endfor %}
+  </div>
+
+  <div id="panel-explore" class="panel">
+    <h3><i class="fa fa-globe"></i> Explore all users</h3>
+    <p class="muted">Search, sort, and export users table.</p>
+
+    <div class="table-toolbar">
+      <select id="users-sort" class="toolbar-sort">
+        <option value="0:number:desc">Sort ID (desc)</option>
+        <option value="0:number:asc">Sort ID (asc)</option>
+        <option value="1:text:asc">Sort Email (A-Z)</option>
+        <option value="1:text:desc">Sort Email (Z-A)</option>
+        <option value="3:text:asc">Sort Name (A-Z)</option>
+        <option value="3:text:desc">Sort Name (Z-A)</option>
+        <option value="7:date:desc">Sort Birth Date (newest)</option>
+        <option value="7:date:asc">Sort Birth Date (oldest)</option>
+      </select>
+      <a href="{{ path('admin_users_pdf') }}" class="toolbar-export" target="_blank"><i class="fa fa-file-pdf-o"></i> Export PDF</a>
+      <input id="users-search" class="toolbar-search" type="search" placeholder="Search users...">
+    </div>
+    <div class="table-wrap">
+      <table id="users-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Username</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Gender</th>
+            <th>Roles</th>
+            <th>Birth Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in managedUsers %}
+            <tr>
+              <td>#{{ user.id }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.username }}</td>
+              <td>{{ user.firstName }} {{ user.lastName }}</td>
+              <td>{{ user.phone }}</td>
+              <td>{{ user.gender }}</td>
+              <td>{{ user.roles|join(', ') }}</td>
+              <td>{{ user.birthDate|date('Y-m-d') }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="8" class="muted">No users found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.option-card');
+    const panels = {
+      create: document.getElementById('panel-create'),
+      update: document.getElementById('panel-update'),
+      delete: document.getElementById('panel-delete'),
+      explore: document.getElementById('panel-explore')
+    };
+
+    cards.forEach((card) => {
+      card.addEventListener('click', () => {
+        cards.forEach((c) => c.classList.remove('selected'));
+        card.classList.add('selected');
+        Object.values(panels).forEach((p) => p && p.classList.remove('active'));
+        const key = card.getAttribute('data-action');
+        if (panels[key]) panels[key].classList.add('active');
+      });
+    });
+
+    const defaultCard = document.querySelector('.option-card[data-action="explore"]');
+    if (defaultCard) defaultCard.click();
+
+    document.querySelectorAll('.js-toggle').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = document.getElementById(btn.getAttribute('data-target'));
+        if (!target) return;
+        target.style.display = target.style.display === 'none' || target.style.display === '' ? 'block' : 'none';
+      });
+    });
+
+    function loadJsPdf() {
+      if (window.jspdf && window.jspdf.jsPDF) return Promise.resolve(window.jspdf.jsPDF);
+      return new Promise((resolve, reject) => {
+        const existing = document.querySelector('script[data-jspdf="1"]');
+        if (existing) {
+          existing.addEventListener('load', () => resolve(window.jspdf?.jsPDF));
+          existing.addEventListener('error', reject);
+          return;
+        }
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';
+        s.async = true;
+        s.setAttribute('data-jspdf', '1');
+        s.onload = () => resolve(window.jspdf?.jsPDF);
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+
+    function parseValue(raw, type) {
+      if (type === 'number') {
+        const m = String(raw).match(/-?\d+(\.\d+)?/);
+        return m ? parseFloat(m[0]) : 0;
+      }
+      if (type === 'date') {
+        return new Date(String(raw).replace(' ', 'T')).getTime() || 0;
+      }
+      return String(raw).toLowerCase();
+    }
+
+    function setupTableTools(cfg) {
+      const table = document.getElementById(cfg.tableId);
+      if (!table) return;
+      const tbody = table.querySelector('tbody');
+      const searchInput = document.getElementById(cfg.searchId);
+      const sortSelect = document.getElementById(cfg.sortId);
+      const exportBtn = document.getElementById(cfg.exportId);
+      const baseRows = Array.from(tbody.querySelectorAll('tr'));
+
+      function apply() {
+        const q = (searchInput?.value || '').trim().toLowerCase();
+        const [col, type, dir] = (sortSelect?.value || '0:number:desc').split(':');
+        const visible = [...baseRows]
+          .filter((row) => q === '' || row.textContent.toLowerCase().includes(q))
+          .sort((a, b) => {
+            const av = parseValue(a.cells[Number(col)]?.textContent || '', type);
+            const bv = parseValue(b.cells[Number(col)]?.textContent || '', type);
+            if (av === bv) return 0;
+            return dir === 'asc' ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
+          });
+        tbody.innerHTML = '';
+        visible.forEach((row) => tbody.appendChild(row));
+      }
+
+      async function exportPdf() {
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        if (rows.length === 0) {
+          alert('No rows to export.');
+          return;
+        }
+        try {
+          const JsPdfCtor = await loadJsPdf();
+          const doc = new JsPdfCtor({ unit: 'pt', format: 'a4' });
+          const margin = 40;
+          let y = margin;
+          const pageW = doc.internal.pageSize.getWidth();
+          const pageH = doc.internal.pageSize.getHeight();
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(16);
+          doc.text('Fitopia Admin - ' + cfg.title, margin, y);
+          y += 16;
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(10);
+          doc.text('Generated on ' + new Date().toLocaleString(), margin, y);
+          y += 14;
+          rows.forEach((row) => {
+            if (y > pageH - 40) {
+              doc.addPage();
+              y = margin;
+            }
+            const line = Array.from(row.cells).map((c) => c.textContent.trim()).join(' | ');
+            const wrapped = doc.splitTextToSize(line, pageW - margin * 2);
+            doc.text(wrapped, margin, y);
+            y += Math.max(14, wrapped.length * 12);
+          });
+          doc.save(cfg.filename + '.pdf');
+        } catch (e) {
+          alert('Unable to export PDF right now.');
+        }
+      }
+
+      searchInput?.addEventListener('input', apply);
+      sortSelect?.addEventListener('change', apply);
+      exportBtn?.addEventListener('click', exportPdf);
+      apply();
+    }
+
+    setupTableTools({
+      tableId: 'users-table',
+      searchId: 'users-search',
+      sortId: 'users-sort',
+      title: 'Users',
+      filename: 'admin-users'
+    });
+  });
+</script>
+{% endblock %}

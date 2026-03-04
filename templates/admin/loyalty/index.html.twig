@@ -1,0 +1,139 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Gestion Fidelite Clients | Fitopia{% endblock %}
+
+{% block stylesheets %}
+<style>
+  .loyalty-hero {
+    background: linear-gradient(135deg, #0b3a3d 0%, #0d5b50 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    box-shadow: 0 16px 40px rgba(14, 30, 37, 0.16);
+  }
+  .loyalty-hero h2 { margin: 0 0 0.45rem; font-weight: 800; }
+  .loyalty-hero p { margin: 0; opacity: 0.9; }
+  .hero-stats { margin-top: 1rem; display: flex; gap: 0.65rem; flex-wrap: wrap; }
+  .hero-chip {
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+  .panel {
+    margin-top: 1.4rem;
+    background: #fff;
+    border: 1px solid #e7edf5;
+    border-radius: 14px;
+    padding: 1.2rem;
+    box-shadow: 0 12px 30px rgba(14, 30, 37, 0.08);
+  }
+  .toolbar { display: flex; gap: 0.65rem; flex-wrap: wrap; }
+  .filter-link {
+    text-decoration: none;
+    color: #0b3a3d;
+    border: 1px solid #c8d8e5;
+    border-radius: 10px;
+    padding: 0.45rem 0.75rem;
+    font-weight: 600;
+  }
+  .filter-link.active {
+    background: #0f7a5f;
+    color: #fff;
+    border-color: #0f7a5f;
+  }
+  .table-wrap { overflow-x: auto; margin-top: 1rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 520px;
+  }
+  th, td {
+    padding: 0.7rem 0.8rem;
+    border-bottom: 1px solid #edf2f7;
+    text-align: left;
+  }
+  th {
+    font-size: 0.88rem;
+    color: #526377;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.2rem 0.62rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+  .badge-vip {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+  }
+  .badge-standard {
+    background: #e5e7eb;
+    color: #374151;
+    border: 1px solid #d1d5db;
+  }
+  .empty {
+    margin-top: 1rem;
+    color: #6b7280;
+    font-weight: 600;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+  <section class="loyalty-hero">
+    <h2>Gestion Fidelite Clients</h2>
+    <p>Statut VIP calcule dynamiquement depuis les reservations confirmees/utilisees.</p>
+    <div class="hero-stats">
+      <span class="hero-chip">Total clients: {{ totalClients }}</span>
+      <span class="hero-chip">Nombre total de VIP: {{ totalVip }}</span>
+      <span class="hero-chip">Seuil VIP: {{ vipThreshold }} reservations</span>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="toolbar">
+      <a class="filter-link {{ filter == 'all' ? 'active' : '' }}" href="{{ path('admin_loyalty', {filter: 'all'}) }}">Tous</a>
+      <a class="filter-link {{ filter == 'vip' ? 'active' : '' }}" href="{{ path('admin_loyalty', {filter: 'vip'}) }}">VIP</a>
+      <a class="filter-link {{ filter == 'standard' ? 'active' : '' }}" href="{{ path('admin_loyalty', {filter: 'standard'}) }}">Standard</a>
+    </div>
+
+    {% if clients is empty %}
+      <p class="empty">Aucun client trouve pour ce filtre.</p>
+    {% else %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Reservations confirmees</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for client in clients %}
+              <tr>
+                <td>{{ client.email }}</td>
+                <td>{{ client.confirmedCount }}</td>
+                <td>
+                  {% if client.loyaltyStatus == 'VIP' %}
+                    <span class="badge badge-vip">VIP</span>
+                  {% else %}
+                    <span class="badge badge-standard">Standard</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

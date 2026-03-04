@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Order Confirmation</title>
+    <style>
+      body { margin: 0; padding: 0; font-family: Arial, sans-serif; background: #f5f7fb; color: #0f172a; }
+      .container { max-width: 680px; margin: 0 auto; padding: 32px 18px; }
+      .card { background: #ffffff; border-radius: 16px; padding: 28px; box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08); }
+      .header { text-align: center; margin-bottom: 24px; }
+      .header h1 { margin: 0; font-size: 24px; color: #0b3a3d; }
+      .muted { color: #64748b; font-size: 13px; }
+      .meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 16px; }
+      .meta div { background: #f8fafc; border-radius: 12px; padding: 12px; font-size: 13px; }
+      .section-title { margin: 24px 0 12px; font-size: 16px; color: #0b3a3d; }
+      table { width: 100%; border-collapse: collapse; font-size: 13px; }
+      th, td { padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: left; }
+      th { background: #f1f5f9; font-weight: 700; }
+      .totals { margin-top: 12px; }
+      .totals-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
+      .totals-row strong { font-size: 15px; }
+      .address { background: #f8fafc; border-radius: 12px; padding: 12px; font-size: 13px; }
+      .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #64748b; }
+    </style>
+  </head>
+  <body>
+    {% set shippingValue = order.shipping|default(0) %}
+    {% set discountValue = order.discount|default(0) %}
+    <div class="container">
+      <div class="card">
+        <div class="header">
+          <h1>Your order is confirmed</h1>
+          <p class="muted">Thank you, {{ order.firstName }}. We received your order and will process it shortly.</p>
+        </div>
+
+        <div class="meta">
+          <div><strong>Order #</strong><br>{{ order.orderNumber }}</div>
+          <div><strong>Date</strong><br>{{ order.createdAt|date('Y-m-d H:i') }}</div>
+          <div><strong>Status</strong><br>{{ order.status|upper }}</div>
+          <div><strong>Payment</strong><br>{{ order.paymentMethod }}</div>
+        </div>
+
+        <h3 class="section-title">Order items</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Qty</th>
+              <th>Unit</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in order.orderItems %}
+              <tr>
+                <td>{{ item.supplement.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price }} DT</td>
+                <td><strong>{{ item.total }} DT</strong></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <div class="totals">
+          <div class="totals-row"><span>Subtotal</span><span>{{ order.subtotal }} DT</span></div>
+          <div class="totals-row">
+            <span>Shipping</span>
+            <span>{{ (shippingValue + 0) > 0 ? shippingValue ~ ' DT' : 'FREE' }}</span>
+          </div>
+          {% if (discountValue + 0) > 0 %}
+            <div class="totals-row"><span>Discount ({{ order.discountCode }})</span><span>-{{ order.discount }} DT</span></div>
+          {% endif %}
+          <div class="totals-row"><strong>Total</strong><strong>{{ order.total }} DT</strong></div>
+        </div>
+
+        <h3 class="section-title">Shipping details</h3>
+        <div class="address">
+          {{ order.firstName }} {{ order.lastName }}<br>
+          {{ order.address }}<br>
+          {{ order.city }} {{ order.postalCode }}<br>
+          {{ order.phone }}
+        </div>
+
+        {% if order.notes %}
+          <h3 class="section-title">Notes</h3>
+          <div class="address">{{ order.notes }}</div>
+        {% endif %}
+      </div>
+
+      <div class="footer">
+        If you have any questions, reply to this email.
+      </div>
+    </div>
+  </body>
+</html>

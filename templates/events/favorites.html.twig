@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes favoris | Fitopia{% endblock %}
+
+{% block body %}
+<section class="container py-5">
+  {% for message in app.flashes('success') %}<div class="alert alert-success">{{ message }}</div>{% endfor %}
+  {% for message in app.flashes('error') %}<div class="alert alert-danger">{{ message }}</div>{% endfor %}
+
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+    <div>
+      <h1 class="h3 mb-1">Mes favoris</h1>
+      <p class="text-muted mb-0">{{ participantEmail }}</p>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ path('events') }}"><i class="fa fa-arrow-left"></i> Retour aux evenements</a>
+  </div>
+
+  {% if events is empty %}
+    <div class="alert alert-info">Vous n’avez encore ajouté aucun événement en favori.</div>
+  {% else %}
+    <div class="row g-3">
+      {% for event in events %}
+        {% set price = event.prixEvent|default('0') + 0 %}
+        {% set imageSrc = (event.imageEvent and event.imageEvent starts with 'event-') ? asset('uploads/events/' ~ event.imageEvent) : 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1400&q=80' %}
+        <div class="col-12 col-md-6 col-lg-4">
+          <article class="card border-0 shadow-sm h-100">
+            <img src="{{ imageSrc }}" alt="{{ event.titre }}" class="card-img-top" style="aspect-ratio:16/9;object-fit:cover;">
+            <div class="card-body d-flex flex-column">
+              <h2 class="h5">{{ event.titre }}</h2>
+              <div class="text-muted small mb-2">
+                <div><i class="fa fa-calendar"></i> {{ event.dateEvent|date('Y-m-d') }}</div>
+                <div><i class="fa fa-map-marker"></i> {{ event.lieu }}</div>
+              </div>
+              <div class="fw-bold mb-3">{% if price > 0 %}{{ event.prixEvent }} DT{% else %}Gratuit{% endif %}</div>
+              <div class="d-flex flex-wrap gap-2 mt-auto">
+                <form method="post" action="{{ path('app_event_favorite_toggle', {id: event.id}) }}">
+                  <input type="hidden" name="_token" value="{{ csrf_token('event_favorite_' ~ event.id) }}">
+                  <input type="hidden" name="redirect_url" value="{{ app.request.uri }}">
+                  <button type="submit" class="btn btn-outline-danger btn-sm">💔 Retirer des favoris</button>
+                </form>
+                <a href="{{ path('app_event_show', {id: event.id}) }}" class="btn btn-outline-primary btn-sm">ℹ Informations</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

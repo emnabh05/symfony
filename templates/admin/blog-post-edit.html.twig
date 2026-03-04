@@ -1,0 +1,77 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Edit Blog Post | Fitopia{% endblock %}
+
+{% block stylesheets %}
+<style>
+  .edit-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    border: 1px solid #eef2f6;
+    box-shadow: 0 12px 30px rgba(14, 30, 37, 0.08);
+  }
+  .icon-input { position: relative; }
+  .icon-input i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #0f7a5f;
+  }
+  .icon-input input,
+  .icon-input textarea,
+  .icon-input select {
+    padding-left: 38px;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+  <div class="page-title">Edit Blog Post</div>
+  <div class="edit-card">
+    {{ form_start(blogForm) }}
+      <div class="mb-3">
+        {{ form_label(blogForm.title) }}
+        <div class="icon-input">
+          <i class="fa fa-heading"></i>
+          {{ form_widget(blogForm.title, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        {{ form_errors(blogForm.title) }}
+      </div>
+      <div class="mb-3">
+        {{ form_label(blogForm.content) }}
+        <div class="icon-input">
+          <i class="fa fa-align-left"></i>
+          {{ form_widget(blogForm.content, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        {{ form_errors(blogForm.content) }}
+      </div>
+      <div class="mb-3">
+        {{ form_label(blogForm.excerpt) }}
+        <div class="icon-input">
+          <i class="fa fa-quote-left"></i>
+          {{ form_widget(blogForm.excerpt, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        {{ form_errors(blogForm.excerpt) }}
+      </div>
+      <div class="mb-3">
+        {{ form_label(blogForm.category) }}
+        <div class="icon-input">
+          <i class="fa fa-tags"></i>
+          {{ form_widget(blogForm.category, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        {{ form_errors(blogForm.category) }}
+      </div>
+      <div class="mb-3">
+        {{ form_label(blogForm.featuredImageFile, 'Featured image') }}
+        <div class="icon-input">
+          <i class="fa fa-image"></i>
+          {{ form_widget(blogForm.featuredImageFile, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        {{ form_errors(blogForm.featuredImageFile) }}
+      </div>
+      <button class="action-btn" type="submit">Save changes</button>
+    {{ form_end(blogForm) }}
+  </div>
+{% endblock %}

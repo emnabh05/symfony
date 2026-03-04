@@ -1,0 +1,884 @@
+{% extends 'shop/base.html.twig' %}
+
+{% block title %}Commande confirmee - Fitopia Supplements{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/cart.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/checkout.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/payment.css') }}">
+    <style>
+        .success-section {
+            position: relative;
+            padding: 48px 0 64px;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(66, 180, 142, 0.2), transparent 40%),
+                radial-gradient(circle at 90% 0%, rgba(31, 120, 255, 0.14), transparent 38%),
+                linear-gradient(180deg, #f4f8fb 0%, #eef4f7 100%);
+            overflow: hidden;
+        }
+
+        .success-section::before {
+            content: "";
+            position: absolute;
+            inset: -120px auto auto -120px;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: rgba(27, 94, 75, 0.08);
+            filter: blur(2px);
+        }
+
+        .success-section .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .success-content {
+            max-width: 980px;
+            margin: 0 auto;
+            border-radius: 24px;
+            border: 1px solid #d7e6ef;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: 0 28px 60px rgba(11, 44, 61, 0.1);
+            padding: 26px;
+            backdrop-filter: blur(4px);
+        }
+
+        .success-icon {
+            width: 82px;
+            height: 82px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: grid;
+            place-items: center;
+            font-size: 38px;
+            color: #ffffff;
+            background: linear-gradient(135deg, #0f7663 0%, #1b5e4b 100%);
+            box-shadow: 0 16px 28px rgba(15, 118, 99, 0.28);
+        }
+
+        .success-content h1 {
+            margin: 0;
+            text-align: center;
+            color: #0b2c3d;
+            font-size: clamp(30px, 3.4vw, 44px);
+            letter-spacing: -0.02em;
+            font-weight: 900;
+        }
+
+        .success-message {
+            margin: 10px auto 18px;
+            text-align: center;
+            color: #4b6175;
+            font-size: 16px;
+            max-width: 70ch;
+        }
+
+        .order-number {
+            margin: 0 auto 18px;
+            width: fit-content;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1px solid #d3e2ee;
+            background: #f7fbff;
+            color: #28445a;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .order-number strong {
+            color: #0b2c3d;
+            font-size: 15px;
+            letter-spacing: 0.02em;
+        }
+
+        .order-details-card,
+        .customer-info-card,
+        .order-items-card,
+        .success-info {
+            border: 1px solid #dce8f3;
+            border-radius: 16px;
+            background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+            box-shadow: 0 14px 30px rgba(14, 38, 56, 0.06);
+            padding: 18px;
+            margin-bottom: 16px;
+        }
+
+        .order-details-card h3,
+        .customer-info-card h3,
+        .order-items-card h3 {
+            margin: 0 0 14px;
+            color: #0b2c3d;
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: -0.01em;
+        }
+
+        .detail-row,
+        .info-row,
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed #d9e5ef;
+            color: #4f667b;
+            font-size: 14px;
+        }
+
+        .detail-row:last-child,
+        .info-row:last-child,
+        .summary-row:last-child {
+            border-bottom: 0;
+        }
+
+        .detail-row strong,
+        .summary-row span:last-child {
+            color: #1a3448;
+            font-weight: 800;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            border: 1px solid #b7decf;
+            background: #eaf8f2;
+            color: #0d5a46;
+        }
+
+        .status-badge i {
+            font-size: 10px;
+        }
+
+        .info-row {
+            justify-content: flex-start;
+            align-items: flex-start;
+            border-bottom-style: solid;
+        }
+
+        .info-row i {
+            width: 18px;
+            color: #0f7663;
+            margin-top: 2px;
+        }
+
+        .success-order-items {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .success-order-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 12px;
+            align-items: center;
+            padding: 10px;
+            border-radius: 14px;
+            border: 1px solid #dce8f3;
+            background: #fdfefe;
+        }
+
+        .item-image img {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #d6e5f0;
+        }
+
+        .item-info h4 {
+            margin: 0 0 4px;
+            color: #0f2e40;
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .item-info p {
+            margin: 0;
+            color: #63798c;
+            font-size: 13px;
+        }
+
+        .item-price {
+            color: #0f5f4c;
+            font-size: 16px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .order-summary-totals {
+            border-top: 1px solid #dce8f3;
+            padding-top: 10px;
+        }
+
+        .total-row {
+            margin-top: 4px;
+            padding-top: 12px;
+            border-top: 1px solid #d8e5ef;
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .total-amount {
+            color: #0f7663;
+        }
+
+        .discount-amount {
+            color: #a12525;
+            font-weight: 800;
+        }
+
+        .success-actions {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 4px;
+            margin-bottom: 8px;
+        }
+
+        .btn-print,
+        .btn-continue {
+            border: 0;
+            border-radius: 12px;
+            min-height: 44px;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-weight: 800;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .btn-print {
+            color: #0b2c3d;
+            background: #eaf2f8;
+            border: 1px solid #d2e1ec;
+        }
+
+        .btn-continue {
+            color: #ffffff;
+            background: linear-gradient(135deg, #1b5e4b 0%, #0f7663 100%);
+            border: 1px solid #17624f;
+        }
+
+        .success-tracking {
+            margin: 16px 0;
+            border: 1px solid #dce8f3;
+            border-radius: 16px;
+            background: #ffffff;
+            padding: 16px;
+        }
+
+        .success-tracking h3 {
+            margin: 0 0 12px;
+            font-size: 18px;
+            color: #0b2c3d;
+            font-weight: 900;
+        }
+
+        .tracking-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .tracking-step {
+            border: 1px solid #d9e6ef;
+            border-radius: 12px;
+            padding: 10px;
+            background: #f8fcff;
+        }
+
+        .tracking-step strong {
+            display: block;
+            color: #11354a;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .tracking-step span {
+            color: #617a8e;
+            font-size: 13px;
+        }
+
+        .success-info {
+            background: linear-gradient(180deg, #f8fcff 0%, #f5fbf8 100%);
+            padding: 14px 16px;
+        }
+
+        .success-info p {
+            margin: 0;
+            color: #304b60;
+            font-size: 14px;
+        }
+
+        .success-info p + p {
+            margin-top: 8px;
+        }
+
+        .success-info i {
+            color: #0f7663;
+            margin-right: 6px;
+        }
+
+        .invoice-toggle-hint {
+            margin-top: 10px;
+            color: #5f7082;
+            font-size: 13px;
+        }
+
+        .btn-invoice {
+            border: 0;
+            border-radius: 10px;
+            padding: 11px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #ffffff;
+            background: linear-gradient(135deg, #0b2c3d 0%, #1b5e4b 100%);
+        }
+
+        .invoice-wrap {
+            margin-top: 26px;
+            border: 1px solid #d8e4ef;
+            border-radius: 16px;
+            background: #ffffff;
+            box-shadow: 0 18px 34px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
+        }
+
+        .invoice-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 18px 20px;
+            background: linear-gradient(135deg, #eff7ff 0%, #effaf4 100%);
+            border-bottom: 1px solid #d7e5f2;
+        }
+
+        .invoice-title {
+            margin: 0 0 6px;
+            font-size: 28px;
+            color: #0b2c3d;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+        }
+
+        .invoice-sub {
+            margin: 0;
+            color: #5f7082;
+            font-size: 13px;
+        }
+
+        .invoice-print-btn {
+            border: 0;
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: #ffffff;
+            background: #1b5e4b;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .invoice-body {
+            padding: 20px;
+        }
+
+        .invoice-meta {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .invoice-card {
+            border: 1px solid #dce8f3;
+            border-radius: 12px;
+            padding: 14px;
+            background: #fcfeff;
+        }
+
+        .invoice-card h4 {
+            margin: 0 0 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #1b5e4b;
+            font-weight: 800;
+        }
+
+        .invoice-card p {
+            margin: 0 0 4px;
+            color: #30495f;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+
+        .invoice-table th,
+        .invoice-table td {
+            border-bottom: 1px solid #e3ecf4;
+            padding: 10px 8px;
+            text-align: left;
+            font-size: 13px;
+            color: #20384d;
+        }
+
+        .invoice-table th {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: #5b7288;
+            background: #f5f9fd;
+        }
+
+        .invoice-table td:last-child,
+        .invoice-table th:last-child,
+        .invoice-table td:nth-last-child(2),
+        .invoice-table th:nth-last-child(2),
+        .invoice-table td:nth-last-child(3),
+        .invoice-table th:nth-last-child(3) {
+            text-align: right;
+        }
+
+        .invoice-totals {
+            margin-left: auto;
+            width: min(360px, 100%);
+            border: 1px solid #dce8f3;
+            border-radius: 12px;
+            background: #fbfdff;
+            padding: 12px 14px;
+        }
+
+        .invoice-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 5px 0;
+            color: #3f5a70;
+            font-size: 13px;
+        }
+
+        .invoice-row.total {
+            border-top: 1px solid #dbe7f1;
+            margin-top: 6px;
+            padding-top: 10px;
+            font-size: 18px;
+            font-weight: 800;
+            color: #0b2c3d;
+        }
+
+        .invoice-footer {
+            margin-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .invoice-note {
+            color: #5f7082;
+            font-size: 13px;
+            max-width: 500px;
+            line-height: 1.55;
+        }
+
+        .invoice-signature {
+            text-align: center;
+        }
+
+        .invoice-signature img {
+            max-width: 220px;
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto 6px;
+        }
+
+        .invoice-signature p {
+            margin: 0;
+            font-size: 12px;
+            color: #4a6277;
+            font-weight: 700;
+        }
+
+        @media (max-width: 900px) {
+            .success-content {
+                padding: 18px;
+                border-radius: 18px;
+            }
+
+            .success-actions,
+            .tracking-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .success-order-item {
+                grid-template-columns: 56px 1fr;
+                align-items: start;
+            }
+
+            .item-price {
+                grid-column: 2 / 3;
+            }
+
+            .invoice-meta {
+                grid-template-columns: 1fr;
+            }
+
+            .invoice-head {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .invoice-print-btn {
+                width: 100%;
+            }
+        }
+
+        @media print {
+            body.print-invoice * {
+                visibility: hidden !important;
+            }
+
+            body.print-invoice .invoice-wrap,
+            body.print-invoice .invoice-wrap * {
+                visibility: visible !important;
+            }
+
+            body.print-invoice .invoice-wrap {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                border: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            body.print-invoice .invoice-no-print {
+                display: none !important;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {% set paymentKey = order.paymentMethod|default('')|lower %}
+    {% set paymentLabel = paymentKey == 'visa' ? 'Visa / Bank Card' : (paymentKey == 'paypal' ? 'PayPal' : 'Cash on Delivery') %}
+    {% set invoiceNumber = 'FACT-' ~ order.orderNumber %}
+    {% set statusKey = order.status|default('pending')|lower %}
+    {% set statusLabel = statusKey == 'paid' ? 'Payee' : (statusKey == 'processing' ? 'En preparation' : (statusKey == 'shipped' ? 'Expediee' : (statusKey == 'delivered' ? 'Livree' : 'Confirmee'))) %}
+
+    <section class="success-section">
+        <div class="container">
+            <div class="success-content">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+
+                <h1>Commande confirmee</h1>
+                <p class="success-message">Merci. Votre commande a ete enregistree avec succes.</p>
+
+                <div class="order-number">
+                    <span>Numero de commande:</span>
+                    <strong>{{ order.orderNumber }}</strong>
+                </div>
+
+                <div class="order-details-card">
+                    <h3>Details de la commande</h3>
+
+                    <div class="detail-row">
+                        <span>Date de commande:</span>
+                        <strong>{{ order.createdAt|date('d/m/Y H:i') }}</strong>
+                    </div>
+
+                    <div class="detail-row">
+                        <span>Methode de paiement:</span>
+                        <strong>{{ paymentLabel }}</strong>
+                    </div>
+
+                    <div class="detail-row">
+                        <span>Statut:</span>
+                        <strong class="status-badge"><i class="fas fa-circle"></i> {{ statusLabel }}</strong>
+                    </div>
+
+                    <div class="detail-row">
+                        <span>Montant total:</span>
+                        <strong class="total-amount">{{ order.total|number_format(2, '.', ' ') }} DT</strong>
+                    </div>
+
+                    <div class="detail-row">
+                        <span>Livraison estimee:</span>
+                        <strong>{{ order.createdAt|date_modify('+3 days')|date('d/m/Y') }}</strong>
+                    </div>
+                </div>
+
+                <div class="customer-info-card">
+                    <h3>Informations de livraison</h3>
+
+                    <div class="info-row">
+                        <i class="fas fa-user"></i>
+                        <span>{{ order.firstName }} {{ order.lastName }}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <i class="fas fa-envelope"></i>
+                        <span>{{ order.email }}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <i class="fas fa-phone"></i>
+                        <span>{{ order.phone }}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ order.address }}, {{ order.city }} {{ order.postalCode }}</span>
+                    </div>
+
+                    {% if order.notes %}
+                        <div class="info-row">
+                            <i class="fas fa-sticky-note"></i>
+                            <span>{{ order.notes }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="order-items-card">
+                    <h3>Articles commandes</h3>
+                    <div class="success-order-items">
+                        {% for item in order.orderItems %}
+                            <div class="success-order-item">
+                                <div class="item-image">
+                                    {% if item.supplement.image %}
+                                        <img src="{{ asset('uploads/supplements/' ~ item.supplement.image) }}" alt="{{ item.supplement.name }}">
+                                    {% else %}
+                                        <img src="{{ asset('images/image_1.jpg') }}" alt="{{ item.supplement.name }}">
+                                    {% endif %}
+                                </div>
+                                <div class="item-info">
+                                    <h4>{{ item.supplement.name }}</h4>
+                                    <p>{{ item.supplement.brand }} - {{ item.supplement.category }}</p>
+                                    <p>Quantite: {{ item.quantity }}</p>
+                                </div>
+                                <div class="item-price">{{ item.total|number_format(2, '.', ' ') }} DT</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="order-summary-totals">
+                        <div class="summary-row">
+                            <span>Sous-total:</span>
+                            <span>{{ order.subtotal|number_format(2, '.', ' ') }} DT</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Livraison:</span>
+                            <span>{{ order.shipping > 0 ? order.shipping|number_format(2, '.', ' ') ~ ' DT' : 'GRATUIT' }}</span>
+                        </div>
+                        {% if order.discount > 0 %}
+                            <div class="summary-row">
+                                <span>Reduction ({{ order.discountCode }}):</span>
+                                <span class="discount-amount">-{{ order.discount|number_format(2, '.', ' ') }} DT</span>
+                            </div>
+                        {% endif %}
+                        <div class="summary-row total-row">
+                            <span>Total:</span>
+                            <span class="total-amount">{{ order.total|number_format(2, '.', ' ') }} DT</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-actions">
+                    <button onclick="window.print()" class="btn-print">
+                        <i class="fas fa-print"></i> Imprimer le recu
+                    </button>
+                    <button type="button" class="btn-invoice" id="toggleInvoiceBtn">
+                        <i class="fas fa-file-invoice"></i> Demande facture
+                    </button>
+                    <a href="{{ path('app_shop_index') }}" class="btn-continue">
+                        <i class="fas fa-shopping-bag"></i> Continuer vos achats
+                    </a>
+                </div>
+                <p class="invoice-toggle-hint">
+                    Cliquez sur "Demande facture" pour afficher une facture complete avec cachet et signature.
+                </p>
+
+                <section class="success-tracking">
+                    <h3>Etapes de traitement</h3>
+                    <div class="tracking-grid">
+                        <article class="tracking-step">
+                            <strong>Commande recue</strong>
+                            <span>{{ order.createdAt|date('d/m/Y H:i') }}</span>
+                        </article>
+                        <article class="tracking-step">
+                            <strong>Preparation en cours</strong>
+                            <span>Sous 24 heures ouvrables</span>
+                        </article>
+                        <article class="tracking-step">
+                            <strong>Livraison estimee</strong>
+                            <span>{{ order.createdAt|date_modify('+3 days')|date('d/m/Y') }}</span>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="invoice-wrap" id="invoiceWrap" hidden>
+                    <div class="invoice-head">
+                        <div>
+                            <h2 class="invoice-title">Facture Client</h2>
+                            <p class="invoice-sub">Facture No: <strong>{{ invoiceNumber }}</strong></p>
+                            <p class="invoice-sub">Date: {{ order.createdAt|date('d/m/Y H:i') }}</p>
+                        </div>
+                        <button type="button" class="invoice-print-btn invoice-no-print" id="printInvoiceBtn">
+                            <i class="fas fa-print"></i> Imprimer facture
+                        </button>
+                    </div>
+
+                    <div class="invoice-body">
+                        <div class="invoice-meta">
+                            <div class="invoice-card">
+                                <h4>Emetteur</h4>
+                                <p><strong>Fitopia Supplements</strong></p>
+                                <p>El Ghazela, Ariana, Tunisie</p>
+                                <p>customerservice@fitopia.com</p>
+                                <p>+216 58 936 689</p>
+                            </div>
+                            <div class="invoice-card">
+                                <h4>Client</h4>
+                                <p><strong>{{ order.firstName }} {{ order.lastName }}</strong></p>
+                                <p>{{ order.email }}</p>
+                                <p>{{ order.phone }}</p>
+                                <p>{{ order.address }}, {{ order.city }} {{ order.postalCode }}</p>
+                            </div>
+                        </div>
+
+                        <table class="invoice-table">
+                            <thead>
+                                <tr>
+                                    <th>Produit</th>
+                                    <th>Qte</th>
+                                    <th>Prix unitaire</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.orderItems %}
+                                    <tr>
+                                        <td>{{ item.supplement.name }}</td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>{{ item.price|number_format(2, '.', ' ') }} DT</td>
+                                        <td>{{ item.total|number_format(2, '.', ' ') }} DT</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <div class="invoice-totals">
+                            <div class="invoice-row">
+                                <span>Sous-total</span>
+                                <strong>{{ order.subtotal|number_format(2, '.', ' ') }} DT</strong>
+                            </div>
+                            <div class="invoice-row">
+                                <span>Livraison</span>
+                                <strong>{{ order.shipping > 0 ? order.shipping|number_format(2, '.', ' ') ~ ' DT' : 'GRATUIT' }}</strong>
+                            </div>
+                            {% if order.discount > 0 %}
+                                <div class="invoice-row">
+                                    <span>Reduction{% if order.discountCode %} ({{ order.discountCode }}){% endif %}</span>
+                                    <strong>-{{ order.discount|number_format(2, '.', ' ') }} DT</strong>
+                                </div>
+                            {% endif %}
+                            <div class="invoice-row total">
+                                <span>Total TTC</span>
+                                <span>{{ order.total|number_format(2, '.', ' ') }} DT</span>
+                            </div>
+                        </div>
+
+                        <div class="invoice-footer">
+                            <p class="invoice-note">
+                                Merci pour votre confiance. Cette facture peut etre imprimee et conservee comme preuve d'achat.
+                                Paiement enregistre via {{ paymentLabel }}.
+                            </p>
+                            <div class="invoice-signature">
+                                <img src="{{ asset('images/invoice-stamp-signature.png') }}" alt="Stamp and signature">
+                                <p>Cachet et signature - Fitopia</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="success-info">
+                    <p><i class="fas fa-info-circle"></i> Un email de confirmation a ete envoye a <strong>{{ order.email }}</strong></p>
+                    <p><i class="fas fa-truck"></i> Vous recevrez un email de suivi des que votre commande sera expediee</p>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (function() {
+            try {
+                localStorage.setItem('fitopia_notification_email', '{{ order.email|e('js') }}');
+                localStorage.setItem('fitopia_last_order', '{{ order.orderNumber|e('js') }}');
+            } catch (e) {
+                // Ignore storage errors
+            }
+        })();
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleInvoiceBtn = document.getElementById('toggleInvoiceBtn');
+            const invoiceWrap = document.getElementById('invoiceWrap');
+            const printInvoiceBtn = document.getElementById('printInvoiceBtn');
+
+            toggleInvoiceBtn?.addEventListener('click', function () {
+                if (!invoiceWrap) return;
+                const isHidden = invoiceWrap.hasAttribute('hidden');
+                if (isHidden) {
+                    invoiceWrap.removeAttribute('hidden');
+                    this.innerHTML = '<i class="fas fa-times"></i> Masquer facture';
+                    invoiceWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    invoiceWrap.setAttribute('hidden', 'hidden');
+                    this.innerHTML = '<i class="fas fa-file-invoice"></i> Demande facture';
+                }
+            });
+
+            printInvoiceBtn?.addEventListener('click', function () {
+                if (!invoiceWrap || invoiceWrap.hasAttribute('hidden')) {
+                    return;
+                }
+                document.body.classList.add('print-invoice');
+                window.print();
+                setTimeout(function () {
+                    document.body.classList.remove('print-invoice');
+                }, 200);
+            });
+        });
+    </script>
+{% endblock %}

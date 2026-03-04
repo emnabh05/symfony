@@ -1,0 +1,759 @@
+{% extends 'shop/base.html.twig' %}
+
+{% block title %}Shop - Fitopia Supplements{% endblock %}
+
+{% block stylesheets %}
+<style>
+    /* Hero Slider */
+    .hero-wrap {
+        position: relative;
+        height: 500px;
+        overflow: hidden;
+    }
+
+    .home-slider .slider-item {
+        height: 500px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+
+    .slider-item .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(11, 44, 61, 0.7);
+    }
+
+    .slider-text {
+        position: relative;
+        z-index: 2;
+        height: 100%;
+    }
+
+    .slider-text h2 {
+        font-size: 24px;
+        color: #1B5E4B;
+        font-weight: 600;
+        margin-bottom: 10px;
+        animation: fadeInUp 0.8s ease;
+    }
+
+    .slider-text h1 {
+        font-size: 48px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 20px;
+        line-height: 1.2;
+        animation: fadeInUp 1s ease;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Modern Product Cards */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+        margin-top: 30px;
+        width: 100%;
+    }
+
+    .no-products {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 60px 20px;
+        font-size: 18px;
+        color: #64748b;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        cursor: pointer;
+        display: block;
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(27, 94, 75, 0.2);
+    }
+
+    .product-image {
+        position: relative;
+        height: 280px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .product-card:hover .product-image img {
+        transform: scale(1.1) rotate(2deg);
+    }
+
+    .product-info {
+        padding: 20px;
+    }
+
+    .product-brand {
+        font-size: 12px;
+        color: #1B5E4B;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+    }
+
+    .product-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: #0B2C3D;
+        margin-bottom: 8px;
+        line-height: 1.3;
+        min-height: 48px;
+    }
+
+    .product-link {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .product-link:hover {
+        color: #1B5E4B;
+        text-decoration: none;
+    }
+
+    .product-category {
+        font-size: 13px;
+        color: #64748b;
+        margin-bottom: 10px;
+    }
+
+    .product-rating {
+        color: #fbbf24;
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+
+    .product-rating span {
+        color: #64748b;
+        margin-left: 5px;
+        font-size: 13px;
+    }
+
+    .product-price {
+        font-size: 28px;
+        font-weight: 800;
+        color: #1B5E4B;
+        margin-bottom: 15px;
+    }
+
+    .view-details-btn {
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 12px;
+        border: 1px solid #cbd5e1;
+        color: #0B2C3D;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .view-details-btn:hover {
+        border-color: #1B5E4B;
+        color: #1B5E4B;
+        box-shadow: 0 6px 16px rgba(27, 94, 75, 0.2);
+        transform: translateY(-2px);
+        text-decoration: none;
+    }
+
+    .add-to-cart-btn {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #1B5E4B 0%, #0B2C3D 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .add-to-cart-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(27, 94, 75, 0.4);
+    }
+
+    .add-to-cart-btn:disabled {
+        background: #cbd5e1;
+        cursor: not-allowed;
+    }
+
+    /* Badges */
+    .badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        z-index: 10;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .badge-new {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+    }
+
+    .badge-limited {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+    }
+
+    .badge-sold {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+    }
+
+    /* Shop Section */
+    .shop-section {
+        padding: 60px 0;
+        background: #f8fafc;
+    }
+
+    .shop-layout {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 40px;
+    }
+
+    /* Sidebar */
+    .shop-sidebar {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        height: fit-content;
+        position: sticky;
+        top: 20px;
+    }
+
+    .filter-group {
+        margin-bottom: 30px;
+    }
+
+    .filter-group h3 {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0B2C3D;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #1B5E4B;
+    }
+
+    .filter-options label {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+        color: #475569;
+    }
+
+    .filter-options label:hover {
+        color: #1B5E4B;
+        padding-left: 5px;
+    }
+
+    .filter-checkbox {
+        margin-right: 10px;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    /* Toolbar */
+    .shop-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        padding: 20px 30px;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+    }
+
+    .results-count {
+        font-size: 14px;
+        color: #64748b;
+    }
+
+    .shop-sort select {
+        padding: 10px 40px 10px 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #0B2C3D;
+        cursor: pointer;
+        background: white;
+        transition: all 0.3s ease;
+    }
+
+    .shop-sort select:focus {
+        outline: none;
+        border-color: #1B5E4B;
+    }
+
+    /* Toast Notification */
+    .toast-notification {
+        position: fixed;
+        top: 100px;
+        right: 30px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 20px 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        z-index: 10000;
+        display: none;
+        animation: slideInRight 0.5s ease;
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(100px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .toast-notification.show {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .toast-notification i {
+        font-size: 24px;
+    }
+
+    @media (max-width: 1024px) {
+        .shop-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .shop-sidebar {
+            position: static;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <!-- Hero Slider -->
+    <div class="hero-wrap">
+        <div class="home-slider owl-carousel">
+            <div class="slider-item" style="background-image:url({{ asset('images/bg_1.jpg') }});">
+                <div class="overlay"></div>
+                <div class="container">
+                    <div class="row no-gutters slider-text align-items-center">
+                        <div class="col-md-7 ftco-animate">
+                            <div class="text w-100">
+                                <h2>Welcome to Fitopia</h2>
+                                <h1 class="mb-4">Premium Supplements for Your Fitness Goals</h1>
+                                <p>
+                                    <a href="#products" class="btn btn-primary">Shop Now</a>
+                                    <a href="#" class="btn btn-white">Learn More</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slider-item" style="background-image:url({{ asset('images/bg_2.jpg') }});">
+                <div class="overlay"></div>
+                <div class="container">
+                    <div class="row no-gutters slider-text align-items-center">
+                        <div class="col-md-7 ftco-animate">
+                            <div class="text w-100">
+                                <h2>Build Your Best Body</h2>
+                                <h1 class="mb-4">Quality Nutrition for Peak Performance</h1>
+                                <p>
+                                    <a href="#products" class="btn btn-primary">Explore Products</a>
+                                    <a href="#" class="btn btn-white">Contact Us</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slider-item" style="background-image:url({{ asset('images/bg_3.jpg') }});">
+                <div class="overlay"></div>
+                <div class="container">
+                    <div class="row no-gutters slider-text align-items-center justify-content-end">
+                        <div class="col-md-6 ftco-animate">
+                            <div class="text w-100">
+                                <h2>Transform Your Health</h2>
+                                <h1 class="mb-4">Science-Backed Supplements You Can Trust</h1>
+                                <p>
+                                    <a href="#products" class="btn btn-primary">Start Shopping</a>
+                                    <a href="#" class="btn btn-white">View All</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shop Section -->
+    <section class="shop-section" id="products">
+        <div class="container">
+            <div class="shop-layout">
+                <!-- Sidebar Filters -->
+                <aside class="shop-sidebar">
+                    <div class="filter-group">
+                        <h3><i class="fa fa-filter"></i> Categories</h3>
+                        <div class="filter-options">
+                            {% for category in categories %}
+                                <label>
+                                    <input type="checkbox" name="category" value="{{ category }}" class="filter-checkbox">
+                                    {{ category }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <h3><i class="fa fa-tag"></i> Brands</h3>
+                        <div class="filter-options">
+                            {% for brand in brands %}
+                                <label>
+                                    <input type="checkbox" name="brand" value="{{ brand }}" class="filter-checkbox">
+                                    {{ brand }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <h3><i class="fa fa-dollar-sign"></i> Price Range</h3>
+                        <div class="price-range">
+                            <input type="range" min="0" max="500" value="500" class="price-slider" id="priceSlider">
+                            <div class="price-values">
+                                <span>0 DT</span>
+                                <span id="maxPrice">500 DT</span>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Products Grid -->
+                <div class="shop-main">
+                    <div class="shop-toolbar">
+                        <div class="results-count">
+                            Showing <strong id="showing-count">{{ supplements|length }}</strong> of <strong id="total-count">{{ supplements|length }}</strong> products
+                        </div>
+                        <div class="shop-sort">
+                            <select id="sortSelect">
+                                <option value="name-asc">Sort by Name (A-Z)</option>
+                                <option value="name-desc">Sort by Name (Z-A)</option>
+                                <option value="price-asc">Price: Low to High</option>
+                                <option value="price-desc">Price: High to Low</option>
+                                <option value="newest">Newest First</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="products-grid" id="productsGrid">
+                        {% for supplement in supplements %}
+                            {% set summary = ratingSummary[supplement.id] ?? {'avg': 0, 'count': 0} %}
+                            <div class="product-card"
+                                 data-id="{{ supplement.id }}"
+                                 data-category="{{ supplement.category }}"
+                                 data-brand="{{ supplement.brand }}"
+                                 data-price="{{ supplement.price }}"
+                                 data-name="{{ supplement.name }}"
+                                 data-created="{{ supplement.createdAt|date('Y-m-d') }}">
+                                {% if supplement.createdAt and supplement.createdAt > date('-30 days') %}
+                                    <span class="badge badge-new">NEW</span>
+                                {% endif %}
+                                {% if supplement.stock < 10 and supplement.stock > 0 %}
+                                    <span class="badge badge-limited">LIMITED</span>
+                                {% elseif supplement.stock == 0 %}
+                                    <span class="badge badge-sold">SOLD OUT</span>
+                                {% endif %}
+
+                                <div class="product-image">
+                                    {% if supplement.image %}
+                                        <img src="{{ asset('uploads/supplements/' ~ supplement.image) }}" alt="{{ supplement.name }}">
+                                    {% else %}
+                                        <img src="{{ asset('images/image_1.jpg') }}" alt="{{ supplement.name }}">
+                                    {% endif %}
+                                </div>
+
+                                <div class="product-info">
+                                    <div class="product-brand">{{ supplement.brand }}</div>
+                                    <h3 class="product-name">
+                                        <a class="product-link" href="{{ path('app_shop_product_show', {id: supplement.id}) }}">{{ supplement.name }}</a>
+                                    </h3>
+                                    <div class="product-category">{{ supplement.category }}</div>
+                                    <div class="product-rating">
+                                        {% include 'shop/partials/rating_stars.html.twig' with { rating: summary.avg, count: summary.count } %}
+                                    </div>
+                                    <div class="product-price">{{ supplement.price }} DT</div>
+                                    <a class="view-details-btn" href="{{ path('app_shop_product_show', {id: supplement.id}) }}">
+                                        <i class="fa fa-eye"></i> View Details
+                                    </a>
+                                    {% if supplement.stock > 0 %}
+                                        <button class="add-to-cart-btn" data-id="{{ supplement.id }}" data-name="{{ supplement.name }}">
+                                            <i class="fa fa-shopping-cart"></i> Add to Cart
+                                        </button>
+                                    {% else %}
+                                        <button class="add-to-cart-btn" disabled>
+                                            <i class="fa fa-times"></i> Out of Stock
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <p class="no-products">No products found.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toast Notification -->
+    <div class="toast-notification" id="toastNotification">
+        <i class="fa fa-check-circle"></i>
+        <div>
+            <strong>Success!</strong>
+            <p id="toastMessage">Product added to cart</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            // Initialize Owl Carousel for hero slider
+            if ($('.home-slider').length) {
+                $('.home-slider').owlCarousel({
+                    loop: true,
+                    margin: 0,
+                    items: 1,
+                    nav: true,
+                    dots: true,
+                    autoplay: true,
+                    autoplayTimeout: 5000,
+                    autoplayHoverPause: true,
+                    navText: ['<i class="fa fa-chevron-left"></i>', '<i class="fa fa-chevron-right"></i>'],
+                    animateOut: 'fadeOut',
+                    animateIn: 'fadeIn',
+                    smartSpeed: 1000
+                });
+            }
+
+            // Toast notification function
+            function showToast(message) {
+                const toast = $('#toastNotification');
+                $('#toastMessage').text(message);
+                toast.addClass('show');
+
+                setTimeout(function() {
+                    toast.removeClass('show');
+                }, 3000);
+            }
+
+            // Add to cart with toast notification
+            $(document).on('click', '.add-to-cart-btn', function() {
+                const supplementId = $(this).data('id');
+                const productName = $(this).data('name');
+                const button = $(this);
+
+                // Disable button temporarily
+                button.prop('disabled', true);
+
+                $.ajax({
+                    url: '{{ path('app_shop_cart_add') }}',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        supplementId: supplementId,
+                        quantity: 1
+                    }),
+                    success: function(response) {
+                        if (response.success) {
+                            showToast(productName + ' added to cart!');
+                            updateCartCount();
+
+                            // Re-enable button after 1 second
+                            setTimeout(function() {
+                                button.prop('disabled', false);
+                            }, 1000);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Add to cart error:', xhr.responseText);
+                        showToast('Error adding product to cart');
+                        button.prop('disabled', false);
+                    }
+                });
+            });
+
+            // Filter functionality
+            let allProducts = $('.product-card');
+
+            function filterProducts() {
+                let selectedCategories = [];
+                let selectedBrands = [];
+                let maxPrice = parseInt($('#priceSlider').val());
+
+                // Get selected categories
+                $('input[name="category"]:checked').each(function() {
+                    selectedCategories.push($(this).val());
+                });
+
+                // Get selected brands
+                $('input[name="brand"]:checked').each(function() {
+                    selectedBrands.push($(this).val());
+                });
+
+                let visibleCount = 0;
+
+                allProducts.each(function() {
+                    let product = $(this);
+                    let category = product.data('category');
+                    let brand = product.data('brand');
+                    let price = parseFloat(product.data('price'));
+
+                    let showProduct = true;
+
+                    // Filter by category
+                    if (selectedCategories.length > 0 && !selectedCategories.includes(category)) {
+                        showProduct = false;
+                    }
+
+                    // Filter by brand
+                    if (selectedBrands.length > 0 && !selectedBrands.includes(brand)) {
+                        showProduct = false;
+                    }
+
+                    // Filter by price
+                    if (price > maxPrice) {
+                        showProduct = false;
+                    }
+
+                    if (showProduct) {
+                        product.show();
+                        visibleCount++;
+                    } else {
+                        product.hide();
+                    }
+                });
+
+                $('#showing-count').text(visibleCount);
+            }
+
+            // Filter event listeners
+            $('.filter-checkbox').on('change', filterProducts);
+
+            $('#priceSlider').on('input', function() {
+                $('#maxPrice').text($(this).val() + ' DT');
+                filterProducts();
+            });
+
+            // Sort functionality
+            $('#sortSelect').on('change', function() {
+                let sortValue = $(this).val();
+                let productsArray = allProducts.toArray();
+
+                productsArray.sort(function(a, b) {
+                    let aProduct = $(a);
+                    let bProduct = $(b);
+
+                    switch(sortValue) {
+                        case 'name-asc':
+                            return aProduct.data('name').localeCompare(bProduct.data('name'));
+                        case 'name-desc':
+                            return bProduct.data('name').localeCompare(aProduct.data('name'));
+                        case 'price-asc':
+                            return parseFloat(aProduct.data('price')) - parseFloat(bProduct.data('price'));
+                        case 'price-desc':
+                            return parseFloat(bProduct.data('price')) - parseFloat(aProduct.data('price'));
+                        case 'newest':
+                            return new Date(bProduct.data('created')) - new Date(aProduct.data('created'));
+                        default:
+                            return 0;
+                    }
+                });
+
+                $('#productsGrid').html(productsArray);
+            });
+
+            // Smooth scroll to products
+            $('a[href="#products"]').on('click', function(e) {
+                e.preventDefault();
+                $('html, body').animate({
+                    scrollTop: $('#products').offset().top - 100
+                }, 800);
+            });
+        });
+    </script>
+{% endblock %}

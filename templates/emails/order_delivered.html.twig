@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Order Delivered</title>
+    <style>
+      body { margin: 0; padding: 0; font-family: Arial, sans-serif; background: #f5f7fb; color: #0f172a; }
+      .container { max-width: 680px; margin: 0 auto; padding: 32px 18px; }
+      .card { background: #ffffff; border-radius: 16px; padding: 28px; box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08); }
+      .header h1 { margin: 0 0 8px; font-size: 24px; color: #0b3a3d; }
+      .muted { color: #64748b; font-size: 14px; }
+      .meta { margin-top: 18px; background: #f8fafc; border-radius: 12px; padding: 14px; }
+      .meta p { margin: 6px 0; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div class="header">
+          <h1>Your order has been delivered</h1>
+          <p class="muted">Hello {{ order.firstName }}, your package arrived successfully.</p>
+        </div>
+        <div class="meta">
+          <p><strong>Order #:</strong> {{ order.orderNumber }}</p>
+          <p><strong>Status:</strong> DELIVERED</p>
+          <p><strong>Total:</strong> {{ order.total }} DT</p>
+        </div>
+        <p style="margin-top:18px;">Thank you for choosing Fitopia Supplements.</p>
+      </div>
+    </div>
+  </body>
+</html>

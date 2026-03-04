@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste d attente | Fitopia{% endblock %}
+
+{% block body %}
+<section class="container py-5">
+  {% for message in app.flashes('success') %}<div class="alert alert-success">{{ message }}</div>{% endfor %}
+  {% for message in app.flashes('error') %}<div class="alert alert-danger">{{ message }}</div>{% endfor %}
+
+  <div class="row g-4">
+    <div class="col-12 col-lg-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h1 class="h4 mb-2">{{ event.titre }}</h1>
+          <p class="text-muted mb-2">{{ event.description|length > 180 ? event.description|slice(0, 180) ~ '...' : event.description }}</p>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item px-0"><strong>Date:</strong> {{ event.dateEvent|date('Y-m-d') }}</li>
+            <li class="list-group-item px-0"><strong>Lieu:</strong> {{ event.lieu }}</li>
+            <li class="list-group-item px-0"><strong>Places restantes:</strong> {{ event.capacite }}</li>
+            <li class="list-group-item px-0"><strong>Type:</strong> {{ event.typeEvent }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h2 class="h5 mb-3">Rejoindre la liste d attente</h2>
+          {% if existingEntry %}
+            <div class="alert alert-info mb-0">
+              Deja inscrit. Statut: <strong>{{ existingEntry.status }}</strong>
+              {% if position %}<br>Rang actuel: <strong>{{ position }}</strong>{% endif %}
+            </div>
+          {% else %}
+            <form method="post" action="{{ path('app_waitlist_join', {id: event.id}) }}">
+              <input type="hidden" name="_token" value="{{ csrf_token('waitlist_join_' ~ event.id) }}">
+              <div class="mb-3">
+                <label class="form-label">Nom</label>
+                <input type="text" name="nom" class="form-control" maxlength="150" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" maxlength="150" value="{{ participantEmail|default('') }}" required>
+              </div>
+              <button class="btn btn-primary w-100" type="submit">Confirmer mon inscription</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

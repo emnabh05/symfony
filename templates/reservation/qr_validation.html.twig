@@ -1,0 +1,244 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Validation QR | Fitopia{% endblock %}
+
+{% block body %}
+<style>
+  .qr-validation-page {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 12px;
+  }
+
+  .qr-validation-card {
+    width: 100%;
+    max-width: 760px;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 14px 38px rgba(15, 23, 42, 0.12);
+    padding: 24px;
+  }
+
+  .qr-check-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    font-size: 24px;
+    color: #ffffff;
+    background: #16a34a;
+  }
+
+  .qr-invalid-icon {
+    background: #dc2626;
+  }
+
+  .qr-title {
+    margin-bottom: 16px;
+    font-size: 1.35rem;
+    font-weight: 700;
+  }
+
+  .qr-success-message {
+    background: #dcfce7;
+    color: #14532d;
+    border: 1px solid #86efac;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+
+  .qr-error-message {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+    border-radius: 10px;
+    padding: 12px;
+    font-weight: 700;
+  }
+
+  .qr-details-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .qr-details-item {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .qr-details-item:last-child {
+    border-bottom: none;
+  }
+
+  .qr-details-item strong {
+    color: #111827;
+  }
+
+  .qr-details-item span {
+    color: #374151;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .qr-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .qr-copy-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .qr-copy-main {
+    background: #0f766e;
+    color: #ffffff;
+  }
+
+  .qr-copy-notes {
+    background: #e5e7eb;
+    color: #111827;
+  }
+
+  .qr-feedback {
+    margin-top: 10px;
+    min-height: 20px;
+    font-size: 0.95rem;
+    color: #166534;
+    font-weight: 600;
+  }
+
+  .qr-notes-output {
+    width: 100%;
+    min-height: 136px;
+    margin-top: 12px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    padding: 10px;
+    font-size: 0.95rem;
+    background: #f9fafb;
+  }
+
+  @media (max-width: 640px) {
+    .qr-validation-card {
+      padding: 18px;
+    }
+
+    .qr-details-item {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+</style>
+
+<section class="qr-validation-page">
+  <div class="qr-validation-card">
+    {% if isValid %}
+      {% set dateEvent = event.dateEvent ? event.dateEvent|date('d/m/Y') : 'N/A' %}
+      {% set prix = reservation.montant is not null ? reservation.montant|number_format(2, ',', ' ') ~ ' TND' : 'Gratuit' %}
+      {% set status = statusLabel|default('Réservation confirmée') %}
+      {% set infoLines = [
+        'Nom du participant: ' ~ reservation.nomParticipant,
+        'Email: ' ~ reservation.emailParticipant,
+        'Titre de l evenement: ' ~ event.titre,
+        'Description: ' ~ event.description,
+        'Date: ' ~ dateEvent,
+        'Lieu: ' ~ event.lieu,
+        'Prix: ' ~ prix,
+        'Statut: ' ~ status
+      ] %}
+      {% set infoText = infoLines|join("\n") %}
+      {% set notesText = "Réservation événement\n\n" ~ infoText ~ "\n\nVotre participation est validée" %}
+
+      <div class="qr-check-icon" aria-hidden="true"><i class="fa fa-check"></i></div>
+      <h2 class="qr-title">Validation de participation</h2>
+      <p class="qr-success-message">Votre participation est validée</p>
+
+      <ul class="qr-details-list" id="qr-details-card">
+        <li class="qr-details-item"><strong>Nom du participant</strong><span>{{ reservation.nomParticipant }}</span></li>
+        <li class="qr-details-item"><strong>Email</strong><span>{{ reservation.emailParticipant }}</span></li>
+        <li class="qr-details-item"><strong>Titre de l'evenement</strong><span>{{ event.titre }}</span></li>
+        <li class="qr-details-item"><strong>Description</strong><span>{{ event.description }}</span></li>
+        <li class="qr-details-item"><strong>Date</strong><span>{{ dateEvent }}</span></li>
+        <li class="qr-details-item"><strong>Lieu</strong><span>{{ event.lieu }}</span></li>
+        <li class="qr-details-item"><strong>Prix</strong><span>{{ prix }}</span></li>
+        <li class="qr-details-item"><strong>Statut</strong><span>{{ status }}</span></li>
+      </ul>
+
+      <div class="qr-actions">
+        <button type="button" id="copy-info-btn" class="qr-copy-btn qr-copy-main">Copier les informations</button>
+        <button type="button" id="notes-btn" class="qr-copy-btn qr-copy-notes">Ajouter à mes notes</button>
+      </div>
+      <div id="qr-feedback" class="qr-feedback" aria-live="polite"></div>
+      <textarea id="qr-notes-output" class="qr-notes-output" readonly>{{ notesText }}</textarea>
+
+      <script>
+        (function () {
+          const infoText = {{ infoText|json_encode|raw }};
+          const notesText = {{ notesText|json_encode|raw }};
+          const feedbackEl = document.getElementById('qr-feedback');
+          const notesOutputEl = document.getElementById('qr-notes-output');
+          const copyInfoBtn = document.getElementById('copy-info-btn');
+          const notesBtn = document.getElementById('notes-btn');
+
+          const copyText = async (text) => {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(text);
+              return true;
+            }
+
+            notesOutputEl.value = text;
+            notesOutputEl.focus();
+            notesOutputEl.select();
+            return document.execCommand('copy');
+          };
+
+          copyInfoBtn.addEventListener('click', async function () {
+            try {
+              await copyText(infoText);
+              feedbackEl.textContent = 'Informations copiées dans le presse-papiers.';
+            } catch (e) {
+              feedbackEl.textContent = 'Impossible de copier automatiquement. Copiez le texte manuellement.';
+            }
+          });
+
+          notesBtn.addEventListener('click', async function () {
+            notesOutputEl.value = notesText;
+            try {
+              await copyText(notesText);
+              feedbackEl.textContent = 'Texte de notes généré et copié.';
+            } catch (e) {
+              feedbackEl.textContent = 'Texte de notes généré. Vous pouvez le copier depuis la zone ci-dessous.';
+            }
+          });
+        })();
+      </script>
+    {% else %}
+      <div class="qr-check-icon qr-invalid-icon" aria-hidden="true"><i class="fa fa-times"></i></div>
+      <h2 class="qr-title">Validation de participation</h2>
+      <p class="qr-error-message">{{ errorMessage|default('QR invalide') }}</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block footer %}{% endblock %}

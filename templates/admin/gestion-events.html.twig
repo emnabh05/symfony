@@ -1,0 +1,622 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Gestion des evenements | Fitopia{% endblock %}
+
+{% block stylesheets %}
+<style>
+  .agenda-hero {
+    background: linear-gradient(135deg, #0b3a3d 0%, #0d5b50 55%, #0f7a5f 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 18px 50px rgba(14, 30, 37, 0.18);
+    position: relative;
+    overflow: hidden;
+  }
+  .agenda-hero::after {
+    content: "";
+    position: absolute;
+    right: -60px;
+    top: -60px;
+    width: 180px;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+  }
+  .agenda-hero h2 { margin: 0 0 0.4rem; font-weight: 800; }
+  .agenda-hero p { margin: 0; opacity: 0.9; }
+  .hero-stats { margin-top: 1rem; display: flex; gap: 0.65rem; flex-wrap: wrap; }
+  .hero-chip {
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 999px;
+    padding: 0.32rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .option-grid { margin-top: 2rem; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+  .option-card {
+    background: #fff; border-radius: 14px; padding: 1.5rem; box-shadow: 0 12px 30px rgba(14, 30, 37, 0.08);
+    border: 1px solid #eef2f6; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; cursor: pointer;
+  }
+  .option-card.selected { border-color: #0f7a5f; box-shadow: 0 0 0 3px rgba(15, 122, 95, 0.15); }
+  .option-card:hover { transform: translateY(-4px); border-color: #d2e5e1; box-shadow: 0 18px 40px rgba(14, 30, 37, 0.14); }
+  .option-icon {
+    width: 42px; height: 42px; border-radius: 10px; background: #e6f0ee; color: #0b3a3d;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 0.75rem;
+  }
+  .panel {
+    margin-top: 2rem; background: #fff; border-radius: 16px; padding: 1.75rem; border: 1px solid #eef2f6;
+    box-shadow: 0 12px 30px rgba(14, 30, 37, 0.08); display: none; transform: translateY(12px); opacity: 0; transition: all 0.25s ease;
+  }
+  .panel.active { display: block; transform: translateY(0); opacity: 1; }
+  .panel h3 { margin-top: 0; font-weight: 800; color: #0b3a3d; }
+  .muted { color: #6b7280; }
+  .form-wrap {
+    background: #fff; border-radius: 14px; border: 1px solid #e6eef6; padding: 1.6rem; margin-bottom: 1.25rem;
+    box-shadow: 0 10px 26px rgba(14, 30, 37, 0.07);
+  }
+  .form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+  .form-row.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  label { font-weight: 700; color: #3a4b5c; font-size: 0.95rem; margin-bottom: 0.3rem; }
+  .form-control, .btn { border-radius: 10px; }
+  .form-control { border: 1px solid #d6e0ea; font-size: 1rem; padding: 0.65rem 0.9rem; min-height: 46px; }
+  .event-textarea { min-height: 180px; resize: vertical; }
+  .form-actions { margin-top: 0.5rem; }
+  .form-actions .btn { width: 100%; padding: 0.8rem 1.2rem; font-size: 1rem; }
+  .form-actions .btn.btn-sm { width: auto; padding: 0.6rem 1rem; font-size: 0.95rem; }
+  .btn-primary { background: #0b3a3d; border-color: #0b3a3d; font-weight: 700; }
+  .btn-primary:hover { background: #0f7a5f; border-color: #0f7a5f; }
+  .btn-outline-primary, .btn-outline-danger { font-weight: 700; border-width: 1.5px; }
+  .list-item { border: 1px solid #e6eef6; border-radius: 12px; padding: 0.9rem 1rem; margin-bottom: 0.75rem; background: #fff; }
+  .list-head { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+  .badge-soft { border-radius: 999px; background: #e9f7f2; color: #0f7a5f; font-size: 0.72rem; padding: 0.2rem 0.55rem; font-weight: 700; }
+  .badge-premium-admin { border-radius: 999px; background: #fff7ed; color: #9a3412; border: 1px solid #fdba74; font-size: 0.72rem; padding: 0.2rem 0.55rem; font-weight: 700; }
+  .success-toast {
+    background: #e6fffa; color: #0b3a3d; border: 1px solid #b7f3ea; border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 1rem;
+  }
+  .error-toast {
+    background: #fff1f1; color: #a11b1b; border: 1px solid #f7c9c9; border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 1rem;
+  }
+  .info-toast {
+    background: #eef6ff; color: #1f3f68; border: 1px solid #c8d7ee; border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 1rem;
+  }
+  .table-wrap { overflow-x: auto; }
+  .table-toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 0.55rem; margin: 0.6rem 0 0.8rem; flex-wrap: wrap; }
+  .toolbar-search, .toolbar-sort {
+    border: 1px solid #d6e0ea; border-radius: 10px; padding: 0.42rem 0.62rem; font-size: 0.85rem; background: #fff;
+  }
+  .toolbar-search { min-width: 230px; }
+  .toolbar-sort { min-width: 190px; }
+  .toolbar-export {
+    border: 1px solid #c8d7ee; background: #f0f5ff; color: #1f3f68; border-radius: 10px; font-weight: 700; font-size: 0.84rem;
+    padding: 0.42rem 0.78rem;
+  }
+  table { width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e6eef6; background: #fff; }
+  th, td { border-bottom: 1px solid #eef2f6; padding: 0.62rem 0.55rem; text-align: left; font-size: 0.9rem; }
+  th { background: #f4f8fb; color: #1e3042; font-weight: 800; }
+  @media (max-width: 991px) {
+    .option-grid { grid-template-columns: 1fr; }
+    .form-row, .form-row.three { grid-template-columns: 1fr; }
+    .hero-stats { display: grid; grid-template-columns: 1fr; gap: 0.45rem; }
+    .table-toolbar { justify-content: stretch; }
+    .toolbar-search, .toolbar-sort, .toolbar-export { width: 100%; min-width: 0; }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+{% set events = events|default([]) %}
+{% set eventStats = eventStats|default({}) %}
+{% set participantsByEvent = participantsByEvent|default({}) %}
+{% set premiumFilter = premiumFilter|default('all') %}
+{% set waitlistByEvent = waitlistByEvent|default({}) %}
+
+  <div class="agenda-hero">
+    <h2>Events Management</h2>
+    <p>Centralize event dashboard, create/update forms, and CRUD in one admin page.</p>
+    <div class="hero-stats">
+      <span class="hero-chip"><i class="fa fa-calendar"></i> {{ totalEvents|default(0) }} events</span>
+      <span class="hero-chip"><i class="fa fa-user"></i> {{ totalParticipants|default(0) }} participants</span>
+      <span class="hero-chip"><i class="fa fa-exclamation-circle"></i> {{ totalFull|default(0) }} full events</span>
+      <span class="hero-chip"><i class="fa fa-star"></i> {{ totalPremium|default(0) }} premium</span>
+    </div>
+  </div>
+
+  {% for message in app.flashes('success') %}<div class="success-toast">{{ message }}</div>{% endfor %}
+  {% for message in app.flashes('error') %}<div class="error-toast">{{ message }}</div>{% endfor %}
+  {% for message in app.flashes('info') %}<div class="info-toast">{{ message }}</div>{% endfor %}
+
+  <div class="option-grid">
+    <div class="option-card" data-action="create"><div class="option-icon"><i class="fa fa-plus"></i></div><h4>Create Event</h4><p class="muted">Equivalent of old event_form create flow.</p></div>
+    <div class="option-card" data-action="update"><div class="option-icon"><i class="fa fa-refresh"></i></div><h4>Update Event</h4><p class="muted">Inline edit forms for all existing events.</p></div>
+    <div class="option-card" data-action="delete"><div class="option-icon"><i class="fa fa-trash"></i></div><h4>Delete Event</h4><p class="muted">Remove events and linked participations.</p></div>
+    <div class="option-card" data-action="explore"><div class="option-icon"><i class="fa fa-globe"></i></div><h4>Dashboard & Explore</h4><p class="muted">events_crud/dashboard in one searchable table.</p></div>
+  </div>
+  <div style="margin-top:1rem;">
+    <a class="btn btn-outline-primary btn-sm" href="{{ path('admin_waitlist') }}"><i class="fa fa-list"></i> Ouvrir la gestion waitlist</a>
+  </div>
+
+  <div id="panel-create" class="panel">
+    <h3><i class="fa fa-plus-circle"></i> Add Event</h3>
+    <div class="form-wrap">
+      <form method="post" action="{{ path('admin_events_add') }}" enctype="multipart/form-data" class="event-form">
+        <input type="hidden" name="_token" value="{{ csrf_token('admin_events_add') }}">
+        <div class="form-row"><div><label>Title</label><input class="form-control" name="titre" required></div><div><label>Type</label><input class="form-control" name="type_event" required></div></div>
+        <div class="form-row"><div><label>Date</label><input class="form-control" name="date_event" type="date" required></div><div><label>Location</label><input class="form-control" name="lieu" required></div></div>
+        <div class="form-row three"><div><label>Capacity</label><input class="form-control" name="capacite" type="number" min="1" required></div><div><label>Price</label><input class="form-control" name="prix_event" type="number" min="0" step="0.01" value="0"></div><div><label>Image</label><input class="form-control" name="image_file" type="file" accept="image/*"></div></div>
+        <div class="form-row"><div><label><input type="checkbox" name="is_premium" value="1"> Premium</label></div></div>
+        <div class="form-row"><div style="grid-column:1/-1;"><label>Description</label><textarea class="form-control event-textarea" name="description" rows="6" required></textarea></div></div>
+        <div class="form-actions">
+          <button class="btn btn-primary mt-2" type="submit"><i class="fa fa-check"></i> Create Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="panel-update" class="panel">
+    <h3><i class="fa fa-refresh"></i> Update Events</h3>
+    {% for event in events %}
+      {% set activeReservations = eventStats[event.id].activeReservations|default(0) %}
+      {% set remainingPlaces = eventStats[event.id].remainingPlaces|default(event.capacite) %}
+      {% set waitlistPending = eventStats[event.id].waitlistPending|default(0) %}
+      {% set waitlistInvited = eventStats[event.id].waitlistInvited|default(0) %}
+      {% set isFull = eventStats[event.id].isFull|default(false) %}
+      {% set participantNames = participantsByEvent[event.id]|default([]) %}
+      {% set waitlistEntries = waitlistByEvent[event.id]|default([]) %}
+      <div class="list-item">
+        <div class="list-head">
+          <div>
+            <strong>#{{ event.id }} - {{ event.titre }}</strong>
+            <span class="badge-soft">{{ activeReservations }}/{{ event.capacite }} actives</span>
+            <span class="badge-soft">{{ remainingPlaces }} places restantes</span>
+            <span class="badge-soft">EN_ATTENTE: {{ waitlistPending }}</span>
+            <span class="badge-soft">INVITE: {{ waitlistInvited }}</span>
+            {% if isFull %}
+              <span class="badge-premium-admin" style="background:#fef2f2;border-color:#fca5a5;color:#991b1b;">Complet</span>
+            {% else %}
+              <span class="badge-soft">{{ remainingPlaces }} places</span>
+            {% endif %}
+            {% if event.isPremium %}
+              <span class="badge-premium-admin">Premium</span>
+            {% endif %}
+            <div class="muted">{{ event.dateEvent|date('Y-m-d') }} | {{ event.lieu }} | {{ event.typeEvent }}</div>
+            {% if participantNames is not empty %}
+              <div class="muted" style="margin-top:0.35rem;">{{ participantNames|join(', ') }}</div>
+            {% endif %}
+          </div>
+          <button class="btn btn-outline-primary btn-sm js-toggle" data-target="event-form-{{ event.id }}"><i class="fa fa-pencil"></i> Edit</button>
+        </div>
+        <form id="event-form-{{ event.id }}" method="post" action="{{ path('admin_events_update', {'id': event.id}) }}" enctype="multipart/form-data" class="event-form" style="display:none;margin-top:0.8rem;">
+          <input type="hidden" name="_token" value="{{ csrf_token('admin_events_update_' ~ event.id) }}">
+          <div class="form-row"><div><label>Title</label><input class="form-control" name="titre" value="{{ event.titre }}" required></div><div><label>Type</label><input class="form-control" name="type_event" value="{{ event.typeEvent }}" required></div></div>
+          <div class="form-row"><div><label>Date</label><input class="form-control" name="date_event" type="date" value="{{ event.dateEvent|date('Y-m-d') }}" required></div><div><label>Location</label><input class="form-control" name="lieu" value="{{ event.lieu }}" required></div></div>
+          <div class="form-row three"><div><label>Capacity</label><input class="form-control" name="capacite" type="number" min="1" value="{{ event.capacite }}" required></div><div><label>Price</label><input class="form-control" name="prix_event" type="number" min="0" step="0.01" value="{{ event.prixEvent }}"></div><div><label>Image</label><input class="form-control" name="image_file" type="file" accept="image/*"></div></div>
+          <div class="form-row"><div><label><input type="checkbox" name="is_premium" value="1" {{ event.isPremium ? 'checked' : '' }}> Premium</label></div></div>
+          <div class="form-row"><div style="grid-column:1/-1;"><label>Description</label><textarea class="form-control event-textarea" name="description" rows="6" required>{{ event.description }}</textarea></div></div>
+          <div class="form-actions">
+            <button class="btn btn-primary btn-sm mt-2" type="submit"><i class="fa fa-save"></i> Save Event</button>
+          </div>
+        </form>
+        <div style="margin-top:0.8rem;border-top:1px solid #eef2f6;padding-top:0.8rem;">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+            <strong>Smart Waitlist</strong>
+            <div class="d-flex gap-2">
+              <form method="post" action="{{ path('admin_events_waitlist_expire', {id: event.id}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('admin_events_waitlist_expire_' ~ event.id) }}">
+                <button class="btn btn-outline-secondary btn-sm" type="submit"><i class="fa fa-clock-o"></i> Nettoyer expires</button>
+              </form>
+              <form method="post" action="{{ path('admin_events_waitlist_invite_next', {id: event.id}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('admin_events_waitlist_invite_' ~ event.id) }}">
+                <button class="btn btn-outline-primary btn-sm" type="submit"><i class="fa fa-envelope"></i> Inviter le prochain</button>
+              </form>
+            </div>
+          </div>
+          {% if waitlistEntries is empty %}
+            <p class="muted mb-0">Aucune entree waitlist.</p>
+          {% else %}
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Statut</th>
+                    <th>Expire</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for w in waitlistEntries %}
+                    <tr>
+                      <td>{{ w.nom }}</td>
+                      <td>{{ w.email }}</td>
+                      <td>{{ w.status }}</td>
+                      <td>{{ w.expiresAt ? w.expiresAt|date('Y-m-d H:i') : '-' }}</td>
+                      <td>
+                        {% if w.status in ['EN_ATTENTE', 'INVITE'] %}
+                          <form method="post" action="{{ path('admin_events_waitlist_cancel', {id: w.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('admin_events_waitlist_cancel_' ~ w.id) }}">
+                            <button class="btn btn-outline-danger btn-sm" type="submit">Annuler</button>
+                          </form>
+                        {% else %}
+                          <span class="muted">-</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% else %}
+      <p class="muted">No events found.</p>
+    {% endfor %}
+  </div>
+
+  <div id="panel-delete" class="panel">
+    <h3><i class="fa fa-trash"></i> Delete Events</h3>
+    {% for event in events %}
+      <div class="list-item">
+        <div class="list-head">
+          <div><strong>#{{ event.id }} - {{ event.titre }}</strong><div class="muted">{{ event.dateEvent|date('Y-m-d') }} | {{ event.lieu }}</div></div>
+          <form method="post" action="{{ path('admin_events_delete', {'id': event.id}) }}" onsubmit="return confirm('Delete this event?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('admin_events_delete_' ~ event.id) }}">
+            <button class="btn btn-outline-danger btn-sm" type="submit"><i class="fa fa-trash"></i> Delete</button>
+          </form>
+        </div>
+      </div>
+    {% else %}
+      <p class="muted">No events found.</p>
+    {% endfor %}
+  </div>
+
+  <div id="panel-explore" class="panel">
+    <h3><i class="fa fa-globe"></i> Events Dashboard & List</h3>
+    <p class="muted">Merged content of old dashboard.php and events_crud.php.</p>
+    <form method="get" action="{{ path('admin_events') }}" class="table-toolbar" style="justify-content:flex-start;">
+      <select name="premium_filter" class="toolbar-sort" onchange="this.form.submit()">
+        <option value="all" {{ premiumFilter == 'all' ? 'selected' : '' }}>Tous</option>
+        <option value="premium" {{ premiumFilter == 'premium' ? 'selected' : '' }}>Premium seulement</option>
+        <option value="standard" {{ premiumFilter == 'standard' ? 'selected' : '' }}>Standard seulement</option>
+      </select>
+      <button type="submit" class="toolbar-export"><i class="fa fa-filter"></i> Filtrer</button>
+      <a href="{{ path('admin_events') }}" class="toolbar-export" style="text-decoration:none;"><i class="fa fa-refresh"></i> Reset</a>
+    </form>
+    <div class="table-toolbar">
+      <select id="events-sort" class="toolbar-sort">
+        <option value="0:number:desc">Sort ID (desc)</option>
+        <option value="0:number:asc">Sort ID (asc)</option>
+        <option value="3:date:asc">Sort Date (asc)</option>
+        <option value="3:date:desc">Sort Date (desc)</option>
+        <option value="9:string:desc">Sort Premium first</option>
+        <option value="9:string:asc">Sort Standard first</option>
+        <option value="5:number:desc">Sort Reservations (high)</option>
+        <option value="5:number:asc">Sort Reservations (low)</option>
+      </select>
+      <button type="button" id="events-export" class="toolbar-export"><i class="fa fa-file-pdf-o"></i> Export PDF</button>
+      <input id="events-search" class="toolbar-search" type="search" placeholder="Search events...">
+    </div>
+    <div class="table-wrap">
+      <table id="events-table">
+        <thead><tr><th>ID</th><th>Title</th><th>Type</th><th>Date</th><th>Location</th><th>Res. actives</th><th>Capacite</th><th>Restantes</th><th>Waitlist (A/I)</th><th>Premium</th><th>Etat</th><th>Price</th></tr></thead>
+        <tbody>
+          {% for event in events %}
+            {% set activeReservations = eventStats[event.id].activeReservations|default(0) %}
+            {% set remainingPlaces = eventStats[event.id].remainingPlaces|default(event.capacite) %}
+            {% set waitlistPending = eventStats[event.id].waitlistPending|default(0) %}
+            {% set waitlistInvited = eventStats[event.id].waitlistInvited|default(0) %}
+            {% set isFull = eventStats[event.id].isFull|default(false) %}
+            {% set participantNames = participantsByEvent[event.id]|default([]) %}
+            {% set waitlistEntries = waitlistByEvent[event.id]|default([]) %}
+            <tr data-description="{{ event.description|e('html_attr') }}">
+              <td>#{{ event.id }}</td>
+              <td>{{ event.titre }}</td>
+              <td>{{ event.typeEvent }}</td>
+              <td>{{ event.dateEvent|date('Y-m-d') }}</td>
+              <td>{{ event.lieu }}</td>
+              <td>
+                <strong>{{ activeReservations }}</strong>
+                {% if participantNames is not empty %}
+                  <div class="muted" style="font-size:0.78rem;line-height:1.4;margin-top:0.2rem;">{{ participantNames|join(', ') }}</div>
+                {% endif %}
+              </td>
+              <td>{{ event.capacite }}</td>
+              <td>{{ remainingPlaces }}</td>
+              <td>{{ waitlistPending }}/{{ waitlistInvited }}</td>
+              <td>{% if event.isPremium %}<span class="badge-premium-admin">Premium</span>{% else %}<span class="muted">No</span>{% endif %}</td>
+              <td>{% if isFull %}<span class="badge-premium-admin" style="background:#fef2f2;border-color:#fca5a5;color:#991b1b;">Complet</span>{% else %}<span class="badge-soft">{{ remainingPlaces }} places</span>{% endif %}</td>
+              <td>{% if event.prixEvent|default('0') > 0 %}{{ event.prixEvent }} DT{% else %}Free{% endif %}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="12" class="muted">No events found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% set participantsList = participantsList|default([]) %}
+    <div style="margin-top:1.4rem;">
+      <h3 style="margin:0 0 0.35rem;"><i class="fa fa-users"></i> Liste des Participants</h3>
+      <p class="muted">Participants inscrits aux événements.</p>
+      <form id="participants-filters" method="get" action="{{ path('admin_events') }}" class="table-toolbar" style="margin-bottom:0.8rem;">
+        <input type="hidden" name="premium_filter" value="{{ premiumFilter }}">
+        <input id="participants-search" type="search" name="search" class="toolbar-search" placeholder="Rechercher par nom..." value="{{ search|default('') }}">
+        <select name="sort" class="toolbar-sort" onchange="this.form.submit()">
+          <option value="recent" {{ (sort|default('recent')) == 'recent' ? 'selected' : '' }}>Date la plus recente</option>
+          <option value="oldest" {{ (sort|default('recent')) == 'oldest' ? 'selected' : '' }}>Date la plus ancienne</option>
+        </select>
+        <button type="submit" class="toolbar-export"><i class="fa fa-search"></i> Filtrer</button>
+        <a href="{{ path('admin_events') }}" class="toolbar-export" style="text-decoration:none;"><i class="fa fa-refresh"></i> Reset</a>
+      </form>
+      <div class="table-wrap">
+        <table id="participants-table">
+          <thead>
+            <tr>
+              <th>ID Participation</th>
+              <th>Nom</th>
+              <th>Email</th>
+              <th>Date d'inscription</th>
+              <th>Événement</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in participantsList %}
+              <tr>
+                <td>#{{ p.id|default('-') }}</td>
+                <td>{{ p.nom|default('-') }}</td>
+                <td>{{ p.email|default('-') }}</td>
+                <td>{{ p.dateInscription is defined and p.dateInscription ? p.dateInscription|date('Y-m-d H:i') : '-' }}</td>
+                <td>{{ p.eventTitle|default('-') }}</td>
+              </tr>
+            {% else %}
+              <tr><td colspan="5" class="muted">Aucun participant trouvé.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.option-card');
+    const panels = { create: document.getElementById('panel-create'), update: document.getElementById('panel-update'), delete: document.getElementById('panel-delete'), explore: document.getElementById('panel-explore') };
+    cards.forEach((card) => card.addEventListener('click', () => {
+      cards.forEach((c) => c.classList.remove('selected'));
+      card.classList.add('selected');
+      Object.values(panels).forEach((p) => p && p.classList.remove('active'));
+      const key = card.getAttribute('data-action');
+      if (panels[key]) panels[key].classList.add('active');
+    }));
+    const defaultCard = document.querySelector('.option-card[data-action="explore"]');
+    if (defaultCard) defaultCard.click();
+
+    document.querySelectorAll('.js-toggle').forEach((btn) => btn.addEventListener('click', () => {
+      const target = document.getElementById(btn.getAttribute('data-target'));
+      if (!target) return;
+      target.style.display = target.style.display === 'none' || target.style.display === '' ? 'block' : 'none';
+    }));
+
+    const participantsFilterForm = document.getElementById('participants-filters');
+    const participantsSearchInput = document.getElementById('participants-search');
+    if (participantsFilterForm && participantsSearchInput) {
+      let searchDebounceTimer;
+      participantsSearchInput.addEventListener('input', () => {
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(() => participantsFilterForm.submit(), 300);
+      });
+    }
+
+    function loadJsPdf() {
+      if (window.jspdf && window.jspdf.jsPDF) return Promise.resolve(window.jspdf.jsPDF);
+      return new Promise((resolve, reject) => {
+        const existing = document.querySelector('script[data-jspdf="1"]');
+        if (existing) { existing.addEventListener('load', () => resolve(window.jspdf?.jsPDF)); existing.addEventListener('error', reject); return; }
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';
+        s.async = true; s.setAttribute('data-jspdf', '1');
+        s.onload = () => resolve(window.jspdf?.jsPDF); s.onerror = reject; document.head.appendChild(s);
+      });
+    }
+    function parseValue(raw, type) {
+      if (type === 'number') { const m = String(raw).match(/-?\d+(\.\d+)?/); return m ? parseFloat(m[0]) : 0; }
+      if (type === 'date') return new Date(String(raw).replace(' ', 'T')).getTime() || 0;
+      return String(raw).toLowerCase();
+    }
+    function setupTableTools(cfg) {
+      const table = document.getElementById(cfg.tableId);
+      if (!table) return;
+      const tbody = table.querySelector('tbody');
+      const searchInput = document.getElementById(cfg.searchId);
+      const sortSelect = document.getElementById(cfg.sortId);
+      const exportBtn = document.getElementById(cfg.exportId);
+      const baseRows = Array.from(tbody.querySelectorAll('tr'));
+      function apply() {
+        const q = (searchInput?.value || '').trim().toLowerCase();
+        const [col, type, dir] = (sortSelect?.value || '0:number:desc').split(':');
+        const visible = [...baseRows].filter((row) => q === '' || row.textContent.toLowerCase().includes(q)).sort((a,b) => {
+          const av = parseValue(a.cells[Number(col)]?.textContent || '', type);
+          const bv = parseValue(b.cells[Number(col)]?.textContent || '', type);
+          if (av === bv) return 0;
+          return dir === 'asc' ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
+        });
+        tbody.innerHTML = ''; visible.forEach((row) => tbody.appendChild(row));
+      }
+      async function exportPdf() {
+        try {
+          const JsPdfCtor = await loadJsPdf();
+          const doc = new JsPdfCtor({ unit: 'pt', format: 'a4' });
+          const margin = 40;
+          const pageW = doc.internal.pageSize.getWidth();
+          const pageH = doc.internal.pageSize.getHeight();
+          let y = margin;
+
+          function drawSectionTitle(text) {
+            if (y > pageH - margin - 40) { doc.addPage(); y = margin; }
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(12);
+            doc.text(text, margin, y);
+            y += 12;
+          }
+
+          function drawTable(columns, rows, options = {}) {
+            const tableW = pageW - margin * 2;
+            const lineHeight = options.lineHeight || 11;
+            const cellPadding = options.cellPadding || 4;
+            const headerFontSize = options.headerFontSize || 10;
+            const bodyFontSize = options.bodyFontSize || 9;
+            const colWidths = columns.map((col) => (col.width || (1 / columns.length)) * tableW);
+            const headerHeight = lineHeight + cellPadding * 2;
+
+            if (y + headerHeight > pageH - margin) { doc.addPage(); y = margin; }
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(headerFontSize);
+            doc.setFillColor(244, 248, 251);
+            doc.rect(margin, y, tableW, headerHeight, 'F');
+
+            let x = margin;
+            columns.forEach((col, idx) => {
+              doc.rect(x, y, colWidths[idx], headerHeight);
+              doc.text(String(col.header), x + cellPadding, y + cellPadding + lineHeight - 2);
+              x += colWidths[idx];
+            });
+            y += headerHeight;
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(bodyFontSize);
+            rows.forEach((row) => {
+              const cellLines = row.map((cell, idx) => doc.splitTextToSize(String(cell ?? ''), colWidths[idx] - cellPadding * 2));
+              const maxLines = Math.max(...cellLines.map((lines) => lines.length), 1);
+              const rowHeight = maxLines * lineHeight + cellPadding * 2;
+
+              if (y + rowHeight > pageH - margin) {
+                doc.addPage();
+                y = margin;
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(headerFontSize);
+                doc.setFillColor(244, 248, 251);
+                doc.rect(margin, y, tableW, headerHeight, 'F');
+                x = margin;
+                columns.forEach((col, idx) => {
+                  doc.rect(x, y, colWidths[idx], headerHeight);
+                  doc.text(String(col.header), x + cellPadding, y + cellPadding + lineHeight - 2);
+                  x += colWidths[idx];
+                });
+                y += headerHeight;
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(bodyFontSize);
+              }
+
+              x = margin;
+              row.forEach((cell, idx) => {
+                doc.rect(x, y, colWidths[idx], rowHeight);
+                doc.text(cellLines[idx], x + cellPadding, y + cellPadding + lineHeight - 2);
+                x += colWidths[idx];
+              });
+              y += rowHeight;
+            });
+          }
+
+          function buildEventsRows() {
+            const rows = [];
+            const tableRows = Array.from(document.querySelectorAll('#events-table tbody tr'));
+            tableRows.forEach((row) => {
+              const cells = row.cells;
+              if (!cells || cells.length < 8) return;
+              rows.push([
+                cells[0].textContent.trim(),
+                cells[1].textContent.trim(),
+                (row.getAttribute('data-description') || '').trim(),
+                cells[3].textContent.trim(),
+                cells[4].textContent.trim(),
+                cells[6].textContent.trim(),
+                cells[11].textContent.trim(),
+                cells[2].textContent.trim(),
+              ]);
+            });
+            return rows;
+          }
+
+          function buildParticipantsRows() {
+            const rows = [];
+            const tableRows = Array.from(document.querySelectorAll('#participants-table tbody tr'));
+            tableRows.forEach((row) => {
+              const cells = row.cells;
+              if (!cells || cells.length < 5) return;
+              rows.push([
+                cells[0].textContent.trim(),
+                cells[1].textContent.trim(),
+                cells[2].textContent.trim(),
+                cells[3].textContent.trim(),
+                cells[4].textContent.trim(),
+              ]);
+            });
+            return rows;
+          }
+
+          const eventsRows = buildEventsRows();
+          const participantsRows = buildParticipantsRows();
+          if (eventsRows.length === 0 && participantsRows.length === 0) {
+            alert('No rows to export.');
+            return;
+          }
+
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(16);
+          doc.text('Rapport des Événements et Participants', pageW / 2, y, { align: 'center' });
+          y += 16;
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(10);
+          doc.text('Date de génération : ' + new Date().toLocaleString(), margin, y);
+          y += 18;
+
+          drawSectionTitle('SECTION 1 : LISTE DES ÉVÉNEMENTS');
+          drawTable(
+            [
+              { header: 'ID', width: 0.07 },
+              { header: 'Titre', width: 0.16 },
+              { header: 'Description', width: 0.27 },
+              { header: 'Date', width: 0.10 },
+              { header: 'Lieu', width: 0.12 },
+              { header: 'Capacité', width: 0.08 },
+              { header: 'Prix', width: 0.08 },
+              { header: 'Type', width: 0.12 },
+            ],
+            eventsRows,
+            { headerFontSize: 9, bodyFontSize: 8, lineHeight: 10 }
+          );
+
+          y += 18;
+          drawSectionTitle('SECTION 2 : LISTE DES PARTICIPANTS');
+          drawTable(
+            [
+              { header: 'ID Participation', width: 0.14 },
+              { header: 'Nom', width: 0.18 },
+              { header: 'Email', width: 0.25 },
+              { header: "Date d'inscription", width: 0.18 },
+              { header: 'Événement', width: 0.25 },
+            ],
+            participantsRows,
+            { headerFontSize: 9, bodyFontSize: 8, lineHeight: 10 }
+          );
+
+          doc.save('rapport-evenements-participants.pdf');
+        } catch (e) { alert('Unable to export PDF right now.'); }
+      }
+      searchInput?.addEventListener('input', apply);
+      sortSelect?.addEventListener('change', apply);
+      exportBtn?.addEventListener('click', exportPdf);
+      apply();
+    }
+    setupTableTools({ tableId: 'events-table', searchId: 'events-search', sortId: 'events-sort', exportId: 'events-export' });
+  });
+</script>
+{% endblock %}

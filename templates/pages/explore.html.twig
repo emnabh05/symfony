@@ -1,0 +1,685 @@
+﻿{% extends 'base.html.twig' %}
+
+{% block title %}Explore Forums & Blogs | Fitopia{% endblock %}
+
+{% block stylesheets %}
+<style>
+  :root{
+    --primary-500:#17966f;
+    --primary-600:#117e5d;
+    --primary-700:#0d644a;
+    --neutral-0:#ffffff;
+    --neutral-50:#f8fbfa;
+    --neutral-100:#eef3f2;
+    --neutral-200:#d9e2e0;
+    --neutral-400:#5f6f69;
+    --neutral-700:#213038;
+    --accent-500:#2d6cdf;
+    --accent-100:#eaf1ff;
+    --danger-100:#ffe9ef;
+    --danger-500:#d84367;
+    --radius-lg:18px;
+    --radius-md:14px;
+    --shadow-soft:0 10px 30px rgba(20,42,36,.08);
+    --shadow-hover:0 20px 40px rgba(20,42,36,.14);
+  }
+
+  .container-fluid.py-5{
+    background:
+      radial-gradient(circle at 0% 0%,rgba(23,150,111,.14) 0%,transparent 26%),
+      radial-gradient(circle at 100% 12%,rgba(45,108,223,.12) 0%,transparent 30%),
+      linear-gradient(180deg,#f7fbf9 0%,#f4f8f7 100%);
+    min-height:100vh;
+    padding-top:2.2rem!important;
+    padding-bottom:4rem!important;
+  }
+
+  .explore-shell{max-width:1320px;margin:0 auto;display:grid;gap:1.4rem}
+  .explore-layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:1.1rem;align-items:start}
+  .feed-column{display:grid;gap:1.2rem}
+
+  .explore-hero{
+    background:linear-gradient(130deg,#0e6b50 0%,#17966f 56%,#2ba486 100%);
+    color:#fff;
+    border-radius:24px;
+    padding:1.5rem 1.6rem;
+    position:relative;
+    overflow:hidden;
+    box-shadow:var(--shadow-hover);
+  }
+  .explore-hero::after{content:"";position:absolute;right:-70px;top:-70px;width:220px;height:220px;border-radius:999px;background:rgba(255,255,255,.13)}
+  .hero-logo-badge{position:absolute;right:20px;top:16px;width:56px;height:56px;border-radius:16px;border:1px solid rgba(255,255,255,.38);background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center}
+  .hero-logo-badge img{width:32px;height:32px}
+  .hero-horizontal{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:1rem}
+  .explore-hero h2{font-size:clamp(1.45rem,2.8vw,2rem);line-height:1.2;margin:0 0 .55rem;font-weight:800}
+  .explore-hero p{margin:0;line-height:1.55;max-width:60ch;opacity:.95}
+  .hero-points{margin:.9rem 0 0;padding-left:1rem;display:grid;gap:.25rem;font-size:.9rem}
+  .image-holder{border-radius:16px;height:180px;overflow:hidden;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.14)}
+  .hero-actions-inline{display:flex;gap:.55rem;flex-wrap:wrap;margin-top:.7rem}
+
+  .btn{border-radius:999px;font-weight:700;transition:all .2s ease}
+  .btn:focus-visible,.link-btn:focus-visible,.dm-item:focus-visible,.dm-start-btn:focus-visible{outline:2px solid var(--accent-500);outline-offset:2px}
+  .btn-primary{background:linear-gradient(130deg,var(--primary-600),var(--primary-500));border-color:var(--primary-600)}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(17,126,93,.24);background:linear-gradient(130deg,var(--primary-700),var(--primary-600))}
+  .btn-outline-light{border-color:rgba(255,255,255,.7)}
+  .btn-outline-light:hover{background:#fff;color:var(--primary-700)}
+  .btn-outline-primary{border-color:var(--primary-500);color:var(--primary-600)}
+  .btn-outline-primary:hover{background:var(--primary-600);color:#fff}
+
+  .dm-panel{background:var(--neutral-0);border-radius:22px;border:1px solid var(--neutral-200);box-shadow:var(--shadow-soft);overflow:hidden;display:flex;flex-direction:column;min-height:560px;position:sticky;top:1rem}
+  .dm-header{padding:1rem;border-bottom:1px solid var(--neutral-100);background:linear-gradient(180deg,rgba(23,150,111,.1) 0%,rgba(23,150,111,0) 100%);display:flex;align-items:center;justify-content:space-between;gap:.75rem}
+  .dm-header h3{margin:0;font-size:1rem;font-weight:800;color:var(--neutral-700)}
+  .dm-header-sub{font-size:.79rem;color:var(--neutral-400)}
+  .dm-back-btn{display:inline-flex;align-items:center;gap:.35rem;border:1px solid var(--neutral-200);border-radius:999px;padding:.42rem .72rem;color:var(--neutral-700);background:#fff;font-weight:700;font-size:.8rem;text-decoration:none}
+  .dm-back-btn:hover{text-decoration:none;background:var(--neutral-50);color:var(--neutral-700)}
+  .dm-search{display:flex;align-items:center;gap:.35rem;border:1px solid var(--neutral-200);background:var(--neutral-50);border-radius:999px;padding:.3rem .66rem}
+  .dm-search input{border:none;background:transparent;outline:none;width:110px;color:var(--neutral-700);font-size:.82rem}
+  .dm-list{flex:1;overflow-y:auto;max-height:410px}
+  .dm-item{display:grid;grid-template-columns:1fr auto;gap:.65rem;padding:.8rem .9rem;border-bottom:1px solid var(--neutral-100);text-decoration:none;color:inherit;transition:background .2s ease,border-color .2s ease}
+  .dm-item:hover{background:var(--accent-100);border-color:#dce8ff}
+  .dm-item-name{display:block;font-weight:800;color:var(--neutral-700)}
+  .dm-item-preview{display:block;margin-top:.2rem;color:var(--neutral-400);font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:210px}
+  .dm-item-time{font-size:.72rem;color:var(--neutral-400)}
+  .dm-badge{min-width:20px;height:20px;border-radius:999px;background:var(--primary-500);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800}
+  .dm-chat{display:flex;flex-direction:column;flex:1;background:#f9fcfb}
+  .dm-thread{padding:.95rem;flex:1;overflow-y:auto;max-height:390px}
+  .dm-bubble{max-width:80%;padding:.62rem .86rem;border-radius:14px;margin-bottom:.55rem;background:#fff;color:var(--neutral-700);box-shadow:0 8px 20px rgba(33,48,56,.08);font-size:.88rem}
+  .dm-bubble.me{margin-left:auto;background:var(--primary-700);color:#fff}
+  .dm-bubble small{display:block;margin-top:.25rem;opacity:.72;font-size:.71rem}
+  .dm-input{border-top:1px solid var(--neutral-100);padding:.7rem .9rem;display:flex;gap:.55rem;background:#fff}
+  .dm-input input{flex:1;border:1px solid var(--neutral-200);border-radius:999px;padding:.5rem .85rem;font-size:.87rem}
+  .dm-input input:focus{border-color:var(--accent-500);box-shadow:0 0 0 3px rgba(45,108,223,.15)}
+  .dm-input button,.dm-start-btn{border:1px solid var(--primary-600);background:var(--primary-600);color:#fff;border-radius:999px;padding:.42rem .86rem;font-size:.8rem;font-weight:700;transition:all .2s ease}
+  .dm-input button:hover,.dm-start-btn:hover{background:var(--primary-700);border-color:var(--primary-700)}
+  .dm-user-list{padding:.72rem .9rem .9rem;border-top:1px dashed var(--neutral-200);max-height:210px;overflow-y:auto}
+  .dm-user-list-title{margin:0 0 .5rem;font-size:.82rem;color:var(--neutral-400);font-weight:800}
+  .dm-user-item{display:flex;align-items:center;justify-content:space-between;gap:.65rem;padding:.52rem 0;border-bottom:1px solid var(--neutral-100)}
+  .dm-user-item:last-child{border-bottom:none}
+
+  .offline-card,.form-panel,.cta-box,.feed-card{background:var(--neutral-0);border-radius:var(--radius-lg);border:1px solid var(--neutral-200);box-shadow:var(--shadow-soft)}
+  .offline-card{padding:1.2rem}
+  .offline-title{margin:0 0 .45rem;font-weight:800;color:var(--neutral-700)}
+  .form-panel{padding:1.2rem;display:none}
+  .form-panel.active{display:block}
+  .section-title{font-weight:800;margin:0 0 .8rem;color:var(--neutral-700)}
+  .section-subtitle{margin:0;color:var(--neutral-400);font-size:.92rem}
+  #express-form-panel.form-panel{
+    padding:1.35rem 1.35rem 1.2rem;
+    border-color:#d5e2de;
+    background:linear-gradient(180deg,#ffffff 0%,#fbfefd 100%);
+  }
+  .post-create-form{
+    margin-top:1rem;
+    display:grid;
+    gap:1.05rem;
+  }
+  .post-field{
+    display:grid;
+    gap:.42rem;
+  }
+  .post-label{
+    margin:0;
+    font-weight:700;
+    font-size:.92rem;
+    color:var(--neutral-700);
+    letter-spacing:.01em;
+  }
+  .post-input{
+    border:1px solid #d4e3df!important;
+    border-radius:12px!important;
+    min-height:48px;
+    background:#fdfefe;
+    color:var(--neutral-700);
+    font-size:.94rem;
+    padding:.72rem .82rem!important;
+    transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+  .post-input:hover{
+    border-color:#bed2cc!important;
+    background:#fff;
+  }
+  .post-input:focus{
+    border-color:var(--accent-500)!important;
+    box-shadow:0 0 0 4px rgba(45,108,223,.14)!important;
+    background:#fff;
+  }
+  .post-input::placeholder{color:#8a9b95}
+  textarea.post-textarea{
+    min-height:180px;
+    resize:vertical;
+    line-height:1.55;
+  }
+  textarea.post-excerpt{
+    min-height:104px;
+    resize:vertical;
+  }
+  .post-file-wrap{
+    border:1px dashed #c6d8d2;
+    border-radius:14px;
+    padding:.72rem .78rem;
+    background:#f8fcfb;
+  }
+  .post-file-input{
+    border:none!important;
+    background:transparent!important;
+    min-height:auto;
+    padding:0!important;
+    box-shadow:none!important;
+  }
+  .post-file-help{
+    margin:.44rem 0 0;
+    font-size:.78rem;
+    color:#6d7f78;
+  }
+  .post-submit-btn{
+    justify-self:start;
+    min-width:128px;
+    padding:.65rem 1.05rem!important;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    font-size:.78rem!important;
+    border-radius:999px!important;
+    box-shadow:0 12px 24px rgba(13,100,74,.22);
+  }
+  .post-submit-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 16px 26px rgba(13,100,74,.28);
+  }
+
+  .feed-header{display:flex;align-items:center;justify-content:space-between;gap:.9rem;margin-top:.2rem}
+  .feed-title{margin:0;font-size:1.6rem;font-weight:800;color:var(--neutral-700)}
+  .feed-sort{display:inline-flex;align-items:center;gap:.55rem;border:1px solid var(--neutral-200);border-radius:999px;padding:.42rem .68rem;background:#fff}
+  .feed-sort label{font-weight:700;color:var(--neutral-400)}
+  .feed-sort select{border:1px solid var(--neutral-200);border-radius:999px;padding:.3rem .72rem;font-weight:700;background:var(--neutral-50);color:var(--neutral-700);outline:none}
+  .feed-sort select:focus{border-color:var(--accent-500)}
+  .feed-wrap{display:grid;gap:1rem}
+  .feed-card{padding:1.1rem 1.15rem;transition:transform .2s ease,box-shadow .2s ease}
+  .feed-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+  .post-top{display:flex;align-items:center;justify-content:space-between;gap:.8rem}
+  .user-row{display:flex;align-items:center;gap:.68rem}
+  .avatar-chip{width:44px;height:44px;border-radius:14px;background:linear-gradient(130deg,var(--primary-700),var(--primary-500));color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+  .post-meta-name{color:var(--neutral-700);font-weight:800}
+  .post-meta-date{color:var(--neutral-400);font-size:.82rem}
+  .post-tags{display:flex;gap:.45rem;flex-wrap:wrap;margin:.75rem 0 .62rem}
+  .role-badge,.category-pill,.trending-badge{display:inline-flex;align-items:center;gap:.28rem;border-radius:999px;padding:.24rem .62rem;font-size:.72rem;font-weight:700}
+  .category-pill{background:#eaf8f3;color:var(--primary-700);border:1px solid #cfece1}
+  .role-badge{background:#ecf6ff;color:#1f4e9f;border:1px solid #d8e8ff}
+  .trending-badge{background:#fff4e8;color:#ad5c00;border:1px solid #ffe2bf}
+  .post-title{margin:0 0 .4rem;font-size:1.18rem;font-weight:800;line-height:1.35;color:var(--neutral-700)}
+  .post-preview{margin:0;color:var(--neutral-400);line-height:1.68;font-size:.95rem}
+  .post-preview.expanded{color:var(--neutral-700)}
+  .link-btn{border:none;background:none;padding:0;color:var(--accent-500);font-weight:700}
+  .link-btn:hover{text-decoration:underline}
+  .feed-image{width:100%;border-radius:var(--radius-md);margin:.72rem 0 .52rem;max-height:340px;object-fit:cover}
+  .image-holder.no-image{color:var(--primary-700);background:#ecf7f4;border:1px dashed #c9e3db;height:200px;display:flex;align-items:center;justify-content:center}
+  .post-actions{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+  .post-actions form{margin:0}
+  .post-action-btn{border:1px solid var(--neutral-200)!important;background:#fff!important;color:var(--neutral-700)!important;border-radius:999px!important;padding:.42rem .84rem!important;font-size:.82rem!important;font-weight:700!important;display:inline-flex;align-items:center;gap:.36rem;transition:all .2s ease}
+  .post-action-btn:hover{background:var(--neutral-50)!important;border-color:#c9d8d4!important;transform:translateY(-1px)}
+  .post-action-btn.like-btn.is-active{border-color:#f5beca!important;background:var(--danger-100)!important;color:var(--danger-500)!important}
+  .post-action-btn.repost-btn.is-active{border-color:#bcd7ff!important;background:var(--accent-100)!important;color:var(--accent-500)!important}
+  .comment-toggle-btn:hover{background:#f3f7ff!important}
+  .summarize-btn{border:1px solid #d6e4ff!important;background:#f3f7ff!important;color:#264a9b!important}
+  .summarize-btn:hover{background:#e6efff!important;border-color:#bfd6ff!important}
+  .summary-panel{
+    margin-top:.7rem;
+    border-radius:14px;
+    border:1px solid var(--neutral-200);
+    background:#f9fbff;
+    padding:.65rem .8rem;
+    font-size:.88rem;
+    color:var(--neutral-700);
+    display:none;
+  }
+  .summary-panel.show{display:block}
+  .summary-status{color:var(--neutral-400);font-size:.8rem;margin-bottom:.4rem}
+  .interaction-counts{margin-top:.6rem;display:flex;gap:.82rem;flex-wrap:wrap;color:var(--neutral-400);font-size:.83rem;font-weight:700}
+  .comment-form{margin-top:.72rem}
+  .comment-list{margin-top:.68rem;list-style:none;border:1px solid var(--neutral-100);background:var(--neutral-50);border-radius:var(--radius-md);padding:.44rem .75rem}
+  .comment-item{padding:.42rem 0;border-bottom:1px solid #e8efed}
+  .comment-item:last-child{border-bottom:none}
+  .comment-author{font-weight:700;color:var(--neutral-700)}
+  .comment-text{color:#4b5a55}
+  .comments-link{display:block;margin-top:.64rem;text-align:left;color:var(--neutral-400)}
+
+  .cta-box{padding:1.2rem}
+  .cta-box p{margin:0 0 .7rem;color:var(--neutral-400)}
+
+  .floating-create-btn{position:fixed;right:20px;bottom:22px;z-index:1050;border:0;border-radius:999px;padding:.72rem 1rem;background:linear-gradient(130deg,var(--primary-700),var(--primary-500));color:#fff;font-weight:800;box-shadow:0 16px 28px rgba(13,100,74,.34)}
+  .floating-create-btn:hover{transform:translateY(-1px)}
+
+  @media (max-width:1180px){.explore-layout{grid-template-columns:1fr}.dm-panel{position:relative;top:auto;min-height:520px}}
+  @media (max-width:920px){.hero-horizontal{grid-template-columns:1fr}.image-holder{height:220px}.feed-header{flex-direction:column;align-items:flex-start}}
+  @media (max-width:768px){.explore-hero{padding:1.2rem 1rem}.hero-logo-badge{display:none}.feed-card{padding:.95rem}.post-actions{gap:.42rem}.post-action-btn{padding:.4rem .7rem!important}.floating-create-btn{left:14px;right:14px;display:flex;justify-content:center}}
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="container-fluid py-5">
+  <div class="explore-shell">
+    <div class="explore-layout">
+      <div class="feed-column">
+        <div class="explore-hero">
+          <div class="hero-logo-badge"><img src="{{ asset('images/logo.png') }}" alt="Fitopia logo"></div>
+          <div class="hero-horizontal">
+            <div>
+              <h2>Fitopia Community: Learn Faster, Grow Together</h2>
+              <p>Share your progress, ask better questions, and get real feedback from a motivated health-focused community.</p>
+              <ul class="hero-points">
+                <li>Ask questions and receive practical answers from members and coaches.</li>
+                <li>Turn your small wins into motivation for others.</li>
+                <li>Build momentum through forums, feed interactions, and direct messages.</li>
+              </ul>
+            </div>
+            <div>
+              <div class="image-holder"><img src="{{ asset('images/forum.png') }}" alt="Forum inspiration" style="width:100%;height:100%;object-fit:cover;border-radius:14px;"></div>
+              <div class="hero-actions-inline">
+                <button class="btn btn-primary" id="btn-express">Express Yourself Now</button>
+                <button class="btn btn-outline-light" id="btn-my-posts">My posts</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% if not app.user %}
+          <div class="offline-card">
+            <h4 class="offline-title">You are offline</h4>
+            <p>Please connect first to explore and share with the Fitopia community.</p>
+            <div class="hero-actions-inline">
+              <a href="{{ path('app_login') }}" class="btn btn-primary">Sign in</a>
+              <a href="{{ path('app_register') }}" class="btn btn-outline-primary">Don't have an account? Register now for free</a>
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="form-panel" id="express-form-panel">
+          <h3 class="section-title">Share your post</h3>
+          <p class="section-subtitle">Post your progress, a question, or a helpful tip for the community.</p>
+          {{ form_start(blogForm, {'attr': {'class': 'post-create-form'}}) }}
+            <div class="post-field">
+              {{ form_label(blogForm.title, null, {'label_attr': {'class': 'post-label'}}) }}
+              {{ form_widget(blogForm.title, {'attr': {'class': 'form-control post-input', 'placeholder': 'Give your post a clear title'}}) }}
+            </div>
+            <div class="post-field">
+              {{ form_label(blogForm.content, null, {'label_attr': {'class': 'post-label'}}) }}
+              {{ form_widget(blogForm.content, {'attr': {'class': 'form-control post-input post-textarea', 'rows': 7, 'placeholder': 'Share details, context, and what you learned...'}}) }}
+            </div>
+            <div class="post-field">
+              {{ form_label(blogForm.excerpt, null, {'label_attr': {'class': 'post-label'}}) }}
+              {{ form_widget(blogForm.excerpt, {'attr': {'class': 'form-control post-input post-excerpt', 'rows': 4, 'placeholder': 'Write a short summary for the feed preview'}}) }}
+            </div>
+            <div class="post-field">
+              {{ form_label(blogForm.category, null, {'label_attr': {'class': 'post-label'}}) }}
+              {{ form_widget(blogForm.category, {'attr': {'class': 'form-control post-input'}}) }}
+            </div>
+            <div class="post-field">
+              {{ form_label(blogForm.featuredImageFile, 'Featured image', {'label_attr': {'class': 'post-label'}}) }}
+              <div class="post-file-wrap">
+                {{ form_widget(blogForm.featuredImageFile, {'attr': {'class': 'form-control post-file-input'}}) }}
+                <p class="post-file-help">PNG, JPG, or WEBP. A clear image gets more engagement.</p>
+              </div>
+            </div>
+            <button class="btn btn-primary post-submit-btn">Publish</button>
+          {{ form_end(blogForm) }}
+        </div>
+
+        <div class="form-panel" id="my-posts-panel">
+          <h3 class="section-title">My Posts</h3>
+          {% if app.user is not defined or not app.user %}
+            <p>Please login to see your posts.</p>
+          {% else %}
+            {% if userPosts is empty %}
+              <p>You have not any post. Let's start our first post.</p>
+              <button class="btn btn-primary" id="btn-open-form">Create first post</button>
+            {% else %}
+              {% for p in userPosts %}
+                <div class="feed-card mt-2">
+                  <strong>{{ p.title }}</strong>
+                  <div class="post-meta-date mt-1">{{ p.createdAt|date('Y-m-d') }}</div>
+                  {% if p.featuredImage %}<img src="{{ asset('uploads/blog/' ~ p.featuredImage) }}" alt="Post image" class="feed-image">{% endif %}
+                  <p class="post-preview">{{ p.excerpt }}</p>
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endif %}
+        </div>
+
+        <div class="feed-header">
+          <h3 class="feed-title">Explore Feed</h3>
+          <div class="feed-sort">
+            <i class="fa fa-filter" aria-hidden="true"></i>
+            <label for="feed-sort" class="mb-0">Sort by</label>
+            <select id="feed-sort"><option value="newest">Newest</option><option value="liked">Most Liked</option><option value="commented">Most Commented</option><option value="trending">Trending</option></select>
+          </div>
+        </div>
+
+        <div class="feed-wrap" id="feed-wrap">
+          {% if items is empty %}
+            <div class="feed-card"><p>No posts yet. Be the first to share your experience.</p></div>
+          {% else %}
+            {% for item in items %}
+              <div class="feed-card" data-post-date="{{ item.date }}" data-likes="{{ item.likes.count }}" data-comments="{{ item.comments.count }}" data-trending="{{ loop.first ? 1 : 0 }}">
+                <div class="post-top">
+                  <div class="user-row">
+                    <div class="avatar-chip">{{ item.email ? item.email|slice(0,1)|upper : 'U' }}</div>
+                    <div>
+                      <div class="post-meta-name">{{ item.email ?: 'Fitopia member' }}</div>
+                      <div class="post-meta-date">{{ item.date }}</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="post-tags">
+                  {% if item.category %}<span class="category-pill">{{ item.category }}</span>{% endif %}
+                  <span class="role-badge"><i class="fa fa-id-badge"></i> {{ item.role }}</span>
+                  {% if loop.first %}<span class="trending-badge"><i class="fa fa-fire"></i> Trending</span>{% endif %}
+                </div>
+                <h4 class="post-title">{{ item.title }}</h4>
+                <p class="post-preview">{{ item.excerpt ? item.excerpt : 'No preview available yet.' }}</p>
+                <div class="post-content" style="display:none;">{{ item.content|default('')|e|nl2br }}</div>
+                <button class="link-btn js-read-more" type="button">Read more</button>
+                {% if item.image %}
+                  <img src="{{ asset('uploads/blog/' ~ item.image) }}" alt="Post image" class="feed-image">
+                {% else %}
+                  <div class="image-holder no-image">No image</div>
+                {% endif %}
+                <div class="post-actions">
+                  <form method="post" action="{{ path('explore_interact', {'id': item.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('interact_like_' ~ item.id) }}"><input type="hidden" name="type" value="like">
+                    <button class="btn btn-sm post-action-btn like-btn{% if item.likedByMe %} is-active{% endif %}" type="submit"><i class="fa fa-heart"></i> Like</button>
+                  </form>
+                  <button class="btn btn-sm post-action-btn comment-toggle-btn js-toggle-comment" type="button" data-post-id="{{ item.id }}"><i class="fa fa-comment"></i> Comment</button>
+                  <form method="post" action="{{ path('explore_interact', {'id': item.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('interact_repost_' ~ item.id) }}"><input type="hidden" name="type" value="repost">
+                    <button class="btn btn-sm post-action-btn repost-btn{% if item.repostedByMe %} is-active{% endif %}" type="submit"><i class="fa fa-retweet"></i> Repost</button>
+                  </form>
+                  <button
+                    class="btn btn-sm post-action-btn summarize-btn js-summarize"
+                    type="button"
+                    data-post-id="{{ item.id }}"
+                    data-url="{{ path('explore_summarize', {'id': item.id}) }}"
+                    data-token="{{ csrf_token('explore_summarize_' ~ item.id) }}"
+                  >
+                    <i class="fa fa-magic"></i> Summarize with AI
+                  </button>
+                </div>
+                <div class="interaction-counts"><span><i class="fa fa-heart"></i> {{ item.likes.count }} likes</span><span><i class="fa fa-comment"></i> {{ item.comments.count }} comments</span><span><i class="fa fa-retweet"></i> {{ item.reposts.count }} reposts</span></div>
+                <div class="summary-panel" id="summary-{{ item.id }}">
+                  <div class="summary-status" id="summary-status-{{ item.id }}"></div>
+                  <div class="summary-text" id="summary-text-{{ item.id }}"></div>
+                </div>
+                <div class="comment-form" id="comment-form-{{ item.id }}" style="display:none;">
+                  <form method="post" action="{{ path('explore_interact', {'id': item.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('interact_comment_' ~ item.id) }}"><input type="hidden" name="type" value="comment">
+                    <textarea name="comment_text" class="form-control mb-2" rows="2" placeholder="Write your comment..."></textarea>
+                    <button class="btn btn-primary btn-sm" type="submit">Post comment</button>
+                  </form>
+                </div>
+                <button class="link-btn comments-link js-toggle-comments" type="button" data-post-id="{{ item.id }}">View all {{ item.comments.count }} comments</button>
+                <ul class="comment-list" id="comment-list-{{ item.id }}" style="display:none;">
+                  {% for c in item.comments.items|slice(0,5) %}
+                    <li class="comment-item"><div class="comment-author">{{ c.user }}</div><div class="comment-text">{{ c.text }}</div><small class="text-muted">{{ c.date }}</small></li>
+                  {% else %}
+                    <li class="comment-item text-muted">No comments yet.</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <h3 class="section-title">Share your story</h3>
+        <div class="cta-box">
+          <p>Your voice matters. Share a question, a tip, or a win to inspire the community.</p>
+          {% if app.user %}<a href="{{ path('app_profile') }}" class="btn btn-primary">My profile</a>{% else %}<a href="{{ path('app_register') }}" class="btn btn-primary">Join Fitopia</a>{% endif %}
+        </div>
+      </div>
+
+      <aside class="dm-panel">
+        {% if app.user and dmSelectedConversation %}
+          <div class="dm-header">
+            <div>
+              <h3><i class="fa fa-commenting"></i> {{ dmOtherName ?: 'Conversation' }}</h3>
+              <div class="dm-header-sub">{{ dmStatusLine ?: 'Direct message' }}</div>
+            </div>
+            <a class="dm-back-btn" href="{{ path('explore_forums_blogs') }}"><i class="fa fa-arrow-left"></i> Back to list</a>
+          </div>
+          <div class="dm-chat">
+            <div class="dm-thread">
+              {% for m in dmMessages %}
+                <div class="dm-bubble {% if m.sender.id == app.user.id %}me{% endif %}">
+                  {{ m.body }}
+                  <small>{{ m.createdAt|date('H:i') }}{% if m.sender.id == app.user.id %} &middot; {{ m.status|capitalize }}{% endif %}</small>
+                </div>
+              {% else %}
+                <div class="text-muted">Say hello to start the conversation.</div>
+              {% endfor %}
+              <div id="dm-typing-indicator" class="text-muted" style="display:none;margin-top:.5rem;">Typing...</div>
+            </div>
+            <form class="dm-input" method="post" action="{{ path('explore_dm_send', {'id': dmSelectedConversation.id}) }}" enctype="multipart/form-data">
+              <input type="text" name="body" placeholder="Write a message..." id="dm-input-field" autocomplete="off">
+              <button type="submit">Send</button>
+            </form>
+          </div>
+        {% else %}
+          <div class="dm-header">
+            <div>
+              <h3><i class="fa fa-commenting"></i> Direct Messages</h3>
+              <div class="dm-header-sub">Select a conversation to open it in full view.</div>
+            </div>
+            <div class="dm-search"><i class="fa fa-search"></i><input type="text" placeholder="Search" id="dm-search-input" aria-label="Search conversations"></div>
+          </div>
+          <div class="dm-list" id="dm-conversation-list">
+            {% for conv in dmConversationItems %}
+              <a class="dm-item" href="{{ path('explore_forums_blogs', {'dm': conv.id}) }}" data-user="{{ conv.displayName }}">
+                <div>
+                  <span class="dm-item-name">{{ conv.displayName }}</span>
+                  <span class="dm-item-preview">{{ dmLastMessage[conv.id]|default('No messages yet') }}</span>
+                </div>
+                <div class="d-flex flex-column align-items-end" style="gap:.28rem;">
+                  <span class="dm-item-time">{{ dmLastMessageTime[conv.id]|default('') }}</span>
+                  {% if dmUnreadCounts[conv.id]|default(0) > 0 %}<span class="dm-badge">{{ dmUnreadCounts[conv.id] }}</span>{% endif %}
+                </div>
+              </a>
+            {% else %}
+              <div class="p-3 text-muted">No conversations yet. Start one below.</div>
+            {% endfor %}
+          </div>
+          <div class="dm-user-list">
+            <p class="dm-user-list-title">Start a new chat</p>
+            {% for u in dmUsers|slice(0,4) %}
+              <div class="dm-user-item">
+                <div><strong>{{ (u.firstName ~ ' ' ~ u.lastName)|trim ?: u.email }}</strong><div class="text-muted">{{ u.email }}</div></div>
+                <form method="post" action="{{ path('explore_dm_start', {'id': u.id}) }}"><button class="dm-start-btn" type="submit">Message</button></form>
+              </div>
+            {% else %}
+              <div class="text-muted">No users available right now.</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </aside>
+    </div>
+    {% if app.user %}<button type="button" class="floating-create-btn" id="floating-create-post"><i class="fa fa-plus-circle"></i> Create Post</button>{% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block javascripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const expressBtn = document.getElementById('btn-express');
+    const myPostsBtn = document.getElementById('btn-my-posts');
+    const openFormBtn = document.getElementById('btn-open-form');
+    const floatingCreateBtn = document.getElementById('floating-create-post');
+    const expressPanel = document.getElementById('express-form-panel');
+    const myPostsPanel = document.getElementById('my-posts-panel');
+
+    const show = (panel) => {
+      if (!panel) {
+        return;
+      }
+
+      expressPanel.classList.remove('active');
+      myPostsPanel.classList.remove('active');
+      panel.classList.add('active');
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    expressBtn && expressBtn.addEventListener('click', () => show(expressPanel));
+    myPostsBtn && myPostsBtn.addEventListener('click', () => show(myPostsPanel));
+    openFormBtn && openFormBtn.addEventListener('click', () => show(expressPanel));
+    floatingCreateBtn && floatingCreateBtn.addEventListener('click', () => show(expressPanel));
+
+    document.querySelectorAll('.js-read-more').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const card = btn.closest('.feed-card');
+        const preview = card?.querySelector('.post-preview');
+        const content = card?.querySelector('.post-content');
+        if (!preview || !content) {
+          return;
+        }
+
+        const expanded = preview.classList.toggle('expanded');
+        content.style.display = expanded ? 'block' : 'none';
+        btn.textContent = expanded ? 'Show less' : 'Read more';
+      });
+    });
+
+    document.querySelectorAll('.js-toggle-comments').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-post-id');
+        const list = document.getElementById('comment-list-' + id);
+        if (!list) {
+          return;
+        }
+
+        const hidden = list.style.display === 'none' || list.style.display === '';
+        list.style.display = hidden ? 'block' : 'none';
+        btn.textContent = hidden ? 'Hide comments' : 'View all comments';
+      });
+    });
+
+    document.querySelectorAll('.js-toggle-comment').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-post-id');
+        const form = document.getElementById('comment-form-' + id);
+        if (!form) {
+          return;
+        }
+
+        const hidden = form.style.display === 'none' || form.style.display === '';
+        form.style.display = hidden ? 'block' : 'none';
+      });
+    });
+
+    document.querySelectorAll('.js-summarize').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const postId = btn.getAttribute('data-post-id');
+        const url = btn.getAttribute('data-url');
+        const token = btn.getAttribute('data-token');
+        const panel = document.getElementById('summary-' + postId);
+        const statusEl = document.getElementById('summary-status-' + postId);
+        const textEl = document.getElementById('summary-text-' + postId);
+
+        if (!url || !token || !panel || !statusEl || !textEl) {
+          return;
+        }
+
+        if (panel.classList.contains('show') && textEl.textContent.trim() !== '') {
+          panel.classList.remove('show');
+          return;
+        }
+
+        panel.classList.add('show');
+        statusEl.textContent = 'Summarizing...';
+        textEl.textContent = '';
+        btn.disabled = true;
+
+        try {
+          const form = new FormData();
+          form.append('_token', token);
+
+          const resp = await fetch(url, {
+            method: 'POST',
+            body: form,
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'Accept': 'application/json'
+            }
+          });
+
+          const raw = await resp.text();
+          let data = null;
+          try {
+            data = JSON.parse(raw);
+          } catch (_) {
+            throw new Error('Invalid response (HTTP ' + resp.status + ').');
+          }
+
+          if (!resp.ok || data.error) {
+            throw new Error(data.error || ('HTTP ' + resp.status));
+          }
+
+          const sourceLabel = data.source === 'fallback' ? 'Quick summary' : 'AI summary';
+          statusEl.textContent = sourceLabel;
+          textEl.textContent = data.summary || '';
+        } catch (err) {
+          statusEl.textContent = 'Summary failed';
+          textEl.textContent = err.message || 'Unknown error';
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    });
+
+    const dmSearchInput = document.getElementById('dm-search-input');
+    if (dmSearchInput) {
+      dmSearchInput.addEventListener('input', () => {
+        const q = dmSearchInput.value.trim().toLowerCase();
+        document.querySelectorAll('#dm-conversation-list .dm-item').forEach((item) => {
+          const name = (item.getAttribute('data-user') || '').toLowerCase();
+          item.style.display = name.includes(q) ? 'grid' : 'none';
+        });
+      });
+    }
+
+    const feedSort = document.getElementById('feed-sort');
+    const feedWrap = document.getElementById('feed-wrap');
+    if (feedSort && feedWrap) {
+      feedSort.addEventListener('change', () => {
+        const cards = Array.from(feedWrap.querySelectorAll('.feed-card[data-post-date]'));
+        const mode = feedSort.value;
+        const parseDate = (v) => {
+          const d = new Date(v);
+          return Number.isNaN(d.getTime()) ? 0 : d.getTime();
+        };
+
+        cards.sort((a, b) => {
+          const likesA = Number(a.dataset.likes || 0);
+          const likesB = Number(b.dataset.likes || 0);
+          const commentsA = Number(a.dataset.comments || 0);
+          const commentsB = Number(b.dataset.comments || 0);
+          const trendA = Number(a.dataset.trending || 0);
+          const trendB = Number(b.dataset.trending || 0);
+          const dateA = parseDate(a.dataset.postDate || '');
+          const dateB = parseDate(b.dataset.postDate || '');
+
+          if (mode === 'liked') {
+            return likesB - likesA;
+          }
+          if (mode === 'commented') {
+            return commentsB - commentsA;
+          }
+          if (mode === 'trending') {
+            return trendB - trendA || (likesB + commentsB) - (likesA + commentsA);
+          }
+          return dateB - dateA;
+        });
+
+        cards.forEach((card) => feedWrap.appendChild(card));
+      });
+    }
+  });
+</script>
+{% endblock %}

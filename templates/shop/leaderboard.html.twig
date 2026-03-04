@@ -1,0 +1,517 @@
+{% extends 'shop/base.html.twig' %}
+
+{% block title %}Monthly XP Leaderboard | Fitopia{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;500;700;800&display=swap');
+
+    :root {
+      --lb-bg: #f2f7fb;
+      --lb-card: #ffffff;
+      --lb-line: #dbe7f0;
+      --lb-text: #113247;
+      --lb-muted: #5f7a8b;
+      --lb-brand: #0f7a61;
+      --lb-brand-deep: #0b3a3d;
+      --lb-gold: #c08a00;
+      --lb-silver: #617489;
+      --lb-bronze: #8a5533;
+    }
+
+    .lb-page {
+      min-height: 72vh;
+      background:
+        radial-gradient(circle at 86% 10%, rgba(18, 124, 98, 0.14), transparent 32%),
+        radial-gradient(circle at 12% 90%, rgba(11, 58, 61, 0.12), transparent 30%),
+        var(--lb-bg);
+      padding: 34px 0 58px;
+      font-family: 'Manrope', sans-serif;
+      color: var(--lb-text);
+    }
+
+    .lb-hero {
+      background:
+        linear-gradient(130deg, rgba(9, 48, 71, 0.96), rgba(13, 114, 93, 0.92)),
+        repeating-linear-gradient(
+          -30deg,
+          rgba(255, 255, 255, 0.045),
+          rgba(255, 255, 255, 0.045) 16px,
+          rgba(255, 255, 255, 0.01) 16px,
+          rgba(255, 255, 255, 0.01) 30px
+        );
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 24px;
+      color: #f6fcff;
+      padding: 26px;
+      box-shadow: 0 22px 52px rgba(9, 34, 46, 0.26);
+      margin-bottom: 18px;
+    }
+
+    .lb-eyebrow {
+      margin: 0;
+      font-size: 11px;
+      letter-spacing: 0.19em;
+      text-transform: uppercase;
+      opacity: 0.9;
+      font-weight: 700;
+    }
+
+    .lb-title {
+      margin: 6px 0 8px;
+      font-size: clamp(1.8rem, 2.6vw, 2.7rem);
+      line-height: 1.04;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+    }
+
+    .lb-subtitle {
+      margin: 0;
+      color: rgba(236, 248, 253, 0.93);
+      max-width: 760px;
+    }
+
+    .lb-controls {
+      margin-top: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .lb-month-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      border-radius: 999px;
+      padding: 8px 13px;
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .lb-controls form {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .lb-controls input[type="month"] {
+      border: 1px solid rgba(255, 255, 255, 0.34);
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      padding: 7px 10px;
+      font-weight: 600;
+      min-width: 170px;
+    }
+
+    .lb-controls button {
+      border: 0;
+      border-radius: 11px;
+      padding: 8px 14px;
+      background: #ffffff;
+      color: #0f4460;
+      font-weight: 800;
+    }
+
+    .lb-winner {
+      background: var(--lb-card);
+      border: 1px solid var(--lb-line);
+      border-radius: 18px;
+      padding: 15px;
+      box-shadow: 0 12px 34px rgba(17, 50, 71, 0.1);
+      margin-bottom: 14px;
+    }
+
+    .lb-winner h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .lb-winner-grid {
+      margin-top: 9px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 8px;
+    }
+
+    .lb-winner-chip {
+      border: 1px solid #e2edf5;
+      background: #f8fbfe;
+      border-radius: 11px;
+      padding: 8px 9px;
+    }
+
+    .lb-winner-chip .k {
+      margin: 0;
+      font-size: 0.67rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--lb-muted);
+      font-weight: 700;
+    }
+
+    .lb-winner-chip .v {
+      margin: 2px 0 0;
+      font-size: 1rem;
+      font-weight: 800;
+      color: #123347;
+    }
+
+    .lb-empty {
+      background: #fff;
+      border: 1px dashed #bfd2e1;
+      border-radius: 16px;
+      padding: 22px;
+      color: var(--lb-muted);
+    }
+
+    .lb-podium {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .lb-podium-card {
+      border-radius: 16px;
+      padding: 12px;
+      color: #fff;
+      box-shadow: 0 14px 30px rgba(18, 50, 71, 0.2);
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .lb-podium-card.rank-1 {
+      background: linear-gradient(140deg, #0f7a61, #0a3f50);
+    }
+
+    .lb-podium-card.rank-2 {
+      background: linear-gradient(140deg, #7f8fa3, #495b73);
+    }
+
+    .lb-podium-card.rank-3 {
+      background: linear-gradient(140deg, #a06a45, #714626);
+    }
+
+    .lb-rank-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 800;
+      opacity: 0.93;
+    }
+
+    .lb-podium-name {
+      margin: 8px 0 2px;
+      font-size: 1.15rem;
+      line-height: 1.1;
+      font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .lb-podium-user {
+      margin: 0;
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    .lb-podium-xp {
+      margin: 0;
+      font-size: 1.55rem;
+      line-height: 1;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+    }
+
+    .lb-table-wrap {
+      background: #fff;
+      border: 1px solid var(--lb-line);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 12px 32px rgba(18, 50, 71, 0.1);
+    }
+
+    .lb-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    .lb-table thead th {
+      background: #eef4f9;
+      color: #2d4b5f;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 11px 10px;
+      border-bottom: 1px solid #dce8f1;
+      font-weight: 800;
+      text-align: left;
+    }
+
+    .lb-table td {
+      padding: 10px;
+      border-bottom: 1px solid #ecf2f7;
+      color: #15374d;
+      vertical-align: middle;
+    }
+
+    .lb-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lb-table tbody tr.current-user {
+      background: #ebfbf5;
+    }
+
+    .lb-rank {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800;
+    }
+
+    .lb-rank.rank-1 { color: var(--lb-gold); }
+    .lb-rank.rank-2 { color: var(--lb-silver); }
+    .lb-rank.rank-3 { color: var(--lb-bronze); }
+
+    .lb-recent {
+      margin-top: 14px;
+      background: #fff;
+      border: 1px solid var(--lb-line);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 12px 30px rgba(18, 50, 71, 0.08);
+    }
+
+    .lb-recent h3 {
+      margin: 0 0 10px;
+      font-size: 1.1rem;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .lb-recent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+      gap: 8px;
+    }
+
+    .lb-recent-card {
+      border: 1px solid #e1ebf3;
+      border-radius: 11px;
+      padding: 9px;
+      background: #f8fbfe;
+    }
+
+    .lb-recent-card .m {
+      margin: 0;
+      color: #567183;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .lb-recent-card .n {
+      margin: 2px 0 0;
+      color: #17394f;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .lb-recent-card .x {
+      margin: 2px 0 0;
+      color: #31556b;
+      font-size: 0.82rem;
+    }
+
+    @media (max-width: 991px) {
+      .lb-podium {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 575px) {
+      .lb-page { padding-top: 24px; }
+      .lb-hero { padding: 19px 16px; }
+      .lb-controls form { width: 100%; }
+      .lb-controls input[type="month"] { flex: 1; min-width: 0; }
+      .lb-controls button { white-space: nowrap; }
+      .lb-table-wrap { overflow-x: auto; }
+      .lb-table { min-width: 740px; }
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+<section class="lb-page">
+  <div class="container">
+    <header class="lb-hero">
+      <p class="lb-eyebrow">Global Ranking</p>
+      <h1 class="lb-title">Monthly Discipline Leaderboard</h1>
+      <p class="lb-subtitle">All users are ranked by XP. Top user of the month wins a free product.</p>
+
+      <div class="lb-controls">
+        <div class="lb-month-label"><i class="fa fa-calendar"></i> {{ monthLabel }}</div>
+        <form method="get" action="{{ path('app_shop_leaderboard') }}">
+          <input type="month" name="month" value="{{ monthKey }}">
+          <button type="submit">Load Month</button>
+        </form>
+      </div>
+    </header>
+
+    {% if winner %}
+      <section class="lb-winner">
+        <h2><i class="fa fa-trophy" style="color:#d4a300;"></i> Official Winner for {{ monthLabel }}</h2>
+        <div class="lb-winner-grid">
+          <div class="lb-winner-chip">
+            <p class="k">Winner</p>
+            <p class="v">{{ winner.user.firstName }} {{ winner.user.lastName }}</p>
+          </div>
+          <div class="lb-winner-chip">
+            <p class="k">XP</p>
+            <p class="v">{{ winner.xp }}</p>
+          </div>
+          <div class="lb-winner-chip">
+            <p class="k">Active Days</p>
+            <p class="v">{{ winner.activeDays }}</p>
+          </div>
+          <div class="lb-winner-chip">
+            <p class="k">Longest Streak</p>
+            <p class="v">{{ winner.longestStreak }} days</p>
+          </div>
+          <div class="lb-winner-chip">
+            <p class="k">Reward Product</p>
+            <p class="v">{{ winner.rewardProductName }}</p>
+          </div>
+        </div>
+      </section>
+    {% elseif entries is not empty %}
+      {% set provisional = entries[0] %}
+      <section class="lb-winner">
+        <h2><i class="fa fa-flag-checkered" style="color:#0f7a61;"></i> Provisional Leader for {{ monthLabel }}</h2>
+        <div class="lb-winner-grid">
+          <div class="lb-winner-chip">
+            <p class="k">Leader</p>
+            <p class="v">{{ provisional.displayName }}</p>
+          </div>
+          <div class="lb-winner-chip">
+            <p class="k">XP</p>
+            <p class="v">{{ provisional.xp }}</p>
+          </div>
+          <div class="lb-winner-chip">
+            <p class="k">Longest Streak</p>
+            <p class="v">{{ provisional.longestStreak }} days</p>
+          </div>
+          <div class="lb-winner-chip">
+            <p class="k">Status</p>
+            <p class="v">Winner not finalized yet</p>
+          </div>
+        </div>
+      </section>
+    {% endif %}
+
+    {% if entries is empty %}
+      <div class="lb-empty">
+        No intake logs were found for this month yet.
+      </div>
+    {% else %}
+      {% set first = entries[0] ?? null %}
+      {% set second = entries[1] ?? null %}
+      {% set third = entries[2] ?? null %}
+
+      <section class="lb-podium">
+        {% if first %}
+          <article class="lb-podium-card rank-1">
+            <div>
+              <div class="lb-rank-badge"><i class="fa fa-trophy"></i> Rank #1</div>
+              <h2 class="lb-podium-name">{{ first.displayName }}</h2>
+              <p class="lb-podium-user">@{{ first.username }}</p>
+            </div>
+            <p class="lb-podium-xp">{{ first.xp }} XP</p>
+          </article>
+        {% endif %}
+
+        {% if second %}
+          <article class="lb-podium-card rank-2">
+            <div>
+              <div class="lb-rank-badge"><i class="fa fa-star"></i> Rank #2</div>
+              <h2 class="lb-podium-name">{{ second.displayName }}</h2>
+              <p class="lb-podium-user">@{{ second.username }}</p>
+            </div>
+            <p class="lb-podium-xp">{{ second.xp }} XP</p>
+          </article>
+        {% endif %}
+
+        {% if third %}
+          <article class="lb-podium-card rank-3">
+            <div>
+              <div class="lb-rank-badge"><i class="fa fa-certificate"></i> Rank #3</div>
+              <h2 class="lb-podium-name">{{ third.displayName }}</h2>
+              <p class="lb-podium-user">@{{ third.username }}</p>
+            </div>
+            <p class="lb-podium-xp">{{ third.xp }} XP</p>
+          </article>
+        {% endif %}
+      </section>
+
+      <section class="lb-table-wrap">
+        <table class="lb-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>User</th>
+              <th>XP</th>
+              <th>Total Intakes</th>
+              <th>Active Days</th>
+              <th>Longest Streak</th>
+              <th>Current Streak</th>
+              <th>Weekly Bonus</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in entries %}
+              <tr class="{% if currentUserId and entry.userId == currentUserId %}current-user{% endif %}">
+                <td class="lb-rank rank-{{ entry.rank <= 3 ? entry.rank : 0 }}">#{{ entry.rank }}</td>
+                <td>
+                  <strong>{{ entry.displayName }}</strong><br>
+                  <span style="color:#5b7688;font-size:12px;">@{{ entry.username }}</span>
+                </td>
+                <td><strong>{{ entry.xp }}</strong></td>
+                <td>{{ entry.totalIntakes }}</td>
+                <td>{{ entry.activeDays }}</td>
+                <td>{{ entry.longestStreak }}d</td>
+                <td>{{ entry.currentStreak }}d</td>
+                <td>+{{ entry.weeklyBonus }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    {% endif %}
+
+    {% if recentWinners is not empty %}
+      <section class="lb-recent">
+        <h3>Recent Winners</h3>
+        <div class="lb-recent-grid">
+          {% for recent in recentWinners %}
+            <article class="lb-recent-card">
+              <p class="m">{{ recent.monthKey }}</p>
+              <p class="n">{{ recent.user.firstName }} {{ recent.user.lastName }}</p>
+              <p class="x">{{ recent.xp }} XP | {{ recent.rewardProductName }}</p>
+            </article>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

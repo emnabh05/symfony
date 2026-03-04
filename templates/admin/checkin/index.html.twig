@@ -1,0 +1,88 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Admin Check-in QR{% endblock %}
+
+{% block body %}
+<h1 class="page-title">Check-in QR</h1>
+
+{% for message in app.flashes('success') %}
+  <div class="alert alert-success">{{ message }}</div>
+{% endfor %}
+{% for message in app.flashes('error') %}
+  <div class="alert alert-danger">{{ message }}</div>
+{% endfor %}
+
+<form method="get" class="mb-4 d-flex gap-2">
+  <input type="text"
+         name="q"
+         class="form-control"
+         placeholder="Rechercher par nom, email, evenement..."
+         value="{{ app.request.get('q') }}">
+  <button class="btn btn-primary">Rechercher</button>
+</form>
+
+{% if isSearchActive %}
+  <div class="mb-3">
+    <span class="badge badge-info">Resultats pour : {{ searchQuery }}</span>
+    <a href="{{ path('admin_checkin_index') }}" class="btn btn-sm btn-outline-secondary ml-2">Reset</a>
+  </div>
+{% endif %}
+
+<div class="card mb-3">
+  <h3>Scanner ou saisir le token</h3>
+  <form method="post" action="{{ path('admin_checkin_index') }}">
+    <input type="hidden" name="_token" value="{{ csrf_token('admin_checkin_search') }}">
+    <div class="mb-3">
+      <label class="form-label" for="token">Token QR</label>
+      <input id="token" name="token" class="form-control" placeholder="Collez le token ici" required>
+    </div>
+    <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i> Verifier</button>
+  </form>
+</div>
+
+<div class="card">
+  <h3>{% if isSearchActive %}Resultats de recherche{% else %}Reservations recentes{% endif %}</h3>
+  {% if recentReservations is empty %}
+    {% if isSearchActive %}
+      <p class="text-muted mb-0">❌ Aucun client trouve.</p>
+    {% else %}
+      <p class="text-muted mb-0">Aucune reservation trouvee.</p>
+    {% endif %}
+  {% else %}
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>Evenement</th>
+            <th>Statut</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for reservation in recentReservations %}
+            <tr>
+              <td>{{ reservation.nomParticipant }}</td>
+              <td>{{ reservation.emailParticipant }}</td>
+              <td>{{ reservation.event ? reservation.event.titre : 'N/A' }}</td>
+              <td>{{ reservation.statut }}</td>
+              <td>{{ reservation.dateReservation|date('Y-m-d H:i') }}</td>
+              <td>
+                {% if reservation.qrToken is not empty %}
+                  <a class="btn btn-sm btn-outline-primary" href="{{ path('admin_checkin_show', {token: reservation.qrToken}) }}">
+                    Ouvrir
+                  </a>
+                {% else %}
+                  <button type="button" class="btn btn-sm btn-outline-secondary" disabled>Ouvrir</button>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

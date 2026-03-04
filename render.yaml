@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: fitopia-app
+    env: php
+    plan: free
+    buildCommand: composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+    startCommand: php -S 0.0.0.0:$PORT -t public
+    envVars:
+      - key: APP_ENV
+        value: prod
+      - key: APP_DEBUG
+        value: "0"
+      - key: APP_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false

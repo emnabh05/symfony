@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirmation invitation | Fitopia{% endblock %}
+
+{% block body %}
+<section class="container py-5">
+  {% for message in app.flashes('success') %}<div class="alert alert-success">{{ message }}</div>{% endfor %}
+  {% for message in app.flashes('error') %}<div class="alert alert-danger">{{ message }}</div>{% endfor %}
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body">
+      <h1 class="h4 mb-3">Invitation liste d attente</h1>
+      {% if not entry %}
+        <div class="alert alert-danger mb-0">Invitation invalide.</div>
+      {% else %}
+        <p class="mb-2"><strong>Evenement:</strong> {{ entry.event ? entry.event.titre : 'N/A' }}</p>
+        <p class="mb-2"><strong>Nom:</strong> {{ entry.nom }}</p>
+        <p class="mb-3"><strong>Expire le:</strong> {{ entry.expiresAt ? entry.expiresAt|date('Y-m-d H:i') : 'N/A' }}</p>
+        <form method="post" action="{{ path('app_waitlist_confirm', {token: token}) }}">
+          <input type="hidden" name="_token" value="{{ csrf_token('waitlist_confirm_' ~ token) }}">
+          <button type="submit" class="btn btn-primary">Confirmer ma place</button>
+          <a class="btn btn-outline-secondary" href="{{ path('events') }}">Retour aux events</a>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

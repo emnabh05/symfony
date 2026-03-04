@@ -1,0 +1,944 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Gestion forum et blog | Fitopia{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+  .agenda-hero {
+    background: linear-gradient(135deg, #0b3a3d 0%, #0d5b50 55%, #0f7a5f 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 18px 50px rgba(14, 30, 37, 0.18);
+    position: relative;
+    overflow: hidden;
+  }
+  .agenda-hero::after {
+    content: "";
+    position: absolute;
+    right: -60px;
+    top: -60px;
+    width: 180px;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+  }
+  .agenda-hero h2 { margin: 0 0 0.4rem; font-weight: 800; }
+  .agenda-hero p { margin: 0; opacity: 0.9; }
+  .hero-stats {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+  .hero-chip {
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 999px;
+    padding: 0.32rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .option-grid {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .option-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 12px 30px rgba(14, 30, 37, 0.08);
+    border: 1px solid #eef2f6;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .option-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(15,122,95,0.05), rgba(11,58,61,0));
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .option-card.selected {
+    border-color: #0f7a5f;
+    box-shadow: 0 0 0 3px rgba(15, 122, 95, 0.15);
+  }
+  .option-card:hover {
+    transform: translateY(-4px);
+    border-color: #d2e5e1;
+    box-shadow: 0 18px 40px rgba(14, 30, 37, 0.14);
+  }
+  .option-card:hover::before {
+    opacity: 1;
+  }
+  .option-card > * { position: relative; z-index: 1; }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 16px;
+    margin: 1.5rem 0 1.1rem;
+  }
+  .stat-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
+    border: 1px solid #e8eef6;
+    box-shadow: 0 10px 24px rgba(14, 30, 37, 0.08);
+  }
+  .stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #6c7a89;
+    font-weight: 700;
+  }
+  .stat-value {
+    margin-top: 6px;
+    font-size: 23px;
+    font-weight: 800;
+    color: #102a43;
+    line-height: 1.15;
+  }
+  .stat-meta {
+    margin-top: 5px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .stats-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    margin-bottom: 1.4rem;
+  }
+  .chart-card, .status-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
+    border: 1px solid #e8eef6;
+    box-shadow: 0 10px 24px rgba(14, 30, 37, 0.06);
+  }
+  .card-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+  .bar-chart {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 10px;
+    align-items: end;
+    height: 190px;
+    margin-top: 14px;
+  }
+  .bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .bar-track {
+    width: 100%;
+    height: 124px;
+    background: #f1f5f9;
+    border-radius: 9px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .bar-fill {
+    width: 100%;
+    background: linear-gradient(180deg, #0f7a5f, #0b3a3d);
+    border-radius: 9px;
+    min-height: 4px;
+  }
+  .bar-label {
+    font-size: 10px;
+    letter-spacing: .08em;
+    color: #64748b;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .bar-value {
+    font-size: 11px;
+    font-weight: 700;
+    color: #102a43;
+  }
+  .status-list {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .75rem;
+    font-size: 13px;
+  }
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    padding: 4px 9px;
+    text-transform: uppercase;
+  }
+  .status-pill.green { background: #dcfce7; color: #166534; }
+  .status-pill.blue { background: #dbeafe; color: #1d4ed8; }
+  .status-pill.teal { background: #ccfbf1; color: #0f766e; }
+  .status-pill.slate { background: #e2e8f0; color: #334155; }
+  .status-divider {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 14px 0 11px;
+  }
+  .option-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: #e6f0ee;
+    color: #0b3a3d;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+  }
+  .panel {
+    margin-top: 2rem;
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.75rem;
+    border: 1px solid #eef2f6;
+    box-shadow: 0 12px 30px rgba(14, 30, 37, 0.08);
+    display: none;
+    transform: translateY(12px);
+    opacity: 0;
+    transition: all 0.25s ease;
+  }
+  .panel.active { display: block; transform: translateY(0); opacity: 1; }
+  .panel h3 {
+    margin-top: 0;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: #0b3a3d;
+  }
+  .panel h3 i {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: #e9f7f2;
+    color: #0f7a5f;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+  }
+  .muted { color: #6b7280; }
+  .form-wrap {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #e6eef6;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 10px 26px rgba(14, 30, 37, 0.07);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+  }
+  .form-wrap:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(14, 30, 37, 0.11);
+  }
+  .form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+  .form-row.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .form-control, .btn { border-radius: 10px; }
+  .form-control {
+    border: 1px solid #d6e0ea;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .form-control:focus {
+    border-color: #0f7a5f;
+    box-shadow: 0 0 0 3px rgba(15, 122, 95, 0.12);
+  }
+  label {
+    font-weight: 700;
+    color: #3a4b5c;
+    font-size: 0.86rem;
+    margin-bottom: 0.2rem;
+  }
+  .btn-primary {
+    background: #0b3a3d;
+    border-color: #0b3a3d;
+    font-weight: 700;
+    box-shadow: 0 6px 16px rgba(11, 58, 61, 0.22);
+  }
+  .btn-primary:hover { background: #0f7a5f; border-color: #0f7a5f; }
+  .btn-outline-primary, .btn-outline-danger {
+    font-weight: 700;
+    border-width: 1.5px;
+  }
+  .list-item {
+    border: 1px solid #e6eef6;
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.75rem;
+    background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: itemIn .28s ease both;
+  }
+  .list-item:hover {
+    transform: translateX(2px);
+    box-shadow: 0 10px 22px rgba(14, 30, 37, 0.08);
+  }
+  .list-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .badge-soft {
+    display: inline-block;
+    border-radius: 999px;
+    background: #e9f7f2;
+    color: #0f7a5f;
+    font-size: 0.72rem;
+    padding: 0.2rem 0.55rem;
+    font-weight: 700;
+  }
+  .success-toast {
+    background: #e6fffa;
+    color: #0b3a3d;
+    border: 1px solid #b7f3ea;
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem;
+  }
+  .error-toast {
+    background: #fff1f1;
+    color: #a11b1b;
+    border: 1px solid #f7c9c9;
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem;
+  }
+  .table-wrap { overflow-x: auto; }
+  .table-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0.6rem 0 0.8rem;
+    flex-wrap: wrap;
+  }
+  .toolbar-search, .toolbar-sort {
+    border: 1px solid #d6e0ea;
+    border-radius: 10px;
+    padding: 0.42rem 0.62rem;
+    font-size: 0.85rem;
+    background: #fff;
+  }
+  .toolbar-search { min-width: 230px; }
+  .toolbar-sort { min-width: 190px; }
+  .toolbar-export {
+    border: 1px solid #c8d7ee;
+    background: #f0f5ff;
+    color: #1f3f68;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.84rem;
+    padding: 0.42rem 0.78rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e6eef6;
+    background: #fff;
+  }
+  th, td {
+    border-bottom: 1px solid #eef2f6;
+    padding: 0.62rem 0.55rem;
+    text-align: left;
+    font-size: 0.9rem;
+    vertical-align: top;
+  }
+  th {
+    background: #f4f8fb;
+    color: #1e3042;
+    font-weight: 800;
+  }
+  tbody tr {
+    transition: background-color 0.2s ease;
+  }
+  tbody tr:hover {
+    background: #f8fcfb;
+  }
+  .excerpt-clamp {
+    max-width: 380px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  @keyframes itemIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (max-width: 991px) {
+    .stats-row {
+      grid-template-columns: 1fr;
+    }
+    .option-grid { grid-template-columns: 1fr; }
+    .form-row, .form-row.three { grid-template-columns: 1fr; }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.45rem;
+    }
+    .table-toolbar {
+      justify-content: stretch;
+    }
+    .toolbar-search, .toolbar-sort, .toolbar-export {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+{% set items = items|default([]) %}
+{% set interactions = interactions|default([]) %}
+{% set users = users|default([]) %}
+{% set posts = posts|default([]) %}
+{% set blogStats = blogStats|default({}) %}
+
+  <div class="agenda-hero">
+    <h2>Forum and Blog Management</h2>
+    <p>Admin can manage all users posts and every interaction from one place.</p>
+    <div class="hero-stats">
+      <span class="hero-chip"><i class="fa fa-file-text-o"></i> {{ items|length }} posts</span>
+      <span class="hero-chip"><i class="fa fa-comments-o"></i> {{ interactions|length }} interactions</span>
+      <span class="hero-chip"><i class="fa fa-users"></i> {{ users|length }} users</span>
+    </div>
+  </div>
+
+  {% for message in app.flashes('success') %}
+    <div class="success-toast">{{ message }}</div>
+  {% endfor %}
+  {% for message in app.flashes('error') %}
+    <div class="error-toast">{{ message }}</div>
+  {% endfor %}
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total posts</div>
+      <div class="stat-value">{{ blogStats.totalPosts|default(items|length) }}</div>
+      <div class="stat-meta">{{ blogStats.publishedPosts|default(0) }} published</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total interactions</div>
+      <div class="stat-value">{{ blogStats.totalInteractions|default(interactions|length) }}</div>
+      <div class="stat-meta">{{ blogStats.comments|default(0) }} comments</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Engagement per post</div>
+      <div class="stat-value">{{ blogStats.engagementPerPost|default(0) }}</div>
+      <div class="stat-meta">Interactions / post</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Active authors</div>
+      <div class="stat-value">{{ blogStats.activeAuthors|default(0) }}</div>
+      <div class="stat-meta">Users posting content</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Top category</div>
+      <div class="stat-value">{{ blogStats.topCategory|default('-') }}</div>
+      <div class="stat-meta">Most used category</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Draft posts</div>
+      <div class="stat-value">{{ blogStats.draftPosts|default(0) }}</div>
+      <div class="stat-meta">Require review</div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="chart-card">
+      <h3 class="card-title">Post Trend (Last 7 days)</h3>
+      <div class="bar-chart">
+        {% set weeklySeries = blogStats.weeklySeries|default([]) %}
+        {% set weeklyMax = blogStats.weeklyMax|default(1) %}
+        {% for point in weeklySeries %}
+          <div class="bar">
+            <div class="bar-track">
+              <span class="bar-fill" style="height: {{ weeklyMax > 0 ? (point.count * 100 / weeklyMax) : 0 }}%;"></span>
+            </div>
+            <div class="bar-label">{{ point.label }}</div>
+            <div class="bar-value">{{ point.count }}</div>
+          </div>
+        {% else %}
+          <p class="muted">No trend data yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="status-card">
+      <h3 class="card-title">Interaction Breakdown</h3>
+      <div class="status-list">
+        <div class="status-item">
+          <span class="status-pill green">Likes</span>
+          <strong>{{ blogStats.likes|default(0) }}</strong>
+        </div>
+        <div class="status-item">
+          <span class="status-pill blue">Comments</span>
+          <strong>{{ blogStats.comments|default(0) }}</strong>
+        </div>
+        <div class="status-item">
+          <span class="status-pill teal">Reposts</span>
+          <strong>{{ blogStats.reposts|default(0) }}</strong>
+        </div>
+      </div>
+      <div class="status-divider"></div>
+      <div class="status-item">
+        <span class="status-pill slate">Users in system</span>
+        <strong>{{ users|length }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="option-grid">
+    <div class="option-card" data-action="create">
+      <div class="option-icon"><i class="fa fa-plus"></i></div>
+      <h4>Create records</h4>
+      <p class="muted">Add posts and interactions for any user.</p>
+    </div>
+    <div class="option-card" data-action="update">
+      <div class="option-icon"><i class="fa fa-refresh"></i></div>
+      <h4>Update existing records</h4>
+      <p class="muted">Edit posts and interactions quickly.</p>
+    </div>
+    <div class="option-card" data-action="delete">
+      <div class="option-icon"><i class="fa fa-trash"></i></div>
+      <h4>Delete records</h4>
+      <p class="muted">Remove posts or interactions when required.</p>
+    </div>
+    <div class="option-card" data-action="explore">
+      <div class="option-icon"><i class="fa fa-globe"></i></div>
+      <h4>Explore all data</h4>
+      <p class="muted">Search, sort, and export posts and interactions.</p>
+    </div>
+  </div>
+
+  <div id="panel-create" class="panel">
+    <h3><i class="fa fa-plus-circle"></i> Create records</h3>
+    <p class="muted">Create a new post or an interaction.</p>
+
+    <div class="form-wrap">
+      <h5 style="font-weight:800;"><i class="fa fa-file-text-o"></i> Add Post</h5>
+      {{ form_start(blogForm) }}
+        <div class="form-row">
+          <div>
+            {{ form_label(blogForm.title) }}
+            {{ form_widget(blogForm.title, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(blogForm.title) }}
+          </div>
+          <div>
+            {{ form_label(blogForm.category) }}
+            {{ form_widget(blogForm.category, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(blogForm.category) }}
+          </div>
+        </div>
+        <div class="form-row">
+          <div style="grid-column: 1 / -1;">
+            {{ form_label(blogForm.content) }}
+            {{ form_widget(blogForm.content, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(blogForm.content) }}
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            {{ form_label(blogForm.excerpt) }}
+            {{ form_widget(blogForm.excerpt, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(blogForm.excerpt) }}
+          </div>
+          <div>
+            {{ form_label(blogForm.featuredImageFile, 'Featured image') }}
+            {{ form_widget(blogForm.featuredImageFile, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(blogForm.featuredImageFile) }}
+          </div>
+        </div>
+        <button class="btn btn-primary mt-2" type="submit"><i class="fa fa-check"></i> Publish Post</button>
+      {{ form_end(blogForm) }}
+    </div>
+
+    <div class="form-wrap">
+      <h5 style="font-weight:800;"><i class="fa fa-comments-o"></i> Add Interaction</h5>
+      <form method="post" action="{{ path('admin_blog_forum_interaction_add') }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('admin_blog_interaction_add') }}">
+        <div class="form-row three">
+          <div>
+            <label>User</label>
+            <select class="form-control" name="user_id" required>
+              <option value="">Select user</option>
+              {% for user in users %}
+                <option value="{{ user.id }}">{{ user.email }} ({{ user.username }})</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label>Post</label>
+            <select class="form-control" name="post_id" required>
+              <option value="">Select post</option>
+              {% for post in posts %}
+                <option value="{{ post.id }}">#{{ post.id }} - {{ post.title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label>Type</label>
+            <select class="form-control" name="interaction_type" required>
+              <option value="like">Like</option>
+              <option value="repost">Repost</option>
+              <option value="comment">Comment</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div style="grid-column: 1 / -1;">
+            <label>Comment text (required only for comment)</label>
+            <textarea class="form-control" name="comment_text" rows="2"></textarea>
+          </div>
+        </div>
+        <button class="btn btn-primary mt-2" type="submit"><i class="fa fa-check"></i> Create Interaction</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="panel-update" class="panel">
+    <h3><i class="fa fa-refresh"></i> Update existing records</h3>
+    <p class="muted">Edit posts and interactions directly.</p>
+
+    <h5 style="font-weight:800;"><i class="fa fa-file-text-o"></i> Posts</h5>
+    {% for item in items %}
+      <div class="list-item">
+        <div class="list-head" style="width:100%;">
+          <div>
+            <strong>#{{ item.id }} - {{ item.title }}</strong>
+            <div class="muted">{{ item.email }} | {{ item.category }} | {{ item.date }}</div>
+          </div>
+          <button class="btn btn-outline-primary btn-sm js-toggle" data-target="post-edit-{{ item.id }}"><i class="fa fa-pencil"></i> Edit</button>
+        </div>
+        <form id="post-edit-{{ item.id }}" method="post" action="{{ path('admin_blog_forum_edit', {'id': item.id}) }}" enctype="multipart/form-data" style="display:none;margin-top:0.8rem;">
+          {{ form_row(editForms[item.id]._token, {'label': false}) }}
+          <div class="form-row">
+            <div>{{ form_label(editForms[item.id].title) }}{{ form_widget(editForms[item.id].title, {'attr': {'class': 'form-control'}}) }}</div>
+            <div>{{ form_label(editForms[item.id].category) }}{{ form_widget(editForms[item.id].category, {'attr': {'class': 'form-control'}}) }}</div>
+          </div>
+          <div class="form-row">
+            <div style="grid-column:1/-1;">{{ form_label(editForms[item.id].content) }}{{ form_widget(editForms[item.id].content, {'attr': {'class': 'form-control'}}) }}</div>
+          </div>
+          <div class="form-row">
+            <div>{{ form_label(editForms[item.id].excerpt) }}{{ form_widget(editForms[item.id].excerpt, {'attr': {'class': 'form-control'}}) }}</div>
+            <div>{{ form_label(editForms[item.id].featuredImageFile, 'Featured image') }}{{ form_widget(editForms[item.id].featuredImageFile, {'attr': {'class': 'form-control'}}) }}</div>
+          </div>
+          <button class="btn btn-primary btn-sm mt-2" type="submit"><i class="fa fa-save"></i> Save Post</button>
+        </form>
+      </div>
+    {% else %}
+      <p class="muted">No posts found.</p>
+    {% endfor %}
+
+    <h5 style="font-weight:800;margin-top:1.2rem;"><i class="fa fa-comments-o"></i> Interactions</h5>
+    {% for interaction in interactions %}
+      <div class="list-item">
+        <div class="list-head" style="width:100%;">
+          <div>
+            <strong>#{{ interaction.id }} - {{ interaction.type|upper }}</strong>
+            <div class="muted">{{ interaction.userEmail }} | Post #{{ interaction.postId }} - {{ interaction.postTitle }} | {{ interaction.date }}</div>
+            {% if interaction.comment %}
+              <div class="muted">Comment: {{ interaction.comment }}</div>
+            {% endif %}
+          </div>
+          <button class="btn btn-outline-primary btn-sm js-toggle" data-target="interaction-edit-{{ interaction.id }}"><i class="fa fa-pencil"></i> Edit</button>
+        </div>
+        <form id="interaction-edit-{{ interaction.id }}" method="post" action="{{ path('admin_blog_forum_interaction_update', {'id': interaction.id}) }}" style="display:none;margin-top:0.8rem;">
+          <input type="hidden" name="_token" value="{{ csrf_token('admin_blog_interaction_update_' ~ interaction.id) }}">
+          <div class="form-row three">
+            <div>
+              <label>User</label>
+              <select class="form-control" name="user_id" required>
+                {% for user in users %}
+                  <option value="{{ user.id }}" {% if interaction.userId == user.id %}selected{% endif %}>{{ user.email }} ({{ user.username }})</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div>
+              <label>Post</label>
+              <select class="form-control" name="post_id" required>
+                {% for post in posts %}
+                  <option value="{{ post.id }}" {% if interaction.postId == post.id %}selected{% endif %}>#{{ post.id }} - {{ post.title }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div>
+              <label>Type</label>
+              <select class="form-control" name="interaction_type" required>
+                <option value="like" {% if interaction.type == 'like' %}selected{% endif %}>Like</option>
+                <option value="repost" {% if interaction.type == 'repost' %}selected{% endif %}>Repost</option>
+                <option value="comment" {% if interaction.type == 'comment' %}selected{% endif %}>Comment</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div style="grid-column:1/-1;">
+              <label>Comment text (required only for comment)</label>
+              <textarea class="form-control" name="comment_text" rows="2">{{ interaction.comment }}</textarea>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm mt-2" type="submit"><i class="fa fa-save"></i> Save Interaction</button>
+        </form>
+      </div>
+    {% else %}
+      <p class="muted">No interactions found.</p>
+    {% endfor %}
+  </div>
+
+  <div id="panel-delete" class="panel">
+    <h3><i class="fa fa-trash"></i> Delete records</h3>
+    <p class="muted">Remove posts and interactions.</p>
+
+    <h5 style="font-weight:800;"><i class="fa fa-file-text-o"></i> Delete Posts</h5>
+    {% for item in items %}
+      <div class="list-item">
+        <div class="list-head" style="width:100%;">
+          <div>
+            <strong>#{{ item.id }} - {{ item.title }}</strong>
+            <div class="muted">{{ item.email }} | {{ item.date }}</div>
+          </div>
+          <form method="post" action="{{ path('admin_blog_forum_delete', {'id': item.id}) }}" onsubmit="return confirm('Delete this post and all linked interactions?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete_blog_post_' ~ item.id) }}">
+            <button class="btn btn-outline-danger btn-sm" type="submit"><i class="fa fa-trash"></i> Delete</button>
+          </form>
+        </div>
+      </div>
+    {% else %}
+      <p class="muted">No posts found.</p>
+    {% endfor %}
+
+    <h5 style="font-weight:800;margin-top:1.2rem;"><i class="fa fa-comments-o"></i> Delete Interactions</h5>
+    {% for interaction in interactions %}
+      <div class="list-item">
+        <div class="list-head" style="width:100%;">
+          <div>
+            <strong>#{{ interaction.id }} - {{ interaction.type|upper }}</strong>
+            <div class="muted">{{ interaction.userEmail }} | Post #{{ interaction.postId }} - {{ interaction.postTitle }}</div>
+          </div>
+          <form method="post" action="{{ path('admin_blog_forum_interaction_delete', {'id': interaction.id}) }}" onsubmit="return confirm('Delete this interaction?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('admin_blog_interaction_delete_' ~ interaction.id) }}">
+            <button class="btn btn-outline-danger btn-sm" type="submit"><i class="fa fa-trash"></i> Delete</button>
+          </form>
+        </div>
+      </div>
+    {% else %}
+      <p class="muted">No interactions found.</p>
+    {% endfor %}
+  </div>
+
+  <div id="panel-explore" class="panel">
+    <h3><i class="fa fa-globe"></i> Explore all blog and forum data</h3>
+    <p class="muted">Search, sort, and export posts and interactions.</p>
+
+    <h5 style="font-weight:800;"><i class="fa fa-table"></i> All Posts</h5>
+    <div class="table-toolbar">
+      <select id="posts-sort" class="toolbar-sort">
+        <option value="0:number:desc">Sort ID (desc)</option>
+        <option value="0:number:asc">Sort ID (asc)</option>
+        <option value="4:number:desc">Sort Likes (high)</option>
+        <option value="4:number:asc">Sort Likes (low)</option>
+        <option value="6:number:desc">Sort Comments (high)</option>
+        <option value="6:number:asc">Sort Comments (low)</option>
+        <option value="8:date:desc">Sort Created (newest)</option>
+        <option value="8:date:asc">Sort Created (oldest)</option>
+      </select>
+      <a href="{{ path('admin_blog_forum_posts_pdf') }}" class="toolbar-export" target="_blank"><i class="fa fa-file-pdf-o"></i> Export PDF</a>
+      <input id="posts-search" class="toolbar-search" type="search" placeholder="Search posts...">
+    </div>
+    <div class="table-wrap">
+      <table id="posts-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Category</th>
+            <th>Likes</th>
+            <th>Reposts</th>
+            <th>Comments</th>
+            <th>Status</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+            <tr>
+              <td>#{{ item.id }}</td>
+              <td>{{ item.title }}</td>
+              <td>{{ item.email }}</td>
+              <td>{{ item.category }}</td>
+              <td>{{ item.likes }}</td>
+              <td>{{ item.reposts }}</td>
+              <td>{{ item.comments }}</td>
+              <td>{{ item.status }}</td>
+              <td>{{ item.date }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="9" class="muted">No posts found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <h5 style="font-weight:800;margin-top:1rem;"><i class="fa fa-table"></i> All Interactions</h5>
+    <div class="table-toolbar">
+      <select id="interactions-sort" class="toolbar-sort">
+        <option value="0:number:desc">Sort ID (desc)</option>
+        <option value="0:number:asc">Sort ID (asc)</option>
+        <option value="1:text:asc">Sort Type (A-Z)</option>
+        <option value="1:text:desc">Sort Type (Z-A)</option>
+        <option value="5:date:desc">Sort Date (newest)</option>
+        <option value="5:date:asc">Sort Date (oldest)</option>
+      </select>
+      <a href="{{ path('admin_blog_forum_interactions_pdf') }}" class="toolbar-export" target="_blank"><i class="fa fa-file-pdf-o"></i> Export PDF</a>
+      <input id="interactions-search" class="toolbar-search" type="search" placeholder="Search interactions...">
+    </div>
+    <div class="table-wrap">
+      <table id="interactions-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Post</th>
+            <th>User</th>
+            <th>Comment</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for interaction in interactions %}
+            <tr>
+              <td>#{{ interaction.id }}</td>
+              <td>{{ interaction.type }}</td>
+              <td>#{{ interaction.postId }} - {{ interaction.postTitle }}</td>
+              <td>{{ interaction.userEmail }}</td>
+              <td class="excerpt-clamp">{{ interaction.comment ?: '-' }}</td>
+              <td>{{ interaction.date }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="6" class="muted">No interactions found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.option-card');
+    const panels = {
+      create: document.getElementById('panel-create'),
+      update: document.getElementById('panel-update'),
+      delete: document.getElementById('panel-delete'),
+      explore: document.getElementById('panel-explore')
+    };
+
+    cards.forEach((card) => {
+      card.addEventListener('click', () => {
+        cards.forEach((c) => c.classList.remove('selected'));
+        card.classList.add('selected');
+        Object.values(panels).forEach((p) => p && p.classList.remove('active'));
+        const key = card.getAttribute('data-action');
+        if (panels[key]) panels[key].classList.add('active');
+      });
+    });
+
+    const defaultCard = document.querySelector('.option-card[data-action="explore"]');
+    if (defaultCard) defaultCard.click();
+
+    document.querySelectorAll('.js-toggle').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = document.getElementById(btn.getAttribute('data-target'));
+        if (!target) return;
+        target.style.display = target.style.display === 'none' || target.style.display === '' ? 'block' : 'none';
+      });
+    });
+
+    function parseValue(raw, type) {
+      if (type === 'number') {
+        const m = String(raw).match(/-?\d+(\.\d+)?/);
+        return m ? parseFloat(m[0]) : 0;
+      }
+      if (type === 'date') {
+        return new Date(String(raw).replace(' ', 'T')).getTime() || 0;
+      }
+      return String(raw).toLowerCase();
+    }
+
+    function setupTableTools(cfg) {
+      const table = document.getElementById(cfg.tableId);
+      if (!table) return;
+      const tbody = table.querySelector('tbody');
+      const searchInput = document.getElementById(cfg.searchId);
+      const sortSelect = document.getElementById(cfg.sortId);
+      const baseRows = Array.from(tbody.querySelectorAll('tr'));
+
+      function apply() {
+        const q = (searchInput?.value || '').trim().toLowerCase();
+        const [col, type, dir] = (sortSelect?.value || '0:number:desc').split(':');
+        const visible = [...baseRows]
+          .filter((row) => q === '' || row.textContent.toLowerCase().includes(q))
+          .sort((a, b) => {
+            const av = parseValue(a.cells[Number(col)]?.textContent || '', type);
+            const bv = parseValue(b.cells[Number(col)]?.textContent || '', type);
+            if (av === bv) return 0;
+            return dir === 'asc' ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
+          });
+        tbody.innerHTML = '';
+        visible.forEach((row) => tbody.appendChild(row));
+      }
+
+      searchInput?.addEventListener('input', apply);
+      sortSelect?.addEventListener('change', apply);
+      apply();
+    }
+
+    setupTableTools({
+      tableId: 'posts-table',
+      searchId: 'posts-search',
+      sortId: 'posts-sort'
+    });
+    setupTableTools({
+      tableId: 'interactions-table',
+      searchId: 'interactions-search',
+      sortId: 'interactions-sort'
+    });
+  });
+</script>
+{% endblock %}

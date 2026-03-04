@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home | Fitopia{% endblock %}
+
+{% block body %}
+
+<!-- HERO / SLIDER -->
+<div class="hero-wrap js-fullheight">
+  <div class="home-slider owl-carousel js-fullheight">
+
+    <div class="slider-item js-fullheight" style="background-image:url({{ asset('images/bg_1.jpg') }});">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row no-gutters slider-text align-items-center">
+          <div class="col-md-7 ftco-animate">
+            <div class="text w-100">
+              <h2>Welcome to Fitopia</h2>
+              <h1 class="mb-4">Get in shape faster, live your happy life</h1>
+              <p>
+                <a href="#" class="btn btn-primary">Learn more</a>
+                <a href="#" class="btn btn-white">Contact us</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slider-item js-fullheight" style="background-image:url({{ asset('images/bg_2.jpg') }});">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row no-gutters slider-text align-items-center">
+          <div class="col-md-7 ftco-animate">
+            <div class="text w-100">
+              <h2>A Fresh approach to healthy life</h2>
+              <h1 class="mb-4 color-white">Unlock your potential with good nutrition</h1>
+              <p>
+                <a href="#" class="btn btn-primary">Learn more</a>
+                <a href="#" class="btn btn-white">Contact us</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slider-item js-fullheight" style="background-image:url({{ asset('images/bg_3.jpg') }});">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row no-gutters slider-text align-items-center justify-content-end">
+          <div class="col-md-6 ftco-animate">
+            <div class="text w-100">
+              <h2>Welcome Fitopia</h2>
+              <h1 class="mb-4">You can transform health through habit change</h1>
+              <p>
+                <a href="#" class="btn btn-primary">Learn more</a>
+                <a href="#" class="btn btn-white">Contact us</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="ftco-section ftco-services">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 d-flex services align-self-stretch px-4 ftco-animate">
+        <div class="services-wrap text-center">
+          <div class="img" style="background-image:url({{ asset('images/services-1.jpg') }});"></div>
+          <div class="media-body p-2 mt-3">
+            <h3>Exercise Program</h3>
+            <p>Even the all-powerful Pointing has no control about the blind texts.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 d-flex services align-self-stretch px-4 ftco-animate">
+        <div class="services-wrap text-center">
+          <div class="img" style="background-image:url({{ asset('images/services-2.jpg') }});"></div>
+          <div class="media-body p-2 mt-3">
+            <h3>Nutrition Plans</h3>
+            <p>Even the all-powerful Pointing has no control about the blind texts.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 d-flex services align-self-stretch px-4 ftco-animate">
+        <div class="services-wrap text-center">
+          <div class="img" style="background-image:url({{ asset('images/services-3.jpg') }});"></div>
+          <div class="media-body p-2 mt-3">
+            <h3>Diet Program</h3>
+            <p>Even the all-powerful Pointing has no control about the blind texts.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="ftco-section bg-light">
+  <div class="container">
+    <div class="row no-gutters">
+      <div class="col-md-5 img" style="background-image:url({{ asset('images/coach-1.jpg') }});"></div>
+      <div class="col-md-7 wrap-about py-5 ftco-animate">
+        <span class="subheading">Welcome to Fitopia</span>
+        <h2>Hello! Health Care is a natural way of improving your health</h2>
+        <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

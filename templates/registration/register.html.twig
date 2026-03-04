@@ -1,0 +1,551 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register | Fitopia{% endblock %}
+
+{% block stylesheets %}
+<style>
+  .register-wrap {
+    padding: 3.5rem 0 4.5rem;
+  }
+  .register-card {
+    display: grid;
+    grid-template-columns: 1.05fr 1.4fr;
+    gap: 0;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(14, 30, 37, 0.15);
+    background: #fff;
+  }
+  .register-left {
+    background: linear-gradient(135deg, #0b3a3d 0%, #0d5b50 55%, #0f7a5f 100%);
+    color: #fff;
+    padding: 3rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100%;
+  }
+  .brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+  .brand-logo img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 6px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+  }
+  .brand-logo span {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .register-left h2 {
+    font-weight: 800;
+    font-size: 2rem;
+    letter-spacing: -0.5px;
+    margin-bottom: 0.5rem;
+  }
+  .register-left p {
+    opacity: 0.9;
+    font-size: 1.05rem;
+    margin-bottom: 1.5rem;
+  }
+  .role-card {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 14px;
+    padding: 1.6rem;
+    min-height: 230px;
+  }
+  .role-card h5 {
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+  .role-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem;
+  }
+  .role-options input[type="radio"] {
+    display: none;
+  }
+  .role-options label {
+    position: relative;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 10px;
+    padding: 0.9rem 0.9rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .role-options .role-icon {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    font-size: 1.1rem;
+  }
+  .role-options .role-badge {
+    margin-left: auto;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(15, 118, 110, 0.9);
+    color: #fff;
+    padding: 0.2rem 0.45rem;
+    border-radius: 6px;
+    opacity: 0;
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+  }
+  .role-options input[type="radio"]:checked + label {
+    background: #ffffff;
+    color: #0b3a3d;
+    border-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2), 0 12px 30px rgba(10, 95, 88, 0.35);
+  }
+  .role-options input[type="radio"]:checked + label .role-badge {
+    opacity: 1;
+  }
+  .register-right {
+    padding: 2.75rem 2.75rem;
+    background: #fff;
+  }
+  .register-right h4 {
+    margin-bottom: 0.75rem;
+    font-weight: 800;
+    font-size: 1.35rem;
+  }
+  .form-section-title {
+    font-weight: 600;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  .form-subtle {
+    font-size: 0.9rem;
+    color: #6c757d;
+  }
+  .hidden-section {
+    display: none;
+  }
+  .register-actions {
+    margin-top: 1.5rem;
+  }
+  .register-actions .btn {
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+  }
+  .register-divider {
+    height: 1px;
+    background: #e9ecef;
+    margin: 1.2rem 0;
+  }
+  .choice-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  .choice-grid input[type="radio"],
+  .chip-grid input[type="checkbox"] {
+    display: none;
+  }
+  .choice-grid label,
+  .chip-grid label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    border: 1px solid #d9e2ec;
+    border-radius: 10px;
+    padding: 0.7rem 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: #f8fafc;
+    transition: all 0.2s ease;
+  }
+  .choice-grid label .icon-badge,
+  .chip-grid label .icon-badge {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #e6f0ee;
+    color: #0b3a3d;
+    font-size: 1rem;
+  }
+  .choice-grid input[type="radio"]:checked + label,
+  .chip-grid input[type="checkbox"]:checked + label {
+    border-color: #0b3a3d;
+    box-shadow: 0 0 0 3px rgba(11, 58, 61, 0.12);
+    background: #ffffff;
+  }
+  .chip-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.6rem;
+  }
+  .chip-grid label {
+    justify-content: center;
+    text-align: center;
+    background: #f3f6f9;
+  }
+  @media (max-width: 575px) {
+    .choice-grid {
+      grid-template-columns: 1fr;
+    }
+    .chip-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 991px) {
+    .register-card {
+      grid-template-columns: 1fr;
+    }
+    .register-left {
+      padding: 2.25rem;
+    }
+    .register-right {
+      padding: 2.25rem;
+    }
+    .role-options {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 575px) {
+    .role-options {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="container register-wrap">
+  <div class="register-card">
+    <div class="register-left">
+      <div class="brand-logo">
+        <img src="{{ asset('images/logo.png') }}" alt="Fitopia logo">
+        <span>Fitopia</span>
+      </div>
+      <h2>Welcome to Fitopia</h2>
+      <p>Join our community and start your transformation.</p>
+
+      {{ form_start(registrationForm, {'attr': {'id': 'register-form'}}) }}
+
+      {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">{{ message }}</div>
+      {% endfor %}
+
+      {% if not registrationForm.vars.valid %}
+        <div class="alert alert-danger">
+          {{ form_errors(registrationForm) }}
+        </div>
+      {% endif %}
+
+      <div class="role-card">
+        <h5>U will join as?</h5>
+        <div class="role-options">
+          {% set roleMeta = {
+            'ROLE_PATIENT': {'label': 'Patient', 'icon': 'fa-heartbeat'},
+            'ROLE_COACH': {'label': 'Coach', 'icon': 'fa-user-circle'},
+            'ROLE_NUTRITIONIST': {'label': 'Nutritionist', 'icon': 'fa-leaf'},
+            'ROLE_ADMIN': {'label': 'Admin', 'icon': 'fa-shield'}
+          } %}
+          {% for child in registrationForm.role %}
+            {% set meta = roleMeta[child.vars.value]|default({'label': child.vars.label, 'icon': 'fa-user'}) %}
+            {{ form_widget(child) }}
+            <label for="{{ child.vars.id }}">
+              <span class="role-icon"><i class="fa {{ meta.icon }}"></i></span>
+              <span class="role-text">{{ meta.label }}</span>
+              <span class="role-badge">Selected</span>
+            </label>
+          {% endfor %}
+        </div>
+        {{ form_errors(registrationForm.role) }}
+      </div>
+    </div>
+
+    <div class="register-right">
+      <h4>Account Information</h4>
+      <p class="form-subtle">Complete your profile details to create your account.</p>
+
+      <div id="registration-form-fields" class="hidden-section">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            {{ form_label(registrationForm.firstName) }}
+            {{ form_widget(registrationForm.firstName, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.firstName) }}
+          </div>
+          <div class="col-md-6 mb-3">
+            {{ form_label(registrationForm.lastName) }}
+            {{ form_widget(registrationForm.lastName, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.lastName) }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          {{ form_label(registrationForm.username) }}
+          {{ form_widget(registrationForm.username, {'attr': {'class': 'form-control'}}) }}
+          {{ form_errors(registrationForm.username) }}
+        </div>
+
+        <div class="mb-3">
+          {{ form_label(registrationForm.email) }}
+          {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control'}}) }}
+          {{ form_errors(registrationForm.email) }}
+        </div>
+
+        <div class="mb-3">
+          {{ form_label(registrationForm.plainPassword) }}
+          {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control'}}) }}
+          {{ form_errors(registrationForm.plainPassword) }}
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            {{ form_label(registrationForm.phone) }}
+            {{ form_widget(registrationForm.phone, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.phone) }}
+          </div>
+          <div class="col-md-6 mb-3">
+            {{ form_label(registrationForm.birthDate) }}
+            {{ form_widget(registrationForm.birthDate, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.birthDate) }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          {{ form_label(registrationForm.gender, 'Gender') }}
+          <div class="choice-grid">
+            {% set genderMeta = {
+              'male': {'label': 'Male', 'icon': 'fa-mars'},
+              'female': {'label': 'Female', 'icon': 'fa-venus'}
+            } %}
+            {% for child in registrationForm.gender %}
+              {% set meta = genderMeta[child.vars.value]|default({'label': child.vars.label, 'icon': 'fa-user'}) %}
+              {{ form_widget(child) }}
+              <label for="{{ child.vars.id }}">
+                <span class="icon-badge"><i class="fa {{ meta.icon }}"></i></span>
+                <span>{{ meta.label }}</span>
+              </label>
+            {% endfor %}
+          </div>
+          {{ form_errors(registrationForm.gender) }}
+        </div>
+
+        <div class="mb-3">
+          {{ form_label(registrationForm.avatarFile, 'Avatar profile picture') }}
+          {{ form_widget(registrationForm.avatarFile, {'attr': {'class': 'form-control'}}) }}
+          {{ form_errors(registrationForm.avatarFile) }}
+        </div>
+
+        <div id="user-fields">
+          <div class="register-divider"></div>
+          <div class="form-section-title">User Health Information</div>
+
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              {{ form_label(registrationForm.height, 'Height (cm)') }}
+              {{ form_widget(registrationForm.height, {'attr': {'class': 'form-control'}}) }}
+              {{ form_errors(registrationForm.height) }}
+            </div>
+            <div class="col-md-4 mb-3">
+              {{ form_label(registrationForm.weight, 'Weight (kg)') }}
+              {{ form_widget(registrationForm.weight, {'attr': {'class': 'form-control'}}) }}
+              {{ form_errors(registrationForm.weight) }}
+            </div>
+            <div class="col-md-4 mb-3">
+              {{ form_label(registrationForm.targetWeight, 'Target Weight') }}
+              {{ form_widget(registrationForm.targetWeight, {'attr': {'class': 'form-control'}}) }}
+              {{ form_errors(registrationForm.targetWeight) }}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            {{ form_label(registrationForm.fitnessLevel, 'Fitness level') }}
+            <div class="choice-grid">
+              {% set fitnessMeta = {
+                'beginner': {'label': 'Beginner', 'icon': 'fa-seedling'},
+                'intermediate': {'label': 'Intermediate', 'icon': 'fa-bolt'},
+                'advanced': {'label': 'Advanced', 'icon': 'fa-fire'}
+              } %}
+              {% for child in registrationForm.fitnessLevel %}
+                {% set meta = fitnessMeta[child.vars.value]|default({'label': child.vars.label, 'icon': 'fa-star'}) %}
+                {{ form_widget(child) }}
+                <label for="{{ child.vars.id }}">
+                  <span class="icon-badge"><i class="fa {{ meta.icon }}"></i></span>
+                  <span>{{ meta.label }}</span>
+                </label>
+              {% endfor %}
+            </div>
+            {{ form_errors(registrationForm.fitnessLevel) }}
+          </div>
+
+          <div class="mb-3">
+            {{ form_label(registrationForm.healthConditions) }}
+            {{ form_widget(registrationForm.healthConditions, {'attr': {'class': 'form-control', 'rows': 3, 'placeholder': 'Comma-separated (e.g., asthma, pollen)'}}) }}
+            {{ form_errors(registrationForm.healthConditions) }}
+          </div>
+
+          <div class="mb-3">
+            {{ form_label(registrationForm.dietaryPreferences, 'Dietary preferences') }}
+            <div class="chip-grid">
+              {% set dietIcons = {
+                'vegetarian': 'fa-leaf',
+                'vegan': 'fa-seedling',
+                'gluten_free': 'fa-ban',
+                'dairy_free': 'fa-glass',
+                'halal': 'fa-moon-o',
+                'keto': 'fa-bolt'
+              } %}
+              {% for child in registrationForm.dietaryPreferences %}
+                {% set icon = dietIcons[child.vars.value]|default('fa-check') %}
+                {{ form_widget(child) }}
+                <label for="{{ child.vars.id }}">
+                  <span class="icon-badge"><i class="fa {{ icon }}"></i></span>
+                  <span>{{ child.vars.label }}</span>
+                </label>
+              {% endfor %}
+            </div>
+            {{ form_errors(registrationForm.dietaryPreferences) }}
+          </div>
+
+          <div class="mb-3">
+            {{ form_label(registrationForm.fitnessGoals, 'Fitness goals') }}
+            <div class="chip-grid">
+              {% set goalIcons = {
+                'weight_loss': 'fa-arrow-down',
+                'muscle_gain': 'fa-arrow-up',
+                'endurance': 'fa-road',
+                'flexibility': 'fa-child',
+                'maintenance': 'fa-balance-scale'
+              } %}
+              {% for child in registrationForm.fitnessGoals %}
+                {% set icon = goalIcons[child.vars.value]|default('fa-check') %}
+                {{ form_widget(child) }}
+                <label for="{{ child.vars.id }}">
+                  <span class="icon-badge"><i class="fa {{ icon }}"></i></span>
+                  <span>{{ child.vars.label }}</span>
+                </label>
+              {% endfor %}
+            </div>
+            {{ form_errors(registrationForm.fitnessGoals) }}
+          </div>
+        </div>
+
+        <div id="pro-fields">
+          <div class="register-divider"></div>
+          <div class="form-section-title">Professional Information</div>
+
+          <div class="mb-3">
+            {{ form_label(registrationForm.professionalTitle) }}
+            {{ form_widget(registrationForm.professionalTitle, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.professionalTitle) }}
+          </div>
+
+          <div class="mb-3">
+            {{ form_label(registrationForm.specialization) }}
+            {{ form_widget(registrationForm.specialization) }}
+            {{ form_errors(registrationForm.specialization) }}
+          </div>
+
+          <div class="mb-3">
+            {{ form_label(registrationForm.qualification) }}
+            {{ form_widget(registrationForm.qualification, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.qualification) }}
+          </div>
+
+          <div class="mb-3">
+            {{ form_label(registrationForm.yearsOfExperience) }}
+            {{ form_widget(registrationForm.yearsOfExperience, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.yearsOfExperience) }}
+          </div>
+
+          <div class="mb-3">
+            {{ form_label(registrationForm.bio) }}
+            {{ form_widget(registrationForm.bio, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.bio) }}
+          </div>
+
+          <div class="mb-3">
+            {{ form_label(registrationForm.licenseNumber) }}
+            {{ form_widget(registrationForm.licenseNumber, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.licenseNumber) }}
+          </div>
+        </div>
+
+        <div class="register-actions">
+          {% if recaptcha_site_key is defined and recaptcha_site_key %}
+            <div class="mb-3">
+              <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+            </div>
+          {% endif %}
+          <button class="btn btn-dark w-100">Create Account</button>
+        </div>
+
+        <div class="text-center mt-3">
+          <small>Already have an account?</small><br>
+          <a href="{{ path('app_login') }}" class="btn btn-outline-primary btn-sm mt-2">Login</a>
+        </div>
+      </div>
+
+      {{ form_end(registrationForm) }}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block javascripts %}
+{% if recaptcha_site_key is defined and recaptcha_site_key %}
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+{% endif %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const roleInputs = document.querySelectorAll('input[name="registration_form[role]"]');
+    const formFields = document.getElementById('registration-form-fields');
+    const userFields = document.getElementById('user-fields');
+    const proFields = document.getElementById('pro-fields');
+
+    function toggleFields() {
+      const selected = document.querySelector('input[name="registration_form[role]"]:checked');
+      if (!selected) {
+        formFields.classList.add('hidden-section');
+        return;
+      }
+
+      formFields.classList.remove('hidden-section');
+
+      if (selected.value === 'ROLE_PATIENT') {
+        userFields.style.display = 'block';
+        proFields.style.display = 'none';
+      } else {
+        userFields.style.display = 'none';
+        proFields.style.display = 'block';
+      }
+    }
+
+    roleInputs.forEach(r => r.addEventListener('change', toggleFields));
+    toggleFields();
+  });
+</script>
+{% endblock %}
+
+{% block footer %}{% endblock %}

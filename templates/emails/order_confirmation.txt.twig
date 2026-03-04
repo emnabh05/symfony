@@ -1,0 +1,35 @@
+Order Confirmation
+
+Hello {{ order.firstName }},
+
+Thank you for your order. We received your request and will process it shortly.
+
+Order #: {{ order.orderNumber }}
+Date: {{ order.createdAt|date('Y-m-d H:i') }}
+Status: {{ order.status|upper }}
+Payment: {{ order.paymentMethod }}
+
+Items:
+{% for item in order.orderItems %}
+- {{ item.supplement.name }} x{{ item.quantity }} @ {{ item.price }} DT = {{ item.total }} DT
+{% endfor %}
+
+Subtotal: {{ order.subtotal }} DT
+Shipping: {{ (order.shipping|default(0) + 0) > 0 ? order.shipping ~ ' DT' : 'FREE' }}
+{% if (order.discount|default(0) + 0) > 0 %}
+Discount ({{ order.discountCode }}): -{{ order.discount }} DT
+{% endif %}
+Total: {{ order.total }} DT
+
+Shipping details:
+{{ order.firstName }} {{ order.lastName }}
+{{ order.address }}
+{{ order.city }} {{ order.postalCode }}
+{{ order.phone }}
+
+{% if order.notes %}
+Notes:
+{{ order.notes }}
+{% endif %}
+
+If you have any questions, reply to this email.

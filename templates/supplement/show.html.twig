@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ supplement.name }} - Fitopia Admin{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <a href="{{ path('app_supplement_index') }}" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <div>
+        <h1 class="page-title">{{ supplement.name }}</h1>
+        <p class="page-subtitle">Supplement Details</p>
+    </div>
+    <div class="header-actions">
+        <a href="{{ path('app_supplement_edit', {'id': supplement.id}) }}" class="btn btn-primary">
+            <i class="fas fa-edit"></i> Edit
+        </a>
+        <form method="post" action="{{ path('app_supplement_delete', {'id': supplement.id}) }}" onsubmit="return confirm('Are you sure you want to delete this supplement?');" style="display: inline;">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ supplement.id) }}">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Delete
+            </button>
+        </form>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px; max-width: 1200px;">
+    <!-- Product Image -->
+    <div class="table-container" style="padding: 30px; text-align: center;">
+        {% if supplement.image %}
+            <img src="/uploads/supplements/{{ supplement.image }}" alt="{{ supplement.name }}" style="width: 100%; max-width: 300px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        {% else %}
+            <div style="width: 100%; max-width: 300px; height: 300px; background: linear-gradient(135deg, #0B2C3D, #1B5E4B); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                <i class="fas fa-capsules" style="font-size: 80px; color: white;"></i>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Product Details -->
+    <div>
+        <div class="table-container" style="padding: 30px; margin-bottom: 30px;">
+            <h3 style="font-size: 18px; font-weight: 700; color: #0B2C3D; margin-bottom: 20px;">Product Information</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div style="padding: 15px; background: #F5F7FA; border-radius: 10px;">
+                    <p style="font-size: 11px; color: #8892A0; text-transform: uppercase; font-weight: 700; margin-bottom: 5px;">Category</p>
+                    <p style="font-size: 16px; font-weight: 600; color: #0B2C3D;">{{ supplement.category }}</p>
+                </div>
+
+                <div style="padding: 15px; background: #F5F7FA; border-radius: 10px;">
+                    <p style="font-size: 11px; color: #8892A0; text-transform: uppercase; font-weight: 700; margin-bottom: 5px;">Brand</p>
+                    <p style="font-size: 16px; font-weight: 600; color: #0B2C3D;">{{ supplement.brand }}</p>
+                </div>
+
+                <div style="padding: 15px; background: #F5F7FA; border-radius: 10px;">
+                    <p style="font-size: 11px; color: #8892A0; text-transform: uppercase; font-weight: 700; margin-bottom: 5px;">Price</p>
+                    <p style="font-size: 24px; font-weight: 700; color: #1B5E4B;">${{ supplement.price|number_format(2) }}</p>
+                </div>
+
+                <div style="padding: 15px; background: #F5F7FA; border-radius: 10px;">
+                    <p style="font-size: 11px; color: #8892A0; text-transform: uppercase; font-weight: 700; margin-bottom: 5px;">Stock</p>
+                    <p style="font-size: 24px; font-weight: 700; color: {% if supplement.stock > 50 %}#10b981{% elseif supplement.stock > 20 %}#f59e0b{% else %}#ef4444{% endif %};">
+                        {{ supplement.stock }} units
+                    </p>
+                </div>
+
+                {% if supplement.calories %}
+                <div style="padding: 15px; background: #F5F7FA; border-radius: 10px;">
+                    <p style="font-size: 11px; color: #8892A0; text-transform: uppercase; font-weight: 700; margin-bottom: 5px;">Calories</p>
+                    <p style="font-size: 16px; font-weight: 600; color: #0B2C3D;">{{ supplement.calories }} kcal</p>
+                </div>
+                {% endif %}
+
+                <div style="padding: 15px; background: #F5F7FA; border-radius: 10px;">
+                    <p style="font-size: 11px; color: #8892A0; text-transform: uppercase; font-weight: 700; margin-bottom: 5px;">Product ID</p>
+                    <p style="font-size: 16px; font-weight: 600; color: #0B2C3D;">#{{ supplement.id }}</p>
+                </div>
+            </div>
+        </div>
+
+        {% if supplement.description %}
+        <div class="table-container" style="padding: 30px; margin-bottom: 30px;">
+            <h3 style="font-size: 18px; font-weight: 700; color: #0B2C3D; margin-bottom: 15px;">Description</h3>
+            <p style="font-size: 14px; color: #2C3E50; line-height: 1.6;">{{ supplement.description }}</p>
+        </div>
+        {% endif %}
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="table-container" style="padding: 20px; border-left: 4px solid #4A90E2;">
+                <p style="font-size: 11px; color: #8892A0; text-transform: uppercase; font-weight: 700; margin-bottom: 5px;">Created At</p>
+                <p style="font-size: 14px; color: #2C3E50;">{{ supplement.createdAt|date('F d, Y H:i') }}</p>
+            </div>
+
+            <div class="table-container" style="padding: 20px; border-left: 4px solid #10b981;">
+                <p style="font-size: 11px; color: #8892A0; text-transform: uppercase; font-weight: 700; margin-bottom: 5px;">Last Updated</p>
+                <p style="font-size: 14px; color: #2C3E50;">{{ supplement.updatedAt|date('F d, Y H:i') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

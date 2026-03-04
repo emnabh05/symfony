@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}2FA Verification{% endblock %}
+
+{% block body %}
+<section class="container py-5" style="max-width: 560px;">
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+      <h3 class="mb-2">Two-Factor Verification</h3>
+      <p class="text-muted mb-3">Enter the 6-digit code from your authenticator app.</p>
+
+      {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">{{ message }}</div>
+      {% endfor %}
+
+      <form method="post">
+        <div class="mb-3">
+          <label class="form-label" for="totpCode">Code</label>
+          <input id="totpCode" name="code" class="form-control" maxlength="6" pattern="[0-9]{6}" inputmode="numeric" required autofocus>
+        </div>
+        <input type="hidden" name="_token" value="{{ csrf_token('2fa_check') }}">
+        <button class="btn btn-dark w-100" type="submit">Verify</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

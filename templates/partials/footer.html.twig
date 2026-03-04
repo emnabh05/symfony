@@ -1,0 +1,109 @@
+<footer class="footer bg-dark">
+  <div class="container">
+
+    {# ================= NEWSLETTER ================= #}
+    <div class="row justify-content-center">
+      <div class="col-md-10 col-lg-8">
+        <div class="subscribe mb-5">
+          <form action="#" class="subscribe-form">
+            <div class="form-group d-flex">
+              <input type="email"
+                     class="form-control rounded-left"
+                     placeholder="Enter email address">
+              <input type="submit"
+                     value="SUBSCRIBE"
+                     class="form-control submit px-4">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    {# ================= FOOTER CONTENT ================= #}
+    <div class="row pt-5">
+
+      {# LEFT #}
+      <div class="col-md-4 pr-md-5">
+        <div class="footer-widget">
+          <h2 class="footer-heading">
+            <a href="/" class="logo">
+              <img src="{{ asset('images/logo.png') }}"
+                   alt="Fitopia"
+                   style="height:40px;">
+            </a>
+          </h2>
+          <p>
+            A small river named Duden flows by their place and supplies it with
+            the necessary regelialia.
+          </p>
+          <a href="#">read more</a>
+        </div>
+      </div>
+
+      {# RIGHT #}
+      <div class="col-md-8">
+        <div class="row">
+
+          <div class="col-md-3 border-left">
+            <h2 class="footer-heading">Services</h2>
+            <ul class="list-unstyled">
+              <li><a href="#">Balance Body</a></li>
+              <li><a href="#">Physical Activity</a></li>
+              <li><a href="#">Fitness Program</a></li>
+              <li><a href="#">Healthy Food</a></li>
+            </ul>
+          </div>
+
+          <div class="col-md-3 border-left">
+            <h2 class="footer-heading">About</h2>
+            <ul class="list-unstyled">
+              <li><a href="#">Staff</a></li>
+              <li><a href="#">Team</a></li>
+              <li><a href="#">Careers</a></li>
+              <li><a href="#">Blog</a></li>
+            </ul>
+          </div>
+
+          <div class="col-md-3 border-left">
+            <h2 class="footer-heading">Resources</h2>
+            <ul class="list-unstyled">
+              <li><a href="#">Security</a></li>
+              <li><a href="#">Global</a></li>
+              <li><a href="#">Charts</a></li>
+              <li><a href="#">Privacy</a></li>
+            </ul>
+          </div>
+
+          <div class="col-md-3 border-left">
+            <h2 class="footer-heading">Social</h2>
+            <ul class="list-unstyled">
+              <li><a href="#">Facebook</a></li>
+              <li><a href="#">Twitter</a></li>
+              <li><a href="#">Instagram</a></li>
+              <li><a href="#">Google</a></li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    {# ================= COPYRIGHT ================= #}
+    <div class="row mt-5 pt-4 border-top">
+      <div class="col-md-6">
+        <p class="mb-0">
+          Copyright © {{ "now"|date("Y") }}
+          All rights reserved | Fitopia
+        </p>
+      </div>
+      <div class="col-md-6 text-md-right">
+        <p class="mb-0">
+          <a href="#">Terms</a>
+          <a href="#" class="ml-3">Privacy</a>
+          <a href="#" class="ml-3">Compliances</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+</footer>

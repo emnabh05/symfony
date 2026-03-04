@@ -1,0 +1,92 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Add Supplement | Fitopia Admin{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <link rel="stylesheet" href="{{ asset('css/admin-forms.css') }}">
+{% endblock %}
+
+{% block body %}
+  <div class="admin-shell-inner">
+    <div class="page-header">
+      <a href="{{ path('admin_stocks') }}" class="back-btn">
+        <i class="fa fa-arrow-left"></i>
+      </a>
+      <div>
+        <h1 class="page-title">Add New Supplement</h1>
+        <p class="page-subtitle">Create a new supplement entry.</p>
+      </div>
+    </div>
+
+    {% for message in app.flashes('success') %}
+      <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+      <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+
+    <div class="form-container">
+      <form method="post" action="{{ path('admin_stocks_supplement_add') }}" enctype="multipart/form-data">
+        <input type="hidden" name="_token" value="{{ csrf_token('admin_stocks_supplement_add') }}">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Name *</label>
+            <input class="form-control" name="name" required>
+          </div>
+          <div class="form-group">
+            <label>Category *</label>
+            <input class="form-control" name="category" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Brand *</label>
+            <input class="form-control" name="brand" required>
+          </div>
+          <div class="form-group">
+            <label>Price (DT) *</label>
+            <input class="form-control" name="price" type="number" step="0.01" min="0" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Stock Quantity *</label>
+            <input class="form-control" name="stock" type="number" min="0" required>
+          </div>
+          <div class="form-group">
+            <label>Calories</label>
+            <input class="form-control" name="calories" type="number" min="0">
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Description</label>
+            <textarea class="form-control" name="description" rows="4"></textarea>
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Product Image</label>
+            <input class="form-control" name="image_file" type="file" accept="image/*">
+            <small style="color: #8892A0; font-size: 12px; margin-top: 6px; display: block;">Allowed formats: JPG, PNG, WEBP. Max size: 5MB</small>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <a href="{{ path('admin_stocks') }}" class="btn btn-secondary">
+            <i class="fa fa-times"></i> Cancel
+          </a>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa fa-save"></i> Save Supplement
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

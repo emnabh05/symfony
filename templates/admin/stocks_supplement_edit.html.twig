@@ -1,0 +1,98 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Edit Supplement | Fitopia Admin{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <link rel="stylesheet" href="{{ asset('css/admin-forms.css') }}">
+{% endblock %}
+
+{% block body %}
+  <div class="admin-shell-inner">
+    <div class="page-header">
+      <a href="{{ path('admin_stocks') }}" class="back-btn">
+        <i class="fa fa-arrow-left"></i>
+      </a>
+      <div>
+        <h1 class="page-title">Edit Supplement</h1>
+        <p class="page-subtitle">{{ supplement.name }}</p>
+      </div>
+    </div>
+
+    {% for message in app.flashes('success') %}
+      <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+      <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+
+    <div class="form-container">
+      <form method="post" action="{{ path('admin_stocks_supplement_update', {'id': supplement.id}) }}" enctype="multipart/form-data">
+        <input type="hidden" name="_token" value="{{ csrf_token('admin_stocks_supplement_update_' ~ supplement.id) }}">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Name *</label>
+            <input class="form-control" name="name" value="{{ supplement.name }}" required>
+          </div>
+          <div class="form-group">
+            <label>Category *</label>
+            <input class="form-control" name="category" value="{{ supplement.category }}" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Brand *</label>
+            <input class="form-control" name="brand" value="{{ supplement.brand }}" required>
+          </div>
+          <div class="form-group">
+            <label>Price (DT) *</label>
+            <input class="form-control" name="price" type="number" step="0.01" min="0" value="{{ supplement.price }}" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Stock Quantity *</label>
+            <input class="form-control" name="stock" type="number" min="0" value="{{ supplement.stock }}" required>
+          </div>
+          <div class="form-group">
+            <label>Calories</label>
+            <input class="form-control" name="calories" type="number" min="0" value="{{ supplement.calories }}">
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Description</label>
+            <textarea class="form-control" name="description" rows="4">{{ supplement.description }}</textarea>
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div class="form-group">
+            <label>Product Image</label>
+            {% if supplement.image %}
+              <div class="current-image">
+                <img src="/uploads/supplements/{{ supplement.image }}" alt="{{ supplement.name }}">
+                <p>Current image</p>
+              </div>
+            {% endif %}
+            <input class="form-control" name="image_file" type="file" accept="image/*">
+            <small style="color: #8892A0; font-size: 12px; margin-top: 6px; display: block;">Leave empty to keep current image.</small>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <a href="{{ path('admin_stocks') }}" class="btn btn-secondary">
+            <i class="fa fa-times"></i> Cancel
+          </a>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa fa-save"></i> Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

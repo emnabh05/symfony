@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page { margin: 26px; }
+        body {
+            margin: 0;
+            font-family: Helvetica, Arial, sans-serif;
+            color: #1f2937;
+            background: #f2fbf7;
+            font-size: 12px;
+            line-height: 1.45;
+        }
+        .sheet {
+            border: 1px solid #cce8dc;
+            background: #ffffff;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .header {
+            background: #0f7a5f;
+            color: #ffffff;
+            padding: 20px 22px 18px;
+        }
+        .brand {
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.95;
+        }
+        .title {
+            margin: 6px 0 0;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .content {
+            padding: 18px 20px 20px;
+        }
+        .meta {
+            background: #ecfdf5;
+            border: 1px solid #cce8dc;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 14px;
+        }
+        .meta-row {
+            margin: 0 0 6px;
+        }
+        .meta-row:last-child {
+            margin-bottom: 0;
+        }
+        .label {
+            color: #166534;
+            font-weight: 700;
+        }
+        .nutrition-title {
+            color: #166534;
+            font-size: 14px;
+            font-weight: 700;
+            margin: 4px 0 10px;
+        }
+        .grid {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 8px;
+            margin: 0 0 8px;
+        }
+        .cell {
+            width: 50%;
+            border: 1px solid #d1fae5;
+            background: #f0fdf4;
+            border-radius: 9px;
+            padding: 10px;
+            vertical-align: top;
+        }
+        .metric {
+            display: block;
+            color: #065f46;
+            font-size: 11px;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .comment-box {
+            margin-top: 8px;
+            border-left: 4px solid #22c55e;
+            background: #f8fffb;
+            border-radius: 8px;
+            border: 1px solid #dcfce7;
+            padding: 10px 12px;
+        }
+        .comment-title {
+            margin: 0 0 4px;
+            color: #166534;
+            font-weight: 700;
+            font-size: 12px;
+        }
+        .footer {
+            margin-top: 12px;
+            color: #6b7280;
+            font-size: 10px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="sheet">
+        <div class="header">
+            <div class="brand">Fitopia Nutrition</div>
+            <div class="title">Fiche repas: {{ repas.nomRepas }}</div>
+        </div>
+
+        <div class="content">
+            <div class="meta">
+                <p class="meta-row"><span class="label">Date:</span> {{ repas.dateRepas|date('d/m/Y H:i') }}</p>
+                <p class="meta-row"><span class="label">Type:</span> {{ repas.typeRepas }}</p>
+                <p class="meta-row"><span class="label">Utilisateur:</span> {{ repas.email }}</p>
+            </div>
+
+            <div class="nutrition-title">Valeurs nutritionnelles</div>
+            <table class="grid">
+                <tr>
+                    <td class="cell">
+                        <span class="metric">Calories</span>
+                        <span class="value">{{ repas.calories }} kcal</span>
+                    </td>
+                    <td class="cell">
+                        <span class="metric">Proteines</span>
+                        <span class="value">{{ repas.proteines }} g</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="cell">
+                        <span class="metric">Glucides</span>
+                        <span class="value">{{ repas.glucides }} g</span>
+                    </td>
+                    <td class="cell">
+                        <span class="metric">Lipides</span>
+                        <span class="value">{{ repas.lipides }} g</span>
+                    </td>
+                </tr>
+            </table>
+
+            {% if repas.commentaire %}
+                <div class="comment-box">
+                    <p class="comment-title">Commentaire</p>
+                    <div>{{ repas.commentaire }}</div>
+                </div>
+            {% endif %}
+
+            <div class="footer">
+                Document genere le {{ "now"|date('d/m/Y H:i') }}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

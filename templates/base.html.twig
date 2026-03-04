@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}Fitopia{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="{{ asset('css/animate.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/owl.theme.default.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/magnific-popup.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap-datepicker.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/jquery.timepicker.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/flaticon.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style_fitopia.css') }}">
+
+    {% block stylesheets %}{% endblock %}
+</head>
+
+<body>
+{% set skipUserContext = skip_user_context|default(false) %}
+
+{% if not skipUserContext %}
+{% include 'partials/topbar.html.twig' %}
+{% include 'partials/navbar.html.twig' %}
+{% endif %}
+
+{% block body %}{% endblock %}
+
+{% block footer %}
+{% include 'partials/footer.html.twig' %}
+{% endblock %}
+
+{% if not skipUserContext and app.user %}
+  <div id="logout-modal" style="position:fixed;inset:0;background:rgba(15,23,42,0.5);display:none;align-items:center;justify-content:center;z-index:1050;">
+    <div style="background:#fff;border-radius:14px;padding:1.5rem;width:min(520px,92vw);box-shadow:0 20px 60px rgba(15,23,42,0.25);text-align:center;">
+      <h4 style="margin-bottom:0.5rem;font-weight:800;color:#b42318;">Leaving so soon?</h4>
+      <p style="color:#475467;">Are you sure you want to logout and return to home?</p>
+      <div style="margin-top:1.25rem;display:flex;gap:0.75rem;justify-content:center;">
+        <button id="logout-cancel-btn" style="background:#e2e8f0;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:600;">Cancel</button>
+        <a id="logout-confirm-btn" href="{{ path('app_logout') }}" style="background:#b42318;color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:700;text-decoration:none;">Logout</a>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% if not skipUserContext and not app.user %}
+  <div id="explore-guest-modal" style="position:fixed;inset:0;background:rgba(15,23,42,0.5);display:none;align-items:center;justify-content:center;z-index:1050;">
+    <div style="background:#fff;border-radius:14px;padding:1.5rem;width:min(560px,92vw);box-shadow:0 20px 60px rgba(15,23,42,0.25);text-align:center;">
+      <h4 style="margin-bottom:0.5rem;font-weight:800;color:#0b3a3d;">You are offline</h4>
+      <p style="color:#475467;">Please connect first to explore the feed and share with the Fitopia community.</p>
+      <div style="margin-top:1.25rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+        <a href="{{ path('app_login') }}" style="background:#0b3a3d;color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:700;text-decoration:none;">Sign in</a>
+        <a href="{{ path('app_register') }}" style="background:#fff;border:1px solid #0b3a3d;color:#0b3a3d;border-radius:8px;padding:0.5rem 1rem;font-weight:700;text-decoration:none;">Don't have an account? Register now for free</a>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+<div id="ftco-loader" class="fullscreen">
+    <svg class="circular" width="48px" height="48px">
+        <circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4"/>
+        <circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4"/>
+    </svg>
+</div>
+
+<script src="{{ asset('js/jquery.min.js') }}"></script>
+<script src="{{ asset('js/jquery-migrate-3.0.1.min.js') }}"></script>
+<script src="{{ asset('js/popper.min.js') }}"></script>
+<script src="{{ asset('js/bootstrap.min.js') }}"></script>
+
+<script src="{{ asset('js/jquery.easing.1.3.js') }}"></script>
+<script src="{{ asset('js/jquery.waypoints.min.js') }}"></script>
+<script src="{{ asset('js/jquery.stellar.min.js') }}"></script>
+<script src="{{ asset('js/jquery.animateNumber.min.js') }}"></script>
+<script src="{{ asset('js/bootstrap-datepicker.js') }}"></script>
+<script src="{{ asset('js/jquery.timepicker.min.js') }}"></script>
+<script src="{{ asset('js/owl.carousel.min.js') }}"></script>
+<script src="{{ asset('js/jquery.magnific-popup.min.js') }}"></script>
+<script src="{{ asset('js/scrollax.min.js') }}"></script>
+
+<script src="{{ asset('js/main.js') }}"></script>
+
+{% block javascripts %}{% endblock %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const logoutBtn = document.getElementById('global-logout-btn');
+    const modal = document.getElementById('logout-modal');
+    const cancelBtn = document.getElementById('logout-cancel-btn');
+    if (!logoutBtn || !modal || !cancelBtn) return;
+    logoutBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      modal.style.display = 'flex';
+    });
+    cancelBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.style.display = 'none';
+    });
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const exploreBtn = document.getElementById('explore-guest-btn');
+    const modal = document.getElementById('explore-guest-modal');
+    if (!exploreBtn || !modal) return;
+    exploreBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      modal.style.display = 'flex';
+    });
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.style.display = 'none';
+    });
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const dietGuestBtn = document.getElementById('diet-planner-guest-btn');
+    const modal = document.getElementById('explore-guest-modal');
+    if (dietGuestBtn && modal) {
+      dietGuestBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        modal.style.display = 'flex';
+      });
+    }
+    const dietBtn = document.getElementById('diet-planner-btn');
+    if (dietBtn) {
+      dietBtn.addEventListener('click', () => {});
+    }
+
+    const supplementsGuestBtn = document.getElementById('supplements-guest-btn');
+    if (supplementsGuestBtn && modal) {
+      supplementsGuestBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        modal.style.display = 'flex';
+      });
+    }
+    const fitnessGuestBtn = document.getElementById('fitness-planner-guest-btn');
+    if (fitnessGuestBtn && modal) {
+      fitnessGuestBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        modal.style.display = 'flex';
+      });
+    }
+    const eventsGuestBtn = document.getElementById('events-guest-btn');
+    if (eventsGuestBtn && modal) {
+      eventsGuestBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        modal.style.display = 'flex';
+      });
+    }
+  });
+</script>
+</body>
+</html>
+
+
+
+

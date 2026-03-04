@@ -1,0 +1,487 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Stocks & Payments | Fitopia Admin{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <link rel="stylesheet" href="{{ asset('css/admin-forms.css') }}">
+  <style>
+    .section-card {
+      margin-bottom: 32px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin: 0;
+    }
+    .section-subtitle {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+    .badge-warning { background: #f59e0b; color: #fff; }
+    .badge-info { background: #0ea5e9; color: #fff; }
+    .badge-primary { background: #2563eb; color: #fff; }
+    .badge-success { background: #10b981; color: #fff; }
+    .badge-danger { background: #ef4444; color: #fff; }
+    .badge-secondary { background: #94a3b8; color: #fff; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 18px;
+      border: 1px solid #eef2f7;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    }
+    .stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      font-weight: 700;
+    }
+    .stat-value {
+      margin-top: 8px;
+      font-size: 24px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .stat-meta {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 500;
+    }
+    .stats-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    .chart-card,
+    .status-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #eef2f7;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+    }
+    .bar-chart {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+      align-items: end;
+      height: 190px;
+      margin-top: 16px;
+    }
+    .bar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .bar-track {
+      width: 100%;
+      height: 120px;
+      background: #f1f5f9;
+      border-radius: 10px;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    .bar-fill {
+      width: 100%;
+      background: linear-gradient(180deg, #0f7a5f, #0b3a3d);
+      border-radius: 10px;
+      min-height: 4px;
+    }
+    .bar-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+    }
+    .bar-value {
+      font-size: 11px;
+      font-weight: 600;
+      color: #0f172a;
+    }
+    .status-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .status-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .status-divider {
+      height: 1px;
+      background: #e5e7eb;
+      margin: 16px 0;
+    }
+    .low-stock-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .low-stock-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #0f172a;
+    }
+    .stats-empty {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 10px;
+    }
+    @media (max-width: 1024px) {
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <div class="admin-shell-inner">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Stock & Payments</h1>
+        <p class="page-subtitle">Manage supplements and payment records from one place.</p>
+      </div>
+      <div class="header-actions">
+        <a href="{{ path('admin_stocks_supplement_add') }}" class="btn btn-primary">
+          <i class="fa fa-plus"></i> Add Supplement
+        </a>
+        <a href="{{ path('admin_stocks_payment_add') }}" class="btn btn-secondary">
+          <i class="fa fa-credit-card"></i> Add Payment
+        </a>
+      </div>
+    </div>
+
+    {% for message in app.flashes('success') %}
+      <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+      <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+
+    <section class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Stock Performance Dashboard</h2>
+          <p class="section-subtitle">Weekly and monthly revenue, order stats, and best sellers.</p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Revenue (7 days)</div>
+          <div class="stat-value">{{ stats.weeklyRevenue|number_format(2) }} DT</div>
+          <div class="stat-meta">{{ stats.weeklyOrders }} orders</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Revenue (30 days)</div>
+          <div class="stat-value">{{ stats.monthlyRevenue|number_format(2) }} DT</div>
+          <div class="stat-meta">{{ stats.monthlyOrders }} orders</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-value">{{ stats.totalRevenue|number_format(2) }} DT</div>
+          <div class="stat-meta">Non-canceled orders</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg. Order Value</div>
+          <div class="stat-value">{{ stats.avgOrderValue|number_format(2) }} DT</div>
+          <div class="stat-meta">Based on non-canceled orders</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Items Sold</div>
+          <div class="stat-value">{{ stats.itemsSold }}</div>
+          <div class="stat-meta">All time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Low Stock Items</div>
+          <div class="stat-value">{{ stats.lowStockCount }}</div>
+          <div class="stat-meta">Below 10 units</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Best Seller (30 days)</div>
+          {% if stats.bestProduct %}
+            <div class="stat-value">{{ stats.bestProduct.name }}</div>
+            <div class="stat-meta">{{ stats.bestProduct.qty }} sold • {{ stats.bestProduct.revenue|number_format(2) }} DT</div>
+          {% else %}
+            <div class="stat-value">-</div>
+            <div class="stat-meta">No sales yet</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="chart-card">
+          <h3 class="card-title">Revenue Trend (Last 7 days)</h3>
+          <div class="bar-chart">
+            {% for point in stats.weeklySeries %}
+              <div class="bar">
+                <div class="bar-track">
+                  <span class="bar-fill" style="height: {{ point.percent }}%;"></span>
+                </div>
+                <div class="bar-label">{{ point.label }}</div>
+                <div class="bar-value">{{ point.value|number_format(2) }} DT</div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="status-card">
+          <h3 class="card-title">Orders & Stock Watch</h3>
+          <div class="status-list">
+            <div class="status-item">
+              <span class="badge badge-warning">PENDING</span>
+              <strong>{{ stats.statusCounts.pending }}</strong>
+            </div>
+            <div class="status-item">
+              <span class="badge badge-info">ACCEPTED</span>
+              <strong>{{ stats.statusCounts.accepted }}</strong>
+            </div>
+            <div class="status-item">
+              <span class="badge badge-success">DELIVERED</span>
+              <strong>{{ stats.statusCounts.delivered }}</strong>
+            </div>
+            <div class="status-item">
+              <span class="badge badge-danger">CANCELED</span>
+              <strong>{{ stats.statusCounts.canceled }}</strong>
+            </div>
+          </div>
+
+          <div class="status-divider"></div>
+          <div class="card-title">Low Stock Watchlist</div>
+          {% if stats.lowStock|length > 0 %}
+            <div class="low-stock-list">
+              {% for item in stats.lowStock %}
+                <div class="low-stock-item">
+                  <span>{{ item.name }}</span>
+                  <span class="badge {% if item.stock > 5 %}badge-warning{% else %}badge-danger{% endif %}">{{ item.stock }} left</span>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="stats-empty">No low stock items.</div>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Top Selling Supplements (30 days)</h2>
+          <p class="section-subtitle">Best performers by quantity sold.</p>
+        </div>
+      </div>
+      <div class="table-container">
+        <div class="table-wrapper">
+          {% if stats.topProducts|length > 0 %}
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Brand</th>
+                  <th>Units Sold</th>
+                  <th>Revenue</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for product in stats.topProducts %}
+                  <tr>
+                    <td><strong>{{ product.name }}</strong></td>
+                    <td>{{ product.brand }}</td>
+                    <td>{{ product.qty }}</td>
+                    <td><strong>{{ product.revenue|number_format(2) }} DT</strong></td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <div class="empty-state">
+              <i class="fa fa-line-chart"></i>
+              <p>No sales data yet.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Supplements</h2>
+          <p class="section-subtitle">Inventory list with quick actions.</p>
+        </div>
+      </div>
+      <div class="table-container">
+        <div class="table-wrapper">
+          {% if supplements|length > 0 %}
+            <table>
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Brand</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for supplement in supplements %}
+                  <tr>
+                    <td>
+                      {% if supplement.image %}
+                        <img src="/uploads/supplements/{{ supplement.image }}" alt="{{ supplement.name }}" style="width: 48px; height: 48px; object-fit: cover; border-radius: 8px;">
+                      {% else %}
+                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #0B2C3D, #1B5E4B); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                          <i class="fa fa-medkit"></i>
+                        </div>
+                      {% endif %}
+                    </td>
+                    <td><strong>{{ supplement.name }}</strong></td>
+                    <td>{{ supplement.category }}</td>
+                    <td>{{ supplement.brand }}</td>
+                    <td><strong>{{ supplement.price|number_format(2) }} DT</strong></td>
+                    <td>
+                      <span class="badge {% if supplement.stock > 50 %}badge-success{% elseif supplement.stock > 0 %}badge-warning{% else %}badge-danger{% endif %}">
+                        {{ supplement.stock }} units
+                      </span>
+                    </td>
+                    <td class="table-actions">
+                      <a href="{{ path('app_supplement_show', {'id': supplement.id}) }}" class="btn btn-small btn-edit" title="View">
+                        <i class="fa fa-eye"></i> View
+                      </a>
+                      <a href="{{ path('admin_stocks_supplement_update', {'id': supplement.id}) }}" class="btn btn-small btn-edit" title="Edit">
+                        <i class="fa fa-edit"></i> Edit
+                      </a>
+                      <form method="post" action="{{ path('admin_stocks_supplement_delete', {'id': supplement.id}) }}" onsubmit="return confirm('Delete this supplement?');" style="display: inline;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('admin_stocks_supplement_delete_' ~ supplement.id) }}">
+                        <button type="submit" class="btn btn-small btn-danger">
+                          <i class="fa fa-trash"></i> Delete
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <div class="empty-state">
+              <i class="fa fa-medkit"></i>
+              <p>No supplements found.</p>
+              <a href="{{ path('admin_stocks_supplement_add') }}" class="btn btn-primary">
+                <i class="fa fa-plus"></i> Add Supplement
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Payments</h2>
+          <p class="section-subtitle">Order payment records.</p>
+        </div>
+      </div>
+      <div class="table-container">
+        <div class="table-wrapper">
+          {% if payments|length > 0 %}
+            <table>
+              <thead>
+                <tr>
+                  <th>Order #</th>
+                  <th>Customer</th>
+                  <th>Email</th>
+                  <th>Method</th>
+                  <th>Status</th>
+                  <th>Total</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for payment in payments %}
+                  <tr>
+                    <td><strong>{{ payment.orderNumber }}</strong></td>
+                    <td>{{ payment.firstName }} {{ payment.lastName }}</td>
+                    <td>{{ payment.email }}</td>
+                    <td>{{ payment.paymentMethod }}</td>
+                    <td>
+                      <span class="badge
+                        {% if payment.status == 'pending' %}badge-warning
+                        {% elseif payment.status == 'accepted' %}badge-info
+                        {% elseif payment.status == 'delivered' %}badge-success
+                        {% elseif payment.status == 'canceled' %}badge-danger
+                        {% else %}badge-secondary{% endif %}">
+                        {{ payment.status|upper }}
+                      </span>
+                    </td>
+                    <td><strong>{{ payment.total }} DT</strong></td>
+                    <td>{{ payment.createdAt ? payment.createdAt|date('Y-m-d H:i') : '-' }}</td>
+                    <td class="table-actions">
+                      <a href="{{ path('app_order_show', {'id': payment.id}) }}" class="btn btn-small btn-edit" title="View">
+                        <i class="fa fa-eye"></i> View
+                      </a>
+                      <a href="{{ path('admin_stocks_payment_update', {'id': payment.id}) }}" class="btn btn-small btn-edit" title="Edit">
+                        <i class="fa fa-edit"></i> Edit
+                      </a>
+                      <form method="post" action="{{ path('admin_stocks_payment_delete', {'id': payment.id}) }}" onsubmit="return confirm('Delete this payment record?');" style="display: inline;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('admin_stocks_payment_delete_' ~ payment.id) }}">
+                        <button type="submit" class="btn btn-small btn-danger">
+                          <i class="fa fa-trash"></i> Delete
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <div class="empty-state">
+              <i class="fa fa-credit-card"></i>
+              <p>No payment records found.</p>
+              <a href="{{ path('admin_stocks_payment_add') }}" class="btn btn-secondary">
+                <i class="fa fa-plus"></i> Add Payment
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+  </div>
+{% endblock %}

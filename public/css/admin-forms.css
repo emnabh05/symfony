@@ -1,0 +1,329 @@
+.admin-shell {
+  --dark-blue: #0B2C3D;
+  --vert-sapin: #1B5E4B;
+  --white: #FFFFFF;
+  --light-gray: #F5F7FA;
+  --border-color: #E4E7EB;
+  --text-dark: #2C3E50;
+  --text-light: #8892A0;
+  --shadow: 0 2px 14px rgba(11, 44, 61, 0.1);
+  --shadow-lg: 0 8px 24px rgba(11, 44, 61, 0.15);
+  padding: 32px 0 60px;
+  color: var(--text-dark);
+  font-family: 'Poppins', sans-serif;
+}
+
+.admin-shell-inner {
+  width: min(1200px, 92vw);
+  margin: 0 auto;
+}
+
+.admin-shell .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  background: var(--white);
+  padding: 24px 28px;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+.admin-shell .page-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--dark-blue);
+  margin: 0;
+}
+
+.admin-shell .page-subtitle {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
+.admin-shell .header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.admin-shell .back-btn {
+  background: var(--light-gray);
+  color: var(--dark-blue);
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.admin-shell .back-btn:hover {
+  background: var(--vert-sapin);
+  color: var(--white);
+}
+
+.admin-shell .btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.admin-shell .btn-primary {
+  background: linear-gradient(135deg, var(--vert-sapin), var(--dark-blue));
+  color: var(--white);
+}
+
+.admin-shell .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(27, 94, 75, 0.35);
+}
+
+.admin-shell .btn-secondary {
+  background: var(--light-gray);
+  color: var(--text-dark);
+}
+
+.admin-shell .btn-secondary:hover {
+  background: var(--border-color);
+}
+
+.admin-shell .btn-danger {
+  background: #ef4444;
+  color: var(--white);
+}
+
+.admin-shell .btn-danger:hover {
+  background: #dc2626;
+}
+
+.admin-shell .btn-small {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+.admin-shell .btn-edit {
+  background: #4A90E2;
+  color: var(--white);
+}
+
+.admin-shell .btn-edit:hover {
+  background: #357ABD;
+}
+
+.admin-shell .table-container {
+  background: var(--white);
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.admin-shell .table-wrapper {
+  overflow-x: auto;
+}
+
+.admin-shell table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-shell thead {
+  background: linear-gradient(135deg, var(--dark-blue), var(--vert-sapin));
+  color: var(--white);
+}
+
+.admin-shell thead th {
+  padding: 15px 20px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-shell tbody tr {
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.2s ease;
+}
+
+.admin-shell tbody tr:hover {
+  background: #f8fafc;
+}
+
+.admin-shell tbody td {
+  padding: 15px 20px;
+  font-size: 14px;
+}
+
+.admin-shell .table-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-shell .badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-shell .badge-active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.admin-shell .badge-inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.admin-shell .form-container {
+  background: var(--white);
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+  padding: 30px;
+}
+
+.admin-shell .form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  margin-bottom: 22px;
+}
+
+.admin-shell .form-row.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.admin-shell .form-row.full {
+  grid-template-columns: 1fr;
+}
+
+.admin-shell .form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.admin-shell .form-group input,
+.admin-shell .form-group textarea,
+.admin-shell .form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.admin-shell .form-group input:focus,
+.admin-shell .form-group textarea:focus,
+.admin-shell .form-group select:focus {
+  outline: none;
+  border-color: var(--vert-sapin);
+  box-shadow: 0 0 0 3px rgba(27, 94, 75, 0.1);
+}
+
+.admin-shell .form-group textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+.admin-shell .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.admin-shell .current-image {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-shell .current-image img {
+  width: 90px;
+  height: 90px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: var(--shadow);
+}
+
+.admin-shell .empty-state {
+  text-align: center;
+  padding: 50px 20px;
+  color: var(--text-light);
+}
+
+.admin-shell .empty-state i {
+  font-size: 48px;
+  color: #d1d5db;
+  margin-bottom: 16px;
+}
+
+.admin-shell .error-message {
+  font-size: 12px;
+  color: #ef4444;
+  margin-top: 6px;
+}
+
+.admin-shell .alert {
+  padding: 14px 18px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.admin-shell .alert-success {
+  background: #d1fae5;
+  color: #065f46;
+  border-left: 4px solid #10b981;
+}
+
+.admin-shell .alert-danger {
+  background: #fee2e2;
+  color: #991b1b;
+  border-left: 4px solid #ef4444;
+}
+
+@media (max-width: 900px) {
+  .admin-shell .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-shell .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-shell .form-row.three {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-shell .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}

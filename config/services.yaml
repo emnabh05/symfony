@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+# See also https://symfony.com/doc/current/service_container/import.html
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+    app.avatar_upload_dir: '%kernel.project_dir%/public/uploads/avatars'
+    app.blog_upload_dir: '%kernel.project_dir%/public/uploads/blog'
+    app.supplement_upload_dir: '%kernel.project_dir%/public/uploads/supplements'
+    app.calorie_ninjas_api_key: '%env(CALORIE_NINJAS_API_KEY)%'
+    app.huggingface_api_key: '%env(HUGGINGFACE_API_KEY)%'
+    app.facepp_api_key: '%env(FACEPP_API_KEY)%'
+    app.facepp_api_secret: '%env(FACEPP_API_SECRET)%'
+    app.facepp_api_base_url: '%env(FACEPP_API_BASE_URL)%'
+    app.facepp_min_confidence: '%env(float:FACEPP_MIN_CONFIDENCE)%'
+    app.recaptcha_site_key: '%env(RECAPTCHA_SITE_KEY)%'
+    app.recaptcha_secret_key: '%env(RECAPTCHA_SECRET_KEY)%'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            $calorieNinjasKey: '%app.calorie_ninjas_api_key%'
+            $huggingfaceKey: '%app.huggingface_api_key%'
+            $faceppApiKey: '%app.facepp_api_key%'
+            $faceppApiSecret: '%app.facepp_api_secret%'
+            $faceppApiBaseUrl: '%app.facepp_api_base_url%'
+            $faceppMinConfidence: '%app.facepp_min_confidence%'
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+    App\Service\FileUploader:
+        arguments:
+            $targetDirectory: '%app.supplement_upload_dir%'
+
+    App\Service\RecaptchaVerifier:
+        arguments:
+            $secretKey: '%app.recaptcha_secret_key%'
+            $kernelEnvironment: '%kernel.environment%'
+
+    # Reduce Doctrine Doctor noise for this project: keep runtime query analyzers,
+    # disable policy-only analyzers that are not actionable in current scope.
+    AhmedBhs\DoctrineDoctor\Analyzer\Integrity\PrimaryKeyStrategyAnalyzer:
+        tags: []
+
+    AhmedBhs\DoctrineDoctor\Analyzer\Integrity\TimestampableTraitAnalyzer:
+        tags: []
+
+    AhmedBhs\DoctrineDoctor\Analyzer\Configuration\TimeZoneAnalyzer:
+        tags: []
+
+    AhmedBhs\DoctrineDoctor\Analyzer\Configuration\CollationAnalyzer:
+        tags: []
+
+    AhmedBhs\DoctrineDoctor\Analyzer\Configuration\ConnectionPoolingAnalyzer:
+        tags: []

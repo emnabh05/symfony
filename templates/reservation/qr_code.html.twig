@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon QR Code | Fitopia{% endblock %}
+
+{% block body %}
+<section class="container py-5">
+  <div class="card shadow-sm border-0" style="max-width: 760px; margin: 0 auto; border-radius: 16px;">
+    <div class="card-body p-4 p-md-5">
+      <h2 class="h4 mb-3"><i class="fa fa-qrcode"></i> Mon QR Code de participation</h2>
+
+      <div class="mb-3 text-muted">
+        <div><strong>Client:</strong> {{ reservation.nomParticipant }}</div>
+        <div><strong>Evenement:</strong> {{ event ? event.titre : 'N/A' }}</div>
+        <div><strong>Date:</strong> {{ event ? event.dateEvent|date('Y-m-d') : 'N/A' }}</div>
+        <div><strong>Lieu:</strong> {{ event ? event.lieu : 'N/A' }}</div>
+        <div><strong>Statut:</strong> {{ reservation.statut }}</div>
+      </div>
+
+      <div class="text-center mb-3">
+        <img src="{{ qrImageUrl }}" alt="QR Code Reservation" width="320" height="320" style="max-width:100%;height:auto;border-radius:10px;border:1px solid #e2e8f0;">
+      </div>
+
+      <div class="alert alert-info mb-3">
+        Scannez ce QR Code pour valider votre participation.
+      </div>
+
+      <div class="small text-muted" style="word-break: break-all;">
+        <strong>Lien QR:</strong> {{ validationUrl }}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block footer %}{% endblock %}

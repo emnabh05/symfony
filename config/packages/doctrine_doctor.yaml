@@ -1,0 +1,16 @@
+when@dev:
+    doctrine_doctor:
+        enabled: true
+        analyzers:
+            naming_convention:
+                enabled: false
+            missing_embeddable_opportunity:
+                enabled: false
+            blameable_trait:
+                enabled: false
+            dto_hydration:
+                enabled: false
+            strict_mode:
+                enabled: false
+            inno_db_engine:
+                enabled: false

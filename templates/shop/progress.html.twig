@@ -1,0 +1,632 @@
+{% extends 'shop/base.html.twig' %}
+
+{% block title %}My Supplement Progress | Fitopia{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+    :root {
+      --tracker-bg-start: #edf4f8;
+      --tracker-bg-end: #dfe9f2;
+      --tracker-ink: #123144;
+      --tracker-muted: #5c7687;
+      --tracker-card: #ffffff;
+      --tracker-line: #d5e1ea;
+      --tracker-brand: #0e7b61;
+      --tracker-brand-deep: #094c54;
+      --tracker-warn: #d97706;
+      --tracker-danger: #c2410c;
+      --tracker-shadow: 0 16px 42px rgba(14, 36, 54, 0.12);
+    }
+
+    .tracker-page {
+      position: relative;
+      min-height: 72vh;
+      padding: 36px 0 62px;
+      background: linear-gradient(160deg, var(--tracker-bg-start), var(--tracker-bg-end));
+      overflow: hidden;
+      font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+      color: var(--tracker-ink);
+    }
+
+    .tracker-page::before,
+    .tracker-page::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .tracker-page::before {
+      width: 460px;
+      height: 460px;
+      top: -180px;
+      right: -120px;
+      background: radial-gradient(circle at center, rgba(14, 123, 97, 0.18), rgba(14, 123, 97, 0) 68%);
+    }
+
+    .tracker-page::after {
+      width: 360px;
+      height: 360px;
+      bottom: -180px;
+      left: -90px;
+      background: radial-gradient(circle at center, rgba(9, 76, 84, 0.16), rgba(9, 76, 84, 0) 70%);
+    }
+
+    .tracker-shell {
+      position: relative;
+      z-index: 1;
+    }
+
+    .tracker-hero {
+      background:
+        linear-gradient(135deg, rgba(9, 45, 66, 0.97), rgba(10, 98, 83, 0.9)),
+        repeating-linear-gradient(
+          -40deg,
+          rgba(255, 255, 255, 0.04),
+          rgba(255, 255, 255, 0.04) 14px,
+          rgba(255, 255, 255, 0.01) 14px,
+          rgba(255, 255, 255, 0.01) 28px
+        );
+      color: #f5fbff;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      box-shadow: 0 24px 54px rgba(7, 30, 43, 0.32);
+      padding: 30px 30px 24px;
+      animation: trackerRise 0.55s ease both;
+    }
+
+    .tracker-eyebrow {
+      margin: 0;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      opacity: 0.9;
+      font-weight: 700;
+    }
+
+    .tracker-hero h1 {
+      margin: 8px 0 10px;
+      font-size: clamp(1.9rem, 2.6vw, 2.8rem);
+      line-height: 1.08;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+    }
+
+    .tracker-subtitle {
+      margin: 0;
+      font-size: 1.02rem;
+      max-width: 760px;
+      color: rgba(238, 251, 255, 0.92);
+    }
+
+    .tracker-pill {
+      margin-top: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .tracker-summary-grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(172px, 1fr));
+      gap: 12px;
+    }
+
+    .tracker-summary-item {
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      backdrop-filter: blur(2px);
+    }
+
+    .tracker-summary-item .label {
+      margin: 0;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      opacity: 0.86;
+      font-weight: 600;
+    }
+
+    .tracker-summary-item .value {
+      margin-top: 2px;
+      display: block;
+      font-size: 2rem;
+      line-height: 1;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      color: #ffffff;
+    }
+
+    .tracker-empty {
+      margin-top: 20px;
+      background: var(--tracker-card);
+      border: 1px dashed #bfd0de;
+      border-radius: 18px;
+      padding: 26px 24px;
+      box-shadow: var(--tracker-shadow);
+      color: var(--tracker-muted);
+      animation: trackerRise 0.7s ease both;
+    }
+
+    .tracker-empty h2 {
+      margin: 0 0 8px;
+      font-size: 1.2rem;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--tracker-ink);
+    }
+
+    .tracker-list {
+      margin-top: 20px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .tracker-card {
+      --card-delay: 0ms;
+      background: var(--tracker-card);
+      border: 1px solid var(--tracker-line);
+      border-radius: 20px;
+      padding: 18px 18px 16px;
+      box-shadow: var(--tracker-shadow);
+      animation: trackerRise 0.6s ease both;
+      animation-delay: var(--card-delay);
+    }
+
+    .tracker-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .tracker-product-brand {
+      margin: 0;
+      color: #0e7b61;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .tracker-card h2 {
+      margin: 2px 0 7px;
+      font-size: 1.62rem;
+      line-height: 1.08;
+      font-family: 'Space Grotesk', sans-serif;
+      color: #0f2d44;
+    }
+
+    .tracker-meta {
+      margin: 0;
+      color: var(--tracker-muted);
+      font-size: 0.86rem;
+      line-height: 1.5;
+    }
+
+    .tracker-badge {
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .tracker-badge.badge-elite {
+      color: #14532d;
+      background: #ddf8e8;
+      border-color: #a6e7c0;
+    }
+
+    .tracker-badge.badge-consistent {
+      color: #1d4d91;
+      background: #deedff;
+      border-color: #b8d7ff;
+    }
+
+    .tracker-badge.badge-average {
+      color: #8a4e07;
+      background: #fff2d8;
+      border-color: #ffdba6;
+    }
+
+    .tracker-badge.badge-at-risk {
+      color: #9a3412;
+      background: #fff0eb;
+      border-color: #ffcab7;
+    }
+
+    .tracker-card-body {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .tracker-orb-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tracker-orb {
+      --p: 0;
+      width: 128px;
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      background: conic-gradient(var(--tracker-brand) calc(var(--p) * 1%), #d9e7f1 0);
+      position: relative;
+      box-shadow: inset 0 0 0 1px rgba(18, 49, 68, 0.08), 0 10px 25px rgba(16, 42, 61, 0.14);
+    }
+
+    .tracker-orb::before {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border-radius: 50%;
+      background: #ffffff;
+    }
+
+    .tracker-orb-inner {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      line-height: 1.1;
+    }
+
+    .tracker-orb-inner strong {
+      font-size: 1.55rem;
+      font-family: 'Space Grotesk', sans-serif;
+      color: #0f2d44;
+    }
+
+    .tracker-orb-inner span {
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #608096;
+      font-weight: 600;
+    }
+
+    .tracker-orb-note {
+      margin: 0;
+      font-size: 0.82rem;
+      color: #4f6a7a;
+      text-align: center;
+    }
+
+    .tracker-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 9px;
+    }
+
+    .tracker-metric {
+      border: 1px solid #e0eaf1;
+      background: #f7fafd;
+      border-radius: 11px;
+      padding: 10px;
+    }
+
+    .tracker-metric .k {
+      margin: 0;
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #6d8595;
+      font-weight: 700;
+    }
+
+    .tracker-metric .v {
+      margin: 4px 0 0;
+      color: #0f2d44;
+      font-weight: 700;
+      font-size: 1.16rem;
+      line-height: 1.08;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .tracker-footer {
+      margin-top: 13px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .tracker-feedback {
+      border-radius: 12px;
+      padding: 10px 12px;
+      border: 1px solid #d8e6ef;
+      background: #edf5fb;
+      color: #234357;
+      font-size: 0.9rem;
+    }
+
+    .tracker-feedback.risk {
+      border-color: #ffd4bf;
+      background: #fff3eb;
+      color: #9a3412;
+    }
+
+    .tracker-action {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tracker-status {
+      margin: 0;
+      font-size: 0.82rem;
+      color: #61798b;
+    }
+
+    .tracker-btn {
+      border: none;
+      border-radius: 11px;
+      padding: 10px 14px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+    }
+
+    .tracker-btn-primary {
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--tracker-brand), var(--tracker-brand-deep));
+      box-shadow: 0 10px 18px rgba(9, 76, 84, 0.26);
+    }
+
+    .tracker-btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 24px rgba(9, 76, 84, 0.3);
+    }
+
+    .tracker-btn-secondary {
+      color: #465f70;
+      background: #e7eef4;
+      cursor: not-allowed;
+    }
+
+    @keyframes trackerRise {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 991px) {
+      .tracker-hero {
+        padding: 22px 20px 18px;
+      }
+
+      .tracker-card h2 {
+        font-size: 1.42rem;
+      }
+
+      .tracker-card-body {
+        grid-template-columns: 1fr;
+      }
+
+      .tracker-orb-wrap {
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .tracker-orb-note {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 575px) {
+      .tracker-page {
+        padding-top: 24px;
+      }
+
+      .tracker-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .tracker-summary-item .value {
+        font-size: 1.55rem;
+      }
+
+      .tracker-card {
+        padding: 15px;
+      }
+
+      .tracker-card-head {
+        flex-direction: column;
+      }
+
+      .tracker-orb {
+        width: 106px;
+      }
+
+      .tracker-action {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .tracker-btn {
+        width: 100%;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+<section class="tracker-page">
+  <div class="container tracker-shell">
+    <header class="tracker-hero">
+      <p class="tracker-eyebrow">Fitopia Smart Consumption Tracker</p>
+      <h1>My Supplement Progress</h1>
+      <p class="tracker-subtitle">See discipline score, consistency streak, risk level, and estimated timeline for each purchased supplement.</p>
+      <div class="tracker-pill">Synced automatically with your account orders</div>
+
+      <div class="tracker-summary-grid">
+        <div class="tracker-summary-item">
+          <p class="label">Tracked Supplements</p>
+          <span class="value">{{ summary.trackedSupplements }}</span>
+        </div>
+        <div class="tracker-summary-item">
+          <p class="label">Average Compliance</p>
+          <span class="value">{{ summary.averageCompliance }}%</span>
+        </div>
+        <div class="tracker-summary-item">
+          <p class="label">Current Max Streak</p>
+          <span class="value">{{ summary.maxCurrentStreak }}d</span>
+        </div>
+        <div class="tracker-summary-item">
+          <p class="label">At-Risk Supplements</p>
+          <span class="value">{{ summary.atRiskCount }}</span>
+        </div>
+        <div class="tracker-summary-item">
+          <p class="label">Total XP</p>
+          <span class="value">{{ summary.totalXp }}</span>
+        </div>
+      </div>
+    </header>
+
+    {% if cards is empty %}
+      <section class="tracker-empty">
+        <h2>No supplement tracking data yet</h2>
+        <p style="margin:0;">Place an order while logged in, then this dashboard will automatically show all your tracking metrics.</p>
+      </section>
+    {% else %}
+      <section class="tracker-list">
+        {% for card in cards %}
+          {% set badgeClass = card.badge|lower|replace({' ': '-'}) %}
+          <article class="tracker-card" style="--card-delay: {{ loop.index0 * 70 }}ms;">
+            <div class="tracker-card-head">
+              <div>
+                <p class="tracker-product-brand">{{ card.supplement.brand }}</p>
+                <h2>{{ card.supplement.name }}</h2>
+                <p class="tracker-meta">
+                  Bought since {{ card.firstPurchasedAt|date('Y-m-d') }}
+                  | Ordered qty: {{ card.totalPurchasedQuantity }}
+                  | Base plan: {{ card.supplement.recommendedDurationDays }} days
+                </p>
+              </div>
+              <span class="tracker-badge badge-{{ badgeClass }}">{{ card.badge }}</span>
+            </div>
+
+            <div class="tracker-card-body">
+              <div class="tracker-orb-wrap">
+                <div class="tracker-orb" style="--p: {{ card.compliance }};">
+                  <div class="tracker-orb-inner">
+                    <strong>{{ card.compliance }}%</strong>
+                    <span>Compliance</span>
+                  </div>
+                </div>
+                <p class="tracker-orb-note">{{ card.takenDays }} taken / {{ card.totalDays }} days</p>
+              </div>
+
+              <div class="tracker-metrics">
+                <div class="tracker-metric">
+                  <p class="k">Current Streak</p>
+                  <p class="v">{{ card.currentStreak }} days</p>
+                </div>
+                <div class="tracker-metric">
+                  <p class="k">Best Streak</p>
+                  <p class="v">{{ card.bestStreak }} days</p>
+                </div>
+                <div class="tracker-metric">
+                  <p class="k">Estimated Progress</p>
+                  <p class="v">{{ card.estimatedProgress }}%</p>
+                </div>
+                <div class="tracker-metric">
+                  <p class="k">Estimated Result Date</p>
+                  <p class="v">
+                    {% if card.estimatedGoalDate %}
+                      {{ card.estimatedGoalDate|date('Y-m-d') }}
+                    {% else %}
+                      N/A
+                    {% endif %}
+                  </p>
+                </div>
+                <div class="tracker-metric">
+                  <p class="k">Estimated Duration</p>
+                  <p class="v">
+                    {% if card.estimatedDurationDays %}
+                      {{ card.estimatedDurationDays }} days
+                    {% else %}
+                      N/A
+                    {% endif %}
+                  </p>
+                </div>
+                <div class="tracker-metric">
+                  <p class="k">Last Intake Gap</p>
+                  <p class="v">{{ card.daysSinceLastIntake }} days</p>
+                </div>
+                <div class="tracker-metric">
+                  <p class="k">XP Points</p>
+                  <p class="v">{{ card.xp }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="tracker-footer">
+              <div class="tracker-feedback {% if card.riskDetected %}risk{% endif %}">
+                {{ card.feedback }}
+              </div>
+
+              <div class="tracker-action">
+                <p class="tracker-status">
+                  {% if card.todayTaken %}
+                    Intake already logged for today.
+                  {% else %}
+                    Not logged yet for today.
+                  {% endif %}
+                </p>
+                <form method="post" action="{{ path('app_shop_progress_take_today', {id: card.supplement.id}) }}" style="margin:0;">
+                  <input type="hidden" name="_token" value="{{ csrf_token('take_today_' ~ card.supplement.id) }}">
+                  <button
+                    type="submit"
+                    class="tracker-btn {% if card.todayTaken %}tracker-btn-secondary{% else %}tracker-btn-primary{% endif %}"
+                    {% if card.todayTaken %}disabled{% endif %}
+                  >
+                    {% if card.todayTaken %}
+                      Already taken today
+                    {% else %}
+                      Mark as taken today
+                    {% endif %}
+                  </button>
+                </form>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </section>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+

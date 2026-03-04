@@ -1,0 +1,537 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Login{% endblock %}
+
+{% block stylesheets %}
+<style>
+  .login-wrap {
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    padding: 3rem 0 4rem;
+  }
+  .login-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+  .login-panel {
+    background: linear-gradient(135deg, #0b3a3d 0%, #0d5b50 55%, #0f7a5f 100%);
+    color: #fff;
+    border-radius: 18px;
+    padding: 3rem;
+    box-shadow: 0 18px 40px rgba(14, 30, 37, 0.15);
+  }
+  .login-panel h2 {
+    font-weight: 800;
+    font-size: 2.2rem;
+  }
+  .login-panel p {
+    font-size: 1.05rem;
+    opacity: 0.9;
+  }
+  .login-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 2.5rem;
+    box-shadow: 0 18px 50px rgba(14, 30, 37, 0.12);
+  }
+  .login-card h3 {
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .login-avatar-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  .login-avatar {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    border: 3px solid #e6eef6;
+    object-fit: cover;
+    background: #f8fafc;
+  }
+  .auth-mode-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+  }
+  .auth-mode-btn {
+    border: 1px solid #ced4da;
+    background: #fff;
+    border-radius: 10px;
+    padding: 0.65rem 0.8rem;
+    font-weight: 600;
+    color: #23313f;
+  }
+  .auth-mode-btn.active {
+    background: #0b3a3d;
+    border-color: #0b3a3d;
+    color: #fff;
+  }
+  .auth-section {
+    display: none;
+  }
+  .auth-section.active {
+    display: block;
+  }
+  .face-camera {
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 0.9rem;
+    background: #f8fafc;
+  }
+  .face-camera video, .face-camera canvas {
+    width: 100%;
+    border-radius: 10px;
+    background: #0f172a;
+  }
+  .face-camera-preview {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+    margin-top: 0.7rem;
+    display: none;
+  }
+  .qr-login-trigger {
+    margin-top: 0.65rem;
+  }
+  .qr-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.55);
+    z-index: 2200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .qr-modal {
+    background: #fff;
+    width: min(420px, 96vw);
+    border-radius: 14px;
+    box-shadow: 0 22px 70px rgba(15, 23, 42, 0.28);
+    padding: 1rem 1rem 1.2rem;
+  }
+  .qr-modal h5 {
+    margin-bottom: 0.4rem;
+    font-weight: 800;
+  }
+  .qr-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 220px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    margin-top: 0.6rem;
+    background: #f8fafc;
+  }
+  .qr-status {
+    margin-top: 0.7rem;
+    font-size: 0.9rem;
+    color: #334155;
+  }
+  @media (max-width: 991px) {
+    .login-grid {
+      grid-template-columns: 1fr;
+    }
+    .login-panel {
+      padding: 2.2rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container login-wrap">
+  <div class="login-grid w-100">
+    <div class="login-panel">
+      <img src="{{ asset('images/logo.png') }}" alt="Fitopia logo" style="width: 56px; height: 56px; background: #fff; border-radius: 12px; padding: 8px; margin-bottom: 1rem;">
+      <h2>Welcome Back</h2>
+      <p>Access your Fitopia account, track your progress, and manage your personalized journey.</p>
+      <div class="mt-4">
+        <ul class="list-unstyled">
+          <li class="mb-2"><i class="fa fa-check mr-2"></i> Smart plans tailored to your goals</li>
+          <li class="mb-2"><i class="fa fa-check mr-2"></i> Track workouts, nutrition, and progress</li>
+          <li class="mb-2"><i class="fa fa-check mr-2"></i> Connect with coaches and experts</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="login-card">
+        <h3 class="text-center">Sign in to Fitopia</h3>
+        <div class="login-avatar-wrap">
+          <img id="login-avatar-preview" class="login-avatar" src="{{ path('app_login_avatar') }}" alt="User avatar">
+        </div>
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% if error %}
+            <div class="alert alert-danger">
+                {{ error.messageKey|trans(error.messageData, 'security') }}
+            </div>
+        {% endif %}
+
+        <div class="auth-mode-switch" role="tablist" aria-label="Authentication mode">
+          <button type="button" class="auth-mode-btn active" id="mode-password-btn" data-target="password">Login + Password</button>
+          <button type="button" class="auth-mode-btn" id="mode-face-btn" data-target="face">Face ID</button>
+        </div>
+        <button type="button" class="btn btn-outline-secondary w-100 qr-login-trigger" id="qr-login-open-btn">Login with QR</button>
+
+        <div class="auth-section active" id="auth-password-section">
+          <form method="post">
+              <div class="mb-3">
+                  <label for="inputEmail" class="form-label">Email ou Username</label>
+                  <input
+                      type="text"
+                      value="{{ last_username }}"
+                      name="email"
+                      id="inputEmail"
+                      class="form-control"
+                      required
+                      autofocus
+                  >
+              </div>
+
+              <div class="mb-3">
+                  <label for="inputPassword" class="form-label">Password</label>
+                  <input
+                      type="password"
+                      name="password"
+                      id="inputPassword"
+                      class="form-control"
+                      required
+                  >
+              </div>
+
+              {% if recaptcha_site_key is defined and recaptcha_site_key %}
+                <div class="mb-3">
+                  <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+                </div>
+              {% endif %}
+
+              <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+              <div class="d-grid gap-2 mt-4">
+                  <button class="btn btn-dark btn-lg" type="submit">
+                      Login
+                  </button>
+              </div>
+          </form>
+        </div>
+
+        <div class="auth-section" id="auth-face-section">
+          <h5 class="text-center mb-3">Sign in with Face ID Camera</h5>
+          <form method="post" action="{{ path('app_login_face_id_camera') }}" id="face-id-camera-form">
+              <div class="mb-3">
+                  <label for="faceIdEmail" class="form-label">Email</label>
+                  <input
+                      type="email"
+                      name="email"
+                      id="faceIdEmail"
+                      class="form-control"
+                      required
+                  >
+              </div>
+              <div class="face-camera mb-3">
+                  <video id="face-camera-video" autoplay playsinline></video>
+                  <canvas id="face-camera-canvas" style="display:none;"></canvas>
+                  <img id="face-camera-preview" class="face-camera-preview" alt="Face capture preview">
+                  <input type="hidden" name="image_base64" id="face-camera-image" required>
+                  <small id="face-camera-status" class="text-muted d-block mt-2">Camera starts automatically. Click login when ready.</small>
+              </div>
+              <input type="hidden" name="_csrf_token" value="{{ csrf_token('face_id_authenticate') }}">
+              <div class="d-grid gap-2 mt-3">
+                  <button class="btn btn-outline-dark" type="submit" id="face-login-btn">Login with Face ID</button>
+              </div>
+              <div id="face-action-error" class="alert alert-danger mt-3 mb-0" style="display:none;"></div>
+          </form>
+        </div>
+
+        <hr class="my-4">
+
+        <div class="text-center">
+            <p class="mb-2">Don't have an account?</p>
+            <a href="{{ path('app_register') }}" class="btn btn-outline-secondary w-100">
+                Create an Account
+            </a>
+        </div>
+
+    </div>
+  </div>
+</div>
+<div class="qr-modal-backdrop" id="qr-login-modal">
+  <div class="qr-modal">
+    <div class="d-flex justify-content-between align-items-center">
+      <h5>QR Login</h5>
+      <button type="button" class="btn btn-sm btn-light" id="qr-login-close-btn">Close</button>
+    </div>
+    <p class="text-muted mb-1">Scan from trusted mobile session and approve.</p>
+    <div class="qr-box">
+      <div id="qr-login-code"></div>
+    </div>
+    <div class="qr-status" id="qr-login-status">Preparing QR session...</div>
+    <div class="mt-2 small text-muted" id="qr-login-expiry"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+{% block javascripts %}
+{% if recaptcha_site_key is defined and recaptcha_site_key %}
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+{% endif %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGoC4R52UjBv6AaL5GbrSQQA1jRzCQXDpUe1koRaSPoaqe7i0rGUNShUMHbOWcZH/5LiCFYI8a9kaI0Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const modeBtns = Array.from(document.querySelectorAll('.auth-mode-btn'));
+    const passwordSection = document.getElementById('auth-password-section');
+    const faceSection = document.getElementById('auth-face-section');
+
+    const video = document.getElementById('face-camera-video');
+    const loginEmail = document.getElementById('inputEmail');
+    const faceEmail = document.getElementById('faceIdEmail');
+    const avatarPreview = document.getElementById('login-avatar-preview');
+    const canvas = document.getElementById('face-camera-canvas');
+    const preview = document.getElementById('face-camera-preview');
+    const hiddenImage = document.getElementById('face-camera-image');
+    const statusEl = document.getElementById('face-camera-status');
+    const actionErrorEl = document.getElementById('face-action-error');
+    const form = document.getElementById('face-id-camera-form');
+    const qrOpenBtn = document.getElementById('qr-login-open-btn');
+    const qrModal = document.getElementById('qr-login-modal');
+    const qrCloseBtn = document.getElementById('qr-login-close-btn');
+    const qrCodeEl = document.getElementById('qr-login-code');
+    const qrStatusEl = document.getElementById('qr-login-status');
+    const qrExpiryEl = document.getElementById('qr-login-expiry');
+
+    let stream = null;
+    let avatarTimer = null;
+    let cameraStarted = false;
+    let qrPollTimer = null;
+    let qrCountdownTimer = null;
+    let qrSession = null;
+
+    function setMode(mode) {
+      const isFace = mode === 'face';
+      passwordSection?.classList.toggle('active', !isFace);
+      faceSection?.classList.toggle('active', isFace);
+      modeBtns.forEach((btn) => btn.classList.toggle('active', btn.dataset.target === mode));
+
+      if (isFace && !cameraStarted) {
+        startCamera();
+      }
+      if (isFace && faceEmail && loginEmail && !faceEmail.value.trim() && loginEmail.value.trim()) {
+        faceEmail.value = loginEmail.value.trim();
+      }
+      updateLoginAvatar();
+    }
+
+    function showActionError(message) {
+      if (!actionErrorEl) return;
+      actionErrorEl.textContent = message;
+      actionErrorEl.style.display = 'block';
+    }
+
+    function clearActionError() {
+      if (!actionErrorEl) return;
+      actionErrorEl.textContent = '';
+      actionErrorEl.style.display = 'none';
+    }
+
+    function updateLoginAvatar() {
+      if (!avatarPreview) return;
+      const raw = (faceSection?.classList.contains('active') ? faceEmail?.value : loginEmail?.value) || '';
+      const normalized = raw.trim();
+      const base = "{{ path('app_login_avatar') }}";
+      const qs = normalized ? ('?email=' + encodeURIComponent(normalized)) : '';
+      avatarPreview.src = base + qs + (qs ? '&' : '?') + 'v=' + Date.now();
+    }
+
+    async function startCamera() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        statusEl.textContent = 'Camera API unavailable in this browser/context.';
+        return;
+      }
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        cameraStarted = true;
+        video.srcObject = stream;
+        statusEl.textContent = 'Camera started. Place your face clearly and click capture.';
+      } catch (e) {
+        statusEl.textContent = 'Unable to access camera. Allow permission and use https:// or http://localhost.';
+      }
+    }
+
+    function captureFace() {
+      if (!stream) {
+        return false;
+      }
+      const sourceW = video.videoWidth || 640;
+      const sourceH = video.videoHeight || 480;
+      const maxW = 640;
+      const scale = sourceW > maxW ? (maxW / sourceW) : 1;
+      const w = Math.max(320, Math.round(sourceW * scale));
+      const h = Math.max(240, Math.round(sourceH * scale));
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
+      hiddenImage.value = dataUrl.replace(/^data:image\/jpeg;base64,/, '');
+      preview.src = dataUrl;
+      preview.style.display = 'block';
+      statusEl.textContent = 'Face captured.';
+      clearActionError();
+      return true;
+    }
+
+    form?.addEventListener('submit', async (e) => {
+      if (!hiddenImage.value) {
+        if (!stream) {
+          await startCamera();
+        }
+        const ok = captureFace();
+        if (!ok) {
+          e.preventDefault();
+          statusEl.textContent = 'Camera not ready yet. Please allow camera and try again.';
+          showActionError('Camera not ready. Please retry in 1-2 seconds.');
+          return;
+        }
+      }
+      clearActionError();
+    });
+
+    modeBtns.forEach((btn) => {
+      btn.addEventListener('click', () => setMode(btn.dataset.target || 'password'));
+    });
+
+    [loginEmail, faceEmail].forEach((input) => {
+      input?.addEventListener('input', () => {
+        if (input === loginEmail && faceEmail && !faceEmail.value.trim()) {
+          faceEmail.value = loginEmail.value.trim();
+        }
+        if (avatarTimer) clearTimeout(avatarTimer);
+        avatarTimer = setTimeout(updateLoginAvatar, 180);
+      });
+    });
+
+    setMode('password');
+
+    function stopQrTimers() {
+      if (qrPollTimer) clearInterval(qrPollTimer);
+      if (qrCountdownTimer) clearInterval(qrCountdownTimer);
+      qrPollTimer = null;
+      qrCountdownTimer = null;
+    }
+
+    async function pollQrStatus() {
+      if (!qrSession) return;
+      const response = await fetch(qrSession.status_url, { headers: { 'Accept': 'application/json' } });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        qrStatusEl.textContent = data.status === 'rate_limited' ? 'Too many checks. Please wait.' : 'QR polling error.';
+        return;
+      }
+      if (data.status === 'pending') {
+        qrStatusEl.textContent = 'Waiting for approval on mobile...';
+        return;
+      }
+      if (data.status === 'approved') {
+        stopQrTimers();
+        qrStatusEl.textContent = 'Approved. Finalizing login...';
+        const consumeBody = new URLSearchParams({ _token: "{{ csrf_token('qr_login_consume') }}" });
+        const consumeResponse = await fetch(qrSession.consume_url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: consumeBody
+        });
+        if (consumeResponse.redirected) {
+          window.location.href = consumeResponse.url;
+          return;
+        }
+        const consumeData = await consumeResponse.json().catch(() => ({}));
+        if (!consumeResponse.ok || !consumeData.ok) {
+          qrStatusEl.textContent = consumeData.error || 'Unable to finalize QR login.';
+          return;
+        }
+        window.location.href = consumeData.redirect_url || "{{ path('app_profile') }}";
+        return;
+      }
+
+      stopQrTimers();
+      if (data.status === 'denied') qrStatusEl.textContent = 'Request denied on mobile.';
+      else if (data.status === 'expired') qrStatusEl.textContent = 'QR session expired. Generate a new one.';
+      else if (data.status === 'consumed') qrStatusEl.textContent = 'This QR has already been used.';
+      else if (data.status === 'forbidden') qrStatusEl.textContent = 'Session binding mismatch.';
+      else qrStatusEl.textContent = 'QR session not available.';
+    }
+
+    function startQrCountdown(expiresAt) {
+      const end = new Date(expiresAt).getTime();
+      qrCountdownTimer = setInterval(() => {
+        const remaining = Math.max(0, Math.floor((end - Date.now()) / 1000));
+        qrExpiryEl.textContent = remaining > 0 ? ('Expires in ' + remaining + 's') : 'Expired';
+        if (remaining <= 0) {
+          stopQrTimers();
+        }
+      }, 500);
+    }
+
+    async function openQrModal() {
+      stopQrTimers();
+      qrSession = null;
+      qrCodeEl.innerHTML = '';
+      qrStatusEl.textContent = 'Preparing QR session...';
+      qrExpiryEl.textContent = '';
+      qrModal.style.display = 'flex';
+
+      const body = new URLSearchParams({ _token: "{{ csrf_token('qr_login_create') }}" });
+      const response = await fetch("{{ path('app_login_qr_create') }}", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok) {
+        qrStatusEl.textContent = data.error || 'Cannot create QR login session.';
+        return;
+      }
+
+      qrSession = data;
+      new QRCode(qrCodeEl, { text: data.scan_url, width: 200, height: 200 });
+      qrStatusEl.textContent = 'Scan from trusted mobile, then approve.';
+      startQrCountdown(data.expires_at);
+      qrPollTimer = setInterval(pollQrStatus, 2000);
+    }
+
+    qrOpenBtn?.addEventListener('click', openQrModal);
+    qrCloseBtn?.addEventListener('click', () => {
+      qrModal.style.display = 'none';
+      stopQrTimers();
+    });
+    qrModal?.addEventListener('click', (event) => {
+      if (event.target === qrModal) {
+        qrModal.style.display = 'none';
+        stopQrTimers();
+      }
+    });
+
+  });
+</script>
+{% endblock %}
+

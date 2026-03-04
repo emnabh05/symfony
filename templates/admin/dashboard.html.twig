@@ -1,0 +1,28 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Admin Dashboard | Fitopia{% endblock %}
+
+{% block body %}
+  <div class="page-title" style="font-size:2rem;">Admin Dashboard</div>
+  <div class="card" style="padding:2.5rem;">
+    <h3 style="margin-top:0;font-weight:800;">Welcome to Fitopia Admin</h3>
+    <p style="color:#6b7280;font-size:1.05rem;">
+      Manage your platform, monitor key areas, and keep Fitopia running smoothly.
+    </p>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin:1.5rem 0;">
+      <div style="background:#f3f6f9;border-radius:14px;padding:1rem;">
+        <div style="font-weight:700;font-size:1.1rem;">Users</div>
+        <div style="color:#6b7280;">Review profiles and permissions</div>
+      </div>
+      <div style="background:#f3f6f9;border-radius:14px;padding:1rem;">
+        <div style="font-weight:700;font-size:1.1rem;">Content</div>
+        <div style="color:#6b7280;">Forum, blog, and posts</div>
+      </div>
+      <div style="background:#f3f6f9;border-radius:14px;padding:1rem;">
+        <div style="font-weight:700;font-size:1.1rem;">Operations</div>
+        <div style="color:#6b7280;">Stock, events, training, nutrition</div>
+      </div>
+    </div>
+    <a href="{{ path('admin_profile') }}" class="btn btn-dark" style="background:#0b3a3d;border:none;border-radius:10px;padding:0.75rem 1.2rem;color:#fff;text-decoration:none;font-weight:600;font-size:1rem;">Edit Profile</a>
+  </div>
+{% endblock %}

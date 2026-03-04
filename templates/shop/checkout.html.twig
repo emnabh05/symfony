@@ -1,0 +1,250 @@
+{% extends 'shop/base.html.twig' %}
+
+{% block title %}Paiement - Fitopia Supplements{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/cart.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/checkout.css') }}">
+{% endblock %}
+
+{% block body %}
+    <!-- Checkout Section -->
+    <section class="checkout-section">
+        <div class="container">
+            <div class="checkout-steps">
+                <div class="step completed">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Panier</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="step active">
+                    <i class="fas fa-user"></i>
+                    <span>Informations</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="step">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Paiement</span>
+                </div>
+            </div>
+
+            <div class="checkout-layout">
+                <!-- Checkout Form -->
+                <div class="checkout-main">
+                    <h2>Informations de livraison</h2>
+                    
+                    <form id="checkoutForm" class="checkout-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">Prénom *</label>
+                                <input type="text" id="firstName" name="firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Nom *</label>
+                                <input type="text" id="lastName" name="lastName" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Téléphone *</label>
+                            <input type="tel" id="phone" name="phone" required placeholder="+216 XX XXX XXX">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address">Adresse complète *</label>
+                            <input type="text" id="address" name="address" required placeholder="Rue, numéro, bâtiment...">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="city">Ville *</label>
+                                <input type="text" id="city" name="city" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="postalCode">Code postal *</label>
+                                <input type="text" id="postalCode" name="postalCode" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="notes">Notes de commande (optionnel)</label>
+                            <textarea id="notes" name="notes" rows="3" placeholder="Instructions spéciales pour la livraison..."></textarea>
+                        </div>
+
+                        <h2 style="margin-top: 40px;">Méthode de paiement</h2>
+
+                        <div class="payment-methods-selection">
+                            {% for payment in paymentMethods %}
+                                <label class="payment-method-option">
+                                    <input type="radio" name="paymentMethod" value="{{ payment.id }}" required {% if loop.first %}checked{% endif %}>
+                                    <div class="payment-method-card">
+                                        <i class="{{ payment.icon }}"></i>
+                                        <span>{{ payment.name }}</span>
+                                    </div>
+                                </label>
+                            {% endfor %}
+                        </div>
+
+                        <div class="discount-code-section">
+                            <input type="text" id="discountCode" name="discountCode" placeholder="Code promo (optionnel)">
+                            <button type="button" id="applyDiscountBtn">Appliquer</button>
+                        </div>
+
+                        <div class="form-actions">
+                            <a href="{{ path('app_shop_cart') }}" class="back-btn">
+                                <i class="fas fa-arrow-left"></i> Retour au panier
+                            </a>
+                            <button type="submit" class="submit-order-btn">
+                                <i class="fas fa-lock"></i> Confirmer la commande
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Order Summary -->
+                <aside class="order-summary">
+                    <h3>Résumé de la commande</h3>
+                    
+                    <div class="order-items">
+                        {% for item in cartItems %}
+                            <div class="order-item">
+                                <div class="item-image">
+                                    {% if item.supplement.image %}
+                                        <img src="{{ asset('uploads/supplements/' ~ item.supplement.image) }}" alt="{{ item.supplement.name }}">
+                                    {% else %}
+                                        <img src="{{ asset('images/image_1.jpg') }}" alt="{{ item.supplement.name }}">
+                                    {% endif %}
+                                </div>
+                                <div class="item-info">
+                                    <h4>{{ item.supplement.name }}</h4>
+                                    <p>Quantité: {{ item.quantity }}</p>
+                                </div>
+                                <div class="item-price">{{ item.total }} DT</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="summary-totals">
+                        <div class="summary-row">
+                            <span>Sous-total</span>
+                            <span id="summarySubtotal">{{ subtotal }} DT</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Livraison</span>
+                            <span id="summaryShipping">{{ subtotal >= 100 ? 'GRATUIT' : '7 DT' }}</span>
+                        </div>
+                        <div class="summary-row discount-row" id="summaryDiscountRow" style="display: none;">
+                            <span>Réduction (<span id="discountCodeText"></span>)</span>
+                            <span id="summaryDiscount" class="discount-amount">-0.00 DT</span>
+                        </div>
+                        <div class="summary-row total-row">
+                            <span>Total</span>
+                            <span id="summaryTotal" class="total-price">{{ subtotal + (subtotal >= 100 ? 0 : 7) }} DT</span>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        let subtotal = {{ subtotal }};
+        let shipping = {{ subtotal >= 100 ? 0 : 7 }};
+        let discount = 0;
+        let discountCode = '';
+        let checkoutSubmitting = false;
+
+        // Apply discount code
+        $('#applyDiscountBtn').on('click', function() {
+            const code = $('#discountCode').val().trim();
+            if (code.toLowerCase() === 'ali123') {
+                discount = subtotal * 0.10;
+                discountCode = code;
+                $('#summaryDiscountRow').show();
+                $('#discountCodeText').text(code);
+                $('#summaryDiscount').text('-' + discount.toFixed(2) + ' DT');
+                updateTotal();
+                alert('Code promo appliqué! -10%');
+            } else if (code) {
+                alert('Code promo invalide');
+            }
+        });
+
+        function updateTotal() {
+            const total = subtotal + shipping - discount;
+            $('#summaryTotal').text(total.toFixed(2) + ' DT');
+        }
+
+        // Submit order
+        $('#checkoutForm').on('submit', function(e) {
+            e.preventDefault();
+            if (checkoutSubmitting) {
+                return;
+            }
+
+            const submitButton = $(this).find('button[type="submit"]');
+            const originalSubmitHtml = submitButton.html();
+            checkoutSubmitting = true;
+            submitButton.prop('disabled', true);
+            submitButton.html('<i class="fas fa-spinner fa-spin"></i> Traitement...');
+
+            const formData = {
+                firstName: $('#firstName').val(),
+                lastName: $('#lastName').val(),
+                email: $('#email').val(),
+                phone: $('#phone').val(),
+                address: $('#address').val(),
+                city: $('#city').val(),
+                postalCode: $('#postalCode').val(),
+                notes: $('#notes').val(),
+                paymentMethod: $('input[name="paymentMethod"]:checked').val(),
+                discountCode: discountCode
+            };
+
+            $.ajax({
+                url: '{{ path('app_shop_order_create') }}',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function(response) {
+                    if (!response.success || !response.orderNumber) {
+                        alert(response.message || 'La commande n\'a pas pu etre creee.');
+                        return;
+                    }
+
+                    // Check payment method to redirect appropriately
+                    const paymentMethod = $('input[name="paymentMethod"]:checked').closest('.payment-method-option').find('span').text().toLowerCase();
+
+                    if (paymentMethod.includes('visa') || paymentMethod.includes('mastercard')) {
+                        // Redirect to Visa payment page
+                        window.location.href = '{{ path('app_shop_payment_visa') }}?order=' + response.orderNumber;
+                    } else if (paymentMethod.includes('paypal')) {
+                        // Redirect to PayPal payment page
+                        window.location.href = '{{ path('app_shop_payment_paypal') }}?order=' + response.orderNumber;
+                    } else {
+                        // Cash on delivery - go directly to success page
+                        window.location.href = '{{ path('app_shop_order_success', {orderNumber: '__ORDER__'}) }}'.replace('__ORDER__', response.orderNumber);
+                    }
+                },
+                error: function(xhr) {
+                    alert('Erreur lors de la creation de la commande: ' + (xhr.responseJSON?.message || 'Erreur inconnue'));
+                },
+                complete: function() {
+                    checkoutSubmitting = false;
+                    submitButton.prop('disabled', false);
+                    submitButton.html(originalSubmitHtml);
+                }
+            });
+        });
+    </script>
+{% endblock %}
+

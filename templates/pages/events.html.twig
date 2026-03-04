@@ -1,0 +1,1274 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Events | Fitopia{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Sora:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --events-bg: #f5f8fb;
+      --events-surface: #ffffff;
+      --events-text: #0f172a;
+      --events-muted: #55627a;
+      --events-brand: #0f7a5f;
+      --events-brand-dark: #0b3a3d;
+      --events-border: #dde6ef;
+      --events-shadow: 0 20px 40px rgba(15, 32, 48, 0.08);
+    }
+    .events-shell {
+      background: radial-gradient(circle at 18% 10%, #e5fff3 0%, transparent 32%),
+                  radial-gradient(circle at 85% 12%, #e8f3ff 0%, transparent 30%),
+                  var(--events-bg);
+      padding: 48px 0 70px;
+      font-family: "Manrope", "Sora", sans-serif;
+      color: var(--events-text);
+    }
+    .events-container {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+    .events-hero {
+      background: linear-gradient(125deg, #0b3a3d 0%, #0f7a5f 55%, #3dcf9f 100%);
+      border-radius: 24px;
+      color: #fff;
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--events-shadow);
+      margin-bottom: 22px;
+    }
+    .events-hero::after {
+      content: "";
+      position: absolute;
+      right: -90px;
+      top: -90px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.11);
+    }
+    .events-hero-content {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 20px;
+      padding: 36px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-kicker {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 7px 14px;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .events-hero h1 {
+      margin: 0;
+      font-size: clamp(32px, 4.2vw, 52px);
+      font-weight: 800;
+      line-height: 1.05;
+    }
+    .hero-copy {
+      margin-top: 14px;
+      max-width: 48ch;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 18px;
+      line-height: 1.6;
+    }
+    .hero-ctas {
+      margin-top: 22px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .hero-btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hero-btn:hover { transform: translateY(-2px); }
+    .hero-btn-primary {
+      background: #fff;
+      color: #0b3a3d;
+      box-shadow: 0 12px 24px rgba(8, 26, 35, .2);
+    }
+    .hero-btn-secondary {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+    }
+    .featured-panel {
+      background: rgba(255, 255, 255, 0.17);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 16px;
+      padding: 18px;
+      backdrop-filter: blur(4px);
+    }
+    .featured-panel h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .featured-meta {
+      margin-top: 8px;
+      display: grid;
+      gap: 6px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, .9);
+    }
+    .trust-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .trust-badge {
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid var(--events-border);
+      color: #203047;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 8px 16px rgba(15, 32, 48, 0.06);
+    }
+    .loyalty-overview {
+      margin-top: 14px;
+      border: 1px solid var(--events-border);
+      border-radius: 16px;
+      background: #ffffff;
+      box-shadow: var(--events-shadow);
+      padding: 14px;
+    }
+    .loyalty-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .loyalty-title {
+      margin: 0;
+      color: #10324e;
+      font-size: 16px;
+      font-weight: 800;
+    }
+    .loyalty-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid transparent;
+    }
+    .loyalty-None { background: #f1f5f9; color: #475569; border-color: #d9e2ec; }
+    .loyalty-Bronze { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+    .loyalty-Silver { background: #e2e8f0; color: #334155; border-color: #cbd5e1; }
+    .loyalty-Gold { background: #fef08a; color: #854d0e; border-color: #fde047; }
+    .loyalty-VIP { background: #fee2e2; color: #9f1239; border-color: #fda4af; }
+    .loyalty-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .loyalty-metric {
+      border: 1px solid #e5edf4;
+      border-radius: 10px;
+      background: #f8fbff;
+      padding: 10px;
+    }
+    .loyalty-metric strong {
+      display: block;
+      font-size: 13px;
+      color: #1f3d61;
+    }
+    .loyalty-metric span {
+      color: #506176;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .loyalty-benefits {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .loyalty-benefit {
+      border: 1px solid #d9e5f1;
+      border-radius: 10px;
+      background: #fff;
+      padding: 8px 10px;
+    }
+    .loyalty-benefit strong {
+      display: block;
+      color: #183a59;
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+    .loyalty-benefit p {
+      margin: 0;
+      color: #576a80;
+      font-size: 12px;
+    }
+    .vip-lock-note {
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #9f1239;
+    }
+    .events-toolbar {
+      background: var(--events-surface);
+      border: 1px solid var(--events-border);
+      border-radius: 18px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1.4fr repeat(4, 1fr);
+      gap: 12px;
+      box-shadow: var(--events-shadow);
+      margin-bottom: 20px;
+    }
+    .recommend-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin: 14px 0 18px;
+    }
+    .recommend-card {
+      background: #fff;
+      border: 1px solid var(--events-border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 8px 18px rgba(15, 32, 48, 0.08);
+      display: flex;
+      flex-direction: column;
+    }
+    .recommend-image {
+      aspect-ratio: 16/9;
+      width: 100%;
+      object-fit: cover;
+      background: #e5edf5;
+    }
+    .recommend-body {
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+    .recommend-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .recommend-card h4 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.3;
+      color: #0f2139;
+    }
+    .recommend-score {
+      display: inline-flex;
+      border-radius: 999px;
+      background: #e9fbf3;
+      color: #0f7a5f;
+      border: 1px solid #b7f0d7;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+    }
+    .recommend-meta {
+      margin: 0;
+      color: #506176;
+      font-size: 12px;
+      display: grid;
+      gap: 3px;
+    }
+    .recommend-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 0;
+      border-radius: 10px;
+      text-decoration: none;
+      background: linear-gradient(120deg, #0b3a3d, #0f7a5f);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 9px 10px;
+    }
+    .recommend-action.disabled {
+      background: #d6dfe8;
+      color: #5c6a7f;
+      pointer-events: none;
+    }
+    .recommend-empty {
+      border: 1px solid var(--events-border);
+      border-radius: 12px;
+      background: #fff;
+      color: #55627a;
+      padding: 12px;
+      margin: 10px 0 18px;
+    }
+    .events-input, .events-select {
+      border: 1px solid #d5dfe9;
+      border-radius: 12px;
+      min-height: 44px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #173049;
+      width: 100%;
+      background: #fff;
+    }
+    .events-input:focus, .events-select:focus {
+      outline: none;
+      border-color: #3cae8c;
+      box-shadow: 0 0 0 3px rgba(60, 174, 140, .15);
+    }
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .event-card {
+      background: var(--events-surface);
+      border: 1px solid var(--events-border);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: var(--events-shadow);
+      transition: transform .22s ease, box-shadow .22s ease;
+      animation: cardIn .35s ease both;
+    }
+    .event-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 28px 44px rgba(15, 32, 48, 0.13);
+    }
+    .event-media {
+      aspect-ratio: 16/8;
+      width: 100%;
+      object-fit: cover;
+    }
+    .event-body {
+      padding: 16px;
+    }
+    .event-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .event-title {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 800;
+      color: #0f2139;
+    }
+    .state-badge {
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      font-weight: 800;
+    }
+    .state-open { background: #e9fbf3; color: #0f7a5f; }
+    .state-full { background: #ffe8e8; color: #ba3030; }
+    .event-engagement {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .engage-chip {
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #f4f7fb;
+      color: #29415f;
+      border: 1px solid #d8e2ee;
+    }
+    .engage-chip i {
+      margin-right: 4px;
+    }
+    .rating-stars {
+      display: inline-flex;
+      gap: 2px;
+      color: #f59e0b;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+    .badge-insight {
+      border-radius: 10px;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-left: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .badge-premium { background: #ffedd5; color: #9a3412; border: 1px solid #fdba74; }
+    .badge-recommended { background: #ecfeff; color: #0f766e; border: 1px solid #99f6e4; }
+    .badge-new { background: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; }
+    .event-actions {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .favorite-btn {
+      border: 1px solid #d8e2ee;
+      border-radius: 10px;
+      background: #fff;
+      color: #173049;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 9px 12px;
+      white-space: nowrap;
+    }
+    .favorite-btn.active {
+      border-color: #fda4af;
+      color: #be123c;
+      background: #fff1f2;
+    }
+    .favorite-btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+    .event-meta {
+      margin: 11px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: #415069;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .event-pill {
+      background: #f0f4f8;
+      border-radius: 999px;
+      padding: 7px 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .event-description {
+      margin: 0 0 15px;
+      color: var(--events-muted);
+      line-height: 1.65;
+      font-size: 16px;
+      min-height: 78px;
+    }
+    .event-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .event-price {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0e6f57;
+    }
+    .register-btn {
+      border: 0;
+      background: linear-gradient(120deg, #0b3a3d, #0f7a5f);
+      color: #fff;
+      font-weight: 800;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-radius: 12px;
+      padding: 11px 16px;
+      text-decoration: none;
+      transition: transform .2s ease, opacity .2s ease, box-shadow .2s ease;
+      box-shadow: 0 10px 18px rgba(11, 58, 61, .2);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .register-btn:hover { opacity: .95; transform: translateY(-2px); color: #fff; }
+    .register-btn.disabled {
+      background: #d6dfe8;
+      box-shadow: none;
+      color: #5c6a7f;
+      pointer-events: none;
+    }
+    .register-btn.priority {
+      background: linear-gradient(120deg, #1f4d8f, #0f7a5f);
+      box-shadow: 0 12px 20px rgba(31, 77, 143, 0.24);
+    }
+    .details-panel {
+      margin-top: 26px;
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid var(--events-border);
+      box-shadow: var(--events-shadow);
+      padding: 18px;
+    }
+    .details-header {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 18px;
+    }
+    .details-image {
+      width: 100%;
+      border-radius: 14px;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      margin-top: 12px;
+    }
+    .book-panel {
+      border: 1px solid var(--events-border);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fbfdff;
+    }
+    .book-panel h4 { margin: 0 0 8px; font-weight: 800; }
+    .book-panel .form-label { font-size: 13px; font-weight: 700; }
+    .book-panel .form-control {
+      border-radius: 10px;
+      min-height: 42px;
+      border: 1px solid #d6e2ed;
+    }
+    .book-panel .book-trust {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .book-chip {
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 999px;
+      border: 1px solid #d9e7f3;
+      color: #27405a;
+      padding: 5px 10px;
+      background: #fff;
+    }
+    .reviews-panel {
+      margin-top: 18px;
+      border: 1px solid var(--events-border);
+      border-radius: 14px;
+      background: #fcfdff;
+      padding: 14px;
+    }
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 14px;
+    }
+    .review-card {
+      border: 1px solid #dbe5ef;
+      border-radius: 12px;
+      background: #fff;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .review-card:last-child {
+      margin-bottom: 0;
+    }
+    .review-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+      color: #20354f;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .review-comment {
+      margin: 0;
+      color: #42556f;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+    .review-sort {
+      min-height: 38px;
+      border-radius: 10px;
+      border: 1px solid #cfdae6;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 700;
+      background: #fff;
+    }
+    .social-proof {
+      margin-top: 26px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .proof-card {
+      background: #fff;
+      border: 1px solid var(--events-border);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 12px 22px rgba(15, 32, 48, 0.06);
+    }
+    .proof-card p {
+      margin: 0;
+      color: #44526a;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    .proof-author {
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #0f2b45;
+    }
+    .empty-note {
+      background: #fff;
+      border: 1px solid var(--events-border);
+      border-radius: 14px;
+      padding: 18px;
+      color: var(--events-muted);
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 1080px) {
+      .events-toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .recommend-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .events-grid { grid-template-columns: 1fr; }
+      .details-header { grid-template-columns: 1fr; }
+      .reviews-grid { grid-template-columns: 1fr; }
+      .social-proof { grid-template-columns: 1fr; }
+      .loyalty-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .loyalty-benefits { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .events-shell { padding-top: 28px; }
+      .events-hero-content { grid-template-columns: 1fr; padding: 24px; }
+      .hero-copy { font-size: 16px; }
+      .events-toolbar { grid-template-columns: 1fr; padding: 12px; }
+      .recommend-grid { grid-template-columns: 1fr; }
+      .event-title { font-size: 19px; }
+      .event-description { min-height: 0; font-size: 15px; }
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+{% set events = events|default([]) %}
+{% set stats = stats|default({}) %}
+{% set favoriteCounts = favoriteCounts|default({}) %}
+{% set favoritedEventIds = favoritedEventIds|default([]) %}
+{% set reviewStats = reviewStats|default({}) %}
+{% set selectedEvent = selectedEvent|default(null) %}
+{% set upcomingEvent = upcomingEvent|default(null) %}
+{% set selectedEventReviews = selectedEventReviews|default([]) %}
+{% set selectedReviewSort = selectedReviewSort|default('recent') %}
+{% set mySelectedEventReview = mySelectedEventReview|default(null) %}
+{% set participantEmail = participantEmail|default(null) %}
+{% set loyaltyTier = loyaltyTier|default('None') %}
+{% set loyaltyStats = loyaltyStats|default({'countConfirmed': 0, 'totalAmount': 0, 'lastReservationDate': null}) %}
+{% set loyaltyBenefits = loyaltyBenefits|default([]) %}
+{% set loyaltyProgress = loyaltyProgress|default({'current': 0, 'needed': 1, 'nextTier': 'Bronze'}) %}
+{% set canAccessVipEvents = canAccessVipEvents|default(false) %}
+{% set vipReservationThreshold = vipReservationThreshold|default(5) %}
+{% set recommendedEvents = recommendedEvents|default([]) %}
+{% set popularityScores = popularityScores|default({}) %}
+{% set waitlistEntriesByEvent = waitlistEntriesByEvent|default({}) %}
+{% set eventIsFullById = eventIsFullById|default({}) %}
+{% set eventRemainingPlacesById = eventRemainingPlacesById|default({}) %}
+{% set typeImages = {
+  'Yoga': 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1400&q=80',
+  'Nutrition': 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1400&q=80',
+  'Sport': 'https://images.unsplash.com/photo-1549060279-7e168fcee0c2?auto=format&fit=crop&w=1400&q=80',
+  'Cardio': 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1400&q=80'
+} %}
+
+<section class="events-shell">
+  <div class="events-container">
+    {% for message in app.flashes('success') %}<div class="alert alert-success">{{ message }}</div>{% endfor %}
+    {% for message in app.flashes('error') %}<div class="alert alert-danger">{{ message }}</div>{% endfor %}
+    {% for message in app.flashes('info') %}<div class="alert alert-info">{{ message }}</div>{% endfor %}
+
+    <header class="events-hero">
+      <div class="events-hero-content">
+        <div>
+          <span class="hero-kicker">Fitopia Events 2026</span>
+          <h1>Move With Purpose. Book Your Next Wellness Event.</h1>
+          <p class="hero-copy">
+            Premium coaching experiences, real community energy, and a fast secure registration flow.
+            Find the right event and reserve your spot in under a minute.
+          </p>
+          <div class="hero-ctas">
+            <a class="hero-btn hero-btn-primary" href="#events-catalog"><i class="fa fa-bolt"></i> Explore Events</a>
+            {% if upcomingEvent %}
+              {% set isUpcomingVipLocked = upcomingEvent.isPremium and not canAccessVipEvents %}
+              <a class="hero-btn hero-btn-secondary" {% if isUpcomingVipLocked %}style="opacity:.6;pointer-events:none;"{% endif %} href="{% if isUpcomingVipLocked %}#{% else %}{{ path('app_event_reservation_new', {id: upcomingEvent.id}) }}{% endif %}"><i class="fa fa-calendar-check-o"></i> Register Next Event</a>
+            {% endif %}
+          </div>
+        </div>
+        <aside class="featured-panel">
+          <h3><i class="fa fa-star"></i> Next Upcoming Event</h3>
+          {% if upcomingEvent %}
+            {% set featuredCount = stats[upcomingEvent.id].participants|default(0) %}
+            <div class="featured-meta">
+              <div><strong>{{ upcomingEvent.titre }}</strong></div>
+              <div><i class="fa fa-calendar"></i> {{ upcomingEvent.dateEvent|date('Y-m-d') }}</div>
+              <div><i class="fa fa-map-marker"></i> {{ upcomingEvent.lieu }}</div>
+              <div><i class="fa fa-users"></i> {{ featuredCount }}/{{ upcomingEvent.capacite }} participants</div>
+              <div><i class="fa fa-money"></i> {% if upcomingEvent.prixEvent|default('0') > 0 %}{{ upcomingEvent.prixEvent }} DT{% else %}Free{% endif %}</div>
+            </div>
+          {% else %}
+            <div class="featured-meta"><div>No event is scheduled yet.</div></div>
+          {% endif %}
+        </aside>
+      </div>
+    </header>
+
+    <div class="trust-row">
+      <span class="trust-badge"><i class="fa fa-check-circle"></i> Verified Coaches</span>
+      <span class="trust-badge"><i class="fa fa-lock"></i> Secure Registration</span>
+      <span class="trust-badge"><i class="fa fa-shield"></i> GDPR Ready</span>
+      <span class="trust-badge"><i class="fa fa-star"></i> Rated 4.8/5 by Members</span>
+      <a class="trust-badge" href="{{ path('app_event_favorites') }}"><i class="fa fa-heart"></i> Mes favoris</a>
+    </div>
+    <section aria-label="Recommandations IA">
+      <h3 class="h5 mb-2">Recommande pour vous</h3>
+      {% if recommendedEvents is not empty %}
+        <div class="recommend-grid">
+          {% for item in recommendedEvents %}
+            {% set recEvent = item.event %}
+            {% set isRecVipLocked = recEvent.isPremium and not canAccessVipEvents %}
+            {% set recImage = (recEvent.imageEvent and recEvent.imageEvent starts with 'event-') ? asset('uploads/events/' ~ recEvent.imageEvent) : typeImages[recEvent.typeEvent]|default('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1400&q=80') %}
+            <article class="recommend-card">
+              <img class="recommend-image" src="{{ recImage }}" alt="{{ recEvent.titre }}">
+              <div class="recommend-body">
+                <div class="recommend-top">
+                  <span class="recommend-score">Score {{ item.score }}</span>
+                  {% if recEvent.isPremium %}
+                    <span class="badge-insight badge-premium"><i class="fa fa-certificate"></i> Premium</span>
+                  {% endif %}
+                </div>
+                <h4>{{ recEvent.titre }}</h4>
+                <p class="recommend-meta">
+                  <span><i class="fa fa-calendar"></i> {{ recEvent.dateEvent|date('Y-m-d') }}</span>
+                  <span><i class="fa fa-map-marker"></i> {{ recEvent.lieu }}</span>
+                </p>
+                <a class="recommend-action {% if isRecVipLocked %}disabled{% endif %}" href="{% if isRecVipLocked %}#{% else %}{{ path('app_event_reservation_new', {id: recEvent.id}) }}{% endif %}">
+                  <i class="fa fa-check-circle"></i> {{ isRecVipLocked ? 'Reserve aux VIP' : 'Reserver' }}
+                </a>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="recommend-empty">Aucune recommandation disponible pour le moment.</p>
+      {% endif %}
+    </section>
+
+    <section class="loyalty-overview">
+      <div class="loyalty-top">
+        <h3 class="loyalty-title"><i class="fa fa-trophy"></i> Mon statut fidelite</h3>
+        <span class="loyalty-badge loyalty-{{ loyaltyTier }}">{{ loyaltyTier }}</span>
+      </div>
+      <div class="loyalty-grid">
+        <div class="loyalty-metric">
+          <strong>Reservations confirmees</strong>
+          <span>{{ loyaltyStats.countConfirmed|default(0) }}</span>
+        </div>
+        <div class="loyalty-metric">
+          <strong>Total depense</strong>
+          <span>{{ loyaltyStats.totalAmount|default(0)|number_format(2, '.', ' ') }} DT</span>
+        </div>
+        <div class="loyalty-metric">
+          <strong>Progression</strong>
+          <span>{{ loyaltyProgress.current|default(0) }}/{{ loyaltyProgress.needed|default(1) }} vers {{ loyaltyProgress.nextTier|default('Bronze') }}</span>
+        </div>
+        <div class="loyalty-metric">
+          <strong>Acces VIP</strong>
+          <span>{{ canAccessVipEvents ? 'Actif' : 'Non debloque' }}</span>
+        </div>
+      </div>
+      {% if loyaltyBenefits is not empty %}
+        <div class="loyalty-benefits">
+          {% for benefit in loyaltyBenefits %}
+            <article class="loyalty-benefit">
+              <strong>{{ benefit.title }}</strong>
+              <p>{{ benefit.text }}</p>
+            </article>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </section>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">Nos evenements</h2>
+      <a href="{{ path('app_reservation_history_index') }}" class="btn btn-outline-dark">
+        <i class="fa fa-book mr-1"></i> Mes reservations
+        {% if reservationsCount > 0 %}
+          <span class="badge bg-dark text-white ms-2">{{ reservationsCount }}</span>
+        {% endif %}
+      </a>
+    </div>
+
+    <section class="events-toolbar" id="events-catalog" aria-label="Events filters">
+      <input id="eventSearch" class="events-input" type="search" placeholder="Search by title, location, or category..." value="{{ search|default('') }}">
+      <select id="eventCategory" class="events-select">
+        <option value="">All categories</option>
+        {% for type in types|default([]) %}<option value="{{ type }}">{{ type }}</option>{% endfor %}
+      </select>
+      <select id="eventDateFilter" class="events-select">
+        <option value="">All dates</option>
+        <option value="upcoming">Upcoming only</option>
+        <option value="this_month">This month</option>
+      </select>
+      <select id="eventPriceFilter" class="events-select">
+        <option value="">All prices</option>
+        <option value="free">Free</option>
+        <option value="paid">Paid</option>
+        <option value="under25">Under 25 DT</option>
+        <option value="under50">Under 50 DT</option>
+      </select>
+      <select id="eventSort" class="events-select">
+        <option value="date_asc">Sort: Date (soonest)</option>
+        <option value="date_desc">Sort: Date (latest)</option>
+        <option value="price_asc">Sort: Price (low-high)</option>
+        <option value="price_desc">Sort: Price (high-low)</option>
+        <option value="popularity_desc">Sort: Most popular</option>
+      </select>
+    </section>
+
+    <div class="events-grid" id="eventsGrid">
+      {% if events is empty %}
+        <div class="empty-note">No events are available right now.</div>
+      {% endif %}
+      {% for event in events %}
+        {% set participants = stats[event.id].participants|default(0) %}
+        {% set favoritesCount = favoriteCounts[event.id]|default(0) %}
+        {% set isFavorited = event.id in favoritedEventIds %}
+        {% set review = reviewStats[event.id]|default({'average': 0, 'count': 0}) %}
+        {% set avgRating = review.average|default(0) + 0 %}
+        {% set reviewCount = review.count|default(0) %}
+        {% set popularity = popularityScores[event.id]|default({'score': 0}) %}
+        {% set popularityScore = popularity.score|default(0) + 0 %}
+        {% set badgeLabel = '' %}
+        {% set badgeClass = '' %}
+        {% if event.isPremium %}
+          {% set badgeLabel = 'Evenement Premium' %}
+          {% set badgeClass = 'badge-premium' %}
+        {% elseif avgRating >= 4.0 %}
+          {% set badgeLabel = 'Recommande' %}
+          {% set badgeClass = 'badge-recommended' %}
+        {% elseif reviewCount < 3 %}
+          {% set badgeLabel = 'Nouveau' %}
+          {% set badgeClass = 'badge-new' %}
+        {% endif %}
+        {% set isFull = eventIsFullById[event.id]|default(false) %}
+        {% set remainingPlaces = eventRemainingPlacesById[event.id]|default(event.capacite) %}
+        {% set isVipEvent = event.isPremium %}
+        {% set isVipLocked = isVipEvent and not canAccessVipEvents %}
+        {% set waitlistEntry = waitlistEntriesByEvent[event.id]|default(null) %}
+        {% set price = event.prixEvent|default('0') + 0 %}
+        {% set imageSrc = (event.imageEvent and event.imageEvent starts with 'event-') ? asset('uploads/events/' ~ event.imageEvent) : typeImages[event.typeEvent]|default('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1400&q=80') %}
+        <article class="event-card js-event-card"
+          data-title="{{ event.titre|lower }}"
+          data-location="{{ event.lieu|lower }}"
+          data-category="{{ event.typeEvent|lower }}"
+          data-date="{{ event.dateEvent|date('Y-m-d') }}"
+          data-price="{{ price }}"
+          data-popularity="{{ participants }}">
+          <img class="event-media" src="{{ imageSrc }}" alt="{{ event.titre }}">
+          <div class="event-body">
+            <div class="event-top">
+              <h3 class="event-title">
+                {{ event.titre }}
+                {% if badgeLabel %}
+                  <span class="badge-insight {{ badgeClass }}">{{ badgeLabel }}</span>
+                {% endif %}
+                {% if popularityScore > 20 %}
+                  <span class="badge-insight badge-recommended"><i class="fa fa-fire"></i> Tendance</span>
+                {% endif %}
+                {% if avgRating >= 4.5 %}
+                  <span class="badge-insight badge-premium"><i class="fa fa-star"></i> Top Note</span>
+                {% endif %}
+              </h3>
+              <span class="state-badge {% if isFull %}state-full{% else %}state-open{% endif %}">{% if isFull %}Complet{% else %}Ouvert{% endif %}</span>
+            </div>
+            <div class="event-engagement">
+              <span class="engage-chip"><i class="fa fa-heart text-danger"></i> {{ favoritesCount }} favoris</span>
+              <span class="engage-chip">
+                <span class="rating-stars">
+                  {% for i in 1..5 %}
+                    <i class="fa {% if avgRating >= i %}fa-star{% elseif avgRating >= (i - 0.5) %}fa-star-half-o{% else %}fa-star-o{% endif %}"></i>
+                  {% endfor %}
+                </span>
+                {{ avgRating|number_format(1, '.', ',') }}/5 ({{ reviewCount }})
+              </span>
+            </div>
+            <div class="event-meta">
+              <span class="event-pill"><i class="fa fa-calendar"></i> {{ event.dateEvent|date('Y-m-d') }}</span>
+              <span class="event-pill"><i class="fa fa-map-marker"></i> {{ event.lieu }}</span>
+              <span class="event-pill"><i class="fa fa-tag"></i> {{ event.typeEvent }}</span>
+              <span class="event-pill"><i class="fa fa-ticket"></i> {{ remainingPlaces }} places restantes</span>
+            </div>
+            <p class="event-description">{{ event.description|length > 170 ? event.description|slice(0, 170) ~ '...' : event.description }}</p>
+            <div class="event-actions">
+              <form method="post" action="{{ path('app_event_favorite_toggle', {id: event.id}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('event_favorite_' ~ event.id) }}">
+                <input type="hidden" name="redirect_url" value="{{ app.request.uri }}">
+                <button type="submit" class="favorite-btn {% if isFavorited %}active{% endif %}" {% if not participantEmail %}disabled title="Connectez-vous ou reservez d'abord pour activer les favoris"{% endif %}>
+                  {% if isFavorited %}💔 Retirer{% else %}❤️ Favori{% endif %}
+                </button>
+              </form>
+              <div class="event-footer">
+                <div class="event-price">{% if price > 0 %}{{ event.prixEvent }} DT{% else %}Free{% endif %}</div>
+                <a class="register-btn" href="{{ path('app_event_show', {id: event.id}) }}">
+                  <i class="fa fa-info-circle"></i> Informations
+                </a>
+                {% if isFull and not isVipLocked %}
+                  {% if waitlistEntry %}
+                    <span class="engage-chip">Deja inscrit en waitlist ({{ waitlistEntry.status }})</span>
+                  {% else %}
+                    <form method="post" action="{{ path('app_waitlist_join', {id: event.id}) }}" class="d-flex flex-wrap gap-2 align-items-center">
+                      <input type="hidden" name="_token" value="{{ csrf_token('waitlist_join_' ~ event.id) }}">
+                      <input type="text" name="nom" class="events-input" style="min-height:38px;max-width:170px;" placeholder="Votre nom" required maxlength="150">
+                      <input type="email" name="email" class="events-input" style="min-height:38px;max-width:190px;" placeholder="Votre email" value="{{ participantEmail|default('') }}" required maxlength="150">
+                      <button type="submit" class="register-btn"><i class="fa fa-hourglass-half"></i> Rejoindre la liste d attente</button>
+                    </form>
+                  {% endif %}
+                {% else %}
+                  <a class="register-btn {% if loyaltyTier in ['Silver', 'Gold', 'VIP'] %}priority{% endif %} {% if isVipLocked %}disabled{% endif %}" href="{% if isVipLocked %}#{% else %}{{ path('app_event_reservation_new', {id: event.id}) }}{% endif %}">
+                    <i class="fa fa-check-circle"></i> {{ isVipLocked ? 'Reserve aux VIP' : 'Reserver' }}
+                  </a>
+                {% endif %}
+                {% if loyaltyTier in ['Silver', 'Gold', 'VIP'] %}
+                  <span class="engage-chip">Reservation prioritaire</span>
+                {% endif %}
+                {% if isVipLocked %}
+                  <span class="vip-lock-note">Reserve aux VIP. Deviens VIP a partir de {{ vipReservationThreshold }} reservations.</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+    {% if selectedEvent %}
+      {% set participants = stats[selectedEvent.id].participants|default(0) %}
+      {% set selectedFavoriteCount = favoriteCounts[selectedEvent.id]|default(0) %}
+      {% set selectedIsFavorited = selectedEvent.id in favoritedEventIds %}
+      {% set selectedReview = reviewStats[selectedEvent.id]|default({'average': 0, 'count': 0}) %}
+      {% set selectedAvgRating = selectedReview.average|default(0) + 0 %}
+      {% set selectedReviewCount = selectedReview.count|default(0) %}
+      {% set selectedPopularity = popularityScores[selectedEvent.id]|default({'score': 0}) %}
+      {% set selectedPopularityScore = selectedPopularity.score|default(0) + 0 %}
+      {% set isFull = eventIsFullById[selectedEvent.id]|default(false) %}
+      {% set selectedRemainingPlaces = eventRemainingPlacesById[selectedEvent.id]|default(selectedEvent.capacite) %}
+      {% set isSelectedVipEvent = selectedEvent.isPremium %}
+      {% set isSelectedVipLocked = isSelectedVipEvent and not canAccessVipEvents %}
+      {% set selectedWaitlistEntry = waitlistEntriesByEvent[selectedEvent.id]|default(null) %}
+      {% set selectedPrice = selectedEvent.prixEvent|default('0') + 0 %}
+      {% set selectedImage = (selectedEvent.imageEvent and selectedEvent.imageEvent starts with 'event-') ? asset('uploads/events/' ~ selectedEvent.imageEvent) : typeImages[selectedEvent.typeEvent]|default('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1400&q=80') %}
+      <section class="details-panel" id="event-register">
+        <div class="details-header">
+          <div>
+            <h3 style="font-size:30px;line-height:1.1;margin:0;font-weight:800;">
+              {{ selectedEvent.titre }}
+              {% if selectedPopularityScore > 20 %}
+                <span class="badge-insight badge-recommended"><i class="fa fa-fire"></i> Tendance</span>
+              {% endif %}
+              {% if selectedEvent.isPremium %}
+                <span class="badge-insight badge-premium"><i class="fa fa-certificate"></i> Premium</span>
+              {% endif %}
+              {% if selectedAvgRating >= 4.5 %}
+                <span class="badge-insight badge-premium"><i class="fa fa-star"></i> Top Note</span>
+              {% endif %}
+            </h3>
+            <div class="event-meta">
+              <span class="event-pill"><i class="fa fa-calendar"></i> {{ selectedEvent.dateEvent|date('Y-m-d') }}</span>
+              <span class="event-pill"><i class="fa fa-map-marker"></i> {{ selectedEvent.lieu }}</span>
+              <span class="event-pill"><i class="fa fa-users"></i> {{ participants }} inscrits</span>
+              <span class="event-pill"><i class="fa fa-ticket"></i> {{ selectedRemainingPlaces }} places restantes</span>
+            </div>
+            <div class="event-engagement">
+              <span class="engage-chip"><i class="fa fa-heart text-danger"></i> {{ selectedFavoriteCount }} favoris</span>
+              <span class="engage-chip">
+                <span class="rating-stars">
+                  {% for i in 1..5 %}
+                    <i class="fa {% if selectedAvgRating >= i %}fa-star{% elseif selectedAvgRating >= (i - 0.5) %}fa-star-half-o{% else %}fa-star-o{% endif %}"></i>
+                  {% endfor %}
+                </span>
+                {{ selectedAvgRating|number_format(1, '.', ',') }}/5 ({{ selectedReviewCount }} avis)
+              </span>
+            </div>
+            <form method="post" action="{{ path('app_event_favorite_toggle', {id: selectedEvent.id}) }}" class="mb-2">
+              <input type="hidden" name="_token" value="{{ csrf_token('event_favorite_' ~ selectedEvent.id) }}">
+              <input type="hidden" name="redirect_url" value="{{ app.request.uri }}">
+              <button type="submit" class="favorite-btn {% if selectedIsFavorited %}active{% endif %}" {% if not participantEmail %}disabled title="Connectez-vous ou reservez d'abord pour activer les favoris"{% endif %}>
+                {% if selectedIsFavorited %}💔 Retirer des favoris{% else %}❤️ Ajouter aux favoris{% endif %}
+              </button>
+            </form>
+            <p class="event-description" style="min-height:auto;">{{ selectedEvent.description|nl2br }}</p>
+            <img class="details-image" src="{{ selectedImage }}" alt="{{ selectedEvent.titre }}">
+          </div>
+          <aside class="book-panel">
+            <h4>Reserver votre place</h4>
+            <p class="text-muted mb-2">Passez a la page reservation pour confirmer votre participation.</p>
+            {% if isSelectedVipLocked %}
+              <div class="alert alert-warning mb-0">
+                Reserve aux VIP. Deviens VIP a partir de {{ vipReservationThreshold }} reservations.
+              </div>
+            {% elseif isFull %}
+              {% if selectedWaitlistEntry %}
+                <div class="alert alert-info mb-0">
+                  Vous etes deja sur la liste d attente ({{ selectedWaitlistEntry.status }}).
+                </div>
+              {% else %}
+                <div class="alert alert-warning mb-2">Cet evenement est complet.</div>
+                <form method="post" action="{{ path('app_waitlist_join', {id: selectedEvent.id}) }}">
+                  <input type="hidden" name="_token" value="{{ csrf_token('waitlist_join_' ~ selectedEvent.id) }}">
+                  <div class="mb-2">
+                    <input type="text" name="nom" class="form-control" placeholder="Votre nom" required maxlength="150">
+                  </div>
+                  <div class="mb-2">
+                    <input type="email" name="email" class="form-control" placeholder="Votre email" value="{{ participantEmail|default('') }}" required maxlength="150">
+                  </div>
+                  <button type="submit" class="register-btn w-100 justify-content-center">
+                    <i class="fa fa-hourglass-half"></i> Rejoindre la liste d attente
+                  </button>
+                </form>
+              {% endif %}
+            {% else %}
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong style="font-size:20px;color:#0b6d57;">{% if selectedPrice > 0 %}{{ selectedEvent.prixEvent }} DT{% else %}Gratuit{% endif %}</strong>
+                <small class="text-muted">{{ selectedRemainingPlaces }} places restantes</small>
+              </div>
+              <a class="register-btn w-100 justify-content-center {% if loyaltyTier in ['Silver', 'Gold', 'VIP'] %}priority{% endif %}" href="{{ path('app_event_reservation_new', {id: selectedEvent.id}) }}">
+                <i class="fa fa-check"></i> Continuer la reservation
+              </a>
+              <div class="book-trust">
+                <span class="book-chip">Reservation directe</span>
+                <span class="book-chip">Confirmation immediate</span>
+                <span class="book-chip">Aucun paiement en ligne</span>
+                {% if loyaltyTier in ['Silver', 'Gold', 'VIP'] %}
+                  <span class="book-chip">Reservation prioritaire</span>
+                {% endif %}
+              </div>
+            {% endif %}
+          </aside>
+        </div>
+        <div class="reviews-panel">
+          <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+            <h4 class="mb-0">Avis & Evaluation</h4>
+            <div class="d-flex align-items-center gap-2">
+              <span class="engage-chip">
+                <span class="rating-stars">
+                  {% for i in 1..5 %}
+                    <i class="fa {% if selectedAvgRating >= i %}fa-star{% elseif selectedAvgRating >= (i - 0.5) %}fa-star-half-o{% else %}fa-star-o{% endif %}"></i>
+                  {% endfor %}
+                </span>
+                {{ selectedAvgRating|number_format(1, '.', ',') }}/5 ({{ selectedReviewCount }} avis)
+              </span>
+              <select id="reviewSortSelect" class="review-sort">
+                <option value="recent" {% if selectedReviewSort == 'recent' %}selected{% endif %}>Plus recents</option>
+                <option value="best" {% if selectedReviewSort == 'best' %}selected{% endif %}>Meilleures notes</option>
+              </select>
+            </div>
+          </div>
+          <div class="reviews-grid">
+            <div>
+              <h5 class="h6 mb-2">{{ mySelectedEventReview ? 'Modifier mon avis' : 'Laisser un avis' }}</h5>
+              {% if participantEmail %}
+                <form method="post" action="{{ path('app_event_review_upsert', {id: selectedEvent.id}) }}" novalidate>
+                  <input type="hidden" name="_token" value="{{ csrf_token('event_review_' ~ selectedEvent.id) }}">
+                  <input type="hidden" name="redirect_url" value="{{ app.request.uri }}">
+                  <div class="mb-2">
+                    <label class="form-label">Note</label>
+                    <select class="form-control" name="note">
+                      {% set selectedNote = mySelectedEventReview ? mySelectedEventReview.note : 5 %}
+                      {% for note in 1..5 %}
+                        <option value="{{ note }}" {% if selectedNote == note %}selected{% endif %}>{{ note }}/5</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="mb-2">
+                    <label class="form-label">Commentaire</label>
+                    <textarea class="form-control" name="commentaire" rows="4">{{ mySelectedEventReview ? mySelectedEventReview.commentaire : '' }}</textarea>
+                  </div>
+                  <button class="register-btn w-100 justify-content-center" type="submit">
+                    <i class="fa fa-star"></i> {{ mySelectedEventReview ? 'Mettre a jour mon avis' : 'Publier mon avis' }}
+                  </button>
+                </form>
+              {% else %}
+                <div class="alert alert-warning mb-0">Connectez-vous ou reservez un evenement pour pouvoir laisser un avis.</div>
+              {% endif %}
+            </div>
+            <div>
+              {% if selectedEventReviews is empty %}
+                <div class="alert alert-info mb-0">Aucun avis pour le moment.</div>
+              {% else %}
+                {% for review in selectedEventReviews %}
+                  <article class="review-card">
+                    <div class="review-head">
+                      <span>{{ review.emailParticipant }}</span>
+                      <span>
+                        <span class="rating-stars">
+                          {% for i in 1..5 %}
+                            <i class="fa {% if review.note >= i %}fa-star{% else %}fa-star-o{% endif %}"></i>
+                          {% endfor %}
+                        </span>
+                        {{ review.note }}/5
+                      </span>
+                    </div>
+                    <p class="review-comment">{{ review.commentaire }}</p>
+                    <div class="text-muted small mt-2">
+                      {{ review.createdAt ? review.createdAt|date('Y-m-d H:i') : '' }}
+                      {% if review.updatedAt %} • modifie le {{ review.updatedAt|date('Y-m-d H:i') }}{% endif %}
+                    </div>
+                  </article>
+                {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </section>
+    {% endif %}
+
+    <section class="social-proof">
+      <article class="proof-card">
+        <p>"Fitopia events are the first wellness sessions I never miss. Coaching quality is elite."</p>
+        <div class="proof-author">Nadia H. • Member</div>
+      </article>
+      <article class="proof-card">
+        <p>"Registration is fast and clear. I always know what to expect before I arrive."</p>
+        <div class="proof-author">Karim B. • Athlete</div>
+      </article>
+      <article class="proof-card">
+        <p>"Great balance between nutrition and training events. The platform feels premium."</p>
+        <div class="proof-author">Sarra M. • Coach</div>
+      </article>
+    </section>
+  </div>
+</section>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const cards = Array.from(document.querySelectorAll('.js-event-card'));
+      const searchInput = document.getElementById('eventSearch');
+      const categorySelect = document.getElementById('eventCategory');
+      const dateSelect = document.getElementById('eventDateFilter');
+      const priceSelect = document.getElementById('eventPriceFilter');
+      const sortSelect = document.getElementById('eventSort');
+      const reviewSortSelect = document.getElementById('reviewSortSelect');
+      const grid = document.getElementById('eventsGrid');
+
+      reviewSortSelect?.addEventListener('change', () => {
+        const url = new URL(window.location.href);
+        url.searchParams.set('review_sort', reviewSortSelect.value || 'recent');
+        window.location.href = url.toString();
+      });
+
+      if (!grid || cards.length === 0) return;
+
+      const getDateNum = (value) => new Date(value + 'T00:00:00').getTime();
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).getTime();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
+      function matchesFilters(card) {
+        const q = (searchInput?.value || '').trim().toLowerCase();
+        const cat = (categorySelect?.value || '').toLowerCase();
+        const dateMode = dateSelect?.value || '';
+        const priceMode = priceSelect?.value || '';
+
+        const title = card.dataset.title || '';
+        const location = card.dataset.location || '';
+        const category = card.dataset.category || '';
+        const eventDate = getDateNum(card.dataset.date || '');
+        const price = Number(card.dataset.price || 0);
+
+        const searchOk = q === '' || title.includes(q) || location.includes(q) || category.includes(q);
+        const catOk = cat === '' || category === cat.toLowerCase();
+        const dateOk =
+          dateMode === '' ||
+          (dateMode === 'upcoming' && eventDate >= today) ||
+          (dateMode === 'this_month' && eventDate >= monthStart && eventDate <= monthEnd);
+        const priceOk =
+          priceMode === '' ||
+          (priceMode === 'free' && price === 0) ||
+          (priceMode === 'paid' && price > 0) ||
+          (priceMode === 'under25' && price <= 25) ||
+          (priceMode === 'under50' && price <= 50);
+
+        return searchOk && catOk && dateOk && priceOk;
+      }
+
+      function sortCards(list) {
+        const mode = sortSelect?.value || 'date_asc';
+        return list.sort((a, b) => {
+          const dateA = getDateNum(a.dataset.date || '');
+          const dateB = getDateNum(b.dataset.date || '');
+          const priceA = Number(a.dataset.price || 0);
+          const priceB = Number(b.dataset.price || 0);
+          const popA = Number(a.dataset.popularity || 0);
+          const popB = Number(b.dataset.popularity || 0);
+
+          if (mode === 'date_desc') return dateB - dateA;
+          if (mode === 'price_asc') return priceA - priceB;
+          if (mode === 'price_desc') return priceB - priceA;
+          if (mode === 'popularity_desc') return popB - popA;
+          return dateA - dateB;
+        });
+      }
+
+      function applyFilters() {
+        const visible = sortCards(cards.filter(matchesFilters));
+        grid.innerHTML = '';
+        visible.forEach((card) => grid.appendChild(card));
+        if (visible.length === 0) {
+          const note = document.createElement('div');
+          note.className = 'empty-note';
+          note.textContent = 'No events match your filters. Try broadening your selection.';
+          grid.appendChild(note);
+        }
+      }
+
+      [searchInput, categorySelect, dateSelect, priceSelect, sortSelect].forEach((el) => {
+        el?.addEventListener('input', applyFilters);
+        el?.addEventListener('change', applyFilters);
+      });
+
+      applyFilters();
+    });
+  </script>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+

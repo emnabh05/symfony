@@ -1,0 +1,10 @@
+#!/usr/bin/env php
+<?php
+
+if (!is_file(dirname(__DIR__).'/vendor/bin/simple-phpunit')) {
+    echo "vendor/bin/simple-phpunit not found. Run: composer install\n";
+    exit(1);
+}
+
+passthru('php '.escapeshellarg(dirname(__DIR__).'/vendor/bin/simple-phpunit').' '.implode(' ', array_map('escapeshellarg', array_slice($argv, 1))), $exitCode);
+exit($exitCode);

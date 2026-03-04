@@ -1,0 +1,779 @@
+{% extends 'shop/base.html.twig' %}
+
+{% block title %}Shopping Cart - Fitopia Supplements{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Page Title */
+        .page-title {
+            background: linear-gradient(135deg, #0B2C3D 0%, #1B5E4B 100%);
+            padding: 60px 0;
+            text-align: center;
+            color: white;
+        }
+
+        .page-title h1 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            opacity: 0.9;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cart Section */
+        .cart-section {
+            padding: 80px 0;
+            background: #f8fafc;
+            min-height: 60vh;
+        }
+
+        /* Empty Cart */
+        .empty-cart {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .empty-cart i {
+            font-size: 80px;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        .empty-cart h2 {
+            font-size: 28px;
+            color: #0B2C3D;
+            margin-bottom: 10px;
+        }
+
+        .empty-cart p {
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #1B5E4B 0%, #0B2C3D 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(27, 94, 75, 0.4);
+        }
+
+        /* Cart Layout */
+        .cart-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            animation: slideIn 0.6s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cart Items */
+        .cart-main {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .cart-items {
+            margin-bottom: 30px;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 100px 1fr 120px 150px 100px 50px;
+            gap: 20px;
+            align-items: center;
+            padding: 25px;
+            border-bottom: 2px solid #f1f5f9;
+            transition: all 0.3s ease;
+            animation: fadeInItem 0.5s ease;
+        }
+
+        @keyframes fadeInItem {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .cart-item:hover {
+            background: #f8fafc;
+            border-radius: 15px;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .cart-item:hover .item-image img {
+            transform: scale(1.1);
+        }
+
+        .item-details h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0B2C3D;
+            margin-bottom: 5px;
+        }
+
+        .item-brand {
+            font-size: 13px;
+            color: #1B5E4B;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .item-category {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .item-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1B5E4B;
+        }
+
+        /* Quantity Controls */
+        .item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8fafc;
+            padding: 8px;
+            border-radius: 12px;
+        }
+
+        .qty-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            background: white;
+            color: #0B2C3D;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .qty-btn:hover {
+            background: linear-gradient(135deg, #1B5E4B 0%, #0B2C3D 100%);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .qty-input {
+            width: 50px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #0B2C3D;
+        }
+
+        .qty-input:focus {
+            outline: none;
+            border-color: #1B5E4B;
+        }
+
+        .item-total {
+            font-size: 24px;
+            font-weight: 800;
+            color: #0B2C3D;
+        }
+
+        .item-remove {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #fee2e2;
+            color: #dc2626;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .item-remove:hover {
+            background: #dc2626;
+            color: white;
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        /* Cart Actions */
+        .cart-actions {
+            padding-top: 20px;
+            border-top: 2px solid #f1f5f9;
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 30px;
+            background: #f1f5f9;
+            color: #0B2C3D;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            transform: translateX(-5px);
+        }
+
+        /* Cart Sidebar */
+        .cart-sidebar {
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .cart-summary {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            animation: slideInRight 0.6s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .cart-summary h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0B2C3D;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #1B5E4B;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            font-size: 15px;
+            color: #64748b;
+        }
+
+        .summary-row span:last-child {
+            font-weight: 600;
+            color: #0B2C3D;
+        }
+
+        .discount-code {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .discount-code input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .discount-code input:focus {
+            outline: none;
+            border-color: #1B5E4B;
+        }
+
+        .discount-code button {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #1B5E4B 0%, #0B2C3D 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .discount-code button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(27, 94, 75, 0.4);
+        }
+
+        .discount-row {
+            color: #10b981 !important;
+            border-top: 1px dashed #cbd5e1;
+            border-bottom: 1px dashed #cbd5e1;
+        }
+
+        .discount-amount {
+            color: #10b981 !important;
+            font-weight: 700 !important;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-top: 15px;
+            border-top: 2px solid #f1f5f9;
+            font-size: 20px;
+            font-weight: 700;
+            color: #0B2C3D;
+        }
+
+        .summary-total span:last-child {
+            font-size: 28px;
+            color: #1B5E4B;
+        }
+
+        .btn-checkout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #1B5E4B 0%, #0B2C3D 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(27, 94, 75, 0.3);
+        }
+
+        .btn-checkout:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(27, 94, 75, 0.5);
+        }
+
+        .trust-badges {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid #f1f5f9;
+        }
+
+        .trust-badges .badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .trust-badges .badge i {
+            font-size: 18px;
+            color: #1B5E4B;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .cart-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-sidebar {
+                position: static;
+            }
+
+            .cart-item {
+                grid-template-columns: 80px 1fr;
+                gap: 15px;
+            }
+
+            .item-price,
+            .item-quantity,
+            .item-total {
+                grid-column: 2;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <!-- Page Title -->
+    <section class="page-title">
+        <div class="container">
+            <h1>Shopping Cart</h1>
+            <p class="breadcrumb">Home / Cart</p>
+        </div>
+    </section>
+
+    <!-- Cart Section -->
+    <section class="cart-section">
+        <div class="container">
+            {% if cartItems is empty %}
+                <div class="empty-cart">
+                    <i class="fa fa-shopping-cart"></i>
+                    <h2>Your Cart is Empty</h2>
+                    <p>Add products to start shopping</p>
+                    <a href="{{ path('app_shop_index') }}" class="btn-primary">Continue Shopping</a>
+                </div>
+            {% else %}
+                <div class="cart-layout">
+                    <!-- Cart Items -->
+                    <div class="cart-main">
+                        <div class="cart-items">
+                            {% for item in cartItems %}
+                                <div class="cart-item" data-id="{{ item.supplement.id }}">
+                                    <div class="item-image">
+                                        {% if item.supplement.image %}
+                                            <img src="{{ asset('uploads/supplements/' ~ item.supplement.image) }}" alt="{{ item.supplement.name }}">
+                                        {% else %}
+                                            <img src="{{ asset('images/image_1.jpg') }}" alt="{{ item.supplement.name }}">
+                                        {% endif %}
+                                    </div>
+                                    <div class="item-details">
+                                        <h3>{{ item.supplement.name }}</h3>
+                                        <p class="item-brand">{{ item.supplement.brand }}</p>
+                                        <p class="item-category">{{ item.supplement.category }}</p>
+                                    </div>
+                                    <div class="item-price">{{ item.supplement.price }} DT</div>
+                                    <div class="item-quantity">
+                                        <button class="qty-btn qty-minus" data-id="{{ item.supplement.id }}">-</button>
+                                        <input type="number" value="{{ item.quantity }}" min="1" class="qty-input" data-id="{{ item.supplement.id }}">
+                                        <button class="qty-btn qty-plus" data-id="{{ item.supplement.id }}">+</button>
+                                    </div>
+                                    <div class="item-total">{{ item.total }} DT</div>
+                                    <button class="item-remove" data-id="{{ item.supplement.id }}">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="cart-actions">
+                            <a href="{{ path('app_shop_index') }}" class="btn-secondary">
+                                <i class="fa fa-arrow-left"></i> Continue Shopping
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Cart Summary -->
+                    <div class="cart-sidebar">
+                        <div class="cart-summary">
+                            <h3>Order Summary</h3>
+
+                            <div class="summary-row">
+                                <span>Subtotal</span>
+                                <span id="subtotal">{{ subtotal }} DT</span>
+                            </div>
+
+                            <div class="summary-row">
+                                <span>Shipping</span>
+                                <span id="shipping">{{ subtotal >= 100 ? 'FREE' : '7 DT' }}</span>
+                            </div>
+
+                            <div class="discount-code">
+                                <input type="text" id="discountCode" placeholder="Discount code">
+                                <button id="applyDiscount">Apply</button>
+                            </div>
+
+                            <div class="summary-row discount-row" id="discountRow" style="display: none;">
+                                <span>Discount (<span id="discountCodeText"></span>)</span>
+                                <span class="discount-amount" id="discountAmount">-0 DT</span>
+                            </div>
+
+                            <div class="summary-total">
+                                <span>Total</span>
+                                <span id="total">{{ subtotal + (subtotal >= 100 ? 0 : 7) }} DT</span>
+                            </div>
+
+                            <a href="{{ path('app_shop_checkout') }}" class="btn-checkout">
+                                Proceed to Checkout <i class="fa fa-arrow-right"></i>
+                            </a>
+
+                            <div class="trust-badges">
+                                <div class="badge">
+                                    <i class="fa fa-lock"></i>
+                                    <span>Secure Payment</span>
+                                </div>
+                                <div class="badge">
+                                    <i class="fa fa-truck"></i>
+                                    <span>Fast Delivery</span>
+                                </div>
+                                <div class="badge">
+                                    <i class="fa fa-undo"></i>
+                                    <span>Free Returns</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            let subtotal = {{ subtotal }};
+            let discountPercent = 0;
+
+            // Add stagger animation to cart items
+            $('.cart-item').each(function(index) {
+                $(this).css('animation-delay', (index * 0.1) + 's');
+            });
+
+            // Update quantity with animation
+            $('.qty-plus, .qty-minus').on('click', function() {
+                const supplementId = $(this).data('id');
+                const input = $(`.qty-input[data-id="${supplementId}"]`);
+                let quantity = parseInt(input.val());
+
+                if ($(this).hasClass('qty-plus')) {
+                    quantity++;
+                } else if (quantity > 1) {
+                    quantity--;
+                }
+
+                // Animate the input
+                input.addClass('pulse');
+                setTimeout(() => input.removeClass('pulse'), 300);
+
+                input.val(quantity);
+                updateCartItem(supplementId, quantity);
+            });
+
+            $('.qty-input').on('change', function() {
+                const supplementId = $(this).data('id');
+                let quantity = parseInt($(this).val());
+                if (quantity < 1) quantity = 1;
+                $(this).val(quantity);
+                updateCartItem(supplementId, quantity);
+            });
+
+            function updateCartItem(supplementId, quantity) {
+                $.ajax({
+                    url: '{{ path('app_shop_cart_update') }}',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ supplementId, quantity }),
+                    success: function() {
+                        // Smooth reload with fade effect
+                        $('body').fadeOut(200, function() {
+                            location.reload();
+                        });
+                    }
+                });
+            }
+
+            // Remove item from cart with animation
+            $('.item-remove').on('click', function() {
+                const supplementId = $(this).data('id');
+                const cartItem = $(this).closest('.cart-item');
+
+                if (confirm('Are you sure you want to remove this item?')) {
+                    // Animate removal
+                    cartItem.css({
+                        'animation': 'fadeOutLeft 0.5s ease',
+                        'opacity': '0',
+                        'transform': 'translateX(-100px)'
+                    });
+
+                    setTimeout(function() {
+                        $.ajax({
+                            url: '{{ path('app_shop_cart_remove') }}',
+                            method: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({ supplementId }),
+                            success: function() {
+                                location.reload();
+                            }
+                        });
+                    }, 500);
+                }
+            });
+
+            // Apply discount code with animation
+            $('#applyDiscount').on('click', function() {
+                const code = $('#discountCode').val().trim();
+                const button = $(this);
+
+                // Button loading state
+                button.prop('disabled', true).text('Applying...');
+
+                setTimeout(function() {
+                    if (code.toLowerCase() === 'ali123') {
+                        discountPercent = 10;
+                        const discount = subtotal * 0.10;
+
+                        // Animate discount row appearance
+                        $('#discountRow').slideDown(400);
+                        $('#discountCodeText').text(code);
+                        $('#discountAmount').text('-' + discount.toFixed(2) + ' DT');
+
+                        const shipping = subtotal >= 100 ? 0 : 7;
+                        const total = subtotal + shipping - discount;
+
+                        // Animate total update
+                        $('#total').fadeOut(200, function() {
+                            $(this).text(total.toFixed(2) + ' DT').fadeIn(200);
+                        });
+
+                        // Success feedback
+                        $('#discountCode').css('border-color', '#10b981');
+                        button.text('Applied!').css('background', 'linear-gradient(135deg, #10b981 0%, #059669 100%)');
+
+                        // Show success message
+                        showNotification('Discount code applied! -10%', 'success');
+                    } else if (code) {
+                        $('#discountCode').css('border-color', '#ef4444');
+                        button.text('Apply').prop('disabled', false);
+                        showNotification('Invalid discount code', 'error');
+                    } else {
+                        button.text('Apply').prop('disabled', false);
+                    }
+                }, 800);
+            });
+
+            // Notification function
+            function showNotification(message, type) {
+                const notification = $('<div class="notification"></div>')
+                    .text(message)
+                    .css({
+                        'position': 'fixed',
+                        'top': '100px',
+                        'right': '30px',
+                        'padding': '20px 30px',
+                        'background': type === 'success' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                        'color': 'white',
+                        'border-radius': '12px',
+                        'box-shadow': '0 10px 30px rgba(0,0,0,0.2)',
+                        'z-index': '10000',
+                        'font-weight': '600',
+                        'animation': 'slideInRight 0.5s ease'
+                    });
+
+                $('body').append(notification);
+
+                setTimeout(function() {
+                    notification.fadeOut(400, function() {
+                        $(this).remove();
+                    });
+                }, 3000);
+            }
+
+            // Add pulse animation CSS
+            $('<style>')
+                .text(`
+                    @keyframes pulse {
+                        0%, 100% { transform: scale(1); }
+                        50% { transform: scale(1.1); }
+                    }
+                    .pulse {
+                        animation: pulse 0.3s ease;
+                    }
+                    @keyframes fadeOutLeft {
+                        from {
+                            opacity: 1;
+                            transform: translateX(0);
+                        }
+                        to {
+                            opacity: 0;
+                            transform: translateX(-100px);
+                        }
+                    }
+                `)
+                .appendTo('head');
+        });
+    </script>
+{% endblock %}
+

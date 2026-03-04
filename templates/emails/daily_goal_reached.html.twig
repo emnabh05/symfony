@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Fiche nutrition - objectif atteint</title>
+</head>
+<body style="margin:0;padding:0;background:#f3f6fb;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f3f6fb;padding:24px 0;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="680" cellspacing="0" cellpadding="0" style="max-width:680px;width:100%;background:#ffffff;border:1px solid #d9e2ef;border-radius:14px;overflow:hidden;">
+          <tr>
+            <td style="background:linear-gradient(135deg,#0c3f44 0%,#0b5d66 100%);padding:20px 24px;color:#ffffff;">
+              <div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;opacity:0.9;">Fitopia Nutrition</div>
+              <h1 style="margin:8px 0 0 0;font-size:24px;line-height:1.2;">Fiche journaliere de suivi</h1>
+              <div style="margin-top:6px;font-size:13px;opacity:0.9;">Date: {{ today|date('d/m/Y') }}</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:22px 24px 8px 24px;">
+              <p style="margin:0 0 10px 0;font-size:15px;">
+                Bonjour <strong>{{ user.firstName }} {{ user.lastName }}</strong>,
+              </p>
+              <p style="margin:0;font-size:14px;line-height:1.5;color:#374151;">
+                Felicitations, vous avez atteint votre objectif calorique du jour.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:10px 24px 18px 24px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+                <tr>
+                  <td style="width:33.33%;padding:10px;border:1px solid #e5e7eb;background:#f8fafc;">
+                    <div style="font-size:12px;color:#64748b;">Objectif</div>
+                    <div style="font-size:20px;font-weight:700;color:#0b5d66;">{{ target }} kcal</div>
+                  </td>
+                  <td style="width:33.33%;padding:10px;border:1px solid #e5e7eb;background:#ffffff;">
+                    <div style="font-size:12px;color:#64748b;">Consomme</div>
+                    <div style="font-size:20px;font-weight:700;color:#0b5d66;">{{ afterCalories }} kcal</div>
+                  </td>
+                  <td style="width:33.33%;padding:10px;border:1px solid #e5e7eb;background:#f8fafc;">
+                    <div style="font-size:12px;color:#64748b;">Progression</div>
+                    <div style="font-size:20px;font-weight:700;color:#0b5d66;">{{ progress }}%</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 24px 8px 24px;">
+              <div style="height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden;">
+                <div style="height:10px;width:{{ progress > 100 ? 100 : progress }}%;background:#0b5d66;"></div>
+              </div>
+              <div style="margin-top:8px;font-size:13px;color:#64748b;">
+                {% if excess > 0 %}
+                  Depassement: <strong style="color:#b91c1c;">{{ excess }} kcal</strong>
+                {% else %}
+                  Reste a consommer: <strong>{{ remaining }} kcal</strong>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:14px 24px 12px 24px;">
+              <div style="border:1px solid #dbe7f4;background:#f8fbff;border-radius:10px;padding:12px;">
+                <div style="font-size:13px;font-weight:700;color:#0c3f44;margin-bottom:6px;">Observations nutritionnelles</div>
+                <ul style="margin:0;padding-left:18px;color:#475569;font-size:13px;line-height:1.45;">
+                  <li>Type de profil: {{ regime.typeSante ?? 'non precise' }}</li>
+                  <li>Continuez une hydratation reguliere sur la journee.</li>
+                  <li>Favorisez des repas equilibres: proteines, legumes, glucides complexes, bonnes graisses.</li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 24px 24px 24px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td style="vertical-align:top;">
+                    <div style="font-size:12px;color:#6b7280;">Signature professionnelle</div>
+                    <div style="font-size:15px;font-weight:700;color:#111827;margin-top:4px;">Mme Sarah Benyahia</div>
+                    <div style="font-size:13px;color:#475569;">Nutritionniste Clinique - Fitopia</div>
+                    <div style="font-size:12px;color:#64748b;margin-top:4px;">N° d'agrement: NUT-2026-1184</div>
+                  </td>
+                  <td style="width:130px;vertical-align:top;text-align:right;">
+                    <div style="display:inline-block;border:2px solid #0b5d66;color:#0b5d66;border-radius:999px;padding:10px 12px;font-weight:700;font-size:11px;line-height:1.2;text-align:center;">
+                      TAMPON<br>OFFICIEL<br>NUTRITION
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

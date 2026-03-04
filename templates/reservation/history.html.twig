@@ -1,0 +1,151 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes reservations | Fitopia{% endblock %}
+
+{% block body %}
+<section class="container py-5">
+  {% set waitlistInvites = waitlistInvites|default([]) %}
+  {% set waitlistEntries = waitlistEntries|default([]) %}
+  {% set cancelableReservationIds = cancelableReservationIds|default([]) %}
+  <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="h3 mb-1">Mes reservations</h1>
+      {% if participantEmail %}
+        <p class="text-muted mb-0">Historique pour {{ participantEmail }}</p>
+      {% else %}
+        <p class="text-muted mb-0">Aucun email participant detecte.</p>
+      {% endif %}
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ path('events') }}">Retour aux events</a>
+  </div>
+
+  {% if waitlistInvites is not empty %}
+    <div class="alert alert-warning">
+      <strong>Invitation en attente</strong>
+      <ul class="mb-0 mt-2">
+        {% for invite in waitlistInvites %}
+          <li>
+            {{ invite.event ? invite.event.titre : 'Evenement' }} -
+            expire le {{ invite.expiresAt ? invite.expiresAt|date('Y-m-d H:i') : 'N/A' }}
+            {% if invite.token %}
+              <a class="btn btn-sm btn-primary ml-2" href="{{ path('app_waitlist_confirm_show', {token: invite.token}) }}">Confirmer</a>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  {% if waitlistEntries is not empty %}
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Mes entrees liste d attente</h2>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Evenement</th>
+                <th>Date</th>
+                <th>Lieu</th>
+                <th>Statut</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for entry in waitlistEntries %}
+                {% set event = entry.event %}
+                <tr>
+                  <td>{{ event ? event.titre : 'Evenement indisponible' }}</td>
+                  <td>{{ event and event.dateEvent ? event.dateEvent|date('Y-m-d') : 'N/A' }}</td>
+                  <td>{{ event ? event.lieu : 'N/A' }}</td>
+                  <td>
+                    <span class="badge bg-secondary">{{ entry.status }}</span>
+                    {% if entry.status == 'INVITE' and entry.expiresAt %}
+                      <div class="small text-muted">Expire le {{ entry.expiresAt|date('Y-m-d H:i') }}</div>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if entry.status in ['EN_ATTENTE', 'INVITE'] %}
+                      <form method="post" action="{{ path('app_waitlist_leave', {id: entry.id}) }}" onsubmit="return confirm('Quitter la liste d attente ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('waitlist_leave_' ~ entry.id) }}">
+                        <button class="btn btn-outline-danger btn-sm" type="submit">Quitter la liste d attente</button>
+                      </form>
+                    {% else %}
+                      <span class="text-muted">-</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if reservations is empty %}
+    <div class="alert alert-info">
+      Aucune reservation trouvee pour le moment.
+    </div>
+  {% else %}
+    <div class="row g-3">
+      {% for reservation in reservations %}
+        {% set event = reservation.event %}
+        {% set reservationStatus = reservation.statut|default('') %}
+        {% set statusKey = reservationStatus|lower %}
+        {% set statusClass = 'bg-secondary' %}
+        {% if statusKey == 'confirmee' %}
+          {% set statusClass = 'bg-success' %}
+        {% elseif statusKey == 'utilisee' %}
+          {% set statusClass = 'bg-primary' %}
+        {% elseif statusKey == 'annulee' %}
+          {% set statusClass = 'bg-danger' %}
+        {% endif %}
+        {% set imageSrc = event and event.imageEvent ? (event.imageEvent starts with('http') ? event.imageEvent : asset('uploads/events/' ~ event.imageEvent)) : asset('images/bg_1.jpg') %}
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="card shadow-sm border-0 w-100 h-100">
+            <img
+              src="{{ imageSrc }}"
+              class="card-img-top"
+              alt="Image event"
+              style="height: 190px; object-fit: cover;"
+            >
+            <div class="card-body d-flex flex-column">
+              <h2 class="h5 mb-2">{{ event ? event.titre : 'Evenement indisponible' }}</h2>
+              <ul class="list-unstyled text-muted small mb-3">
+                <li><i class="fa fa-calendar"></i> {{ event and event.dateEvent ? event.dateEvent|date('Y-m-d') : 'N/A' }}</li>
+                <li><i class="fa fa-map-marker"></i> {{ event ? event.lieu : 'N/A' }}</li>
+                <li><i class="fa fa-money"></i> {{ event and event.prixEvent is not null ? event.prixEvent|number_format(2, '.', ' ') ~ ' DT' : 'Gratuit' }}</li>
+                <li>
+                  <i class="fa fa-check-circle"></i>
+                  <span class="badge {{ statusClass }}">{{ reservationStatus }}</span>
+                </li>
+                <li><i class="fa fa-clock-o"></i> {{ reservation.dateReservation ? reservation.dateReservation|date('Y-m-d H:i') : 'N/A' }}</li>
+              </ul>
+
+              <div class="mt-auto">
+                <a class="btn btn-primary btn-sm w-100" href="{{ path('app_reservation_history_show', {id: reservation.id}) }}">
+                  Voir ma reservation
+                </a>
+                {% if reservation.qrToken and statusKey != 'annulee' %}
+                  <a class="btn btn-outline-success btn-sm w-100 mt-2" href="{{ path('app_reservation_qr_generate', {id: reservation.id}) }}">
+                    QR Code
+                  </a>
+                {% elseif statusKey == 'annulee' %}
+                  <p class="small text-danger mb-0 mt-2">Reservation annulee</p>
+                {% endif %}
+                {% if reservation.id in cancelableReservationIds %}
+                  <form class="mt-2" method="post" action="{{ path('app_reservation_history_cancel', {id: reservation.id}) }}" onsubmit="return confirm('Annuler cette reservation ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('reservation_cancel_' ~ reservation.id) }}">
+                    <button class="btn btn-outline-danger btn-sm w-100" type="submit">Annuler reservation</button>
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,186 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Details evenement | Fitopia{% endblock %}
+
+{% block body %}
+<section class="container py-5">
+  {% for message in app.flashes('success') %}<div class="alert alert-success">{{ message }}</div>{% endfor %}
+  {% for message in app.flashes('error') %}<div class="alert alert-danger">{{ message }}</div>{% endfor %}
+  {% for message in app.flashes('info') %}<div class="alert alert-info">{{ message }}</div>{% endfor %}
+
+  {% set price = event.prixEvent|default('0') + 0 %}
+  {% set canAccessVipEvents = canAccessVipEvents|default(false) %}
+  {% set vipReservationThreshold = vipReservationThreshold|default(5) %}
+  {% set waitlistEntry = waitlistEntry|default(null) %}
+  {% set waitlistPosition = waitlistPosition|default(null) %}
+  {% set remainingPlaces = remainingPlaces|default(event.capacite) %}
+  {% set isVipLocked = event.isPremium and not canAccessVipEvents %}
+  {% set isFull = isFull|default(false) %}
+  {% set imageSrc = (event.imageEvent and event.imageEvent starts with 'event-') ? asset('uploads/events/' ~ event.imageEvent) : 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1400&q=80' %}
+  {% set badgeLabel = '' %}
+  {% set badgeClass = 'bg-secondary' %}
+  {% if event.isPremium %}
+    {% set badgeLabel = 'Evenement Premium' %}
+    {% set badgeClass = 'bg-warning text-dark' %}
+  {% elseif average >= 4.5 %}
+    {% set badgeLabel = 'Top note' %}
+    {% set badgeClass = 'bg-warning text-dark' %}
+  {% elseif average >= 4 %}
+    {% set badgeLabel = 'Recommande' %}
+    {% set badgeClass = 'bg-info text-dark' %}
+  {% elseif reviewCount < 3 %}
+    {% set badgeLabel = 'Nouveau' %}
+    {% set badgeClass = 'bg-primary' %}
+  {% endif %}
+
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <a class="btn btn-outline-secondary" href="{{ path('events') }}"><i class="fa fa-arrow-left"></i> Retour</a>
+    <div class="d-flex gap-2">
+      <form method="post" action="{{ path('app_event_favorite_toggle', {id: event.id}) }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('event_favorite_' ~ event.id) }}">
+        <input type="hidden" name="redirect_url" value="{{ app.request.uri }}">
+        <button type="submit" class="btn {{ isFavorited ? 'btn-outline-danger' : 'btn-outline-dark' }}" {% if not participantEmail %}disabled title="Connectez-vous ou reservez d'abord pour les favoris"{% endif %}>
+          {{ isFavorited ? '💔 Retirer des favoris' : '❤️ Ajouter aux favoris' }}
+        </button>
+      </form>
+      <a class="btn btn-outline-primary" href="{{ path('app_event_favorites') }}"><i class="fa fa-heart"></i> Mes favoris</a>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+      <div class="row g-4">
+        <div class="col-lg-5">
+          <img src="{{ imageSrc }}" alt="{{ event.titre }}" class="img-fluid rounded w-100" style="object-fit:cover;max-height:320px;">
+        </div>
+        <div class="col-lg-7">
+          <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+            <h1 class="h3 mb-0">{{ event.titre }}</h1>
+            {% if badgeLabel %}
+              <span class="badge {{ badgeClass }}">{{ badgeLabel }}</span>
+            {% endif %}
+            {% if isFull %}
+              <span class="badge bg-danger">Complet</span>
+            {% endif %}
+          </div>
+          <p class="text-muted mb-3">{{ event.description }}</p>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item px-0"><strong>Date :</strong> {{ event.dateEvent|date('Y-m-d') }}</li>
+            <li class="list-group-item px-0"><strong>Lieu :</strong> {{ event.lieu }}</li>
+            <li class="list-group-item px-0"><strong>Places restantes :</strong> {{ remainingPlaces }}</li>
+            <li class="list-group-item px-0"><strong>Type :</strong> {{ event.typeEvent }}</li>
+            <li class="list-group-item px-0"><strong>Prix :</strong> {% if price > 0 %}{{ event.prixEvent }} DT{% else %}Gratuit{% endif %}</li>
+          </ul>
+          <div class="mt-3">
+            {% if isVipLocked %}
+              <button class="btn btn-secondary" disabled>Reserve aux VIP</button>
+              <div class="small text-muted mt-2">Deviens VIP a partir de {{ vipReservationThreshold }} reservations.</div>
+            {% elseif isFull %}
+              {% if waitlistEntry %}
+                <div class="alert alert-info mb-0">
+                  Deja inscrit sur la liste d attente ({{ waitlistEntry.status }})
+                  {% if waitlistPosition %}<br>Rang actuel: {{ waitlistPosition }}{% endif %}
+                </div>
+              {% else %}
+                <form method="post" action="{{ path('app_waitlist_join', {id: event.id}) }}">
+                  <input type="hidden" name="_token" value="{{ csrf_token('waitlist_join_' ~ event.id) }}">
+                  <div class="mb-2">
+                    <input type="text" name="nom" class="form-control" placeholder="Votre nom" required maxlength="150">
+                  </div>
+                  <div class="mb-2">
+                    <input type="email" name="email" class="form-control" placeholder="Votre email" value="{{ participantEmail|default('') }}" required maxlength="150">
+                  </div>
+                  <button class="btn btn-primary" type="submit">Rejoindre la liste d attente</button>
+                </form>
+              {% endif %}
+            {% else %}
+              <a class="btn btn-primary" href="{{ path('app_event_reservation_new', {id: event.id}) }}">Reserver</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+      <h2 class="h5 mb-3">Statistiques</h2>
+      <div class="row g-3">
+        <div class="col-12 col-md-4">
+          <div class="border rounded p-3 h-100"><strong>Moyenne des notes :</strong><br>{{ average|number_format(1, '.', ',') }}/5</div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="border rounded p-3 h-100"><strong>Nombre total d'avis :</strong><br>{{ reviewCount }}</div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="border rounded p-3 h-100"><strong>Nombre de favoris :</strong><br>{{ favoriteCount }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <h2 class="h5 mb-0">Commentaires</h2>
+        <form method="get" action="{{ path('app_event_show', {id: event.id}) }}" class="d-flex gap-2">
+          <select name="reviews_sort" class="form-select form-select-sm">
+            <option value="recent" {% if reviewsSort == 'recent' %}selected{% endif %}>Plus recent</option>
+            <option value="best" {% if reviewsSort == 'best' %}selected{% endif %}>Meilleures notes</option>
+          </select>
+          <button class="btn btn-sm btn-outline-secondary" type="submit">Trier</button>
+        </form>
+      </div>
+
+      {% if reviews is empty %}
+        <div class="alert alert-info mb-0">Aucun commentaire pour cet evenement.</div>
+      {% else %}
+        <div class="d-grid gap-2">
+          {% for review in reviews %}
+            <article class="border rounded p-3">
+              <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <strong>{{ review.emailParticipant }}</strong>
+                <div class="text-warning">
+                  {% for i in 1..5 %}
+                    <i class="fa {% if review.note >= i %}fa-star{% else %}fa-star-o{% endif %}"></i>
+                  {% endfor %}
+                </div>
+              </div>
+              <p class="mb-1 mt-2">{{ review.commentaire }}</p>
+              <small class="text-muted">{{ review.createdAt|date('Y-m-d H:i') }}</small>
+            </article>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+      <h2 class="h5 mb-3">Laisser un avis</h2>
+      {% if canReview %}
+        <form method="post" action="{{ path('app_event_review_upsert', {id: event.id}) }}" novalidate>
+          <input type="hidden" name="_token" value="{{ csrf_token('event_review_' ~ event.id) }}">
+          <input type="hidden" name="redirect_url" value="{{ app.request.uri }}">
+          <div class="mb-3">
+            <label class="form-label">Note</label>
+            <select class="form-select" name="note">
+              {% set selectedNote = myReview ? myReview.note : 5 %}
+              {% for n in 1..5 %}
+                <option value="{{ n }}" {% if selectedNote == n %}selected{% endif %}>{{ n }}/5</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Commentaire</label>
+            <textarea class="form-control" rows="4" name="commentaire">{{ myReview ? myReview.commentaire : '' }}</textarea>
+          </div>
+          <button class="btn btn-primary" type="submit">{{ myReview ? 'Modifier' : 'Publier' }}</button>
+        </form>
+      {% else %}
+        <div class="alert alert-warning mb-0">Vous devez participer à cet événement pour laisser un avis.</div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

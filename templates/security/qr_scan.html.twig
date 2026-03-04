@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}QR Login Approval{% endblock %}
+
+{% block body %}
+<section class="container py-5" style="max-width: 720px;">
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+      <h3 class="mb-2">QR Login Approval</h3>
+      <p class="text-muted mb-4">Approve this request only if you initiated login on your other device.</p>
+
+      {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">{{ message }}</div>
+      {% endfor %}
+      {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+      {% endfor %}
+
+      {% if session_status == 'pending' %}
+        <div class="alert alert-info">Request status: <strong>Pending</strong></div>
+        <div class="d-flex gap-2">
+          <form method="post" action="{{ path('app_login_qr_approve', { token: token }) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('qr_login_approve') }}">
+            <button class="btn btn-success" type="submit">Approve Login</button>
+          </form>
+          <form method="post" action="{{ path('app_login_qr_deny', { token: token }) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('qr_login_deny') }}">
+            <button class="btn btn-outline-danger" type="submit">Deny</button>
+          </form>
+        </div>
+      {% elseif session_status == 'approved' %}
+        <div class="alert alert-success mb-0">This request has already been approved.</div>
+      {% elseif session_status == 'denied' %}
+        <div class="alert alert-warning mb-0">This request has been denied.</div>
+      {% elseif session_status == 'expired' %}
+        <div class="alert alert-warning mb-0">This QR session has expired. Please generate a new one.</div>
+      {% elseif session_status == 'consumed' %}
+        <div class="alert alert-secondary mb-0">This request was already used.</div>
+      {% else %}
+        <div class="alert alert-secondary mb-0">Invalid session status.</div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
