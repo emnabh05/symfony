@@ -60,17 +60,21 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
 
         return new Passport(
             new UserBadge($normalizedIdentifier, function () use ($normalizedIdentifier): UserInterface {
-                $user = $this->em->getRepository(User::class)
-                    ->createQueryBuilder('u')
-                    ->where('LOWER(u.email) = :identifier')
-                    ->orWhere('LOWER(u.username) = :identifier')
-                    ->setParameter('identifier', $normalizedIdentifier)
-                    ->setMaxResults(1)
-                    ->getQuery()
-                    ->getOneOrNullResult();
+                try {
+                    $user = $this->em->getRepository(User::class)
+                        ->createQueryBuilder('u')
+                        ->where('LOWER(u.email) = :identifier')
+                        ->orWhere('LOWER(u.username) = :identifier')
+                        ->setParameter('identifier', $normalizedIdentifier)
+                        ->setMaxResults(1)
+                        ->getQuery()
+                        ->getOneOrNullResult();
 
-                if (!$user instanceof User) {
-                    $user = $this->legacyUserBridge->findOrImportByIdentifier($normalizedIdentifier);
+                    if (!$user instanceof User) {
+                        $user = $this->legacyUserBridge->findOrImportByIdentifier($normalizedIdentifier);
+                    }
+                } catch (\Throwable) {
+                    throw new CustomUserMessageAuthenticationException('Database is unavailable. Please try again in a moment.');
                 }
 
                 if (!$user instanceof User) {
@@ -84,7 +88,11 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
                     return false;
                 }
 
-                return $this->passwordCompatibility->verifyAndUpgrade($user, $plainPassword);
+                try {
+                    return $this->passwordCompatibility->verifyAndUpgrade($user, $plainPassword);
+                } catch (\Throwable) {
+                    throw new CustomUserMessageAuthenticationException('Database is unavailable. Please try again in a moment.');
+                }
             }, $password),
             [
                 new CsrfTokenBadge('authenticate', $request->getPayload()->getString('_csrf_token')),
