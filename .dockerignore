@@ -1,0 +1,10 @@
+.git
+.symfony5
+var/*
+!var/.gitkeep
+vendor
+tests
+tools
+tmp_*.html
+.env.local
+.env.*.local
