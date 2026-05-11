@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'dm_message')]
+#[ORM\Table(name: 'private_message')]
 class DmMessage
 {
     #[ORM\Id]
@@ -13,27 +13,31 @@ class DmMessage
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: DmConversation::class, inversedBy: 'messages')]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: DmConversation::class)]
+    #[ORM\JoinColumn(name: 'conversation_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     private ?DmConversation $conversation = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'sender_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     private ?User $sender = null;
 
-    #[ORM\Column(type: 'text')]
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: 'receiver_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    private ?User $receiver = null;
+
+    #[ORM\Column(name: 'content', type: 'text')]
     private string $body;
 
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(name: 'is_read', options: ['default' => false])]
+    private bool $isRead = false;
+
+    #[ORM\Column(name: 'created_at', type: 'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
 
-    #[ORM\Column(length: 20)]
     private string $status = 'sent';
 
-    #[ORM\Column(nullable: true)]
     private ?string $attachmentPath = null;
 
-    #[ORM\Column(nullable: true)]
     private ?string $attachmentMime = null;
 
     public function __construct()
@@ -49,14 +53,29 @@ class DmMessage
     public function getSender(): ?User { return $this->sender; }
     public function setSender(?User $sender): self { $this->sender = $sender; return $this; }
 
+    public function getReceiver(): ?User { return $this->receiver; }
+    public function setReceiver(?User $receiver): self { $this->receiver = $receiver; return $this; }
+
     public function getBody(): string { return $this->body; }
     public function setBody(string $body): self { $this->body = $body; return $this; }
 
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
     public function setCreatedAt(\DateTimeImmutable $createdAt): self { $this->createdAt = $createdAt; return $this; }
 
-    public function getStatus(): string { return $this->status; }
-    public function setStatus(string $status): self { $this->status = $status; return $this; }
+    public function getStatus(): string
+    {
+        return $this->isRead ? 'read' : $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
+        $this->isRead = $status === 'read';
+        return $this;
+    }
+
+    public function isRead(): bool { return $this->isRead; }
+    public function setIsRead(bool $isRead): self { $this->isRead = $isRead; return $this; }
 
     public function getAttachmentPath(): ?string { return $this->attachmentPath; }
     public function setAttachmentPath(?string $attachmentPath): self { $this->attachmentPath = $attachmentPath; return $this; }

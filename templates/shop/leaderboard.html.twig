@@ -117,6 +117,27 @@
       font-weight: 800;
     }
 
+    .lb-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      border-radius: 11px;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #f6fcff;
+      font-weight: 800;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .lb-back-link:hover {
+      color: #ffffff;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.45);
+    }
+
     .lb-winner {
       background: var(--lb-card);
       border: 1px solid var(--lb-line);
@@ -168,6 +189,61 @@
       border-radius: 16px;
       padding: 22px;
       color: var(--lb-muted);
+    }
+
+    .lb-note {
+      margin-bottom: 16px;
+      background: linear-gradient(180deg, #ffffff, #f8fbfe);
+      border: 1px solid var(--lb-line);
+      border-radius: 16px;
+      padding: 16px 18px;
+      box-shadow: 0 12px 30px rgba(18, 50, 71, 0.08);
+    }
+
+    .lb-note-title {
+      margin: 0 0 8px;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #5e7c8c;
+      font-weight: 800;
+    }
+
+    .lb-note p {
+      margin: 0;
+      color: #183a4f;
+      font-weight: 700;
+    }
+
+    .lb-user-cell {
+      display: grid;
+      gap: 2px;
+    }
+
+    .lb-user-main {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .lb-user-mail {
+      color: #5b7688;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .lb-current-pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 9px;
+      background: #dff7ee;
+      color: #0f7a61;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .lb-podium {
@@ -351,165 +427,69 @@
   </style>
 {% endblock %}
 
+{% block footer %}{% endblock %}
+
 {% block body %}
 <section class="lb-page">
   <div class="container">
     <header class="lb-hero">
-      <p class="lb-eyebrow">Global Ranking</p>
-      <h1 class="lb-title">Monthly Discipline Leaderboard</h1>
-      <p class="lb-subtitle">All users are ranked by XP. Top user of the month wins a free product.</p>
+      <p class="lb-eyebrow">Supplement Adherence</p>
+      <h1 class="lb-title">Monthly Ranking</h1>
+      <p class="lb-subtitle">Le classement suit la meme logique que le projet Java: active streak, consistency %, puis goal completion %.</p>
 
       <div class="lb-controls">
-        <div class="lb-month-label"><i class="fa fa-calendar"></i> {{ monthLabel }}</div>
+        <a href="{{ path('app_shop_index') }}" class="lb-back-link">
+          <i class="fa fa-arrow-left"></i> Retour
+        </a>
+        <div class="lb-month-label"><i class="fa fa-calendar"></i> Month: {{ monthLabel }}</div>
         <form method="get" action="{{ path('app_shop_leaderboard') }}">
           <input type="month" name="month" value="{{ monthKey }}">
-          <button type="submit">Load Month</button>
+          <button type="submit">Load Ranking</button>
         </form>
       </div>
     </header>
 
-    {% if winner %}
-      <section class="lb-winner">
-        <h2><i class="fa fa-trophy" style="color:#d4a300;"></i> Official Winner for {{ monthLabel }}</h2>
-        <div class="lb-winner-grid">
-          <div class="lb-winner-chip">
-            <p class="k">Winner</p>
-            <p class="v">{{ winner.user.firstName }} {{ winner.user.lastName }}</p>
-          </div>
-          <div class="lb-winner-chip">
-            <p class="k">XP</p>
-            <p class="v">{{ winner.xp }}</p>
-          </div>
-          <div class="lb-winner-chip">
-            <p class="k">Active Days</p>
-            <p class="v">{{ winner.activeDays }}</p>
-          </div>
-          <div class="lb-winner-chip">
-            <p class="k">Longest Streak</p>
-            <p class="v">{{ winner.longestStreak }} days</p>
-          </div>
-          <div class="lb-winner-chip">
-            <p class="k">Reward Product</p>
-            <p class="v">{{ winner.rewardProductName }}</p>
-          </div>
-        </div>
-      </section>
-    {% elseif entries is not empty %}
-      {% set provisional = entries[0] %}
-      <section class="lb-winner">
-        <h2><i class="fa fa-flag-checkered" style="color:#0f7a61;"></i> Provisional Leader for {{ monthLabel }}</h2>
-        <div class="lb-winner-grid">
-          <div class="lb-winner-chip">
-            <p class="k">Leader</p>
-            <p class="v">{{ provisional.displayName }}</p>
-          </div>
-          <div class="lb-winner-chip">
-            <p class="k">XP</p>
-            <p class="v">{{ provisional.xp }}</p>
-          </div>
-          <div class="lb-winner-chip">
-            <p class="k">Longest Streak</p>
-            <p class="v">{{ provisional.longestStreak }} days</p>
-          </div>
-          <div class="lb-winner-chip">
-            <p class="k">Status</p>
-            <p class="v">Winner not finalized yet</p>
-          </div>
-        </div>
-      </section>
-    {% endif %}
+    <section class="lb-note">
+      <p class="lb-note-title">Ranking Notifications</p>
+      <p>{{ notifications|default([])|join('  ') }}</p>
+    </section>
 
     {% if entries is empty %}
       <div class="lb-empty">
         No intake logs were found for this month yet.
       </div>
     {% else %}
-      {% set first = entries[0] ?? null %}
-      {% set second = entries[1] ?? null %}
-      {% set third = entries[2] ?? null %}
-
-      <section class="lb-podium">
-        {% if first %}
-          <article class="lb-podium-card rank-1">
-            <div>
-              <div class="lb-rank-badge"><i class="fa fa-trophy"></i> Rank #1</div>
-              <h2 class="lb-podium-name">{{ first.displayName }}</h2>
-              <p class="lb-podium-user">@{{ first.username }}</p>
-            </div>
-            <p class="lb-podium-xp">{{ first.xp }} XP</p>
-          </article>
-        {% endif %}
-
-        {% if second %}
-          <article class="lb-podium-card rank-2">
-            <div>
-              <div class="lb-rank-badge"><i class="fa fa-star"></i> Rank #2</div>
-              <h2 class="lb-podium-name">{{ second.displayName }}</h2>
-              <p class="lb-podium-user">@{{ second.username }}</p>
-            </div>
-            <p class="lb-podium-xp">{{ second.xp }} XP</p>
-          </article>
-        {% endif %}
-
-        {% if third %}
-          <article class="lb-podium-card rank-3">
-            <div>
-              <div class="lb-rank-badge"><i class="fa fa-certificate"></i> Rank #3</div>
-              <h2 class="lb-podium-name">{{ third.displayName }}</h2>
-              <p class="lb-podium-user">@{{ third.username }}</p>
-            </div>
-            <p class="lb-podium-xp">{{ third.xp }} XP</p>
-          </article>
-        {% endif %}
-      </section>
-
       <section class="lb-table-wrap">
         <table class="lb-table">
           <thead>
             <tr>
-              <th>Rank</th>
+              <th>#</th>
               <th>User</th>
-              <th>XP</th>
-              <th>Total Intakes</th>
-              <th>Active Days</th>
-              <th>Longest Streak</th>
-              <th>Current Streak</th>
-              <th>Weekly Bonus</th>
+              <th>Longest Active Streak</th>
+              <th>Consistency %</th>
+              <th>Goal Completion %</th>
             </tr>
           </thead>
           <tbody>
             {% for entry in entries %}
-              <tr class="{% if currentUserId and entry.userId == currentUserId %}current-user{% endif %}">
+              <tr class="{% if currentUserEmail and entry.email == currentUserEmail %}current-user{% endif %}">
                 <td class="lb-rank rank-{{ entry.rank <= 3 ? entry.rank : 0 }}">#{{ entry.rank }}</td>
-                <td>
-                  <strong>{{ entry.displayName }}</strong><br>
-                  <span style="color:#5b7688;font-size:12px;">@{{ entry.username }}</span>
+                <td class="lb-user-cell">
+                  <span class="lb-user-main">
+                    <strong>{{ entry.displayName }}</strong>
+                    {% if currentUserEmail and entry.email == currentUserEmail %}
+                      <span class="lb-current-pill">You</span>
+                    {% endif %}
+                  </span>
+                  <span class="lb-user-mail">{{ entry.email }}</span>
                 </td>
-                <td><strong>{{ entry.xp }}</strong></td>
-                <td>{{ entry.totalIntakes }}</td>
-                <td>{{ entry.activeDays }}</td>
-                <td>{{ entry.longestStreak }}d</td>
-                <td>{{ entry.currentStreak }}d</td>
-                <td>+{{ entry.weeklyBonus }}</td>
+                <td><strong>{{ entry.longestActiveStreak }} days</strong></td>
+                <td>{{ entry.consistencyPercent|number_format(1, '.', '') }}%</td>
+                <td>{{ entry.goalCompletionPercent|number_format(1, '.', '') }}%</td>
               </tr>
             {% endfor %}
           </tbody>
         </table>
-      </section>
-    {% endif %}
-
-    {% if recentWinners is not empty %}
-      <section class="lb-recent">
-        <h3>Recent Winners</h3>
-        <div class="lb-recent-grid">
-          {% for recent in recentWinners %}
-            <article class="lb-recent-card">
-              <p class="m">{{ recent.monthKey }}</p>
-              <p class="n">{{ recent.user.firstName }} {{ recent.user.lastName }}</p>
-              <p class="x">{{ recent.xp }} XP | {{ recent.rewardProductName }}</p>
-            </article>
-          {% endfor %}
-        </div>
       </section>
     {% endif %}
   </div>

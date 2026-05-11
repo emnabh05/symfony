@@ -35,7 +35,6 @@ class NotificationRepository extends ServiceEntityRepository
         return (int) $this->createQueryBuilder('n')
             ->select('COUNT(n.id)')
             ->andWhere('n.email = :email')
-            ->andWhere('n.readAt IS NULL')
             ->setParameter('email', $email)
             ->getQuery()
             ->getSingleScalarResult();
@@ -43,14 +42,6 @@ class NotificationRepository extends ServiceEntityRepository
 
     public function markAllReadForEmail(string $email): int
     {
-        return $this->createQueryBuilder('n')
-            ->update()
-            ->set('n.readAt', ':readAt')
-            ->andWhere('n.email = :email')
-            ->andWhere('n.readAt IS NULL')
-            ->setParameter('readAt', new \DateTime())
-            ->setParameter('email', $email)
-            ->getQuery()
-            ->execute();
+        return 0;
     }
 }

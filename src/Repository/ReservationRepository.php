@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Reservation;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -149,32 +150,82 @@ class ReservationRepository extends ServiceEntityRepository
             return [];
         }
 
-        $result = [];
         $connection = $this->getEntityManager()->getConnection();
-        $sql = <<<SQL
-SELECT
-    COALESCE((SELECT COUNT(*) FROM reservation r WHERE r.id_event = :idEvent), 0) AS reservations_count,
-    COALESCE((SELECT COUNT(*) FROM favorites f WHERE f.id_event = :idEvent), 0) AS favorites_count,
-    COALESCE((SELECT AVG(v.note) FROM reviews v WHERE v.id_event = :idEvent), 0) AS average_rating
-SQL;
-
+        $result = [];
         foreach ($eventIds as $eventId) {
-            $row = $connection->executeQuery($sql, ['idEvent' => $eventId])->fetchAssociative();
-            if (!is_array($row)) {
-                $row = [];
-            }
-
-            $reservationsCount = (int) ($row['reservations_count'] ?? 0);
-            $favoritesCount = (int) ($row['favorites_count'] ?? 0);
-            $averageRating = (float) ($row['average_rating'] ?? 0.0);
-            $score = ($reservationsCount * 2.0) + ($favoritesCount * 1.5) + ($averageRating * 3.0);
-
             $result[$eventId] = [
-                'score' => round($score, 2),
-                'reservationsCount' => $reservationsCount,
-                'favoritesCount' => $favoritesCount,
-                'averageRating' => round($averageRating, 2),
+                'score' => 0.0,
+                'reservationsCount' => 0,
+                'favoritesCount' => 0,
+                'averageRating' => 0.0,
             ];
+        }
+
+        $reservationRows = $connection->executeQuery(
+            <<<SQL
+SELECT
+    reservation.id_event AS event_id,
+    COUNT(*) AS reservations_count
+FROM reservation
+WHERE reservation.id_event IN (:eventIds)
+GROUP BY reservation.id_event
+SQL,
+            ['eventIds' => $eventIds],
+            ['eventIds' => ArrayParameterType::INTEGER]
+        )->fetchAllAssociative();
+
+        foreach ($reservationRows as $row) {
+            $eventId = (int) ($row['event_id'] ?? 0);
+            if ($eventId > 0 && isset($result[$eventId])) {
+                $result[$eventId]['reservationsCount'] = (int) ($row['reservations_count'] ?? 0);
+            }
+        }
+
+        $favoriteRows = $connection->executeQuery(
+            <<<SQL
+SELECT
+    favorites.id_event AS event_id,
+    COUNT(*) AS favorites_count
+FROM favorites
+WHERE favorites.id_event IN (:eventIds)
+GROUP BY favorites.id_event
+SQL,
+            ['eventIds' => $eventIds],
+            ['eventIds' => ArrayParameterType::INTEGER]
+        )->fetchAllAssociative();
+
+        foreach ($favoriteRows as $row) {
+            $eventId = (int) ($row['event_id'] ?? 0);
+            if ($eventId > 0 && isset($result[$eventId])) {
+                $result[$eventId]['favoritesCount'] = (int) ($row['favorites_count'] ?? 0);
+            }
+        }
+
+        $reviewRows = $connection->executeQuery(
+            <<<SQL
+SELECT
+    reviews.id_event AS event_id,
+    AVG(reviews.note) AS average_rating
+FROM reviews
+WHERE reviews.id_event IN (:eventIds)
+GROUP BY reviews.id_event
+SQL,
+            ['eventIds' => $eventIds],
+            ['eventIds' => ArrayParameterType::INTEGER]
+        )->fetchAllAssociative();
+
+        foreach ($reviewRows as $row) {
+            $eventId = (int) ($row['event_id'] ?? 0);
+            if ($eventId > 0 && isset($result[$eventId])) {
+                $result[$eventId]['averageRating'] = round((float) ($row['average_rating'] ?? 0.0), 2);
+            }
+        }
+
+        foreach ($result as $eventId => $stats) {
+            $score = ($stats['reservationsCount'] * 2.0)
+                + ($stats['favoritesCount'] * 1.5)
+                + ($stats['averageRating'] * 3.0);
+            $result[$eventId]['score'] = round($score, 2);
         }
 
         return $result;
@@ -385,7 +436,7 @@ SQL;
             ->andWhere('r.statut IN (:statuses)')
             ->andWhere("TRIM(COALESCE(r.emailParticipant, '')) <> ''")
             ->setParameter('statuses', self::LOYALTY_STATUSES)
-            ->groupBy('LOWER(r.emailParticipant)');
+            ->groupBy('r.emailParticipant');
 
         if ($search !== '') {
             $qb->andWhere('LOWER(r.emailParticipant) LIKE :search OR LOWER(r.nomParticipant) LIKE :search')

@@ -1,417 +1,418 @@
 {% extends 'base.html.twig' %}
+
 {% block title %}Home | Fitopia{% endblock %}
+
 {% block stylesheets %}
-  {{ parent() }}
-  <link rel="stylesheet" href="{{ asset('css/home-animations.css') }}">
-{% endblock %}
-{% block body %} <!-- HERO -->
+{{ parent() }}
 <style>
   :root {
-    --hero-primary: #0f766e;
-    --hero-primary-dark: #115e59;
-    --hero-text: #f8fafc;
-    --hero-muted: rgba(248, 250, 252, 0.82);
-    --hero-surface: rgba(255, 255, 255, 0.08);
-    --hero-border: rgba(255, 255, 255, 0.18);
+    --f-green: #15996a;
+    --f-blue: #16384c;
+    --f-dark: #13231d;
+    --f-muted: #5f756d;
+    --f-border: #e3eee7;
   }
 
-  .main-hero {
+  .home-page {
+    background-color: #ffffff;
+  }
+
+  /* Hero Section */
+  .hero-slider-shell {
     position: relative;
-    min-height: 88vh;
-    display: grid;
-    align-items: center;
+    height: 600px;
+    background: linear-gradient(to bottom right, #f8fcfa, #edf5f0);
+    border-radius: 28px;
+    border: 1px solid var(--f-border);
+    margin: 20px 30px;
     overflow: hidden;
-    isolation: isolate;
-    background:
-      radial-gradient(55% 55% at 12% 12%, rgba(15, 118, 110, 0.45), transparent 70%),
-      radial-gradient(50% 50% at 86% 18%, rgba(14, 165, 233, 0.28), transparent 72%),
-      linear-gradient(135deg, #022c2c 0%, #063b3b 48%, #0b4f52 100%);
+    box-shadow: 0 24px 48px rgba(15, 23, 42, 0.08);
   }
 
-  .main-hero::before {
-    content: '';
-    position: absolute;
-    inset: -20%;
-    background:
-      radial-gradient(circle at 25% 35%, rgba(255, 255, 255, 0.08), transparent 40%),
-      radial-gradient(circle at 78% 65%, rgba(255, 255, 255, 0.07), transparent 45%);
-    animation: heroFloat 12s ease-in-out infinite alternate;
-    will-change: transform;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .main-hero::after {
-    content: '';
+  .hero-overlay {
     position: absolute;
     inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background-image: linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-    background-size: 40px 40px;
-    mask-image: radial-gradient(circle at center, #000 35%, transparent 85%);
-    opacity: 0.28;
+    background: linear-gradient(to right, rgba(247,251,248,0.92), rgba(247,251,248,0.44), rgba(255,255,255,0.12));
   }
 
-  .main-hero .container {
+  .hero-copy-box {
     position: relative;
-    z-index: 1;
-  }
-
-  .hero-shell {
-    max-width: 760px;
-    padding: clamp(26px, 4vw, 44px);
-    border: 1px solid var(--hero-border);
-    border-radius: 24px;
-    backdrop-filter: blur(8px);
-    background: linear-gradient(165deg, rgba(2, 6, 23, 0.42), rgba(2, 6, 23, 0.2));
+    z-index: 2;
+    max-width: 540px;
+    padding: 50px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 18px;
   }
 
   .hero-kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 12px;
-    margin-bottom: 16px;
-    border-radius: 999px;
-    border: 1px solid var(--hero-border);
-    background: var(--hero-surface);
-    color: #d7fbf5;
+    color: var(--f-green);
     font-size: 13px;
-    letter-spacing: 0.03em;
+    font-weight: 800;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    font-weight: 700;
   }
 
-  .hero-headline {
-    margin: 0;
-    color: var(--hero-text);
-    font-size: clamp(34px, 6vw, 62px);
-    line-height: 1.08;
-    letter-spacing: -0.02em;
+  .hero-title {
+    color: var(--f-dark);
+    font-size: 50px;
+    font-weight: 400;
+    line-height: 1.1;
+  }
+
+  .hero-subtitle {
+    color: var(--f-muted);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .hero-facts {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  .hero-fact-pill {
+    background: #f4faf6;
+    border-radius: 999px;
+    border: 1px solid #dcebe2;
+    color: #48655c;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 14px;
+  }
+
+  /* Featured Services */
+  .featured-services-shell {
+    padding: 60px 30px;
+    background: linear-gradient(to bottom, #f7fcf9, #eef8f2);
+    border-radius: 24px;
+    border: 1px solid #e0ede5;
+    margin: 0 30px;
+    text-align: center;
+  }
+
+  .services-grid {
+    display: flex;
+    gap: 22px;
+    margin-top: 30px;
+    justify-content: center;
+  }
+
+  .service-card {
+    flex: 1;
+    max-width: 388px;
+    background: #ffffff;
+    border-radius: 26px;
+    border: 1px solid #e5efe9;
+    padding-bottom: 20px;
+    text-align: left;
+    overflow: hidden;
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+  }
+
+  .service-img {
+    height: 250px;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .service-tag {
+    color: #109567;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    padding: 15px 20px 5px;
+  }
+
+  .service-title {
+    color: #172554;
+    font-size: 22px;
+    font-weight: 800;
+    padding: 0 20px;
+  }
+
+  .service-copy {
+    color: #5b6777;
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 10px 20px;
+  }
+
+  /* Consult Grid */
+  .consult-grid {
+    padding: 60px 30px;
+    display: flex;
+    gap: 22px;
+  }
+
+  .consult-card {
+    flex: 1;
+    background: linear-gradient(to bottom, #ffffff, #f9fcfa);
+    border-radius: 26px;
+    border: 1px solid #ddebe2;
+    padding: 32px;
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.06);
+  }
+
+  .consult-card-light {
+    flex: 2;
+    background: linear-gradient(to bottom, #ffffff, #f4fbf7);
+    border-color: #d7e8de;
+    box-shadow: 0 22px 44px rgba(21, 154, 114, 0.1);
+  }
+
+  /* Pricing */
+  .price-section {
+    padding: 60px 30px;
+    background-color: #f8fafc;
+    text-align: center;
+  }
+
+  .price-grid {
+    display: flex;
+    gap: 18px;
+    margin-top: 30px;
+  }
+
+  .price-card {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e6edf5;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+  }
+
+  .price-amount {
+    color: #17a589;
+    font-size: 42px;
     font-weight: 800;
   }
 
-  .hero-subheadline {
-    margin: 18px 0 0;
-    color: var(--hero-muted);
-    font-size: clamp(17px, 2.5vw, 21px);
-    line-height: 1.55;
-    max-width: 58ch;
-  }
-
-  .hero-ctas {
-    margin-top: 30px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .hero-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 46px;
-    padding: 11px 22px;
-    border-radius: 12px;
-    font-weight: 700;
+  .btn-java-primary {
+    background: var(--f-blue);
+    color: #ffffff !important;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 24px;
+    font-weight: 800;
+    font-size: 13px;
+    cursor: pointer;
     text-decoration: none;
-    transition: transform 220ms ease, opacity 220ms ease, box-shadow 220ms ease, background-color 220ms ease, color 220ms ease;
-    will-change: transform;
   }
 
-  .hero-btn-primary {
-    background: var(--hero-primary);
-    color: #ffffff;
-    box-shadow: 0 16px 30px rgba(15, 118, 110, 0.34);
+  .btn-java-primary:hover,
+  .btn-java-primary:focus,
+  .btn-java-primary:active,
+  .btn-java-primary:visited {
+    color: #ffffff !important;
+    text-decoration: none;
   }
 
-  .hero-btn-primary:hover,
-  .hero-btn-primary:focus-visible {
-    transform: translateY(-2px) scale(1.01);
-    background: var(--hero-primary-dark);
-    color: #ffffff;
-    box-shadow: 0 20px 34px rgba(15, 118, 110, 0.38);
+  .btn-java-light {
+    background: white;
+    color: var(--f-blue);
+    border: 1px solid #e9edf3;
+    border-radius: 4px;
+    padding: 12px 24px;
+    font-weight: 800;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
   }
 
-  .hero-btn-secondary {
-    border: 1px solid rgba(255, 255, 255, 0.65);
-    color: #0f172a;
-    background: #ffffff;
-  }
-
-  .hero-btn-secondary:hover,
-  .hero-btn-secondary:focus-visible {
-    transform: translateY(-2px);
-    color: #0f172a;
-    background: #f8fafc;
-  }
-
-  @keyframes heroFloat {
-    0% { transform: translate3d(-1.5%, -1.5%, 0) scale(1.02); }
-    100% { transform: translate3d(1.5%, 1.5%, 0) scale(1.04); }
-  }
-
-  @media (max-width: 991.98px) {
-    .main-hero {
-      min-height: 78vh;
-      padding: 96px 0 72px;
-    }
-
-    .hero-shell {
-      border-radius: 18px;
-      padding: 22px;
-    }
-  }
-
-  @media (max-width: 575.98px) {
-    .main-hero {
-      min-height: 72vh;
-      padding: 84px 0 60px;
-    }
-
-    .hero-ctas {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .hero-btn {
-      width: 100%;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .main-hero::before {
-      animation: none;
-    }    .hero-btn,
-    .hero-btn:hover,
-    .hero-btn:focus-visible {
-      transition: none !important;
-      transform: none !important;
-      opacity: 1 !important;
-    }
+  @media (max-width: 991px) {
+    .services-grid, .consult-grid, .price-grid { flex-direction: column; }
+    .hero-slider-shell { height: auto; margin: 10px; }
+    .hero-copy-box { padding: 30px; }
   }
 </style>
+{% endblock %}
 
-<section class="main-hero" aria-label="Fitopia hero">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-10 col-xl-8">
-        <div class="hero-shell" >
-          <span class="hero-kicker">Fitopia Performance Platform</span>
-          <h1 class="hero-headline">Train smarter, eat better, and stay consistent.</h1>
-          <p class="hero-subheadline">
-            Build sustainable fitness habits with structured programs, personalized nutrition guidance, and progress tracking in one place.
-          </p>
-          <div class="hero-ctas">
-            <a href="{{ path('about') }}" class="btn btn-primary hero-btn hero-btn-primary">Learn more</a>
-            <a href="{{ path('contact') }}" class="btn btn-white hero-btn hero-btn-secondary">Contact us</a>
-          </div>
+{% block body %}
+<div class="home-page">
+  
+  <!-- Hero Section -->
+  <div class="home-slider owl-carousel hero-slider-shell">
+    <div class="slider-item" style="background-image: url('{{ asset('images/bg_2.jpg') }}'); background-size: cover; background-position: center;">
+      <div class="hero-overlay"></div>
+      <div class="hero-copy-box">
+        <span class="hero-kicker">A Fresh approach to healthy life</span>
+        <h1 class="hero-title">Unlock your potential with good nutrition</h1>
+        <p class="hero-subtitle">A modern wellness destination that brings nutrition, fitness and healthy habits together in one clear and motivating experience.</p>
+        <div style="display: flex; gap: 12px;">
+          <a href="{{ path('diet_planner', {'open': 'create-regime'}) }}" class="btn-java-primary">Créer mon régime</a>
+          <a href="{{ path('diet_planner', {'open': 'daily-plan'}) }}" class="btn-java-light">Planning 7j</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="slider-item" style="background-image: url('{{ asset('images/bg_1.jpg') }}'); background-size: cover; background-position: center;">
+      <div class="hero-overlay"></div>
+      <div class="hero-copy-box">
+        <span class="hero-kicker">Welcome to Fitopia</span>
+        <h1 class="hero-title">Get in shape faster, live your happy life</h1>
+        <p class="hero-subtitle">Discover our comprehensive programs designed to help you reach your health goals effectively.</p>
+        <div style="display: flex; gap: 12px;">
+          <a href="{{ path('app_register') }}" class="btn-java-primary">Join Now</a>
+          <a href="{{ path('fitness_planner') }}" class="btn-java-light">View Programs</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="slider-item" style="background-image: url('{{ asset('images/bg_3.jpg') }}'); background-size: cover; background-position: center;">
+      <div class="hero-overlay"></div>
+      <div class="hero-copy-box">
+        <span class="hero-kicker">Welcome Fitopia</span>
+        <h1 class="hero-title">You can transform health through habit change</h1>
+        <p class="hero-subtitle">Track your progress, join our community, and build a lifestyle you love with our expert tools.</p>
+        <div style="display: flex; gap: 12px;">
+          <a href="{{ path('explore_forums_blogs') }}" class="btn-java-primary">Explore Community</a>
+          <a href="{{ path('diet_planner') }}" class="btn-java-light">Diet Planner</a>
         </div>
       </div>
     </div>
   </div>
-</section>
 
-<!-- SERVICES --> <section class="ftco-section ftco-services"> <div class="container"> <div class="row"> <div class="col-md-4 d-flex services align-self-stretch px-4 ftco-animate"> <div class="services-wrap text-center"> <div class="img" style="background-image:url({{ asset('images/services-1.jpg') }});"></div> <div class="media-body p-2 mt-3"> <h3>Exercise Program</h3> <p>Even the all-powerful Pointing has no control about the blind texts.</p> </div> </div> </div> <div class="col-md-4 d-flex services align-self-stretch px-4 ftco-animate"> <div class="services-wrap text-center"> <div class="img" style="background-image:url({{ asset('images/services-2.jpg') }});"></div> <div class="media-body p-2 mt-3"> <h3>Nutrition Plans</h3> <p>Even the all-powerful Pointing has no control about the blind texts.</p> </div> </div> </div> <div class="col-md-4 d-flex services align-self-stretch px-4 ftco-animate"> <div class="services-wrap text-center"> <div class="img" style="background-image:url({{ asset('images/services-3.jpg') }});"></div> <div class="media-body p-2 mt-3"> <h3>Diet Program</h3> <p>Even the all-powerful Pointing has no control about the blind texts.</p> </div> </div> </div> </div> </div> </section> <!-- ABOUT + SERVICES + TESTIMONIALS + HOW IT WORKS -->
-<section class="home-about-section">
-  <div class="container">
-    <div class="home-about-panel">
-      <div class="row align-items-center">
-        <div class="col-lg-6">
-          <div class="home-about-media" style="background-image:url({{ asset('images/coach-1.jpg') }});"></div>
-        </div>
-        <div class="col-lg-6">
-          <div class="home-about-content">
-            <span class="subheading">Welcome to Fitopia</span>
-            <h2>Hello! Health Care is a natural way of improving your health</h2>
-            <p>
-              A small river named Duden flows by their place and supplies it with the necessary regelialia. Build stronger routines with practical coaching, nutrition, and support.
-            </p>
-            <a href="{{ path('about') }}" class="btn btn-primary home-section-cta">Discover Fitopia</a>
-          </div>
-        </div>
+  <!-- Featured Services -->
+  <div class="featured-services-shell">
+    <span class="hero-kicker" style="color: #16a34a;">FITOPIA PROGRAMS</span>
+    <h2 class="section-title-dark" style="font-size: 34px;">Three essential paths to a better lifestyle</h2>
+    <p class="service-copy" style="text-align: center;">A cleaner and more focused presentation of the services users discover first.</p>
+    
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-img" style="background-image: url('{{ asset('images/services-1.jpg') }}');"></div>
+        <div class="service-tag">MOVE BETTER</div>
+        <div class="service-title">Exercise Program</div>
+        <p class="service-copy">Even the all-powerful Pointing has no control about the blind texts.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-img" style="background-image: url('{{ asset('images/services-2.jpg') }}');"></div>
+        <div class="service-tag">EAT SMART</div>
+        <div class="service-title">Nutrition Plans</div>
+        <p class="service-copy">Even the all-powerful Pointing has no control about the blind texts.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-img" style="background-image: url('{{ asset('images/services-3.jpg') }}');"></div>
+        <div class="service-tag">LIVE LIGHTER</div>
+        <div class="service-title">Diet Program</div>
+        <p class="service-copy">Even the all-powerful Pointing has no control about the blind texts.</p>
       </div>
     </div>
   </div>
-</section>
 
-<section class="home-services-strip">
-  <div class="container">
-    <div class="home-services-strip-card">
-      <div class="row no-gutters align-items-stretch">
-        <div class="col-lg-3 d-flex align-items-stretch">
-          <div class="consultation w-100 text-center px-4 px-md-4">
-            <h3 class="mb-3">Fitopia Services</h3>
-            <p>A small river named Duden flows by their place and supplies</p>
-            <a href="#" class="btn-custom">See Services</a>
-          </div>
-        </div>
+  <!-- Split Card -->
+  <div style="display: flex; border-top: 1px solid #edf3ef; border-bottom: 1px solid #edf3ef; margin-top: 40px;">
+    <div style="flex: 1; height: 420px; background-image: url('{{ asset('images/coach-1.jpg') }}'); background-size: cover; background-position: center;"></div>
+    <div style="flex: 1.2; padding: 60px; background-color: #fbfdfb; display: flex; flex-direction: column; justify-content: center; gap: 15px;">
+      <span class="hero-kicker" style="color: #16a34a;">Welcome to Fitopia</span>
+      <h2 class="section-title-dark" style="font-size: 34px;">Hello! Health Care is a natural way of improving your health</h2>
+      <p class="service-copy" style="padding: 0;">A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+      <a href="{{ path('about') }}" class="btn-java-primary" style="width: fit-content;">About Fitopia</a>
+    </div>
+  </div>
 
-        <div class="col-lg-6 d-flex align-items-stretch">
-          <div class="consultation consul w-100 px-4 px-md-4">
-            <div class="text-center">
-              <h3 class="mb-4">Free Consultation</h3>
-            </div>
-            <form action="#" class="appointment-form">
-              <div class="row">
-                <div class="col-md-6 col-xl-4">
-                  <div class="form-group"><input type="text" class="form-control" placeholder="First Name"></div>
-                </div>
-                <div class="col-md-6 col-xl-4">
-                  <div class="form-group"><input type="text" class="form-control" placeholder="Last Name"></div>
-                </div>
-                <div class="col-md-6 col-xl-4">
-                  <div class="form-group">
-                    <select class="form-control">
-                      <option>Services</option>
-                      <option>Service 1</option>
-                      <option>Service 2</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="col-md-6 col-xl-4">
-                  <div class="form-group"><input type="text" class="form-control appointment_date" placeholder="Date"></div>
-                </div>
-                <div class="col-md-6 col-xl-4">
-                  <div class="form-group"><input type="text" class="form-control appointment_time" placeholder="Time"></div>
-                </div>
-                <div class="col-md-6 col-xl-4">
-                  <div class="form-group"><input type="submit" value="Book Now" class="btn btn-white py-2 px-4 w-100"></div>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
+  <!-- Consult Grid -->
+  <div class="consult-grid">
+    <div class="consult-card">
+      <span class="hero-kicker" style="font-size: 11px;">FITOPIA SERVICES</span>
+      <h3 class="section-title-dark" style="font-size: 23px; margin-top: 10px;">Explore wellness paths made for your goals</h3>
+      <p class="service-copy" style="padding: 10px 0;">Nutrition guidance, smart activity planning and habit coaching in one refined journey.</p>
+      <a href="{{ path('about') }}" class="btn-java-light" style="background: #f3fcf7; color: #117351; border-color: #cfe9db;">Explore Services</a>
+    </div>
+    
+    <div class="consult-card consult-card-light">
+      <span class="hero-kicker" style="font-size: 11px;">FREE CONSULTATION</span>
+      <h3 class="section-title-dark" style="font-size: 30px; margin-top: 10px;">Book your first Fitopia consultation</h3>
+      <p class="service-copy" style="padding: 10px 0;">Share your needs and let us guide you to the right fitness, diet or wellness experience.</p>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px;">
+        <div><label style="font-size: 12px; color: #5b6777;">First Name</label><div style="height: 46px; background: #f6faf8; border: 1px solid #dbe9e0; border-radius: 14px;"></div></div>
+        <div><label style="font-size: 12px; color: #5b6777;">Last Name</label><div style="height: 46px; background: #f6faf8; border: 1px solid #dbe9e0; border-radius: 14px;"></div></div>
+        <div><label style="font-size: 12px; color: #5b6777;">Services</label><div style="height: 46px; background: #f6faf8; border: 1px solid #dbe9e0; border-radius: 14px;"></div></div>
+        <div><label style="font-size: 12px; color: #5b6777;">Date</label><div style="height: 46px; background: #f6faf8; border: 1px solid #dbe9e0; border-radius: 14px;"></div></div>
+        <div><label style="font-size: 12px; color: #5b6777;">Time</label><div style="height: 46px; background: #f6faf8; border: 1px solid #dbe9e0; border-radius: 14px;"></div></div>
+        <div style="display: flex; align-items: flex-end;"><a href="{{ path('app_login') }}" class="btn-java-primary" style="background: linear-gradient(to right, #159a72, #0f7f5d); width: 100%; text-align: center; border-radius: 14px;">Request Appointment</a></div>
+      </div>
+      <p style="font-size: 14px; color: #66776f; margin-top: 15px;">A member of the Fitopia team will contact you with a tailored recommendation.</p>
+    </div>
 
-        <div class="col-lg-3 d-flex align-items-stretch">
-          <div class="consultation w-100 text-center px-4 px-md-4">
-            <h3 class="mb-3">Find A Health Expert</h3>
-            <p>A small river named Duden flows by their place and supplies</p>
-            <a href="#" class="btn-custom">Meet our health coach</a>
-          </div>
-        </div>
+    <div class="consult-card">
+      <span class="hero-kicker" style="font-size: 11px;">COACHING TEAM</span>
+      <h3 class="section-title-dark" style="font-size: 23px; margin-top: 10px;">Meet experts ready to guide your progress</h3>
+      <p class="service-copy" style="padding: 10px 0;">Work with supportive coaches focused on clear steps, realistic routines and lasting results.</p>
+      <a href="{{ path('fitness_planner') }}" class="btn-java-light" style="background: #f3fcf7; color: #117351; border-color: #cfe9db;">Meet Our Coach</a>
+    </div>
+  </div>
+
+  <!-- Price Section -->
+  <div class="price-section">
+    <span class="hero-kicker" style="color: #16a34a;">Price &amp; Plans</span>
+    <h2 class="section-title-dark" style="font-size: 44px;">Choose Your Perfect Plans</h2>
+    
+    <div class="price-grid">
+      <div class="price-card">
+        <span class="team-name" style="font-size: 21px;">Starter</span>
+        <span class="price-amount">149 TND</span>
+        <span class="service-copy" style="padding: 0; text-align: center;">20 Workouts<br>Meal plans in mobile<br>One Coaching<br>-50% Group coaching<br>24/7 Support</span>
+        <a href="{{ path('app_register') }}" class="btn-java-primary">Choose Plan</a>
+      </div>
+      <div class="price-card">
+        <span class="team-name" style="font-size: 21px;">Standard</span>
+        <span class="price-amount">239 TND</span>
+        <span class="service-copy" style="padding: 0; text-align: center;">20 Workouts<br>Meal plans in mobile<br>One Coaching<br>-50% Group coaching<br>24/7 Support</span>
+        <a href="{{ path('app_register') }}" class="btn-java-primary">Choose Plan</a>
+      </div>
+      <div class="price-card">
+        <span class="team-name" style="font-size: 21px;">Premium</span>
+        <span class="price-amount">329 TND</span>
+        <span class="service-copy" style="padding: 0; text-align: center;">20 Workouts<br>Meal plans in mobile<br>One Coaching<br>-50% Group coaching<br>24/7 Support</span>
+        <a href="{{ path('app_register') }}" class="btn-java-primary">Choose Plan</a>
+      </div>
+      <div class="price-card">
+        <span class="team-name" style="font-size: 21px;">Platinum</span>
+        <span class="price-amount">479 TND</span>
+        <span class="service-copy" style="padding: 0; text-align: center;">20 Workouts<br>Meal plans in mobile<br>One Coaching<br>-50% Group coaching<br>24/7 Support</span>
+        <a href="{{ path('app_register') }}" class="btn-java-primary">Choose Plan</a>
       </div>
     </div>
   </div>
-</section>
 
-<section class="home-testimonials ftco-section testimony-section">
-  <div class="container">
-    <div class="row justify-content-center pb-4 mb-2">
-      <div class="col-md-7 heading-section text-center">
-        <span class="subheading mb-2">Testimonies</span>
-        <h2>Happy Clients &amp; Feedbacks</h2>
-      </div>
+  <!-- Blog Section -->
+  <div style="padding: 60px 30px;">
+    <div style="text-align: center; margin-bottom: 30px;">
+      <h2 class="section-title-dark" style="font-size: 34px;">Latest news from our blog</h2>
+      <span class="hero-kicker" style="color: #16a34a;">News &amp; Blog</span>
     </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <div class="carousel-testimony owl-carousel">
-          <div class="item">
-            <div class="testimony-wrap d-flex">
-              <span class="quote-mark">"</span>
-              <div class="user-img" style="background-image:url({{ asset('images/person_1.jpg') }});"></div>
-              <div class="text pl-4">
-                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                <p class="name">Racky Henderson</p>
-                <span class="position">Father</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="item">
-            <div class="testimony-wrap d-flex">
-              <span class="quote-mark">"</span>
-              <div class="user-img" style="background-image:url({{ asset('images/person_2.jpg') }});"></div>
-              <div class="text pl-4">
-                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                <p class="name">Henry Dee</p>
-                <span class="position">Businesswoman</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="item">
-            <div class="testimony-wrap d-flex">
-              <span class="quote-mark">"</span>
-              <div class="user-img" style="background-image:url({{ asset('images/person_3.jpg') }});"></div>
-              <div class="text pl-4">
-                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                <p class="name">Mark Huff</p>
-                <span class="position">Entrepreneur</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="item">
-            <div class="testimony-wrap d-flex">
-              <span class="quote-mark">"</span>
-              <div class="user-img" style="background-image:url({{ asset('images/person_4.jpg') }});"></div>
-              <div class="text pl-4">
-                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-                <p class="name">Rodel Golez</p>
-                <span class="position">Manager</span>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div class="services-grid">
+      <div class="service-card" style="max-width: 390px;">
+        <div class="service-img" style="background-image: url('{{ asset('images/services-3.jpg') }}'); height: 240px;"></div>
+        <p style="font-size: 13px; color: #6b7280; padding: 15px 20px 0;">February 12, 2026 • Nutrition Team</p>
+        <h3 class="section-title-dark" style="font-size: 21px; padding: 10px 20px;">Colorful meal ideas that make healthy eating easier every day</h3>
+      </div>
+      <div class="service-card" style="max-width: 390px;">
+        <div class="service-img" style="background-image: url('{{ asset('images/services-2.jpg') }}'); height: 240px;"></div>
+        <p style="font-size: 13px; color: #6b7280; padding: 15px 20px 0;">March 03, 2026 • Wellness Coach</p>
+        <h3 class="section-title-dark" style="font-size: 21px; padding: 10px 20px;">Small kitchen habits that help you build a smarter nutrition routine</h3>
+      </div>
+      <div class="service-card" style="max-width: 390px;">
+        <div class="service-img" style="background-image: url('{{ asset('images/coach-1.jpg') }}'); height: 240px;"></div>
+        <p style="font-size: 13px; color: #6b7280; padding: 15px 20px 0;">April 08, 2026 • Fitopia Journal</p>
+        <h3 class="section-title-dark" style="font-size: 21px; padding: 10px 20px;">Why daily movement and coaching support create lasting healthy change</h3>
       </div>
     </div>
   </div>
-</section>
 
-<section class="home-how-it-works ftco-section">
-  <div class="container">
-    <div class="row justify-content-center pb-4 mb-2">
-      <div class="col-md-7 heading-section text-center">
-        <span class="subheading mb-2">Other Services</span>
-        <h2>How it works?</h2>
-      </div>
-    </div>
+</div>
+{% endblock %}
 
-    <div class="home-how-track"></div>
-
-    <div class="row home-how-grid">
-      <div class="col-md-6 col-lg-3 d-flex align-items-stretch">
-        <article class="how-step text-center w-100">
-          <span class="step-index">01</span>
-          <div class="icon d-flex justify-content-center align-items-center"><span class="flaticon-diet"></span></div>
-          <h3 class="heading">Follow the program</h3>
-          <p>Even the all-powerful Pointing has no control about the blind texts.</p>
-        </article>
-      </div>
-
-      <div class="col-md-6 col-lg-3 d-flex align-items-stretch">
-        <article class="how-step text-center w-100">
-          <span class="step-index">02</span>
-          <div class="icon d-flex justify-content-center align-items-center"><span class="flaticon-workout"></span></div>
-          <h3 class="heading">Work for result</h3>
-          <p>Even the all-powerful Pointing has no control about the blind texts.</p>
-        </article>
-      </div>
-
-      <div class="col-md-6 col-lg-3 d-flex align-items-stretch">
-        <article class="how-step text-center w-100">
-          <span class="step-index">03</span>
-          <div class="icon d-flex justify-content-center align-items-center"><span class="flaticon-diet-1"></span></div>
-          <h3 class="heading">Eat healthy food</h3>
-          <p>Even the all-powerful Pointing has no control about the blind texts.</p>
-        </article>
-      </div>
-
-      <div class="col-md-6 col-lg-3 d-flex align-items-stretch">
-        <article class="how-step text-center w-100">
-          <span class="step-index">04</span>
-          <div class="icon d-flex justify-content-center align-items-center"><span class="flaticon-first"></span></div>
-          <h3 class="heading">Enjoy your life</h3>
-          <p>Even the all-powerful Pointing has no control about the blind texts.</p>
-        </article>
-      </div>
-    </div>
-  </div>
-</section> <section class="ftco-section ftco-no-pb bg-light"> <div class="container"> <div class="row justify-content-center pb-5 mb-3"> <div class="col-md-7 heading-section text-center ftco-animate"> <span class="subheading mb-3">Stories</span> <h2>Successfull Stories</h2> </div> </div> <div class="row ftco-animate"> <div class="col-md-12"> <div class="carousel-stories owl-carousel"> <div class="item"> <div class="row justify-content-center"> <div class="col-md-11"> <div class="stories-wrap d-md-flex"> <div class="img" style="background-image: url({{ asset('images/person-1.jpg') }});"> </div> <div class="text p-4 py-xl-5 px-xl-5 d-flex align-items-center"> <div class="desc w-100"> <p> A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth. </p> <p class="mb-5"> A small river named Duden flows by their place and supplies it with the necessary regelialia. </p> <div class="pt-4"> <p class="name mb-0">Joy Smith</p> <span class="position">Client / Manager</span> </div> </div> </div> </div> </div> </div> </div> <div class="item"> <div class="row justify-content-center"> <div class="col-md-11"> <div class="stories-wrap d-md-flex"> <div class="img" style="background-image: url({{ asset('images/person-2.jpg') }});"> </div> <div class="text p-4 py-xl-5 px-xl-5 d-flex align-items-center"> <div class="desc w-100"> <p> A small river named Duden flows by their place and supplies it with the necessary regelialia. </p> <p class="mb-5"> It is a paradisematic country, in which roasted parts of sentences fly into your mouth. </p> <div class="pt-4"> <p class="name mb-0">Rony Smith</p> <span class="position">Client / Messenger</span> </div> </div> </div> </div> </div> </div> </div> <div class="item"> <div class="row justify-content-center"> <div class="col-md-11"> <div class="stories-wrap d-md-flex"> <div class="img" style="background-image: url({{ asset('images/person-3.jpg') }});"> </div> <div class="text p-4 py-xl-5 px-xl-5 d-flex align-items-center"> <div class="desc w-100"> <p> A small river named Duden flows by their place and supplies it with the necessary regelialia. </p> <p class="mb-5"> It is a paradisematic country, in which roasted parts of sentences fly into your mouth. </p> <div class="pt-4"> <p class="name mb-0">John Doe</p> <span class="position">Client</span> </div> </div> </div> </div> </div> </div> </div> </div> </div> </div> </div> </section> <section class="ftco-intro" style="background-image: url({{ asset('images/bg_1.jpg') }});" data-stellar-background-ratio="0.5"> <div class="overlay"></div> <div class="container"> <div class="row"> <div class="col-md-9"> <h2>We Provide Free Health Care Consultation</h2> <p class="mb-0"> Your Health is Our Top Priority with Comprehensive, Affordable Health. </p> </div> <div class="col-md-3 d-flex align-items-center"> <p class="mb-0"> <a href="#" class="btn btn-white px-4 py-3"> Free Consultation </a> </p> </div> </div> </div> </section> <section class="ftco-section bg-light"> <div class="container"> <div class="row justify-content-center pb-5 mb-3"> <div class="col-md-7 heading-section text-center ftco-animate"> <span class="subheading mb-3">Price &amp; Plans</span> <h2>Choose Your Perfect Plans</h2> </div> </div> <div class="row"> {% set plans = [ {name:'Starter', price:49}, {name:'Standard', price:79}, {name:'Premium', price:109}, {name:'Platinum', price:159} ] %} {% for plan in plans %} <div class="col-md-6 col-lg-3 ftco-animate"> <div class="block-7"> <div class="text-center"> <h4 class="heading-2">{{ plan.name }}</h4> <span class="excerpt d-block">A Beautiful Healthcare</span> <span class="price"> <sup>$</sup> <span class="number">{{ plan.price }}</span> </span> <ul class="pricing-text mb-5"> <li><span class="fa fa-check mr-2"></span>20 Workouts</li> <li><span class="fa fa-check mr-2"></span>Meal plans in mobile</li> <li><span class="fa fa-check mr-2"></span>One Coaching</li> <li><span class="fa fa-check mr-2"></span>-50% Group coaching</li> <li><span class="fa fa-check mr-2"></span>24/7 Customer support</li> </ul> <a href="/login" style="color:red;font-size:20px"> TEST LOGIN LINK </a> </div> </div> </div> {% endfor %} </div> </div> </section> <section class="ftco-section"> <div class="container"> <div class="row justify-content-center pb-5 mb-3"> <div class="col-md-7 heading-section text-center ftco-animate"> <h2>Latest news from our blog</h2> <span class="subheading">News &amp; Blog</span> </div> </div> <div class="row d-flex"> {% set blogs = [ {img:'image_1.jpg', date:'January 30, 2020'}, {img:'image_2.jpg', date:'January 30, 2020'}, {img:'image_3.jpg', date:'January 30, 2020'} ] %} {% for blog in blogs %} <div class="col-md-4 d-flex ftco-animate"> <div class="blog-entry align-self-stretch"> <a href="#" class="block-20 rounded" style="background-image: url({{ asset('images/' ~ blog.img) }});"> </a> <div class="text mt-3"> <div class="meta mb-2"> <div><a href="#">{{ blog.date }}</a></div> <div><a href="#">Admin</a></div> <div> <a href="#" class="meta-chat"> <span class="fa fa-comment"></span> 3 </a> </div> </div> <h3 class="heading"> <a href="#"> Even the all-powerful Pointing has no control about the blind texts </a> </h3> </div> </div> </div> {% endfor %} </div> </div> </section> {% endblock %}
-{% block javascripts %}
-  {{ parent() }}
-  <script src="{{ asset('js/home-animations.js') }}"></script>
+{% block footer %}
+{% include 'partials/footer_fitopia.html.twig' %}
 {% endblock %}

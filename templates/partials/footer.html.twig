@@ -1,109 +1,67 @@
-<footer class="footer bg-dark">
+<footer class="footer" style="background: #13231d; padding: 80px 0 30px; color: rgba(255,255,255,0.7);">
   <div class="container">
-
-    {# ================= NEWSLETTER ================= #}
-    <div class="row justify-content-center">
-      <div class="col-md-10 col-lg-8">
-        <div class="subscribe mb-5">
-          <form action="#" class="subscribe-form">
-            <div class="form-group d-flex">
-              <input type="email"
-                     class="form-control rounded-left"
-                     placeholder="Enter email address">
-              <input type="submit"
-                     value="SUBSCRIBE"
-                     class="form-control submit px-4">
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    {# ================= FOOTER CONTENT ================= #}
-    <div class="row pt-5">
-
-      {# LEFT #}
-      <div class="col-md-4 pr-md-5">
+    <div class="row">
+      <div class="col-md-4 mb-5">
         <div class="footer-widget">
-          <h2 class="footer-heading">
-            <a href="/" class="logo">
-              <img src="{{ asset('images/logo.png') }}"
-                   alt="Fitopia"
-                   style="height:40px;">
+          <h2 class="footer-heading" style="margin-bottom: 25px;">
+            <a href="{{ path('home') }}" class="logo">
+              <img src="{{ asset('images/logo.png') }}" alt="Fitopia" style="height:45px; filter: brightness(0) invert(1);">
             </a>
           </h2>
-          <p>
-            A small river named Duden flows by their place and supplies it with
-            the necessary regelialia.
+          <p style="font-size: 15px; line-height: 1.8;">
+            Fitopia is your all-in-one wellness partner. From personalized nutrition and training to a vibrant community, we provide the tools you need to live your healthiest life.
           </p>
-          <a href="#">read more</a>
+          <div style="display: flex; gap: 15px; margin-top: 25px;">
+            <a href="#" style="color: white; font-size: 18px;"><i class="fa fa-facebook"></i></a>
+            <a href="#" style="color: white; font-size: 18px;"><i class="fa fa-twitter"></i></a>
+            <a href="#" style="color: white; font-size: 18px;"><i class="fa fa-instagram"></i></a>
+          </div>
         </div>
       </div>
 
-      {# RIGHT #}
       <div class="col-md-8">
         <div class="row">
-
-          <div class="col-md-3 border-left">
-            <h2 class="footer-heading">Services</h2>
-            <ul class="list-unstyled">
-              <li><a href="#">Balance Body</a></li>
-              <li><a href="#">Physical Activity</a></li>
-              <li><a href="#">Fitness Program</a></li>
-              <li><a href="#">Healthy Food</a></li>
+          <div class="col-md-4 mb-5">
+            <h2 class="footer-heading" style="color: white; font-size: 18px; font-weight: 700; margin-bottom: 25px;">Quick Links</h2>
+            <ul class="list-unstyled" style="display: grid; gap: 12px;">
+              <li><a href="{{ path('home') }}" style="color: inherit; text-decoration: none;">Home</a></li>
+              <li><a href="{{ path('about') }}" style="color: inherit; text-decoration: none;">About Fitopia</a></li>
+              <li><a href="{{ path('services') }}" style="color: inherit; text-decoration: none;">Our Services</a></li>
+              <li><a href="{{ path('contact') }}" style="color: inherit; text-decoration: none;">Contact Us</a></li>
             </ul>
           </div>
 
-          <div class="col-md-3 border-left">
-            <h2 class="footer-heading">About</h2>
-            <ul class="list-unstyled">
-              <li><a href="#">Staff</a></li>
-              <li><a href="#">Team</a></li>
-              <li><a href="#">Careers</a></li>
-              <li><a href="#">Blog</a></li>
+          <div class="col-md-4 mb-5">
+            <h2 class="footer-heading" style="color: white; font-size: 18px; font-weight: 700; margin-bottom: 25px;">Modules</h2>
+            <ul class="list-unstyled" style="display: grid; gap: 12px;">
+              <li><a href="{{ path('diet_planner') }}" style="color: inherit; text-decoration: none;">Diet & Nutrition</a></li>
+              <li><a href="{{ path('fitness_planner') }}" style="color: inherit; text-decoration: none;">Fitness Hub</a></li>
+              <li><a href="{{ path('supplements') }}" style="color: inherit; text-decoration: none;">Supplements Shop</a></li>
+              <li><a href="{{ path('explore_forums_blogs') }}" style="color: inherit; text-decoration: none;">Forums & Blog</a></li>
             </ul>
           </div>
 
-          <div class="col-md-3 border-left">
-            <h2 class="footer-heading">Resources</h2>
-            <ul class="list-unstyled">
-              <li><a href="#">Security</a></li>
-              <li><a href="#">Global</a></li>
-              <li><a href="#">Charts</a></li>
-              <li><a href="#">Privacy</a></li>
+          <div class="col-md-4 mb-5">
+            <h2 class="footer-heading" style="color: white; font-size: 18px; font-weight: 700; margin-bottom: 25px;">Support</h2>
+            <ul class="list-unstyled" style="display: grid; gap: 12px;">
+              <li><a href="#" style="color: inherit; text-decoration: none;">Privacy Policy</a></li>
+              <li><a href="#" style="color: inherit; text-decoration: none;">Terms of Service</a></li>
+              <li><a href="#" style="color: inherit; text-decoration: none;">Help Center</a></li>
+              <li><a href="#" style="color: inherit; text-decoration: none;">FAQ</a></li>
             </ul>
           </div>
-
-          <div class="col-md-3 border-left">
-            <h2 class="footer-heading">Social</h2>
-            <ul class="list-unstyled">
-              <li><a href="#">Facebook</a></li>
-              <li><a href="#">Twitter</a></li>
-              <li><a href="#">Instagram</a></li>
-              <li><a href="#">Google</a></li>
-            </ul>
-          </div>
-
         </div>
       </div>
     </div>
 
-    {# ================= COPYRIGHT ================= #}
-    <div class="row mt-5 pt-4 border-top">
-      <div class="col-md-6">
-        <p class="mb-0">
-          Copyright © {{ "now"|date("Y") }}
-          All rights reserved | Fitopia
-        </p>
-      </div>
-      <div class="col-md-6 text-md-right">
-        <p class="mb-0">
-          <a href="#">Terms</a>
-          <a href="#" class="ml-3">Privacy</a>
-          <a href="#" class="ml-3">Compliances</a>
+    <div class="row mt-5 pt-4" style="border-top: 1px solid rgba(255,255,255,0.1);">
+      <div class="col-md-12 text-center">
+        <p style="font-size: 14px;">
+          Copyright &copy; {{ "now"|date("Y") }} Fitopia. All rights reserved. 
+          <br>
+          <span style="font-size: 12px; opacity: 0.6;">Designed for the Fitopia Legacy Migration Project.</span>
         </p>
       </div>
     </div>
-
   </div>
 </footer>

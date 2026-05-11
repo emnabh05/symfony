@@ -1,4 +1,4 @@
-{% extends 'admin/layout.html.twig' %}
+{% extends 'admin_base.html.twig' %}
 
 {% block title %}Gestion forum et blog | Fitopia{% endblock %}
 
@@ -118,18 +118,19 @@
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 16px;
+    align-items: stretch;
     margin-bottom: 1.4rem;
   }
   .chart-card, .status-card {
     background: #fff;
-    border-radius: 14px;
-    padding: 1rem 1.1rem;
+    border-radius: 22px;
+    padding: 1.8rem 2rem 2rem;
     border: 1px solid #e8eef6;
-    box-shadow: 0 10px 24px rgba(14, 30, 37, 0.06);
+    box-shadow: 0 16px 34px rgba(14, 30, 37, 0.08);
   }
   .card-title {
     margin: 0;
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 800;
     color: #0f172a;
   }
@@ -175,26 +176,26 @@
     color: #102a43;
   }
   .status-list {
-    margin-top: 12px;
+    margin-top: 24px;
     display: flex;
     flex-direction: column;
-    gap: 9px;
+    gap: 18px;
   }
   .status-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: .75rem;
-    font-size: 13px;
+    font-size: 15px;
   }
   .status-pill {
     display: inline-flex;
     align-items: center;
-    border-radius: 999px;
-    font-size: 10px;
+    border-radius: 10px;
+    font-size: 12px;
     font-weight: 800;
     letter-spacing: .08em;
-    padding: 4px 9px;
+    padding: 6px 14px;
     text-transform: uppercase;
   }
   .status-pill.green { background: #dcfce7; color: #166534; }
@@ -204,7 +205,88 @@
   .status-divider {
     height: 1px;
     background: #e5e7eb;
-    margin: 14px 0 11px;
+    margin: 26px 0 18px;
+  }
+  .trend-copy {
+    margin: 24px 0 8px;
+    color: #8a9ab3;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .latest-interactions-title {
+    margin: 0 0 18px;
+    color: #0f172a;
+    font-size: 17px;
+    font-weight: 800;
+  }
+  .latest-interactions-list {
+    display: grid;
+    gap: 14px;
+  }
+  .latest-interaction-item {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 16px 16px;
+    border: 1px solid #e7edf5;
+    border-radius: 16px;
+    background: #ffffff;
+    min-height: 76px;
+  }
+  .latest-interaction-meta {
+    min-width: 135px;
+  }
+  .latest-interaction-name {
+    color: #081f4d;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.4;
+  }
+  .latest-interaction-date {
+    color: #5c6f8e;
+    font-size: 13px;
+    margin-top: 3px;
+  }
+  .latest-interaction-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 46px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: #d8f5e5;
+    color: #08714f;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  .latest-interaction-pill.like {
+    background: #d8f5e5;
+    color: #08714f;
+  }
+  .latest-interaction-pill.comment {
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+  .latest-interaction-pill.repost {
+    background: #fef3c7;
+    color: #b45309;
+  }
+  .latest-interaction-action {
+    color: #243b63;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .status-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 100%;
+  }
+  .status-card .status-item strong {
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 800;
   }
   .option-icon {
     width: 42px;
@@ -401,9 +483,6 @@
     to { opacity: 1; transform: translateY(0); }
   }
   @media (max-width: 991px) {
-    .stats-row {
-      grid-template-columns: 1fr;
-    }
     .option-grid { grid-template-columns: 1fr; }
     .form-row, .form-row.three { grid-template-columns: 1fr; }
     .hero-stats {
@@ -418,6 +497,13 @@
       width: 100%;
       min-width: 0;
     }
+    .latest-interaction-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .latest-interaction-meta {
+      min-width: 0;
+    }
   }
 </style>
 {% endblock %}
@@ -428,6 +514,7 @@
 {% set users = users|default([]) %}
 {% set posts = posts|default([]) %}
 {% set blogStats = blogStats|default({}) %}
+{% set latestInteractions = latestInteractions|default([]) %}
 
   <div class="agenda-hero">
     <h2>Forum and Blog Management</h2>
@@ -482,19 +569,29 @@
   <div class="stats-row">
     <div class="chart-card">
       <h3 class="card-title">Post Trend (Last 7 days)</h3>
-      <div class="bar-chart">
-        {% set weeklySeries = blogStats.weeklySeries|default([]) %}
-        {% set weeklyMax = blogStats.weeklyMax|default(1) %}
-        {% for point in weeklySeries %}
-          <div class="bar">
-            <div class="bar-track">
-              <span class="bar-fill" style="height: {{ weeklyMax > 0 ? (point.count * 100 / weeklyMax) : 0 }}%;"></span>
+      <p class="trend-copy">
+        {% if blogStats.weeklyPosts|default(0) > 0 %}
+          Steady activity. {{ blogStats.weeklyPosts }} new post{{ blogStats.weeklyPosts > 1 ? 's' : '' }} this week.
+        {% else %}
+          Steady activity. No new posts this week.
+        {% endif %}
+      </p>
+
+      <h4 class="latest-interactions-title">Latest Interactions</h4>
+      <div class="latest-interactions-list">
+        {% for interaction in latestInteractions %}
+          <div class="latest-interaction-item">
+            <div class="latest-interaction-meta">
+              <div class="latest-interaction-name">{{ interaction.userName }}</div>
+              <div class="latest-interaction-date">{{ interaction.displayDate }}</div>
             </div>
-            <div class="bar-label">{{ point.label }}</div>
-            <div class="bar-value">{{ point.count }}</div>
+            <span class="latest-interaction-pill {{ interaction.type|default('') }}">{{ interaction.typeLabel }}</span>
+            <div class="latest-interaction-action">{{ interaction.actionLabel }}</div>
           </div>
         {% else %}
-          <p class="muted">No trend data yet.</p>
+          <div class="latest-interaction-item">
+            <div class="latest-interaction-action">No recent interactions yet.</div>
+          </div>
         {% endfor %}
       </div>
     </div>
@@ -606,7 +703,7 @@
             <select class="form-control" name="post_id" required>
               <option value="">Select post</option>
               {% for post in posts %}
-                <option value="{{ post.id }}">#{{ post.id }} - {{ post.title }}</option>
+                <option value="{{ post.id }}">{{ post.title }}</option>
               {% endfor %}
             </select>
           </div>
@@ -639,7 +736,7 @@
       <div class="list-item">
         <div class="list-head" style="width:100%;">
           <div>
-            <strong>#{{ item.id }} - {{ item.title }}</strong>
+            <strong>{{ item.title }}</strong>
             <div class="muted">{{ item.email }} | {{ item.category }} | {{ item.date }}</div>
           </div>
           <button class="btn btn-outline-primary btn-sm js-toggle" data-target="post-edit-{{ item.id }}"><i class="fa fa-pencil"></i> Edit</button>
@@ -669,8 +766,8 @@
       <div class="list-item">
         <div class="list-head" style="width:100%;">
           <div>
-            <strong>#{{ interaction.id }} - {{ interaction.type|upper }}</strong>
-            <div class="muted">{{ interaction.userEmail }} | Post #{{ interaction.postId }} - {{ interaction.postTitle }} | {{ interaction.date }}</div>
+            <strong>{{ interaction.type|upper }}</strong>
+            <div class="muted">{{ interaction.userEmail }} | {{ interaction.postTitle }} | {{ interaction.date }}</div>
             {% if interaction.comment %}
               <div class="muted">Comment: {{ interaction.comment }}</div>
             {% endif %}
@@ -679,6 +776,7 @@
         </div>
         <form id="interaction-edit-{{ interaction.id }}" method="post" action="{{ path('admin_blog_forum_interaction_update', {'id': interaction.id}) }}" style="display:none;margin-top:0.8rem;">
           <input type="hidden" name="_token" value="{{ csrf_token('admin_blog_interaction_update_' ~ interaction.id) }}">
+          <input type="hidden" name="interaction_table" value="{{ interaction.interactionTable }}">
           <div class="form-row three">
             <div>
               <label>User</label>
@@ -692,7 +790,7 @@
               <label>Post</label>
               <select class="form-control" name="post_id" required>
                 {% for post in posts %}
-                  <option value="{{ post.id }}" {% if interaction.postId == post.id %}selected{% endif %}>#{{ post.id }} - {{ post.title }}</option>
+                  <option value="{{ post.id }}" {% if interaction.postId == post.id %}selected{% endif %}>{{ post.title }}</option>
                 {% endfor %}
               </select>
             </div>
@@ -728,7 +826,7 @@
       <div class="list-item">
         <div class="list-head" style="width:100%;">
           <div>
-            <strong>#{{ item.id }} - {{ item.title }}</strong>
+            <strong>{{ item.title }}</strong>
             <div class="muted">{{ item.email }} | {{ item.date }}</div>
           </div>
           <form method="post" action="{{ path('admin_blog_forum_delete', {'id': item.id}) }}" onsubmit="return confirm('Delete this post and all linked interactions?');">
@@ -746,11 +844,12 @@
       <div class="list-item">
         <div class="list-head" style="width:100%;">
           <div>
-            <strong>#{{ interaction.id }} - {{ interaction.type|upper }}</strong>
-            <div class="muted">{{ interaction.userEmail }} | Post #{{ interaction.postId }} - {{ interaction.postTitle }}</div>
+            <strong>{{ interaction.type|upper }}</strong>
+            <div class="muted">{{ interaction.userEmail }} | {{ interaction.postTitle }}</div>
           </div>
           <form method="post" action="{{ path('admin_blog_forum_interaction_delete', {'id': interaction.id}) }}" onsubmit="return confirm('Delete this interaction?');">
             <input type="hidden" name="_token" value="{{ csrf_token('admin_blog_interaction_delete_' ~ interaction.id) }}">
+            <input type="hidden" name="interaction_table" value="{{ interaction.interactionTable }}">
             <button class="btn btn-outline-danger btn-sm" type="submit"><i class="fa fa-trash"></i> Delete</button>
           </form>
         </div>
@@ -767,14 +866,12 @@
     <h5 style="font-weight:800;"><i class="fa fa-table"></i> All Posts</h5>
     <div class="table-toolbar">
       <select id="posts-sort" class="toolbar-sort">
-        <option value="0:number:desc">Sort ID (desc)</option>
-        <option value="0:number:asc">Sort ID (asc)</option>
-        <option value="4:number:desc">Sort Likes (high)</option>
-        <option value="4:number:asc">Sort Likes (low)</option>
-        <option value="6:number:desc">Sort Comments (high)</option>
-        <option value="6:number:asc">Sort Comments (low)</option>
-        <option value="8:date:desc">Sort Created (newest)</option>
-        <option value="8:date:asc">Sort Created (oldest)</option>
+        <option value="3:number:desc">Sort Likes (high)</option>
+        <option value="3:number:asc">Sort Likes (low)</option>
+        <option value="5:number:desc">Sort Comments (high)</option>
+        <option value="5:number:asc">Sort Comments (low)</option>
+        <option value="7:date:desc">Sort Created (newest)</option>
+        <option value="7:date:asc">Sort Created (oldest)</option>
       </select>
       <a href="{{ path('admin_blog_forum_posts_pdf') }}" class="toolbar-export" target="_blank"><i class="fa fa-file-pdf-o"></i> Export PDF</a>
       <input id="posts-search" class="toolbar-search" type="search" placeholder="Search posts...">
@@ -783,7 +880,6 @@
       <table id="posts-table">
         <thead>
           <tr>
-            <th>ID</th>
             <th>Title</th>
             <th>Author</th>
             <th>Category</th>
@@ -797,7 +893,6 @@
         <tbody>
           {% for item in items %}
             <tr>
-              <td>#{{ item.id }}</td>
               <td>{{ item.title }}</td>
               <td>{{ item.email }}</td>
               <td>{{ item.category }}</td>
@@ -808,7 +903,7 @@
               <td>{{ item.date }}</td>
             </tr>
           {% else %}
-            <tr><td colspan="9" class="muted">No posts found.</td></tr>
+            <tr><td colspan="8" class="muted">No posts found.</td></tr>
           {% endfor %}
         </tbody>
       </table>
@@ -817,12 +912,10 @@
     <h5 style="font-weight:800;margin-top:1rem;"><i class="fa fa-table"></i> All Interactions</h5>
     <div class="table-toolbar">
       <select id="interactions-sort" class="toolbar-sort">
-        <option value="0:number:desc">Sort ID (desc)</option>
-        <option value="0:number:asc">Sort ID (asc)</option>
-        <option value="1:text:asc">Sort Type (A-Z)</option>
-        <option value="1:text:desc">Sort Type (Z-A)</option>
-        <option value="5:date:desc">Sort Date (newest)</option>
-        <option value="5:date:asc">Sort Date (oldest)</option>
+        <option value="0:text:asc">Sort Type (A-Z)</option>
+        <option value="0:text:desc">Sort Type (Z-A)</option>
+        <option value="4:date:desc">Sort Date (newest)</option>
+        <option value="4:date:asc">Sort Date (oldest)</option>
       </select>
       <a href="{{ path('admin_blog_forum_interactions_pdf') }}" class="toolbar-export" target="_blank"><i class="fa fa-file-pdf-o"></i> Export PDF</a>
       <input id="interactions-search" class="toolbar-search" type="search" placeholder="Search interactions...">
@@ -831,7 +924,6 @@
       <table id="interactions-table">
         <thead>
           <tr>
-            <th>ID</th>
             <th>Type</th>
             <th>Post</th>
             <th>User</th>
@@ -842,15 +934,14 @@
         <tbody>
           {% for interaction in interactions %}
             <tr>
-              <td>#{{ interaction.id }}</td>
               <td>{{ interaction.type }}</td>
-              <td>#{{ interaction.postId }} - {{ interaction.postTitle }}</td>
+              <td>{{ interaction.postTitle }}</td>
               <td>{{ interaction.userEmail }}</td>
               <td class="excerpt-clamp">{{ interaction.comment ?: '-' }}</td>
               <td>{{ interaction.date }}</td>
             </tr>
           {% else %}
-            <tr><td colspan="6" class="muted">No interactions found.</td></tr>
+            <tr><td colspan="5" class="muted">No interactions found.</td></tr>
           {% endfor %}
         </tbody>
       </table>

@@ -19,7 +19,6 @@ class WaitlistService
         private readonly EntityManagerInterface $em,
         private readonly WaitlistEntryRepository $waitlistEntryRepository,
         private readonly ReservationRepository $reservationRepository,
-        private readonly LoyaltyService $loyaltyService,
         private readonly EventCapacityService $eventCapacityService,
     ) {
     }
@@ -32,9 +31,7 @@ class WaitlistService
         if (!$this->eventCapacityService->isFull($event)) {
             throw new \DomainException('Il reste des places, utilisez la reservation normale.');
         }
-        if ($event->isPremium() && !$this->loyaltyService->isVipEmail($email)) {
-            throw new \DomainException('Acces VIP requis.');
-        }
+
         if ($this->hasActiveReservationForEvent($event, $email)) {
             throw new \DomainException('Vous avez deja une reservation active pour cet evenement.');
         }
@@ -83,16 +80,6 @@ class WaitlistService
             return null;
         }
 
-        if ($event->isPremium() && !$this->loyaltyService->isVipEmail($next->getEmail())) {
-            $next->setStatus(WaitlistEntry::STATUS_ANNULEE);
-            $next->setToken(null);
-            $next->setInvitedAt(null);
-            $next->setExpiresAt(null);
-            $this->em->flush();
-
-            return $this->processNextInvite($event);
-        }
-
         $now = new \DateTimeImmutable();
         $next->setStatus(WaitlistEntry::STATUS_INVITE);
         $next->setToken($this->generateUniqueToken());
@@ -121,12 +108,6 @@ class WaitlistService
             return null;
         }
 
-        if ($event->isPremium() && !$this->loyaltyService->isVipEmail($email)) {
-            $next->setStatus(WaitlistEntry::STATUS_ANNULEE);
-            $this->em->flush();
-            return $this->promoteNext($event);
-        }
-
         if ($this->hasActiveReservationForEvent($event, $email)) {
             $next->setStatus(WaitlistEntry::STATUS_ANNULEE);
             $this->em->flush();
@@ -145,10 +126,7 @@ class WaitlistService
         $reservation->setDateReservation($now);
         $reservation->setMontant($event->getPrixEvent() ?? '0.00');
         $reservation->setStatut(Reservation::STATUS_CONFIRMED);
-        $reservation->setQrToken(null);
-        $reservation->setQrGeneratedAt(null);
 
-        // Keep trace in current waitlist model while marking the entry as promoted.
         $next->setStatus(WaitlistEntry::STATUS_CONFIRMEE);
         $next->setInvitedAt($now);
         $next->setToken(null);
@@ -225,9 +203,31 @@ class WaitlistService
             $entry->setExpiresAt(null);
         }
         $this->em->flush();
+        $this->refreshPendingPositions($event);
         $this->processNextInvite($event);
 
         return count($expired);
+    }
+
+    public function cancelEntry(WaitlistEntry $entry): void
+    {
+        $event = $entry->getEvent();
+        if (!$event instanceof Event) {
+            throw new \DomainException('Evenement introuvable pour cette entree waitlist.');
+        }
+
+        $previousStatus = $entry->getStatus();
+        $entry->setStatus(WaitlistEntry::STATUS_ANNULEE);
+        $entry->setToken(null);
+        $entry->setInvitedAt(null);
+        $entry->setExpiresAt(null);
+        $this->em->flush();
+
+        $this->refreshPendingPositions($event);
+
+        if ($previousStatus === WaitlistEntry::STATUS_INVITE) {
+            $this->processNextInvite($event);
+        }
     }
 
     public function confirmInvite(string $token): Reservation
@@ -257,13 +257,6 @@ class WaitlistService
             throw new \DomainException('Evenement introuvable.');
         }
 
-        if ($event->isPremium() && !$this->loyaltyService->isVipEmail($entry->getEmail())) {
-            $entry->setStatus(WaitlistEntry::STATUS_ANNULEE);
-            $entry->setToken(null);
-            $this->em->flush();
-            throw new \DomainException('Acces VIP requis.');
-        }
-
         if ($this->eventCapacityService->isFull($event)) {
             $entry->setStatus(WaitlistEntry::STATUS_EN_ATTENTE);
             $entry->setToken(null);
@@ -281,8 +274,6 @@ class WaitlistService
         $reservation->setDateReservation($now);
         $reservation->setMontant($event->getPrixEvent() ?? '0.00');
         $reservation->setStatut(Reservation::STATUS_CONFIRMED);
-        $reservation->setQrToken(null);
-        $reservation->setQrGeneratedAt(null);
 
         $entry->setStatus(WaitlistEntry::STATUS_CONFIRMEE);
         $entry->setToken(null);
@@ -311,11 +302,6 @@ class WaitlistService
         $this->processNextInvite($event);
 
         return $reservation;
-    }
-
-    public function onReservationCancelled(Event $event): void
-    {
-        $this->promoteNext($event);
     }
 
     public function computeQueuePosition(Event $event, string $email): ?int
@@ -378,5 +364,4 @@ class WaitlistService
 
         return false;
     }
-
 }

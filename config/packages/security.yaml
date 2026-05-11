@@ -1,7 +1,8 @@
 security:
     password_hashers:
         App\Entity\User:
-            algorithm: auto
+            algorithm: bcrypt
+            cost: 12
 
     providers:
         users:

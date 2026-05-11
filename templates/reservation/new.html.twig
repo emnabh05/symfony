@@ -3,44 +3,249 @@
 {% block title %}Reservation evenement | Fitopia{% endblock %}
 
 {% block body %}
-<section class="container py-5">
-  {% set price = event.prixEvent|default('0') + 0 %}
-  {% set imageSrc = (event.imageEvent and event.imageEvent starts with 'event-') ? asset('uploads/events/' ~ event.imageEvent) : 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1400&q=80' %}
+{% set price = event.prixEvent|default(0) + 0 %}
+{% set imageSrc = path('events_image', {id: event.id}) %}
 
-  <div class="row g-4">
-    <div class="col-12 col-lg-7">
-      <div class="card border-0 shadow-sm h-100">
-        <img src="{{ imageSrc }}" alt="{{ event.titre }}" class="card-img-top" style="aspect-ratio:16/8;object-fit:cover;">
-        <div class="card-body">
-          <h1 class="h4 mb-3">{{ event.titre }}</h1>
-          <div class="row g-2 mb-3">
-            <div class="col-12 col-md-6"><strong>Date :</strong> {{ event.dateEvent|date('Y-m-d') }}</div>
-            <div class="col-12 col-md-6"><strong>Lieu :</strong> {{ event.lieu }}</div>
-            <div class="col-12 col-md-6"><strong>Prix :</strong> {% if price > 0 %}{{ event.prixEvent }} DT{% else %}Gratuit{% endif %}</div>
-            <div class="col-12 col-md-6"><strong>Capacite restante :</strong> {{ event.capacite }}</div>
+<style>
+  .reservation-shell {
+    padding: 40px 0 56px;
+    background:
+      radial-gradient(circle at top left, rgba(15, 122, 95, 0.08), transparent 34%),
+      linear-gradient(180deg, #f8fbfc 0%, #ffffff 100%);
+  }
+  .reservation-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.95fr);
+    gap: 28px;
+    align-items: start;
+  }
+  .reservation-card,
+  .reservation-form-card {
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
+    border: 1px solid #edf2f7;
+    overflow: hidden;
+  }
+  .reservation-image {
+    width: 100%;
+    aspect-ratio: 16 / 8;
+    object-fit: cover;
+    display: block;
+  }
+  .reservation-content {
+    padding: 22px 22px 26px;
+  }
+  .reservation-title {
+    margin: 0 0 18px;
+    font-size: 2rem;
+    line-height: 1.1;
+    color: #17353d;
+    font-weight: 800;
+  }
+  .reservation-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 28px;
+    margin-bottom: 18px;
+  }
+  .reservation-meta strong {
+    color: #374151;
+    font-weight: 800;
+  }
+  .reservation-meta span {
+    color: #12343b;
+  }
+  .reservation-desc {
+    margin: 0;
+    color: #5b6675;
+    line-height: 1.7;
+    font-size: 1.02rem;
+  }
+  .reservation-form-card {
+    padding: 24px 20px;
+  }
+  .reservation-form-card h2 {
+    margin: 0 0 18px;
+    font-size: 1.9rem;
+    color: #17353d;
+    font-weight: 800;
+  }
+  .form-stack {
+    display: grid;
+    gap: 12px;
+  }
+  .field-block label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: #334155;
+  }
+  .field-block input {
+    width: 100%;
+    border: 1px solid #d7e1ea;
+    border-radius: 12px;
+    padding: 13px 14px;
+    font-size: 1rem;
+    color: #0f172a;
+    background: #fff;
+  }
+  .field-block input:focus {
+    outline: none;
+    border-color: #0f7a5f;
+    box-shadow: 0 0 0 4px rgba(15, 122, 95, 0.12);
+  }
+  .form-errors {
+    color: #c0392b;
+    font-size: 0.9rem;
+    margin-top: 6px;
+  }
+  .payment-summary {
+    margin-top: 18px;
+    background: #f4f8fc;
+    border-radius: 18px;
+    padding: 16px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .payment-summary small {
+    display: block;
+    color: #64748b;
+    margin-bottom: 4px;
+  }
+  .payment-summary strong {
+    font-size: 1.9rem;
+    color: #0f1d3a;
+    font-weight: 800;
+  }
+  .payment-status {
+    text-align: right;
+  }
+  .payment-status span {
+    display: block;
+    color: #64748b;
+    margin-bottom: 4px;
+  }
+  .payment-status strong {
+    color: #10b981;
+    font-size: 1.05rem;
+    letter-spacing: 0.03em;
+  }
+  .reservation-submit {
+    margin-top: 18px;
+    width: 100%;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 18px;
+    background: #102b3b;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .reservation-submit:hover {
+    background: #0d2230;
+  }
+  @media (max-width: 992px) {
+    .reservation-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 640px) {
+    .reservation-meta {
+      grid-template-columns: 1fr;
+    }
+    .payment-summary {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .payment-status {
+      text-align: left;
+    }
+  }
+</style>
+
+<section class="reservation-shell">
+  <div class="container">
+    <div class="reservation-grid">
+      <article class="reservation-card">
+        <img src="{{ imageSrc }}" alt="{{ event.titre }}" class="reservation-image">
+        <div class="reservation-content">
+          <h1 class="reservation-title">{{ event.titre }}</h1>
+          <div class="reservation-meta">
+            <div><strong>Date :</strong> <span>{{ event.dateEvent|date('Y-m-d') }}</span></div>
+            <div><strong>Lieu :</strong> <span>{{ event.lieu }}</span></div>
+            <div><strong>Prix :</strong> <span>{% if price > 0 %}{{ event.prixEvent|number_format(2, '.', ' ') }} DT{% else %}Gratuit{% endif %}</span></div>
+            <div><strong>Capacite restante :</strong> <span>{{ event.capacite }}</span></div>
           </div>
-          <p class="text-muted mb-0">{{ event.description|length > 220 ? event.description|slice(0, 220) ~ '...' : event.description }}</p>
+          <p class="reservation-desc">{{ event.description }}</p>
         </div>
-      </div>
-    </div>
+      </article>
 
-    <div class="col-12 col-lg-5">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-body">
-          <h2 class="h5 mb-3">Confirmer votre reservation</h2>
+      <aside class="reservation-form-card">
+        <h2>Confirmer votre reservation</h2>
 
-          {% if isFull %}
-            <div class="alert alert-warning mb-2">Cet evenement est complet.</div>
-            <a class="btn btn-primary w-100" href="{{ path('app_waitlist_join_form', {id: event.id}) }}">Rejoindre la liste d attente</a>
-          {% else %}
-            {{ form_start(form, {action: path('app_event_reservation_create', {id: event.id})}) }}
-              {{ form_widget(form) }}
-              <button type="submit" class="btn btn-primary w-100">Confirmer ma reservation</button>
-            {{ form_end(form) }}
-          {% endif %}
-        </div>
-      </div>
+        {% if isFull %}
+          <div class="alert alert-warning mb-3">Cet evenement est complet.</div>
+          <a class="reservation-submit text-center text-decoration-none d-inline-block" href="{{ path('app_waitlist_join_form', {id: event.id}) }}">Rejoindre la liste d attente</a>
+        {% else %}
+          {{ form_start(form, {action: path('app_event_reservation_create', {id: event.id})}) }}
+            <div class="form-stack">
+              <div class="field-block">
+                {{ form_label(form.nomParticipant) }}
+                {{ form_widget(form.nomParticipant, {attr: {placeholder: 'Nom'}}) }}
+                <div class="form-errors">{{ form_errors(form.nomParticipant) }}</div>
+              </div>
+
+              <div class="field-block">
+                {{ form_label(form.prenomParticipant) }}
+                {{ form_widget(form.prenomParticipant, {attr: {placeholder: 'Prenom'}}) }}
+                <div class="form-errors">{{ form_errors(form.prenomParticipant) }}</div>
+              </div>
+
+              <div class="field-block">
+                {{ form_label(form.emailParticipant) }}
+                {{ form_widget(form.emailParticipant, {attr: {placeholder: 'email@fitopia.tn'}}) }}
+                <div class="form-errors">{{ form_errors(form.emailParticipant) }}</div>
+              </div>
+
+              <div class="field-block">
+                {{ form_label(form.telephoneParticipant) }}
+                {{ form_widget(form.telephoneParticipant, {attr: {placeholder: '+216XXXXXXXX'}}) }}
+                <div class="form-errors">{{ form_errors(form.telephoneParticipant) }}</div>
+              </div>
+            </div>
+
+            {% if requiresPayment %}
+              <div class="payment-summary">
+                <div>
+                  <small>Total a payer</small>
+                  <strong>{{ event.prixEvent|number_format(2, '.', ' ') }} DT</strong>
+                </div>
+                <div class="payment-status">
+                  <span>Statut</span>
+                  <strong>EN ATTENTE PAIEMENT</strong>
+                </div>
+              </div>
+            {% endif %}
+
+            <button type="submit" class="reservation-submit">
+              {% if requiresPayment %}
+                Continuer vers le paiement
+              {% else %}
+                Confirmer ma reservation
+              {% endif %}
+            </button>
+            {{ form_rest(form) }}
+          {{ form_end(form) }}
+        {% endif %}
+      </aside>
     </div>
   </div>
 </section>
 {% endblock %}
+
+{% block footer %}{% endblock %}

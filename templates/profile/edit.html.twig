@@ -1,258 +1,131 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}My Profile | Fitopia{% endblock %}
+{% block title %}Profile Security | Fitopia{% endblock %}
 
 {% block stylesheets %}
 <style>
   .profile-wrap {
-    padding: 3.5rem 0 4.5rem;
+    padding: 3rem 0 4rem;
   }
   .profile-card {
-    border-radius: 18px;
+    border-radius: 22px;
     overflow: hidden;
-    box-shadow: 0 18px 50px rgba(14, 30, 37, 0.12);
     background: #fff;
+    box-shadow: 0 22px 60px rgba(14, 30, 37, 0.14);
   }
   .profile-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem 2rem;
-    background: linear-gradient(135deg, #0b3a3d 0%, #0d5b50 55%, #0f7a5f 100%);
+    background: linear-gradient(160deg, #0b5f61 0%, #176f69 50%, #2f8a7d 100%);
     color: #fff;
+    padding: 2rem;
   }
-  .profile-header h3 {
+  .profile-header h2 {
+    margin: 0 0 0.4rem;
+    font-size: 1.95rem;
+    font-weight: 800;
+  }
+  .profile-header p {
     margin: 0;
-    font-weight: 700;
-  }
-  .card-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 0.75rem;
-  }
-  .card-actions .logout-btn {
-    background: #0b3a3d;
-    border: 1px solid #0b3a3d;
-    color: #fff;
-    border-radius: 8px;
-    padding: 0.4rem 0.9rem;
-    font-weight: 600;
+    max-width: 700px;
+    opacity: 0.92;
   }
   .profile-body {
     padding: 2rem;
   }
-  .profile-avatar-wrap {
+  .profile-topbar {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 1rem;
+    gap: 1rem;
+    margin-bottom: 1.4rem;
   }
-  .profile-avatar-meta {
+  .profile-badges {
     display: flex;
-    flex-direction: column;
-    gap: 0.45rem;
-  }
-  .security-badges {
-    display: flex;
-    gap: 0.45rem;
+    gap: 0.7rem;
     flex-wrap: wrap;
   }
-  .security-pill {
+  .profile-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 0.75rem;
-    font-weight: 700;
+    padding: 0.45rem 0.8rem;
     border-radius: 999px;
-    padding: 0.28rem 0.62rem;
-    color: #fff;
-  }
-  .security-pill.risk-low { background: #0f7a5f; }
-  .security-pill.risk-medium { background: #d97706; }
-  .security-pill.risk-high { background: #b42318; }
-  .security-pill.face-on { background: #0b3a3d; }
-  .security-pill.face-off { background: #64748b; }
-  .faceid-card {
-    border: 1px solid #d9e2ec;
-    border-radius: 12px;
-    padding: 0.9rem;
-    background: #f8fafc;
-    margin-top: 0.9rem;
-    max-width: 480px;
-  }
-  .faceid-card video, .faceid-card img {
-    width: 100%;
-    border-radius: 10px;
-    background: #0f172a;
-  }
-  .profile-avatar {
-    width: 88px;
-    height: 88px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #e6eef6;
-    background: #f8fafc;
-  }
-  .section-title {
-    font-weight: 800;
-    font-size: 1.05rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .section-title {
+    font-size: 0.86rem;
     font-weight: 700;
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
+    background: #eef7f5;
+    color: #0b5f61;
   }
-  .divider {
-    height: 1px;
-    background: #e9ecef;
-    margin: 1.2rem 0;
+  .profile-form .form-control,
+  .profile-form textarea,
+  .profile-form input[type="date"] {
+    min-height: 54px;
+    border-radius: 18px;
+    border: 1px solid #d9e5f1;
+    box-shadow: none;
+    padding: 0.95rem 1.1rem;
+  }
+  .profile-form textarea.form-control {
+    min-height: 110px;
+  }
+  .security-card {
+    margin-top: 1.4rem;
+    border: 1px solid #dbe6f2;
+    border-radius: 18px;
+    background: #f7fbff;
+    padding: 1.1rem;
+  }
+  .security-card h4 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f355c;
+    margin-bottom: 0.4rem;
+  }
+  .security-card p {
+    color: #6279a2;
+    margin-bottom: 0.8rem;
+  }
+  .face-preview,
+  #profile-face-video {
+    width: 100%;
+    max-width: 420px;
+    border-radius: 14px;
+    background: #0f172a;
+    display: block;
   }
   .danger-zone {
-    margin-top: 2rem;
-    padding: 1.2rem;
-    border: 1px solid #f5c2c7;
+    margin-top: 1.8rem;
+    border: 1px solid #f4c7cb;
     background: #fff5f5;
-    border-radius: 12px;
+    border-radius: 18px;
+    padding: 1.2rem;
   }
-  .danger-zone h5 {
-    margin-bottom: 0.5rem;
-    font-weight: 700;
-    color: #b02a37;
+  .danger-zone h4 {
+    margin-bottom: 0.45rem;
+    font-weight: 800;
+    color: #9b1c1c;
   }
   .danger-zone p {
-    margin-bottom: 1rem;
-    color: #6b1d1d;
-  }
-  .delete-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: linear-gradient(135deg, #b42318, #d92d20);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 0.65rem 1.1rem;
-    font-weight: 700;
-    box-shadow: 0 12px 24px rgba(217, 45, 32, 0.25);
-  }
-  .delete-btn:hover {
-    color: #fff;
-    filter: brightness(1.05);
+    margin-bottom: 0.9rem;
+    color: #7f1d1d;
   }
   .modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.5);
+    background: rgba(15, 23, 42, 0.45);
     display: none;
     align-items: center;
     justify-content: center;
-    z-index: 1050;
+    z-index: 1200;
   }
   .modal-card {
+    width: min(420px, 92vw);
     background: #fff;
-    border-radius: 14px;
-    padding: 1.5rem;
-    width: min(520px, 92vw);
-    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
-    text-align: center;
-  }
-  .modal-card h4 {
-    margin-bottom: 0.5rem;
-    font-weight: 800;
-    color: #b42318;
-  }
-  .modal-card p {
-    color: #475467;
+    border-radius: 18px;
+    padding: 1.4rem;
   }
   .modal-actions {
-    margin-top: 1.25rem;
     display: flex;
     gap: 0.75rem;
-    justify-content: center;
-  }
-  .btn-cancel {
-    background: #e2e8f0;
-    border: none;
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-    font-weight: 600;
-  }
-  .btn-confirm {
-    background: #b42318;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-    font-weight: 700;
-  }
-  .choice-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
-  }
-  .choice-grid input[type="radio"],
-  .chip-grid input[type="checkbox"] {
-    display: none;
-  }
-  .choice-grid label,
-  .chip-grid label {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    border: 1px solid #d9e2ec;
-    border-radius: 10px;
-    padding: 0.7rem 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    background: #f8fafc;
-    transition: all 0.2s ease;
-  }
-  .choice-grid label .icon-badge,
-  .chip-grid label .icon-badge {
-    width: 34px;
-    height: 34px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    background: #e6f0ee;
-    color: #0b3a3d;
-    font-size: 1rem;
-  }
-  .choice-grid input[type="radio"]:checked + label,
-  .chip-grid input[type="checkbox"]:checked + label {
-    border-color: #0b3a3d;
-    box-shadow: 0 0 0 3px rgba(11, 58, 61, 0.12);
-    background: #ffffff;
-  }
-  .chip-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.6rem;
-  }
-  .chip-grid label {
-    justify-content: center;
-    text-align: center;
-    background: #f3f6f9;
-  }
-  .field-icon {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-  .field-icon i {
-    color: #0b3a3d;
-  }
-  @media (max-width: 575px) {
-    .choice-grid {
-      grid-template-columns: 1fr;
-    }
-    .chip-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+    justify-content: flex-end;
+    margin-top: 1rem;
   }
 </style>
 {% endblock %}
@@ -261,8 +134,10 @@
 <section class="container profile-wrap">
   <div class="profile-card">
     <div class="profile-header">
-      <h3>My Profile</h3>
+      <h2>Profile Security</h2>
+      <p>Les informations de compte ne s'affichent plus ici apres connexion. Vous arrivez directement sur le Diet &amp; Eating Planner, et cette page garde seulement les actions de securite utiles.</p>
     </div>
+
     <div class="profile-body">
       {% for message in app.flashes('success') %}
         <div class="alert alert-success">{{ message }}</div>
@@ -271,333 +146,43 @@
         <div class="alert alert-danger">{{ message }}</div>
       {% endfor %}
 
-      <div class="card-actions">
-        <a href="{{ path('app_logout') }}" class="logout-btn">Logout</a>
+      <div class="profile-topbar">
+        <div class="profile-badges">
+          <span class="profile-pill">Role: {{ app.user.role ?? 'Patient' }}</span>
+          <span class="profile-pill">Face ID: {{ app.user and app.user.faceIdEnabled ? 'Enabled' : 'Disabled' }}</span>
+        </div>
+        <a href="{{ path('app_logout') }}" class="btn btn-outline-dark">Logout</a>
       </div>
 
-      <div class="profile-avatar-wrap">
-        <img
-          class="profile-avatar"
-          src="{{ path('app_profile_avatar_view') }}?v={{ app.user and app.user.avatar ? app.user.avatar|url_encode : 'none' }}"
-          alt="Avatar"
-        >
-        <div class="profile-avatar-meta">
-          <form id="generate-avatar-form" method="post" action="{{ path('app_profile_avatar_generate') }}">
-            <input type="hidden" name="_token" value="{{ csrf_token('generate_profile_avatar') }}">
-            <button class="btn btn-outline-dark" type="submit" form="generate-avatar-form" id="profile-generate-avatar-btn">
-              <i class="fa fa-magic"></i> Generer mon avatar
-            </button>
-          </form>
-          {% set riskValue = app.user ? app.user.riskScore : 0 %}
-          {% set riskClass = riskValue < 40 ? 'risk-low' : (riskValue < 70 ? 'risk-medium' : 'risk-high') %}
-          <div class="security-badges">
-            <span class="security-pill {{ riskClass }}">
-              <i class="fa fa-shield"></i>
-              Risk {{ riskValue }}/100
-            </span>
-            <span class="security-pill {{ app.user and app.user.faceIdEnabled ? 'face-on' : 'face-off' }}">
-              <i class="fa {{ app.user and app.user.faceIdEnabled ? 'fa-lock' : 'fa-unlock-alt' }}"></i>
-              Face ID {{ app.user and app.user.faceIdEnabled ? 'ON' : 'OFF' }}
-            </span>
-          </div>
-          <div class="faceid-card">
-            {% set faceProviderConnected = app.user and app.user.faceIdEnabled %}
-            {% set faceEnrolled = app.user and app.user.faceIdReferenceToken %}
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <strong>Face ID Security</strong>
-              <div class="d-flex gap-2">
-                <span class="badge badge-{{ faceProviderConnected ? 'success' : 'secondary' }}">
-                  {{ faceProviderConnected ? 'Connected' : 'Not configured' }}
-                </span>
-                <span class="badge badge-{{ faceEnrolled ? 'success' : 'secondary' }}">
-                  {{ faceEnrolled ? 'Enrolled' : 'Not enrolled' }}
-                </span>
-              </div>
-            </div>
-            <video id="profile-face-video" autoplay playsinline style="display:none;"></video>
-            <canvas id="profile-face-canvas" style="display:none;"></canvas>
-            <img id="profile-face-preview" alt="Face capture preview" style="display:none;">
-            <small id="profile-face-status" class="text-muted d-block mt-2">Camera starts automatically. Click Save My Face.</small>
-            <form method="post" action="{{ path('app_profile_face_id_enroll') }}" class="mt-2" id="profile-face-enroll-form">
-              <input type="hidden" name="_token" value="{{ csrf_token('profile_face_id_enroll') }}">
-              <input type="hidden" name="image_base64" id="profile-face-image">
-              <button class="btn btn-sm btn-dark" type="submit">Save My Face</button>
-            </form>
-            <form method="post" action="{{ path('app_profile_face_id_remove') }}" class="mt-2">
-              <input type="hidden" name="_token" value="{{ csrf_token('profile_face_id_remove') }}">
-              <button class="btn btn-sm btn-outline-danger" type="submit">Remove Face ID</button>
-            </form>
-          </div>
-          <div class="faceid-card">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <strong>Two-Factor Authentication (TOTP)</strong>
-              <span class="badge badge-{{ app.user and app.user.twoFactorEnabled ? 'success' : 'secondary' }}">
-                {{ app.user and app.user.twoFactorEnabled ? 'Enabled' : 'Disabled' }}
-              </span>
-            </div>
-
-            {% if app.user and not app.user.twoFactorEnabled %}
-              <form method="post" action="{{ path('app_profile_2fa_prepare') }}" class="mb-2">
-                <input type="hidden" name="_token" value="{{ csrf_token('profile_2fa_prepare') }}">
-                <button class="btn btn-sm btn-outline-dark" type="submit">Generate 2FA QR</button>
-              </form>
-
-              {% if twoFaSetupUri is defined and twoFaSetupUri %}
-                <div class="p-2 border rounded mb-2 d-inline-block bg-white">
-                  <img
-                    src="https://quickchart.io/qr?size=180&text={{ twoFaSetupUri|url_encode }}"
-                    alt="2FA QR Code"
-                    width="180"
-                    height="180"
-                    loading="lazy"
-                  >
-                </div>
-                <small class="d-block text-muted mb-2">Scan with Google Authenticator/Authy, then enter your 6-digit code.</small>
-                <small class="d-block text-muted mb-2">Manual key: <code>{{ twoFaSetupSecret }}</code></small>
-                <form method="post" action="{{ path('app_profile_2fa_enable') }}">
-                  <input type="hidden" name="_token" value="{{ csrf_token('profile_2fa_enable') }}">
-                  <div class="d-flex gap-2">
-                    <input class="form-control form-control-sm" name="code" maxlength="6" pattern="[0-9]{6}" placeholder="123456" required>
-                    <button class="btn btn-sm btn-dark" type="submit">Enable 2FA</button>
-                  </div>
-                </form>
-              {% endif %}
-            {% else %}
-              <form method="post" action="{{ path('app_profile_2fa_disable') }}">
-                <input type="hidden" name="_token" value="{{ csrf_token('profile_2fa_disable') }}">
-                <button class="btn btn-sm btn-outline-danger" type="submit">Disable 2FA</button>
-              </form>
-            {% endif %}
-          </div>
+      <div class="security-card">
+        <h4>Face ID</h4>
+        <p>Capture your face here to keep the Java-style Face ID login available in Symfony too.</p>
+        <div class="mb-2">
+          <span class="badge badge-{{ app.user and app.user.faceIdEnabled ? 'success' : 'secondary' }}">
+            {{ app.user and app.user.faceIdEnabled ? 'Enrolled' : 'Not enrolled' }}
+          </span>
         </div>
+        <video id="profile-face-video" autoplay playsinline></video>
+        <canvas id="profile-face-canvas" style="display:none;"></canvas>
+        <img id="profile-face-preview" class="face-preview mt-2" alt="Face capture preview" style="display:none;">
+        <small id="profile-face-status" class="text-muted d-block mt-2">Camera starts automatically. Click Save My Face when ready.</small>
+
+        <form method="post" action="{{ path('app_profile_face_id_enroll') }}" class="mt-3" id="profile-face-enroll-form">
+          <input type="hidden" name="_token" value="{{ csrf_token('profile_face_id_enroll') }}">
+          <input type="hidden" name="image_base64" id="profile-face-image">
+          <button class="btn btn-dark" type="submit">Save My Face</button>
+        </form>
+
+        <form method="post" action="{{ path('app_profile_face_id_remove') }}" class="mt-2">
+          <input type="hidden" name="_token" value="{{ csrf_token('profile_face_id_remove') }}">
+          <button class="btn btn-outline-danger" type="submit">Remove Face ID</button>
+        </form>
       </div>
-
-      {{ form_start(profileForm, {'attr': {'enctype': 'multipart/form-data'}}) }}
-
-      <div class="section-title"><i class="fa fa-user"></i> Account Information</div>
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          {{ form_label(profileForm.firstName, null, {'label_attr': {'class': 'field-icon'}}) }}
-          {{ form_widget(profileForm.firstName, {'attr': {'class': 'form-control'}}) }}
-          {{ form_errors(profileForm.firstName) }}
-        </div>
-        <div class="col-md-6 mb-3">
-          {{ form_label(profileForm.lastName, null, {'label_attr': {'class': 'field-icon'}}) }}
-          {{ form_widget(profileForm.lastName, {'attr': {'class': 'form-control'}}) }}
-          {{ form_errors(profileForm.lastName) }}
-        </div>
-      </div>
-
-      <div class="mb-3">
-        {{ form_label(profileForm.username, null, {'label_attr': {'class': 'field-icon'}}) }}
-        {{ form_widget(profileForm.username, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(profileForm.username) }}
-      </div>
-
-      <div class="mb-3">
-        {{ form_label(profileForm.email, null, {'label_attr': {'class': 'field-icon'}}) }}
-        {{ form_widget(profileForm.email, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(profileForm.email) }}
-      </div>
-
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          {{ form_label(profileForm.phone, null, {'label_attr': {'class': 'field-icon'}}) }}
-          {{ form_widget(profileForm.phone, {'attr': {'class': 'form-control'}}) }}
-          {{ form_errors(profileForm.phone) }}
-        </div>
-        <div class="col-md-6 mb-3">
-          {{ form_label(profileForm.birthDate, null, {'label_attr': {'class': 'field-icon'}}) }}
-          {{ form_widget(profileForm.birthDate, {'attr': {'class': 'form-control'}}) }}
-          {{ form_errors(profileForm.birthDate) }}
-        </div>
-      </div>
-
-      <div class="mb-3">
-        {{ form_label(profileForm.gender, 'Gender', {'label_attr': {'class': 'field-icon'}}) }}
-        <div class="choice-grid">
-          {% set genderMeta = {
-            'male': {'label': 'Male', 'icon': 'fa-mars'},
-            'female': {'label': 'Female', 'icon': 'fa-venus'}
-          } %}
-          {% for child in profileForm.gender %}
-            {% set meta = genderMeta[child.vars.value]|default({'label': child.vars.label, 'icon': 'fa-user'}) %}
-            {{ form_widget(child) }}
-            <label for="{{ child.vars.id }}">
-              <span class="icon-badge"><i class="fa {{ meta.icon }}"></i></span>
-              <span>{{ meta.label }}</span>
-            </label>
-          {% endfor %}
-        </div>
-        {{ form_errors(profileForm.gender) }}
-      </div>
-
-      <div class="mb-3">
-        {{ form_label(profileForm.avatarFile, 'Avatar profile picture', {'label_attr': {'class': 'field-icon'}}) }}
-        {{ form_widget(profileForm.avatarFile, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(profileForm.avatarFile) }}
-      </div>
-
-      {% if is_granted('ROLE_COACH') or is_granted('ROLE_NUTRITIONIST') %}
-        <div class="divider"></div>
-        <div class="section-title"><i class="fa fa-briefcase"></i> Professional Information</div>
-
-        <div class="mb-3">
-          {{ form_label(profileForm.professionalTitle, null, {'label_attr': {'class': 'field-icon'}}) }}
-          {{ form_widget(profileForm.professionalTitle, {'attr': {'class': 'form-control'}}) }}
-          {{ form_errors(profileForm.professionalTitle) }}
-        </div>
-
-        <div class="mb-3">
-          {{ form_label(profileForm.specialization, null, {'label_attr': {'class': 'field-icon'}}) }}
-          <div class="chip-grid">
-            {% set specIcons = {
-              'weight_loss': 'fa-arrow-down',
-              'strength_training': 'fa-bolt',
-              'yoga': 'fa-leaf',
-              'nutrition': 'fa-apple',
-              'rehab': 'fa-medkit'
-            } %}
-            {% for child in profileForm.specialization %}
-              {% set icon = specIcons[child.vars.value]|default('fa-check') %}
-              {{ form_widget(child) }}
-              <label for="{{ child.vars.id }}">
-                <span class="icon-badge"><i class="fa {{ icon }}"></i></span>
-                <span>{{ child.vars.label }}</span>
-              </label>
-            {% endfor %}
-          </div>
-          {{ form_errors(profileForm.specialization) }}
-        </div>
-
-        <div class="mb-3">
-          {{ form_label(profileForm.qualification, null, {'label_attr': {'class': 'field-icon'}}) }}
-          {{ form_widget(profileForm.qualification, {'attr': {'class': 'form-control'}}) }}
-          {{ form_errors(profileForm.qualification) }}
-        </div>
-
-        <div class="mb-3">
-          {{ form_label(profileForm.yearsOfExperience, null, {'label_attr': {'class': 'field-icon'}}) }}
-          {{ form_widget(profileForm.yearsOfExperience, {'attr': {'class': 'form-control'}}) }}
-          {{ form_errors(profileForm.yearsOfExperience) }}
-        </div>
-
-        <div class="mb-3">
-          {{ form_label(profileForm.bio, null, {'label_attr': {'class': 'field-icon'}}) }}
-          {{ form_widget(profileForm.bio, {'attr': {'class': 'form-control', 'rows': 3}}) }}
-          {{ form_errors(profileForm.bio) }}
-        </div>
-
-        <div class="mb-3">
-          {{ form_label(profileForm.licenseNumber, null, {'label_attr': {'class': 'field-icon'}}) }}
-          {{ form_widget(profileForm.licenseNumber, {'attr': {'class': 'form-control'}}) }}
-          {{ form_errors(profileForm.licenseNumber) }}
-        </div>
-      {% else %}
-        <div class="divider"></div>
-        <div class="section-title"><i class="fa fa-heartbeat"></i> Health Information</div>
-
-        <div class="row">
-          <div class="col-md-4 mb-3">
-            {{ form_label(profileForm.height, 'Height (cm)', {'label_attr': {'class': 'field-icon'}}) }}
-            {{ form_widget(profileForm.height, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(profileForm.height) }}
-          </div>
-          <div class="col-md-4 mb-3">
-            {{ form_label(profileForm.weight, 'Weight (kg)', {'label_attr': {'class': 'field-icon'}}) }}
-            {{ form_widget(profileForm.weight, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(profileForm.weight) }}
-          </div>
-          <div class="col-md-4 mb-3">
-            {{ form_label(profileForm.targetWeight, 'Target Weight', {'label_attr': {'class': 'field-icon'}}) }}
-            {{ form_widget(profileForm.targetWeight, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(profileForm.targetWeight) }}
-          </div>
-        </div>
-
-          <div class="mb-3">
-            {{ form_label(profileForm.fitnessLevel, 'Fitness level', {'label_attr': {'class': 'field-icon'}}) }}
-            <div class="choice-grid">
-              {% set fitnessMeta = {
-                'beginner': {'label': 'Beginner', 'icon': 'fa-seedling'},
-                'intermediate': {'label': 'Intermediate', 'icon': 'fa-bolt'},
-                'advanced': {'label': 'Advanced', 'icon': 'fa-fire'}
-              } %}
-              {% for child in profileForm.fitnessLevel %}
-                {% set meta = fitnessMeta[child.vars.value]|default({'label': child.vars.label, 'icon': 'fa-star'}) %}
-                {{ form_widget(child) }}
-                <label for="{{ child.vars.id }}">
-                  <span class="icon-badge"><i class="fa {{ meta.icon }}"></i></span>
-                  <span>{{ meta.label }}</span>
-                </label>
-              {% endfor %}
-            </div>
-            {{ form_errors(profileForm.fitnessLevel) }}
-          </div>
-
-          <div class="mb-3">
-            {{ form_label(profileForm.healthConditions, null, {'label_attr': {'class': 'field-icon'}}) }}
-            {{ form_widget(profileForm.healthConditions, {'attr': {'class': 'form-control', 'rows': 3}}) }}
-            {{ form_errors(profileForm.healthConditions) }}
-          </div>
-
-          <div class="mb-3">
-            {{ form_label(profileForm.dietaryPreferences, 'Dietary preferences', {'label_attr': {'class': 'field-icon'}}) }}
-            <div class="chip-grid">
-              {% set dietIcons = {
-                'vegetarian': 'fa-leaf',
-                'vegan': 'fa-seedling',
-                'gluten_free': 'fa-ban',
-                'dairy_free': 'fa-glass',
-                'halal': 'fa-moon-o',
-                'keto': 'fa-bolt'
-              } %}
-              {% for child in profileForm.dietaryPreferences %}
-                {% set icon = dietIcons[child.vars.value]|default('fa-check') %}
-                {{ form_widget(child) }}
-                <label for="{{ child.vars.id }}">
-                  <span class="icon-badge"><i class="fa {{ icon }}"></i></span>
-                  <span>{{ child.vars.label }}</span>
-                </label>
-              {% endfor %}
-            </div>
-            {{ form_errors(profileForm.dietaryPreferences) }}
-          </div>
-
-          <div class="mb-3">
-            {{ form_label(profileForm.fitnessGoals, 'Fitness goals', {'label_attr': {'class': 'field-icon'}}) }}
-            <div class="chip-grid">
-              {% set goalIcons = {
-                'weight_loss': 'fa-arrow-down',
-                'muscle_gain': 'fa-arrow-up',
-                'endurance': 'fa-road',
-                'flexibility': 'fa-child',
-                'maintenance': 'fa-balance-scale'
-              } %}
-              {% for child in profileForm.fitnessGoals %}
-                {% set icon = goalIcons[child.vars.value]|default('fa-check') %}
-                {{ form_widget(child) }}
-                <label for="{{ child.vars.id }}">
-                  <span class="icon-badge"><i class="fa {{ icon }}"></i></span>
-                  <span>{{ child.vars.label }}</span>
-                </label>
-              {% endfor %}
-            </div>
-            {{ form_errors(profileForm.fitnessGoals) }}
-          </div>
-      {% endif %}
-
-      {{ form_row(profileForm._token) }}
-      <button class="btn btn-dark w-100 mt-4">Save Changes</button>
-      {{ form_end(profileForm, {'render_rest': false}) }}
 
       <div class="danger-zone">
-        <h5>Delete Account</h5>
-        <p>This action is permanent. Your profile and data will be removed from Fitopia.</p>
-        <button type="button" class="delete-btn" id="delete-account-btn">
-          <i class="fa fa-trash"></i>
-          Delete my account
-        </button>
+        <h4>Delete Account</h4>
+        <p>This action is permanent and removes your Fitopia account from Symfony and the legacy Java side.</p>
+        <button type="button" class="btn btn-danger" id="delete-account-btn">Delete my account</button>
       </div>
 
       <form id="delete-account-form" method="post" action="{{ path('app_profile_delete') }}">
@@ -606,11 +191,11 @@
 
       <div class="modal-backdrop" id="delete-modal">
         <div class="modal-card">
-          <h4>We’re sad to see you go</h4>
-          <p>Are you sure you want to delete your Fitopia account? This can’t be undone.</p>
+          <h4>Delete account</h4>
+          <p>Are you sure you want to permanently delete this account?</p>
           <div class="modal-actions">
-            <button class="btn-cancel" type="button" id="delete-cancel-btn">Cancel</button>
-            <button class="btn-confirm" type="button" id="delete-confirm-btn">Yes, delete</button>
+            <button class="btn btn-outline-secondary" type="button" id="delete-cancel-btn">Cancel</button>
+            <button class="btn btn-danger" type="button" id="delete-confirm-btn">Yes, delete</button>
           </div>
         </div>
       </div>
@@ -628,7 +213,7 @@
     const modal = document.getElementById('delete-modal');
     const cancelBtn = document.getElementById('delete-cancel-btn');
     const confirmBtn = document.getElementById('delete-confirm-btn');
-    const form = document.getElementById('delete-account-form');
+    const deleteForm = document.getElementById('delete-account-form');
     const faceVideo = document.getElementById('profile-face-video');
     const faceCanvas = document.getElementById('profile-face-canvas');
     const facePreview = document.getElementById('profile-face-preview');
@@ -636,40 +221,48 @@
     const faceImage = document.getElementById('profile-face-image');
     const faceStatus = document.getElementById('profile-face-status');
     let faceStream = null;
-    if (openBtn && modal && cancelBtn && confirmBtn && form) {
-      openBtn.addEventListener('click', () => {
+
+    openBtn?.addEventListener('click', () => {
+      if (modal) {
         modal.style.display = 'flex';
-      });
+      }
+    });
 
-      cancelBtn.addEventListener('click', () => {
+    cancelBtn?.addEventListener('click', () => {
+      if (modal) {
         modal.style.display = 'none';
-      });
+      }
+    });
 
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          modal.style.display = 'none';
-        }
-      });
+    confirmBtn?.addEventListener('click', () => {
+      deleteForm?.submit();
+    });
 
-      confirmBtn.addEventListener('click', () => {
-        form.submit();
-      });
-    }
+    modal?.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
 
     async function startProfileFaceCamera() {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        faceStatus.textContent = 'Camera is unavailable.';
+        if (faceStatus) {
+          faceStatus.textContent = 'Camera is unavailable.';
+        }
         return false;
       }
+
       try {
         faceStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
         faceVideo.srcObject = faceStream;
-        faceVideo.style.display = 'block';
-        facePreview.style.display = 'none';
-        faceStatus.textContent = 'Camera ready.';
+        if (faceStatus) {
+          faceStatus.textContent = 'Camera ready.';
+        }
         return true;
-      } catch (e) {
-        faceStatus.textContent = 'Unable to access camera.';
+      } catch (error) {
+        if (faceStatus) {
+          faceStatus.textContent = 'Unable to access camera.';
+        }
         return false;
       }
     }
@@ -678,17 +271,22 @@
       if (!faceStream) {
         return false;
       }
-      const w = faceVideo.videoWidth || 640;
-      const h = faceVideo.videoHeight || 480;
-      faceCanvas.width = w;
-      faceCanvas.height = h;
+
+      const width = faceVideo.videoWidth || 640;
+      const height = faceVideo.videoHeight || 480;
+      faceCanvas.width = width;
+      faceCanvas.height = height;
+
       const ctx = faceCanvas.getContext('2d');
-      ctx.drawImage(faceVideo, 0, 0, w, h);
+      ctx.drawImage(faceVideo, 0, 0, width, height);
+
       const dataUrl = faceCanvas.toDataURL('image/jpeg', 0.75);
       faceImage.value = dataUrl.replace(/^data:image\/jpeg;base64,/, '');
       facePreview.src = dataUrl;
       facePreview.style.display = 'block';
-      faceStatus.textContent = 'Face captured.';
+      if (faceStatus) {
+        faceStatus.textContent = 'Face captured.';
+      }
       return true;
     }
 
@@ -699,16 +297,16 @@
         if (!faceStream) {
           await startProfileFaceCamera();
         }
+
         const ok = captureProfileFace();
         if (!ok) {
           event.preventDefault();
-          faceStatus.textContent = 'Camera not ready yet. Please retry.';
+          if (faceStatus) {
+            faceStatus.textContent = 'Camera not ready yet. Please retry.';
+          }
         }
       }
     });
-
   });
 </script>
 {% endblock %}
-
-

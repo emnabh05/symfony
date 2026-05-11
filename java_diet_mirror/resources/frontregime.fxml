@@ -1,0 +1,722 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.shape.Rectangle?>
+
+<!--suppress XMLErrors -->
+<!--suppress XMLWarnings -->
+<BorderPane prefHeight="980.0" prefWidth="1600.0" stylesheets="@styles/admin-theme.css,@styles/diet-front-symfony.css" styleClass="planner-root"
+            xmlns="http://javafx.com/javafx/22.0.2" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.esprit.Pidev3A49.controllers.MainController">
+    <top>
+        <VBox styleClass="navbar-container">
+            <!-- Top Strip with Contact & Socials -->
+            <HBox alignment="CENTER_LEFT" styleClass="top-navbar-strip">
+                <Label text="Phone no: +216 58 938 889 or email us: customerservice@fitopia.com" styleClass="top-navbar-text" />
+                <Region HBox.hgrow="ALWAYS" />
+                <HBox spacing="10">
+                    <Label text="FB" styleClass="social-icon" />
+                    <Label text="X" styleClass="social-icon" />
+                    <Label text="IG" styleClass="social-icon" />
+                </HBox>
+            </HBox>
+
+            <!-- Main Navbar -->
+            <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="navbar-shell">
+                <!-- Logo -->
+                <VBox alignment="CENTER" spacing="0">
+                    <Label text="&#127811;" styleClass="navbar-logo-icon" />
+                    <Label text="FITOPIA" styleClass="navbar-logo-text" />
+                </VBox>
+                
+                <Region prefWidth="20" />
+                
+                <!-- Links -->
+                <Label text="Home" styleClass="navbar-btn-home-active" />
+                <Label text="About&#10;Fitopia" textAlignment="CENTER" styleClass="navbar-btn-home" />
+                
+                <Region prefWidth="10" />
+                
+                <!-- Action Buttons -->
+                <Button fx:id="btnModuleRegimes" onAction="#afficherModuleRegimes" text="EXPLORE&#10;OUR&#10;DIET&amp;EATING&#10;PLANNER" textAlignment="CENTER" styleClass="navbar-btn-blue-active" />
+                <Button onAction="#ouvrirSupplementsFront" text="EXPLORE&#10;OUR&#10;SUPPLEMENTS" textAlignment="CENTER" styleClass="navbar-btn-blue" />
+                <Button onAction="#afficherModuleExercises" text="EXPLORE&#10;OUR&#10;FITNESS&#10;PLANNER" textAlignment="CENTER" styleClass="navbar-btn-blue" />
+                <Button onAction="#ouvrirEvenementsFront" text="EXPLORE&#10;OUR&#10;EVENTS" textAlignment="CENTER" styleClass="navbar-btn-blue" />
+                <Button onAction="#afficherModuleForumComment" text="EXPLORE&#10;FORUMS&amp;BLOGS" textAlignment="CENTER" styleClass="navbar-btn-blue" />
+                
+                <Region HBox.hgrow="ALWAYS" />
+                
+                <!-- Right Actions -->
+                <HBox alignment="CENTER_RIGHT" spacing="12">
+                    <MenuButton fx:id="sessionProfileMenu" mnemonicParsing="false" text="&#128100;" visible="false" managed="false" styleClass="navbar-avatar-menu">
+                        <items>
+                            <MenuItem fx:id="sessionProfileNameItem" disable="true" mnemonicParsing="false" text="Connected profile" />
+                            <MenuItem fx:id="sessionProfileEmailItem" disable="true" mnemonicParsing="false" text="email@fitopia.com" />
+                            <MenuItem fx:id="sessionProfileRoleItem" disable="true" mnemonicParsing="false" text="ROLE_USER" />
+                            <SeparatorMenuItem />
+                            <MenuItem fx:id="sessionProfileActionItem" mnemonicParsing="false" onAction="#ouvrirProfilSession" text="View my profile" />
+                        </items>
+                    </MenuButton>
+                    <Button onAction="#handleLogout" text="LOGOUT" styleClass="navbar-btn-red" />
+                </HBox>
+            </HBox>
+        </VBox>
+    </top>
+    
+    <center>
+        <StackPane>
+            <ScrollPane fx:id="appScrollPane" fitToHeight="true" fitToWidth="true" style="-fx-background-color: #f3f6fb; -fx-background: #f3f6fb;">
+                <content>
+                    <StackPane>
+                         <VBox fx:id="viewRepas" visible="false" managed="false"/>
+                         
+                         <VBox fx:id="viewRegimes" fillWidth="true" spacing="20.0" style="-fx-background-color: #f3f6fb; -fx-padding: 40;" visible="true" managed="true">
+                             
+                             <!-- Hero & Intro Section (Fitness Home Hero Style) -->
+                             <HBox spacing="26.0" style="-fx-background-color:#ebf5ef;-fx-padding:30;-fx-background-radius:28;-fx-effect:dropshadow(gaussian,rgba(11,58,61,0.06),20,0,0,8);">
+                                 <StackPane prefHeight="470.0" prefWidth="650.0" style="-fx-background-radius: 28; -fx-border-radius: 28; -fx-effect: dropshadow(gaussian, rgba(8, 20, 28, 0.16), 22, 0.14, 0, 8);">
+                                     <ImageView fitWidth="650.0" fitHeight="470.0" preserveRatio="false">
+                                          <image>
+                                              <Image url="@nutrition_plan.png"/>
+                                          </image>
+                                          <clip>
+                                              <Rectangle width="650" height="470" arcWidth="56" arcHeight="56"/>
+                                          </clip>
+                                     </ImageView>
+                                     <VBox alignment="BOTTOM_LEFT" maxWidth="320.0" spacing="10.0" style="-fx-background-color: linear-gradient(to top, rgba(10, 27, 37, 0.78), rgba(10, 27, 37, 0.10)); -fx-background-radius: 0 0 28 28; -fx-padding: 24;" StackPane.alignment="BOTTOM_LEFT">
+                                         <Label text="HEALTH &amp; NUTRITION" style="-fx-background-color: #ffffff; -fx-text-fill: #0c2b22; -fx-font-weight: 800; -fx-font-size: 11px; -fx-padding: 4 10; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2);"/>
+                                         <Label text="Prenez le contrôle de votre alimentation." wrapText="true" style="-fx-text-fill: #ffffff; -fx-font-size: 26px; -fx-font-weight: 900; -fx-line-spacing: -3px;"/>
+                                     </VBox>
+                                 </StackPane>
+                                 <VBox prefWidth="430.0" spacing="18.0" alignment="CENTER_LEFT">
+                                     <Label text="FITOPIA PERFORMANCE PLATFORM" style="-fx-text-fill: #10b981; -fx-font-weight: 900; -fx-font-size: 11px; -fx-letter-spacing: 1px;"/>
+                                     <Label text="Diet &amp; Eating Planner" wrapText="true" style="-fx-text-fill: #0c2b22; -fx-font-size: 38px; -fx-font-weight: 900; -fx-line-spacing: -4px;"/>
+                                     <Label text="Welcome. This page is personalized for you. Planifiez vos repas, suivez vos macros et atteignez vos objectifs avec précision." wrapText="true" style="-fx-text-fill: #475a61; -fx-font-size: 15px; -fx-line-spacing: 3px;"/>
+                                     <HBox spacing="12.0">
+                                         <Button text="Learn more" style="-fx-background-color: #10b981; -fx-text-fill: #ffffff; -fx-font-weight: 800; -fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 20; -fx-cursor: hand;"/>
+                                         <Button text="Contact us" style="-fx-background-color: transparent; -fx-border-color: #10b981; -fx-text-fill: #10b981; -fx-font-weight: 800; -fx-font-size: 14px; -fx-padding: 9 23; -fx-border-radius: 20; -fx-cursor: hand;"/>
+                                     </HBox>
+                                     <HBox spacing="14.0" style="-fx-padding: 20 0 0 0;">
+                                         <VBox spacing="6.0" style="-fx-background-color: #ffffff; -fx-border-color: #e5edea; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 14 18; -fx-min-width: 120;">
+                                             <Label text="98%" style="-fx-text-fill: #0c2b22; -fx-font-size: 20px; -fx-font-weight: 900;"/>
+                                             <Label text="Précision calories" style="-fx-text-fill: #617770; -fx-font-size: 12px;"/>
+                                         </VBox>
+                                         <VBox spacing="6.0" style="-fx-background-color: #ffffff; -fx-border-color: #e5edea; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 14 18; -fx-min-width: 120;">
+                                             <Label text="12 sem." style="-fx-text-fill: #0c2b22; -fx-font-size: 20px; -fx-font-weight: 900;"/>
+                                             <Label text="Planification" style="-fx-text-fill: #617770; -fx-font-size: 12px;"/>
+                                         </VBox>
+                                         <VBox spacing="6.0" style="-fx-background-color: #ffffff; -fx-border-color: #e5edea; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 14 18; -fx-min-width: 120;">
+                                             <Label text="5000+" style="-fx-text-fill: #0c2b22; -fx-font-size: 20px; -fx-font-weight: 900;"/>
+                                             <Label text="repas analysés" style="-fx-text-fill: #617770; -fx-font-size: 12px;"/>
+                                         </VBox>
+                                     </HBox>
+                                 </VBox>
+                             </HBox>
+
+
+                             <!-- New Horizontal Layout -->
+                             <VBox spacing="24" style="-fx-padding: 24 0 0 0;">
+                                 
+                                 <!-- Top Dashboard: My Diet & Daily Tracking -->
+                                 <VBox style="-fx-background-color: white; -fx-background-radius: 20; -fx-border-color: #e2e8f0; -fx-border-radius: 20; -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.08), 25, 0, 0, 12); -fx-padding: 30;" spacing="24">
+                                     <HBox alignment="CENTER_LEFT" spacing="15">
+                                         <StackPane style="-fx-background-color: #ecfdf5; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2); -fx-padding: 10;">
+                                             <Label text="&#128153;" style="-fx-font-size: 20px;"/>
+                                         </StackPane>
+                                         <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                             <HBox spacing="10" alignment="CENTER_LEFT">
+                                                <Label fx:id="lblPlannerRegimeTitle" text="My Regime" style="-fx-font-weight: 900; -fx-font-size: 22px; -fx-text-fill: #0c2b22;"/>
+                                                <Button text="📷 Scanner repas" onAction="#afficherPopupScanIA" style="-fx-background-color: linear-gradient(to right, #10b981, #0f766e); -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 20; -fx-padding: 5 15; -fx-font-size: 11px; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.32), 8, 0, 0, 4);"/>
+                                             </HBox>
+                                             <Label text="Consultez votre profil nutritionnel et suivez votre progression du jour." style="-fx-font-size: 14px; -fx-text-fill: #475a61;"/>
+                                         </VBox>
+                                         <HBox spacing="12">
+                                             <Button text="+ Ajouter repas" onAction="#afficherCreationRepas" style="-fx-background-color: #f1f5f9; -fx-text-fill: #0c3f44; -fx-font-weight: 800; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2); -fx-padding: 10 20;"/>
+                                             <Button text="Planning 7j" onAction="#afficherProgrammeHebdomadaire" style="-fx-background-color: #0c3f44; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2); -fx-padding: 10 20; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(12,63,68,0.3), 10, 0, 0, 5);"/>
+                                             <Button text="🛒 Courses" onAction="#genererListeCourses" style="-fx-background-color: #ecfdf5; -fx-text-fill: #10b981; -fx-font-weight: 800; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2); -fx-padding: 10 20; -fx-cursor: hand; -fx-border-color: #10b981; -fx-border-radius: 12;"/>
+                                             <Button text="📄 PDF" onAction="#handleExportPDF" style="-fx-background-color: #ecfdf5; -fx-text-fill: #10b981; -fx-font-weight: 800; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2); -fx-padding: 10 20; -fx-cursor: hand; -fx-border-color: #10b981; -fx-border-radius: 12;"/>
+
+                                         </HBox>
+                                     </HBox>
+                                     
+                                     <!-- Horizontal Stats Row -->
+                                     <HBox spacing="15" alignment="CENTER">
+                                         <VBox alignment="CENTER" spacing="5" style="-fx-background-color: #f8fafc; -fx-background-radius: 15; -fx-padding: 15 20; -fx-min-width: 110;" HBox.hgrow="ALWAYS">
+                                             <Label text="&#8597; Taille" style="-fx-text-fill: #64748b; -fx-font-size: 12px; -fx-font-weight: 700;"/>
+                                             <Label fx:id="lblPlannerTaille" text="-- cm" style="-fx-text-fill: #0f172a; -fx-font-size: 18px; -fx-font-weight: 900;"/>
+                                         </VBox>
+
+                                         <VBox alignment="CENTER" spacing="5" style="-fx-background-color: #f8fafc; -fx-background-radius: 15; -fx-padding: 15 20; -fx-min-width: 110;" HBox.hgrow="ALWAYS">
+                                             <Label text="&#9878; Poids" style="-fx-text-fill: #64748b; -fx-font-size: 12px; -fx-font-weight: 700;"/>
+                                             <Label fx:id="lblPlannerPoids" text="-- kg" style="-fx-text-fill: #0f172a; -fx-font-size: 18px; -fx-font-weight: 900;"/>
+                                         </VBox>
+                                         <VBox alignment="CENTER" spacing="5" style="-fx-background-color: #f8fafc; -fx-background-radius: 15; -fx-padding: 15 20; -fx-min-width: 110;" HBox.hgrow="ALWAYS">
+                                             <Label text="&#127970; Âge" style="-fx-text-fill: #64748b; -fx-font-size: 12px; -fx-font-weight: 700;"/>
+                                             <Label fx:id="lblPlannerAge" text="-- ans" style="-fx-text-fill: #0f172a; -fx-font-size: 18px; -fx-font-weight: 900;"/>
+                                         </VBox>
+                                         <VBox alignment="CENTER" spacing="5" style="-fx-background-color: #f8fafc; -fx-background-radius: 15; -fx-padding: 15 20; -fx-min-width: 110;" HBox.hgrow="ALWAYS">
+                                             <Label text="&#128141; IMC" style="-fx-text-fill: #64748b; -fx-font-size: 12px; -fx-font-weight: 700;"/>
+                                             <Label fx:id="lblPlannerBmi" text="--" style="-fx-text-fill: #0f172a; -fx-font-size: 18px; -fx-font-weight: 900;"/>
+                                         </VBox>
+                                         <VBox alignment="CENTER" spacing="5" style="-fx-background-color: #f8fafc; -fx-background-radius: 15; -fx-padding: 15 20; -fx-min-width: 110;" HBox.hgrow="ALWAYS">
+                                             <Label text="&#127811; Santé" style="-fx-text-fill: #64748b; -fx-font-size: 12px; -fx-font-weight: 700;"/>
+                                             <Label fx:id="lblPlannerHealthBadge" text="normal" style="-fx-text-fill: #10b981; -fx-font-size: 16px; -fx-font-weight: 900;"/>
+                                         </VBox>
+                                         <VBox alignment="CENTER" spacing="5" style="-fx-background-color: #ecfdf5; -fx-border-color: #10b981; -fx-border-radius: 15; -fx-background-radius: 15; -fx-padding: 15 20; -fx-min-width: 140;" HBox.hgrow="ALWAYS">
+                                             <Label text="&#128293; Calories Cibles" style="-fx-text-fill: #064e3b; -fx-font-size: 12px; -fx-font-weight: 800;"/>
+                                             <Label fx:id="lblPlannerTargetCalories" text="-- kcal/j" style="-fx-text-fill: #047857; -fx-font-size: 20px; -fx-font-weight: 900;"/>
+                                         </VBox>
+                                     </HBox>
+                                     
+                                     <!-- Macros and Quick Add Row -->
+                                     <HBox spacing="30" alignment="CENTER_LEFT" style="-fx-padding: 10 0 0 0;">
+                                         <VBox spacing="10" HBox.hgrow="ALWAYS">
+                                             <HBox spacing="10" alignment="CENTER_LEFT">
+                                                 <Label text="&#127811; Calories du jour" style="-fx-font-weight: 900; -fx-text-fill: #1e293b; -fx-font-size: 15px;"/>
+                                                 <Region HBox.hgrow="ALWAYS"/>
+                                                 <Label fx:id="lblPlannerCaloriesProgress" text="0 / 0 kcal" style="-fx-font-size: 14px; -fx-font-weight: 800; -fx-text-fill: #10b981;"/>
+                                             </HBox>
+                                             <ProgressBar fx:id="pbPlannerCalories" progress="0.0" maxWidth="Infinity" minHeight="18" prefHeight="18" styleClass="calorie-progress-bar" style="-fx-control-inner-background: #f1f5f9; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2); -fx-border-radius: 12; -fx-accent: #10b981;"/>
+                                         </VBox>
+                                         <Separator orientation="VERTICAL" style="-fx-opacity: 0.3;"/>
+                                         <VBox spacing="10" minWidth="300">
+                                             <Label text="Ajout Rapide" style="-fx-font-weight: 800; -fx-text-fill: #475569; -fx-font-size: 13px;"/>
+                                             <HBox spacing="10">
+                                                 <TextField fx:id="tfCodeManuel" promptText="Saisir code-barres..." style="-fx-text-fill: #0f172a; -fx-font-weight: 700; -fx-font-size: 14px; -fx-background-radius: 10; -fx-border-color: #cbd5e1; -fx-border-radius: 10; -fx-padding: 10 14; -fx-background-color: #f8fafc;" HBox.hgrow="ALWAYS"/>
+                                                 <Button text="Ajouter" onAction="#handleSaisieManuelle" style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 10; -fx-padding: 10 18; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.4), 10, 0, 0, 4);"/>
+                                             </HBox>
+                                         </VBox>
+                                     </HBox>
+                                     
+                                     <!-- Recommendation Row -->
+                                     <HBox fx:id="boxPlannerRecommendations" spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: #f0fdf4; -fx-padding: 12 18; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2);">
+                                        <Label text="&#128161;" style="-fx-font-size: 18px;"/>
+                                        <Label text="Suggestions:" style="-fx-font-weight: 800; -fx-text-fill: #166534;"/>
+                                        <Label fx:id="lblPlannerRecommendedMeals" text="Suggestions dynamiques..." wrapText="true" style="-fx-text-fill: #15803d; -fx-font-size: 13px;"/>
+                                     </HBox>
+                                 </VBox>
+                                 <!-- Inline 7-Day Plan Container -->
+                                 <VBox fx:id="paneWeeklyProgramInline" managed="false" visible="false" spacing="20" style="-fx-background-color: white; -fx-background-radius: 20; -fx-border-color: #10b981; -fx-border-radius: 20; -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.1), 30, 0, 0, 15);">
+                                     <HBox alignment="CENTER_LEFT" spacing="15">
+                                         <StackPane style="-fx-background-color: #ecfdf5; -fx-background-radius: 10; -fx-padding: 8;">
+                                             <Label text="📅" style="-fx-font-size: 18px;"/>
+                                         </StackPane>
+                                         <VBox spacing="2">
+                                             <Label text="Programme Hebdomadaire" style="-fx-font-weight: 900; -fx-font-size: 18px; -fx-text-fill: #0c2b22;"/>
+                                             <Label text="Votre plan nutritionnel généré par l'IA pour les 7 prochains jours." style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+                                         </VBox>
+                                         <Region HBox.hgrow="ALWAYS"/>
+                                          <Button text="🔄 Re-générer" onAction="#genererSemaineIARegimeActif" style="-fx-background-color: #0c3f44; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 10; -fx-padding: 8 20; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(12,63,68,0.2), 8, 0, 0, 4);"/>
+                                          <Button text="✖ Masquer" onAction="#masquerProgrammeHebdomadaire" style="-fx-background-color: #f1f5f9; -fx-text-fill: #64748b; -fx-font-weight: 800; -fx-background-radius: 10; -fx-padding: 8 15;"/>
+                                     </HBox>
+                                     <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent; -fx-padding: 0 10;" minHeight="500">
+                                         <content>
+                                             <GridPane fx:id="gridWeeklyProgram" hgap="6" vgap="12" style="-fx-padding: 10;">
+                                                 <!-- Header labels and meal items will be injected here -->
+                                             </GridPane>
+                                         </content>
+                                     </ScrollPane>
+                                 </VBox>
+                                 
+                                 <!-- Bottom 3 Columns Grid -->
+                                 <GridPane hgap="24" vgap="24">
+                                     <columnConstraints>
+                                         <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0"/>
+                                         <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0"/>
+                                     </columnConstraints>
+                                     
+                                     <!-- Col 1: Badges -->
+                                     <VBox spacing="15" GridPane.columnIndex="0" style="-fx-background-color: white; -fx-background-radius: 30; -fx-border-width: 2; -fx-border-color: linear-gradient(to bottom, #f8fafc, #e2e8f0); -fx-border-color: #e2e8f0; -fx-border-radius: 20; -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 20, 0, 0, 10); -fx-padding: 24;">
+                                         <HBox alignment="CENTER_LEFT" spacing="10">
+                                              <Label text="&#127942;" style="-fx-font-size: 20px;"/>
+                                              <Label text="Mes Réussites" style="-fx-font-weight: 900; -fx-text-fill: #1e293b; -fx-font-size: 16px;"/>
+                                         </HBox>
+                                         
+                                         <!-- Macros mini -->
+                                         <HBox spacing="10" alignment="CENTER" style="-fx-background-color: #f8fafc; -fx-background-radius: 10; -fx-padding: 10;">
+                                              <HBox spacing="4" alignment="CENTER_LEFT"><Label text="&#128293;"/><Label fx:id="lblSummaryKcal" text="0 kcal" style="-fx-font-weight: 800; -fx-text-fill: #334155; -fx-font-size: 12px;"/></HBox>
+                                              <HBox spacing="4" alignment="CENTER_LEFT"><Label text="&#9889;"/><Label fx:id="lblSummaryP" text="P 0g" style="-fx-font-weight: 800; -fx-text-fill: #334155; -fx-font-size: 12px;"/></HBox>
+                                              <HBox spacing="4" alignment="CENTER_LEFT"><Label text="&#127811;"/><Label fx:id="lblSummaryC" text="C 0g" style="-fx-font-weight: 800; -fx-text-fill: #334155; -fx-font-size: 12px;"/></HBox>
+                                              <HBox spacing="4" alignment="CENTER_LEFT"><Label text="&#128167;"/><Label fx:id="lblSummaryF" text="F 0g" style="-fx-font-weight: 800; -fx-text-fill: #334155; -fx-font-size: 12px;"/></HBox>
+                                         </HBox>
+                                         
+                                         <VBox spacing="12">
+                                             <VBox fx:id="paneBadgeWinStreak" styleClass="badge-row, badge-locked" style="-fx-padding: 12; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2);">
+                                                 <HBox spacing="12" alignment="CENTER_LEFT">
+                                                     <Label fx:id="lblBadgeWinStreakIcon" text="&#128274;" styleClass="badge-icon-locked" style="-fx-font-size: 18px;"/>
+                                                     <VBox>
+                                                         <Label fx:id="lblBadgeWinStreakTitle" text="Semaine parfaite" styleClass="badge-title-locked" style="-fx-font-weight: 800; -fx-font-size: 13px;"/>
+                                                         <Label fx:id="lblBadgeWinStreakDesc" text="Calories dans la cible." styleClass="badge-desc-locked" style="-fx-font-size: 11px;"/>
+                                                     </VBox>
+                                                 </HBox>
+                                             </VBox>
+                                             <VBox fx:id="paneBadgeHydration" styleClass="badge-row, badge-locked" style="-fx-padding: 12; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2);">
+                                                 <HBox spacing="12" alignment="CENTER_LEFT">
+                                                     <Label fx:id="lblBadgeHydrationIcon" text="&#128274;" styleClass="badge-icon-locked" style="-fx-font-size: 18px;"/>
+                                                     <VBox HBox.hgrow="ALWAYS">
+                                                         <Label fx:id="lblBadgeHydrationTitle" text="Hydratation OK" styleClass="badge-title-locked" style="-fx-font-weight: 800; -fx-font-size: 13px;"/>
+                                                         <Label fx:id="lblBadgeHydrationDesc" text="Au moins 1L d'eau/j." styleClass="badge-desc-locked" style="-fx-font-size: 11px;"/>
+                                                     </VBox>
+                                                     <Button onAction="#ajouterVerreEau" text="+" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: 900; -fx-background-radius: 999; -fx-min-width: 30; -fx-min-height: 30; -fx-padding: 0; -fx-cursor: hand;"/>
+                                                 </HBox>
+                                             </VBox>
+                                             <VBox fx:id="paneBadgeCalories" styleClass="badge-row, badge-locked" style="-fx-padding: 12; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2);">
+                                                 <HBox spacing="12" alignment="CENTER_LEFT">
+                                                     <Label fx:id="lblBadgeCaloriesIcon" text="&#128274;" styleClass="badge-icon-locked" style="-fx-font-size: 18px;"/>
+                                                     <VBox>
+                                                         <Label fx:id="lblBadgeCaloriesTitle" text="Calories respectées" styleClass="badge-title-locked" style="-fx-font-weight: 800; -fx-font-size: 13px;"/>
+                                                         <Label fx:id="lblBadgeCaloriesDesc" text="Journée ok." styleClass="badge-desc-locked" style="-fx-font-size: 11px;"/>
+                                                     </VBox>
+                                                 </HBox>
+                                             </VBox>
+                                         </VBox>
+                                     </VBox>
+                                     
+                                     <!-- Col 2: Today's Meals -->
+                                     <VBox spacing="15" GridPane.columnIndex="1" style="-fx-background-color: white; -fx-background-radius: 30; -fx-border-width: 2; -fx-border-color: linear-gradient(to bottom, #f8fafc, #e2e8f0); -fx-border-color: #e2e8f0; -fx-border-radius: 20; -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 20, 0, 0, 10); -fx-padding: 24;">
+                                         <HBox alignment="CENTER_LEFT" spacing="10">
+                                              <Label text="&#127869;" style="-fx-font-size: 20px;"/>
+                                              <Label text="Mon Journal Alimentaire" style="-fx-font-weight: 900; -fx-text-fill: #1e293b; -fx-font-size: 16px;"/>
+                                              <Region HBox.hgrow="ALWAYS" />
+                                              <Button text="Checklist" style="-fx-background-color: #f1f5f9; -fx-text-fill: #10b981; -fx-font-weight: 800; -fx-background-radius: 8; -fx-font-size: 11px; -fx-padding: 5 10;"/>
+                                         </HBox>
+                                         <Label fx:id="lblPlannerMealsSubtitle" text="Vos derniers repas enregistrés." style="-fx-font-size: 13px; -fx-text-fill: #64748b;" />
+                                         <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS" prefHeight="300">
+                                             <content>
+                                                 <VBox fx:id="plannerMealsListBox" spacing="12" />
+                                             </content>
+                                         </ScrollPane>
+                                         <TableView fx:id="tableRepas" managed="false" prefHeight="0.0" visible="false">
+                                             <columns>
+                                                 <TableColumn fx:id="colRepasId"/>
+                                                 <TableColumn fx:id="colRepasUser"/>
+                                                 <TableColumn fx:id="colRepasNom"/>
+                                                 <TableColumn fx:id="colRepasType"/>
+                                                 <TableColumn fx:id="colRepasDate"/>
+                                                 <TableColumn fx:id="colRepasCalories"/>
+                                                 <TableColumn fx:id="colRepasProteines"/>
+                                                 <TableColumn fx:id="colRepasGlucides"/>
+                                                 <TableColumn fx:id="colRepasLipides"/>
+                                                 <TableColumn fx:id="colRepasRegimeId"/>
+                                             </columns>
+                                         </TableView>
+                                     </VBox>
+                                     
+                                 </GridPane>
+                             </VBox>
+                         </VBox>
+                    </StackPane>
+                </content>
+            </ScrollPane>
+            
+            <!-- OVERLAY FOR FORMS -->
+            <StackPane pickOnBounds="false">
+                <!-- 1. AJOUTER REGIME -->
+                <VBox fx:id="paneRegimeCreate" alignment="CENTER" managed="false" visible="false" style="-fx-background-color: rgba(0,0,0,0.5);">
+                    <ScrollPane fitToWidth="true" maxWidth="950" maxHeight="850" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 20;">
+                        <content>
+                            <VBox maxWidth="850" spacing="18.0" styleClass="panel-card planner-form-card" style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2); -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 30, 0, 0, 15);">
+                                <HBox alignment="CENTER_RIGHT"><Button onAction="#masquerTousLesFormulaires" text="✖ Fermer" style="-fx-background-color: #bb2d22; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 8;"/></HBox>
+                                <Label styleClass="section-title" text="Ajouter un regime"/>
+                                <Label styleClass="section-subtitle" text="Les champs auto s'ajustent pendant la saisie."/>
+                                <GridPane hgap="16.0" vgap="16.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="ALWAYS" percentWidth="33.0"/>
+                                        <ColumnConstraints hgrow="ALWAYS" percentWidth="33.0"/>
+                                        <ColumnConstraints hgrow="ALWAYS" percentWidth="34.0"/>
+                                    </columnConstraints>
+                                    <VBox spacing="8.0" styleClass="field-card" GridPane.columnSpan="3">
+                                        <Label fx:id="lblRegimeUser" styleClass="field-label" text="Utilisateur"/>
+                                        <ComboBox fx:id="cbRegimeUser" maxWidth="1.7976931348623157E308" styleClass="combo-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="metric-card" GridPane.rowIndex="1">
+                                        <Label fx:id="lblRegimeTaille" styleClass="field-label" text="Taille (cm)"/>
+                                        <TextField fx:id="tfRegimeTaille" promptText="175" styleClass="text-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="metric-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                        <Label fx:id="lblRegimePoids" styleClass="field-label" text="Poids (kg)"/>
+                                        <TextField fx:id="tfRegimePoids" promptText="72" styleClass="text-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="metric-card" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                        <Label fx:id="lblRegimeAge" styleClass="field-label" text="Age"/>
+                                        <TextField fx:id="tfRegimeAge" promptText="29" styleClass="text-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="metric-card" GridPane.rowIndex="2">
+                                        <Label styleClass="field-label" text="BMI (auto)"/>
+                                        <TextField fx:id="tfRegimeBmi" styleClass="text-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="field-card" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                        <Label styleClass="field-label" text="Type sante (auto)"/>
+                                        <ComboBox fx:id="cbRegimeTypeSante" maxWidth="1.7976931348623157E308" styleClass="combo-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="field-card" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                        <Label styleClass="field-label" text="Calories cibles (auto)"/>
+                                        <TextField fx:id="tfRegimeCaloriesCibles" styleClass="text-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="field-card" GridPane.columnSpan="3" GridPane.rowIndex="3">
+                                        <Label styleClass="field-label" text="Repas adequats (auto)"/>
+                                        <TextArea fx:id="taRegimeRepasAdequats" prefHeight="110.0" styleClass="text-area-input"/>
+                                    </VBox>
+                                </GridPane>
+                                <HBox alignment="CENTER_RIGHT" spacing="12.0">
+                                    <Button onAction="#viderFormulaireRegime" styleClass="secondary-button" text="Annuler"/>
+                                    <Button onAction="#ajouterRegime" styleClass="primary-button" text="Creer le regime"/>
+                                </HBox>
+                            </VBox>
+                        </content>
+                    </ScrollPane>
+                </VBox>
+
+                <!-- 2. MODIFIER REGIME -->
+                <VBox fx:id="paneRegimeEdit" alignment="CENTER" managed="false" visible="false" style="-fx-background-color: rgba(0,0,0,0.5);">
+                    <ScrollPane fitToWidth="true" maxWidth="950" maxHeight="850" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 20;">
+                        <content>
+                            <VBox maxWidth="850" spacing="18.0" styleClass="panel-card" style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2); -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 30, 0, 0, 15);">
+                                <HBox alignment="CENTER_RIGHT"><Button onAction="#masquerTousLesFormulaires" text="✖ Fermer" style="-fx-background-color: #bb2d22; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 8;"/></HBox>
+                                <Label styleClass="section-title" text="Modifier un regime"/>
+                                <Label styleClass="section-subtitle" text="Selectionnez un regime puis mettez a jour ses donnees."/>
+                                <TextField fx:id="tfRegimeId" editable="false" managed="false" visible="false"/>
+
+                                <GridPane hgap="16.0" vgap="16.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0"/>
+                                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0"/>
+                                    </columnConstraints>
+                                    <VBox spacing="8.0" styleClass="field-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                        <Label fx:id="lblRegimeUserEdit" styleClass="field-label" text="Utilisateur"/>
+                                        <ComboBox fx:id="cbRegimeUserEdit" maxWidth="1.7976931348623157E308" styleClass="combo-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="field-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                        <Label styleClass="field-label" text="Type sante"/>
+                                        <ComboBox fx:id="cbRegimeTypeSanteEdit" maxWidth="1.7976931348623157E308" styleClass="combo-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="metric-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                        <Label fx:id="lblRegimeTailleEdit" styleClass="field-label" text="Taille (cm)"/>
+                                        <TextField fx:id="tfRegimeTailleEdit" styleClass="text-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="metric-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                        <Label fx:id="lblRegimePoidsEdit" styleClass="field-label" text="Poids (kg)"/>
+                                        <TextField fx:id="tfRegimePoidsEdit" styleClass="text-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="metric-card" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                                        <Label fx:id="lblRegimeAgeEdit" styleClass="field-label" text="Age"/>
+                                        <TextField fx:id="tfRegimeAgeEdit" styleClass="text-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="metric-card" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                        <Label styleClass="field-label" text="BMI"/>
+                                        <TextField fx:id="tfRegimeBmiEdit" styleClass="text-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="field-card" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                                        <Label styleClass="field-label" text="Calories cibles"/>
+                                        <TextField fx:id="tfRegimeCaloriesCiblesEdit" styleClass="text-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="field-card" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                        <Label styleClass="field-label" text="Repas adequats"/>
+                                        <TextArea fx:id="taRegimeRepasAdequatsEdit" prefHeight="100.0" styleClass="text-area-input"/>
+                                    </VBox>
+                                </GridPane>
+                                <HBox alignment="CENTER_RIGHT" spacing="12.0">
+                                    <Button onAction="#viderFormulaireRegimeModification" styleClass="secondary-button" text="Reinitialiser"/>
+                                    <Button onAction="#modifierRegime" styleClass="primary-button" text="Mettre a jour"/>
+                                </HBox>
+                            </VBox>
+                        </content>
+                    </ScrollPane>
+                </VBox>
+
+                <!-- 3. SUPPRIMER REGIME -->
+                <VBox fx:id="paneRegimeDelete" alignment="CENTER" managed="false" visible="false" style="-fx-background-color: rgba(0,0,0,0.5);">
+                    <ScrollPane fitToWidth="true" maxWidth="950" maxHeight="850" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 20;">
+                        <content>
+                            <VBox maxWidth="850" spacing="18.0" styleClass="panel-card" style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2); -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 30, 0, 0, 15);">
+                                <HBox alignment="CENTER_RIGHT"><Button onAction="#masquerTousLesFormulaires" text="✖ Fermer" style="-fx-background-color: #bb2d22; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 8;"/></HBox>
+                                <Label styleClass="section-title" text="Supprimer un regime"/>
+                                <Label styleClass="section-subtitle" text="Selectionnez un regime dans le planner puis supprimez-le."/>
+                                <TableView fx:id="tableRegimesDelete" prefHeight="400.0" styleClass="data-table">
+                                    <columns>
+                                        <TableColumn fx:id="colRegimeIdDelete" prefWidth="60.0" text="ID"/>
+                                        <TableColumn fx:id="colRegimeUserDelete" prefWidth="200.0" text="Utilisateur"/>
+                                        <TableColumn fx:id="colRegimeTypeDelete" prefWidth="150.0" text="Type sante"/>
+                                        <TableColumn fx:id="colRegimeCaloriesDelete" prefWidth="130.0" text="Calories"/>
+                                        <TableColumn fx:id="colRegimeBmiDelete" prefWidth="100.0" text="BMI"/>
+                                        <TableColumn fx:id="colRegimeRepasDelete" prefWidth="280.0" text="Repas adequats"/>
+                                    </columns>
+                                </TableView>
+                                <HBox alignment="CENTER_RIGHT" spacing="12.0">
+                                    <Label fx:id="lblRegimeSelectionDelete" styleClass="hint-label" text="Aucun regime selectionne"/>
+                                    <Button onAction="#supprimerRegime" styleClass="danger-button" text="Supprimer definitivement"/>
+                                </HBox>
+                            </VBox>
+                        </content>
+                    </ScrollPane>
+                </VBox>
+
+                <!-- 4. EXPLORER REGIMES -->
+                <VBox fx:id="paneRegimeExplore" alignment="CENTER" managed="false" visible="false" style="-fx-background-color: rgba(0,0,0,0.5);">
+                    <ScrollPane fitToWidth="true" maxWidth="950" maxHeight="850" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 20;">
+                        <content>
+                            <VBox maxWidth="850" spacing="18.0" styleClass="panel-card" style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2); -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 30, 0, 0, 15);">
+                                <HBox alignment="CENTER_RIGHT"><Button onAction="#masquerTousLesFormulaires" text="✖ Fermer" style="-fx-background-color: #bb2d22; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 8;"/></HBox>
+                                <Label styleClass="section-title" text="Explorer les regimes"/>
+                                <Label styleClass="section-subtitle" text="Lecture des regimes enregistres depuis la base Fitopia."/>
+                                <TilePane fx:id="tileRegimeExploreCards" hgap="12" vgap="12" prefColumns="1" />
+                            </VBox>
+                        </content>
+                    </ScrollPane>
+                </VBox>
+
+                <!-- 5. AJOUTER REPAS (SÉLECTION) -->
+                <VBox fx:id="paneRepasCreate" alignment="CENTER" managed="false" visible="false" style="-fx-background-color: rgba(0,0,0,0.5);">
+                    <ScrollPane fitToWidth="true" maxWidth="950" maxHeight="850" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 20;">
+                        <content>
+                            <VBox maxWidth="850" spacing="18.0" styleClass="panel-card" style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2); -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 30, 0, 0, 15);">
+                                <HBox alignment="CENTER_RIGHT"><Button onAction="#masquerTousLesFormulaires" text="✖ Fermer" style="-fx-background-color: #bb2d22; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 8;"/></HBox>
+                                <Label styleClass="section-title" text="Ajouter un repas existant"/>
+                                <Label styleClass="section-subtitle" text="Sélectionnez un repas déjà enregistré pour l'ajouter à la journée en cours."/>
+                                <VBox spacing="10" style="-fx-background-color: #f1f5f9; -fx-padding: 15; -fx-background-radius: 8; -fx-border-color: #cbd5e1; -fx-border-style: dashed; -fx-border-radius: 8;">
+                                     <Label text="Choisissez un repas dans la liste, puis cliquez sur 'Ajouter ce repas'. Vous pouvez comparer l'impact calorique avant validation." wrapText="true" style="-fx-font-size: 11px; -fx-text-fill: #475569;"/>
+                                </VBox>
+                                <VBox spacing="10">
+                                    <TextField fx:id="tfRepasSelectionSearch" promptText="Rechercher un repas..." styleClass="text-input"/>
+                                    <ScrollPane fitToWidth="true" prefHeight="450.0" style="-fx-background-color: transparent; -fx-background: transparent;">
+                                        <content>
+                                            <TilePane fx:id="tileRepasSelectionCards" hgap="14.0" vgap="14.0" prefColumns="2" style="-fx-padding: 5;"/>
+                                        </content>
+                                    </ScrollPane>
+                                </VBox>
+                            </VBox>
+                        </content>
+                    </ScrollPane>
+                </VBox>
+
+                <!-- 6. MODIFIER REPAS -->
+                <VBox fx:id="paneRepasEdit" alignment="CENTER" managed="false" visible="false" style="-fx-background-color: rgba(0,0,0,0.5);">
+                    <ScrollPane fitToWidth="true" maxWidth="950" maxHeight="850" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 20;">
+                        <content>
+                            <VBox maxWidth="850" spacing="18.0" styleClass="panel-card" style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2); -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 30, 0, 0, 15);">
+                                <HBox alignment="CENTER_RIGHT"><Button onAction="#masquerTousLesFormulaires" text="✖ Fermer" style="-fx-background-color: #bb2d22; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 8;"/></HBox>
+                                <Label styleClass="section-title" text="Modifier un repas"/>
+                                <Label styleClass="section-subtitle" text="Mettez à jour les données du repas sélectionné."/>
+                                <TextField fx:id="tfRepasId" editable="false" managed="false" visible="false"/>
+                                <TableView fx:id="tableRepasEdit" prefHeight="290.0" styleClass="data-table">
+                                    <columns>
+                                        <TableColumn fx:id="colRepasIdEdit" prefWidth="60.0" text="ID"/>
+                                        <TableColumn fx:id="colRepasUserEdit" prefWidth="190.0" text="Utilisateur"/>
+                                        <TableColumn fx:id="colRepasNomEdit" prefWidth="170.0" text="Nom"/>
+                                        <TableColumn fx:id="colRepasTypeEdit" prefWidth="120.0" text="Type"/>
+                                        <TableColumn fx:id="colRepasDateEdit" prefWidth="140.0" text="Date"/>
+                                        <TableColumn fx:id="colRepasCaloriesEdit" prefWidth="90.0" text="Calories"/>
+                                        <TableColumn fx:id="colRepasRegimeIdEdit" prefWidth="210.0" text="Regime"/>
+                                    </columns>
+                                </TableView>
+                                <GridPane hgap="16.0" vgap="16.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0"/>
+                                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0"/>
+                                    </columnConstraints>
+                                    <VBox spacing="8.0" styleClass="field-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                        <Label styleClass="field-label" text="Utilisateur"/>
+                                        <ComboBox fx:id="cbRepasUserEdit" maxWidth="1.7976931348623157E308" styleClass="combo-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="field-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                        <Label styleClass="field-label" text="Date du repas"/>
+                                        <DatePicker fx:id="dpDateRepasEdit" maxWidth="1.7976931348623157E308" styleClass="date-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="field-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                        <Label styleClass="field-label" text="Type de repas"/>
+                                        <ComboBox fx:id="cbTypeRepasEdit" maxWidth="1.7976931348623157E308" styleClass="combo-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="field-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                        <Label styleClass="field-label" text="Nom du repas"/>
+                                        <TextField fx:id="tfRepasNomEdit" styleClass="text-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="field-card" GridPane.columnSpan="2" GridPane.rowIndex="2">
+                                        <Label styleClass="field-label" text="Commentaire"/>
+                                        <TextArea fx:id="taRepasDescriptionEdit" prefHeight="96.0" styleClass="text-area-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="field-card" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                                        <Label styleClass="field-label" text="Regime associe"/>
+                                        <ComboBox fx:id="cbRepasRegimeEdit" maxWidth="1.7976931348623157E308" styleClass="combo-input"/>
+                                    </VBox>
+                                    <VBox spacing="8.0" styleClass="metric-card" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                        <Label styleClass="field-label" text="Calories"/>
+                                        <TextField fx:id="tfRepasCaloriesEdit" styleClass="text-input"/>
+                                    </VBox>
+                                </GridPane>
+                                <HBox alignment="CENTER_RIGHT" spacing="12.0">
+                                    <Button onAction="#viderFormulaireRepasModification" styleClass="secondary-button" text="Annuler"/>
+                                    <Button onAction="#modifierRepas" styleClass="primary-button" text="Mettre à jour"/>
+                                </HBox>
+                            </VBox>
+                        </content>
+                    </ScrollPane>
+                </VBox>
+
+                <!-- 7. SUPPRIMER REPAS -->
+                <VBox fx:id="paneRepasDelete" alignment="CENTER" managed="false" visible="false" style="-fx-background-color: rgba(0,0,0,0.5);">
+                    <ScrollPane fitToWidth="true" maxWidth="950" maxHeight="850" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 20;">
+                        <content>
+                            <VBox maxWidth="850" spacing="18.0" styleClass="panel-card" style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2); -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 30, 0, 0, 15);">
+                                <HBox alignment="CENTER_RIGHT"><Button onAction="#masquerTousLesFormulaires" text="✖ Fermer" style="-fx-background-color: #bb2d22; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 8;"/></HBox>
+                                <Label styleClass="section-title" text="Supprimer un repas"/>
+                                <Label styleClass="section-subtitle" text="Voulez-vous vraiment supprimer ce repas ?"/>
+                                <TableView fx:id="tableRepasDelete" prefHeight="400.0" styleClass="data-table">
+                                    <columns>
+                                        <TableColumn fx:id="colRepasIdDelete" prefWidth="60.0" text="ID"/>
+                                        <TableColumn fx:id="colRepasUserDelete" prefWidth="200.0" text="Utilisateur"/>
+                                        <TableColumn fx:id="colRepasNomDelete" prefWidth="180.0" text="Nom"/>
+                                        <TableColumn fx:id="colRepasTypeDelete" prefWidth="120.0" text="Type"/>
+                                        <TableColumn fx:id="colRepasDateDelete" prefWidth="140.0" text="Date"/>
+                                        <TableColumn fx:id="colRepasCaloriesDelete" prefWidth="90.0" text="Calories"/>
+                                    </columns>
+                                </TableView>
+                                <HBox alignment="CENTER_RIGHT" spacing="12.0">
+                                    <Label fx:id="lblRepasSelectionDelete" styleClass="hint-label" text="Aucun repas sélectionné"/>
+                                    <Button onAction="#supprimerRepas" styleClass="danger-button" text="Supprimer définitivement"/>
+                                </HBox>
+                            </VBox>
+                        </content>
+                    </ScrollPane>
+                </VBox>
+
+                <!-- 8. EXPLORER REPAS -->
+                <VBox fx:id="paneRepasExplore" alignment="CENTER" managed="false" visible="false" style="-fx-background-color: rgba(0,0,0,0.5);">
+                    <ScrollPane fitToWidth="true" maxWidth="950" maxHeight="850" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 20;">
+                        <content>
+                            <VBox maxWidth="850" spacing="18.0" styleClass="panel-card" style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2); -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 30, 0, 0, 15);">
+                                <HBox alignment="CENTER_RIGHT"><Button onAction="#masquerTousLesFormulaires" text="✖ Fermer" style="-fx-background-color: #bb2d22; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 8;"/></HBox>
+                                <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                    <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                        <Label styleClass="section-title" text="Explorer les repas"/>
+                                        <Label fx:id="lblRepasExploreCount" styleClass="section-subtitle" text="0 repas affichés"/>
+                                    </VBox>
+                                    <Button onAction="#afficherStatistiquesRepas" styleClass="primary-button" text="Statistiques"/>
+                                </HBox>
+                                <HBox alignment="CENTER_LEFT" spacing="14.0">
+                                    <ComboBox fx:id="cbRepasExploreSort" prefWidth="190.0" styleClass="combo-input"/>
+                                    <TextField fx:id="tfRepasSearch" promptText="Rechercher..." styleClass="text-input" HBox.hgrow="ALWAYS"/>
+                                    <ComboBox fx:id="cbRepasExploreTypeFilter" prefWidth="180.0" styleClass="combo-input"/>
+                                </HBox>
+                                <TilePane fx:id="tileRepasCards" hgap="18.0" vgap="18.0" prefColumns="2" />
+                            </VBox>
+                        </content>
+                    </ScrollPane>
+                </VBox>
+
+                <!-- 9. SCAN IMAGE POPUP -->
+                <VBox fx:id="paneScanIA" alignment="CENTER" managed="false" visible="false" style="-fx-background-color: rgba(15, 23, 42, 0.75);">
+                    <VBox maxWidth="700" spacing="24.0" style="-fx-background-color: white; -fx-background-radius: 28; -fx-padding: 36; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 40, 0, 0, 20);">
+                        <HBox alignment="CENTER_LEFT">
+                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                <Label fx:id="lblScanIATitle" text="Reconnaissance Visuelle" style="-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: #0F172A;"/>
+                                <Label fx:id="lblScanIASubtitle" text="Analysez votre plat instantanément grâce à l'intelligence artificielle." style="-fx-font-size: 14px; -fx-text-fill: #64748B;"/>
+                            </VBox>
+                            <Button onAction="#masquerTousLesFormulaires" text="✕" style="-fx-background-color: #F1F5F9; -fx-text-fill: #64748B; -fx-font-weight: 900; -fx-font-size: 18px; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.02), 5, 0, 0, 2); -fx-min-width: 44; -fx-min-height: 44; -fx-cursor: hand;"/>
+                        </HBox>
+                        
+                        <VBox spacing="24" alignment="CENTER">
+                             <StackPane maxWidth="550" maxHeight="320" style="-fx-background-color: #F8FAFC; -fx-background-radius: 20; -fx-border-color: #E2E8F0; -fx-border-width: 2; -fx-border-style: dashed; -fx-border-radius: 20; -fx-padding: 10;">
+                                  <ImageView fx:id="ivScanImagePreview" fitWidth="500" fitHeight="300" preserveRatio="true" smooth="true" cache="true">
+                                      <effect>
+                                          <DropShadow color="rgba(0,0,0,0.1)" radius="15" />
+                                      </effect>
+                                  </ImageView>
+                                  
+                                  <Pane fx:id="paneScanOverlay" managed="false" visible="false" mouseTransparent="true">
+                                       <Region fx:id="regionScanLine" prefHeight="4" prefWidth="500" style="-fx-background-color: #10B981; -fx-effect: dropshadow(gaussian, #10B981, 20, 0.6, 0, 0);"/>
+                                       <Region prefHeight="300" prefWidth="500" style="-fx-background-color: linear-gradient(to bottom, rgba(16,185,129,0.1), transparent, rgba(16,185,129,0.1));"/>
+                                  </Pane>
+                             </StackPane>
+                             
+                             <HBox alignment="CENTER" spacing="20">
+                                  <Button fx:id="btnScanIAUpload" text="📁 Charger une photo" onAction="#chargerImagePourScan" prefHeight="50" style="-fx-background-color: #0F172A; -fx-text-fill: white; -fx-font-weight: 800; -fx-font-size: 15px; -fx-background-radius: 14; -fx-padding: 0 28; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.2), 10, 0, 0, 4);"/>
+                                  
+                                  <VBox fx:id="boxResultatIA" spacing="12" alignment="CENTER_LEFT" prefWidth="320" style="-fx-background-color: #F0FDF4; -fx-padding: 20; -fx-border-color: #DCFCE7; -fx-border-radius: 16; -fx-background-radius: 16;" managed="false" visible="false">
+                                       <HBox spacing="8" alignment="CENTER_LEFT">
+                                           <Label text="✨" style="-fx-font-size: 18px;"/>
+                                           <Label text="Repas détecté" style="-fx-text-fill: #166534; -fx-font-weight: 900; -fx-font-size: 14px;"/>
+                                       </HBox>
+                                       <TextField fx:id="tfIARepasNomParticulier" prefHeight="44" style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-color: #BBF7D0; -fx-border-radius: 10; -fx-font-weight: 800;"/>
+                                       <Label fx:id="lblIACalories" text="Calories : 0 kcal" style="-fx-text-fill: #15803D; -fx-font-weight: 900; -fx-font-size: 16px;"/>
+                                       <Button fx:id="btnAppliquerCalories" maxWidth="Infinity" text="💾 Ajouter à mon journal" onAction="#appliquerCaloriesScan" prefHeight="44" style="-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: 900; -fx-background-radius: 10; -fx-cursor: hand;"/>
+                                  </VBox>
+                             </HBox>
+                        </VBox>
+                        
+                        <VBox alignment="CENTER" spacing="12">
+                             <Label fx:id="lblScanStatus" text="Analyse du plat en cours..." visible="false" style="-fx-text-fill: #059669; -fx-font-weight: 900; -fx-font-size: 13px;"/>
+                             <ProgressBar fx:id="pbScanProgress" prefWidth="600" visible="false" prefHeight="10" styleClass="calorie-progress-bar" style="-fx-accent: #10B981;"/>
+                        </VBox>
+                    </VBox>
+                </VBox>
+
+                <!-- 10. WEEKLY PROGRAM POPUP -->
+                <VBox fx:id="paneWeeklyProgram" alignment="CENTER" managed="false" visible="false" style="-fx-background-color: rgba(0,0,0,0.6);">
+                    <VBox maxWidth="1100" maxHeight="750" spacing="0" style="-fx-background-color: #ffffff; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 40, 0, 0, 20); -fx-overflow: hidden;">
+                        
+                        <!-- Header Premium Vert Sombre -->
+                        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: linear-gradient(to right, #0c3f44, #1a7177); -fx-padding: 30; -fx-background-radius: 20 20 0 0;">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="📅 Mon Programme de Nutrition" style="-fx-font-size: 26px; -fx-font-weight: 900; -fx-text-fill: white;"/>
+                                <Label text="Planning hebdomadaire personnalisé selon vos besoins caloriques." style="-fx-font-size: 14px; -fx-text-fill: #ecfdf5;"/>
+                            </VBox>
+                            <Button text="Re-générer la semaine" onAction="#genererSemaineIARegimeActif" style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 10; -fx-padding: 10 20; -fx-cursor: hand;"/>
+                            <Button onAction="#masquerTousLesFormulaires" text="✕" style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: 900; -fx-font-size: 18px; -fx-background-radius: 10; -fx-min-width: 45; -fx-min-height: 45; -fx-cursor: hand;"/>
+                        </HBox>
+
+                        <ScrollPane fitToWidth="true" style="-fx-background-color: white; -fx-background: white; -fx-padding: 20;">
+                            <VBox fx:id="boxWeeklyDaysContainer" spacing="25" style="-fx-padding: 10;" />
+                        </ScrollPane>
+
+                        <HBox alignment="CENTER" style="-fx-padding: 15; -fx-background-color: #f8fafc; -fx-background-radius: 0 0 20 20; -fx-border-color: #e2e8f0; -fx-border-width: 1 0 0 0;">
+                            <Label text="Cliquez sur le 'plus' pour ajouter un plat à votre suivi d'aujourd'hui." style="-fx-text-fill: #64748b; -fx-font-style: italic;"/>
+                        </HBox>
+                </VBox>
+            </VBox>
+
+                <!-- OCN Optimiseur Popup (Now handled via code-based Stage for better styling) -->
+
+                <!-- 12. MOTEUR DE RECOMMANDATION NUTRITIONNELLE -->
+                <VBox fx:id="paneRecommandation" alignment="CENTER" managed="false" visible="false" style="-fx-background-color: rgba(0,0,0,0.6);">
+                    <ScrollPane fitToWidth="true" maxWidth="950" maxHeight="850" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 20;">
+                        <content>
+                            <VBox spacing="25" style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 40; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 30, 0, 0, 15);">
+
+                                <!-- En-tête -->
+                                <HBox alignment="CENTER_LEFT" spacing="20">
+                                    <VBox HBox.hgrow="ALWAYS" spacing="4">
+                                        <Label text="🛒 Ma Liste de Courses"
+                                               style="-fx-font-size: 26px; -fx-font-weight: 900; -fx-text-fill: #111827;"/>
+                                        <Label fx:id="lblRecommandationTitre"
+                                               text="Ingr&#233;dients n&#233;cessaires pour vos repas Spoonacular"
+                                               style="-fx-font-size: 14px; -fx-text-fill: #64748b;"/>
+                                    </VBox>
+                                    <Button onAction="#masquerTousLesFormulaires" text="&#10006; Fermer"
+                                            style="-fx-background-color: #f3f4f6; -fx-text-fill: #374151; -fx-font-weight: 800; -fx-background-radius: 10; -fx-padding: 10 20; -fx-cursor: hand;"/>
+                                </HBox>
+
+                                <Separator/>
+
+                                <!-- Bandeau explicatif supprimé -->
+                                <!-- Zone des cartes de recommandation (inject&#233;e dynamiquement) -->
+                                <VBox fx:id="boxRecommandationCards" spacing="14"/>
+
+                            </VBox>
+                        </content>
+                    </ScrollPane>
+                </VBox>
+
+                </StackPane>
+            
+            <!-- Floating Buttons -->
+            <Button text="📷 Scanner un plat" onAction="#afficherPopupScanIA" 
+                    onMouseEntered="#hoverScannerOn" onMouseExited="#hoverScannerOff"
+                    style="-fx-background-color: #0c3f44; -fx-text-fill: white; -fx-background-radius: 999; -fx-padding: 14 24; -fx-font-weight: 800; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.4), 10, 0, 0, 5); -fx-cursor: hand;"
+                    StackPane.alignment="BOTTOM_RIGHT" translateX="-24" translateY="-24" />
+        </StackPane>
+    </center>
+</BorderPane>

@@ -8,6 +8,9 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class EventReservationType extends AbstractType
 {
@@ -26,6 +29,25 @@ class EventReservationType extends AbstractType
             ->add('emailParticipant', EmailType::class, [
                 'label' => 'Email',
                 'attr' => ['class' => 'form-control'],
+                'constraints' => [
+                    new NotBlank(['message' => 'L email est obligatoire.']),
+                ],
+            ])
+            ->add('telephoneParticipant', TextType::class, [
+                'label' => 'Telephone',
+                'required' => true,
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => '+216XXXXXXXX',
+                ],
+                'constraints' => [
+                    new NotBlank(['message' => 'Le telephone est obligatoire.']),
+                    new Length(['max' => 30]),
+                    new Regex([
+                        'pattern' => '/^(\+216|216)?[0-9]{8}$/',
+                        'message' => 'Le telephone doit etre au format +216XXXXXXXX, 216XXXXXXXX ou XXXXXXXX.',
+                    ]),
+                ],
             ]);
     }
 

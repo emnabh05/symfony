@@ -9,58 +9,63 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
-#[ORM\Table(name: '`order`')]
+#[ORM\Table(name: 'supplement_orders')]
 #[ORM\HasLifecycleCallbacks]
 class Order
 {
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_PROCESSING = 'processing';
+    public const STATUS_ON_WAY = 'on_way';
+    public const STATUS_DELIVERED = 'delivered';
+    public const STATUS_CANCELED = 'canceled';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50, unique: true)]
-    private string $orderNumber = '';
+    private ?string $orderNumberOverride = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(name: 'first_name', length: 255, nullable: true)]
     private string $firstName = '';
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(name: 'last_name', length: 255, nullable: true)]
     private string $lastName = '';
 
     #[ORM\Column(length: 180)]
     private string $email = '';
 
-    #[ORM\Column(length: 20)]
+    #[ORM\Column(length: 50, nullable: true)]
     private string $phone = '';
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private string $address = '';
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, nullable: true)]
     private string $city = '';
 
-    #[ORM\Column(length: 20)]
+    #[ORM\Column(name: 'postal_code', length: 20, nullable: true)]
     private string $postalCode = '';
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(name: 'payment_method', length: 50, nullable: true)]
     private string $paymentMethod = '';
 
-    #[ORM\Column(length: 50)]
-    private string $status = 'pending';
+    #[ORM\Column(length: 50, nullable: true)]
+    private string $status = 'PLACED';
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private string $subtotal = '0.00';
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[ORM\Column(name: 'shipping_cost', type: Types::DECIMAL, precision: 10, scale: 2)]
     private string $shipping = '0.00';
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[ORM\Column(name: 'discount_amount', type: Types::DECIMAL, precision: 10, scale: 2)]
     private string $discount = '0.00';
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[ORM\Column(name: 'total_amount', type: Types::DECIMAL, precision: 10, scale: 2)]
     private string $total = '0.00';
 
-    #[ORM\Column(length: 50, nullable: true)]
+    #[ORM\Column(name: 'discount_code', length: 50, nullable: true)]
     private ?string $discountCode = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -73,29 +78,20 @@ class Order
     #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'order', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $orderItems;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(name: 'created_at', type: Types::DATETIME_MUTABLE)]
     private \DateTimeInterface $createdAt;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private \DateTimeInterface $updatedAt;
 
     public function __construct()
     {
         $this->orderItems = new ArrayCollection();
-        $this->orderNumber = 'ORD-' . strtoupper(uniqid());
     }
 
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
-        $this->createdAt = new \DateTime();
-        $this->updatedAt = new \DateTime();
-    }
-
-    #[ORM\PreUpdate]
-    public function setUpdatedAtValue(): void
-    {
-        $this->updatedAt = new \DateTime();
+        if (!isset($this->createdAt)) {
+            $this->createdAt = new \DateTime();
+        }
     }
 
     public function getId(): ?int
@@ -105,12 +101,21 @@ class Order
 
     public function getOrderNumber(): string
     {
-        return $this->orderNumber;
+        if ($this->orderNumberOverride !== null && $this->orderNumberOverride !== '') {
+            return $this->orderNumberOverride;
+        }
+
+        if ($this->id === null) {
+            return 'ORD-PENDING';
+        }
+
+        return sprintf('ORD-%06d', $this->id);
     }
 
     public function setOrderNumber(string $orderNumber): static
     {
-        $this->orderNumber = $orderNumber;
+        $normalized = trim($orderNumber);
+        $this->orderNumberOverride = $normalized !== '' ? $normalized : null;
         return $this;
     }
 
@@ -198,18 +203,30 @@ class Order
 
     public function setPaymentMethod(string $paymentMethod): static
     {
-        $this->paymentMethod = $paymentMethod;
+        $normalized = strtolower(trim($paymentMethod));
+        $this->paymentMethod = match ($normalized) {
+            'visa' => 'Visa',
+            'mastercard' => 'Mastercard',
+            'paypal' => 'PayPal',
+            'cod', 'cash on delivery' => 'Cash on Delivery',
+            default => trim($paymentMethod) !== '' ? trim($paymentMethod) : 'Unknown',
+        };
         return $this;
     }
 
     public function getStatus(): string
     {
-        return $this->status;
+        return self::normalizeStatusForDisplay($this->status);
+    }
+
+    public function getRawStatus(): string
+    {
+        return self::normalizeStatusForStorage($this->status);
     }
 
     public function setStatus(string $status): static
     {
-        $this->status = $status;
+        $this->status = self::normalizeStatusForStorage($status);
         return $this;
     }
 
@@ -330,14 +347,37 @@ class Order
         return $this;
     }
 
-    public function getUpdatedAt(): \DateTimeInterface
+    /**
+     * @return list<string>
+     */
+    public static function getCanceledStorageStatuses(): array
     {
-        return $this->updatedAt;
+        return ['CANCELED', 'CANCELLED', 'canceled', 'cancelled'];
     }
 
-    public function setUpdatedAt(\DateTimeInterface $updatedAt): static
+    public static function normalizeStatusForStorage(?string $status): string
     {
-        $this->updatedAt = $updatedAt;
-        return $this;
+        $normalized = strtoupper(str_replace(['-', ' '], '_', trim((string) $status)));
+
+        return match ($normalized) {
+            '', 'PENDING', 'PLACED' => 'PLACED',
+            'ACCEPTED', 'PROCESSING', 'ON_PROGRESS' => 'ON_PROGRESS',
+            'ON_WAY', 'ON_THE_WAY' => 'ON_THE_WAY',
+            'DELIVERED' => 'DELIVERED',
+            'CANCELED', 'CANCELLED' => 'CANCELED',
+            default => $normalized,
+        };
+    }
+
+    public static function normalizeStatusForDisplay(?string $status): string
+    {
+        return match (self::normalizeStatusForStorage($status)) {
+            'PLACED' => self::STATUS_PENDING,
+            'ON_PROGRESS' => self::STATUS_PROCESSING,
+            'ON_THE_WAY' => self::STATUS_ON_WAY,
+            'DELIVERED' => self::STATUS_DELIVERED,
+            'CANCELED' => self::STATUS_CANCELED,
+            default => strtolower(str_replace(' ', '_', (string) $status)),
+        };
     }
 }

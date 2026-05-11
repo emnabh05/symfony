@@ -118,9 +118,11 @@ class SupplementProgressService
         }
 
         $log = (new SupplementIntakeLog())
-            ->setUser($user)
-            ->setSupplement($supplement)
-            ->setIntakeDate($today);
+            ->setUserEmail((string) $user->getEmail())
+            ->setSupplementId((int) $supplementId)
+            ->setPlanId($this->supplementIntakeLogRepository->findOrCreatePlanId($user, $supplement))
+            ->setIntakeDate($today)
+            ->setTakenUnits(1);
 
         $this->entityManager->persist($log);
 

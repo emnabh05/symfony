@@ -1,4 +1,4 @@
-﻿{% extends 'admin/layout.html.twig' %}
+{% extends 'admin_base.html.twig' %}
 
 {% block title %}Gestion alimentation | Fitopia{% endblock %}
 
@@ -445,6 +445,11 @@
 {% endblock %}
 
 {% block body %}
+{% set items = items|default([]) %}
+{% set currentTab = currentTab|default('create') %}
+{% set selectedEditId = selectedEditId|default(0) %}
+{% set totalRepas = totalRepas|default(items|length) %}
+{% set maxItems = maxItems|default(items|length) %}
   <div class="agenda-hero">
     <h2>Gestion des repas</h2>
     <p>Créez, modifiez ou supprimez les repas enregistrés dans le système.</p>
@@ -474,9 +479,6 @@
     </div>
   </div>
 
-{% set items = items|default([]) %}
-{% set currentTab = currentTab|default('create') %}
-
   {% for label, messages in app.flashes %}
     {% for message in messages %}
       <div class="success-toast" style="{% if label == 'error' %}background:#fee2e2;color:#991b1b;border-color:#fecaca;{% elseif label == 'warning' %}background:#fef3c7;color:#92400e;border-color:#fde68a;{% endif %}">
@@ -502,7 +504,7 @@
               {{ form_label(repasForm.user) }}
               <div class="icon-input">
                 <i class="fa fa-user"></i>
-                {{ form_widget(repasForm.user, {'attr': {'class': 'form-control'}}) }}
+                {{ form_widget(repasForm.user, {'attr': {'class': 'form-control js-user-regime-source', 'data-regime-url-template': path('admin_nutrition_user_regimes', {'id': 0}) }}) }}
               </div>
               {{ form_errors(repasForm.user) }}
             </div>
@@ -542,7 +544,7 @@
               {{ form_label(repasForm.regime) }}
               <div class="icon-input">
                 <i class="fa fa-heart"></i>
-                {{ form_widget(repasForm.regime, {'attr': {'class': 'form-control'}}) }}
+                {{ form_widget(repasForm.regime, {'attr': {'class': 'form-control js-user-regime-target'}}) }}
               </div>
               {{ form_errors(repasForm.regime) }}
             </div>
@@ -555,7 +557,7 @@
               {{ form_label(repasForm.calories) }}
               <div class="icon-input">
                 <i class="fa fa-fire"></i>
-                {{ form_widget(repasForm.calories, {'attr': {'class': 'form-control'}}) }}
+                {{ form_widget(repasForm.calories, {'attr': {'class': 'form-control js-calories-output', 'readonly': 'readonly'}}) }}
               </div>
               {{ form_errors(repasForm.calories) }}
             </div>
@@ -563,7 +565,7 @@
               {{ form_label(repasForm.proteines) }}
               <div class="icon-input">
                 <i class="fa fa-leaf"></i>
-                {{ form_widget(repasForm.proteines, {'attr': {'class': 'form-control'}}) }}
+                {{ form_widget(repasForm.proteines, {'attr': {'class': 'form-control js-macro-protein'}}) }}
               </div>
               {{ form_errors(repasForm.proteines) }}
             </div>
@@ -571,7 +573,7 @@
               {{ form_label(repasForm.glucides) }}
               <div class="icon-input">
                 <i class="fa fa-circle-o"></i>
-                {{ form_widget(repasForm.glucides, {'attr': {'class': 'form-control'}}) }}
+                {{ form_widget(repasForm.glucides, {'attr': {'class': 'form-control js-macro-carbs'}}) }}
               </div>
               {{ form_errors(repasForm.glucides) }}
             </div>
@@ -579,7 +581,7 @@
               {{ form_label(repasForm.lipides) }}
               <div class="icon-input">
                 <i class="fa fa-tint"></i>
-                {{ form_widget(repasForm.lipides, {'attr': {'class': 'form-control'}}) }}
+                {{ form_widget(repasForm.lipides, {'attr': {'class': 'form-control js-macro-fat'}}) }}
               </div>
               {{ form_errors(repasForm.lipides) }}
             </div>
@@ -608,16 +610,17 @@
             </div>
           </div>
           <div class="list-actions">
-            <button class="action-btn js-edit-toggle" type="button" data-repas-id="{{ item.id }}">Modifier</button>
+            <a class="action-btn" href="{{ path('admin_nutrition', {'tab': 'update', 'edit': item.id}) }}">Modifier</a>
           </div>
         </div>
-        <div class="form-wrap edit-form-shell" id="edit-form-{{ item.id }}">
+        <div class="form-wrap edit-form-shell" id="edit-form-{{ item.id }}" style="{% if selectedEditId == item.id and editForms[item.id] is defined %}display:block;{% endif %}">
+          {% if editForms[item.id] is defined %}
           {{ form_start(editForms[item.id], {'attr': {'class': 'js-repas-form'}}) }}
             <div class="mb-3 js-validate-group" data-rule="required">
               {{ form_label(editForms[item.id].user) }}
               <div class="icon-input">
                 <i class="fa fa-user"></i>
-                {{ form_widget(editForms[item.id].user, {'attr': {'class': 'form-control'}}) }}
+                {{ form_widget(editForms[item.id].user, {'attr': {'class': 'form-control js-user-regime-source', 'data-regime-url-template': path('admin_nutrition_user_regimes', {'id': 0}) }}) }}
               </div>
             </div>
             <div class="mb-3 js-validate-group" data-rule="dateFuture">
@@ -645,28 +648,28 @@
               {{ form_label(editForms[item.id].calories) }}
               <div class="icon-input">
                 <i class="fa fa-fire"></i>
-                {{ form_widget(editForms[item.id].calories, {'attr': {'class': 'form-control'}}) }}
+                {{ form_widget(editForms[item.id].calories, {'attr': {'class': 'form-control js-calories-output', 'readonly': 'readonly'}}) }}
               </div>
             </div>
             <div class="mb-3 js-validate-group" data-rule="positiveNumber">
               {{ form_label(editForms[item.id].proteines) }}
               <div class="icon-input">
                 <i class="fa fa-leaf"></i>
-                {{ form_widget(editForms[item.id].proteines, {'attr': {'class': 'form-control'}}) }}
+                {{ form_widget(editForms[item.id].proteines, {'attr': {'class': 'form-control js-macro-protein'}}) }}
               </div>
             </div>
             <div class="mb-3 js-validate-group" data-rule="positiveNumber">
               {{ form_label(editForms[item.id].glucides) }}
               <div class="icon-input">
                 <i class="fa fa-circle-o"></i>
-                {{ form_widget(editForms[item.id].glucides, {'attr': {'class': 'form-control'}}) }}
+                {{ form_widget(editForms[item.id].glucides, {'attr': {'class': 'form-control js-macro-carbs'}}) }}
               </div>
             </div>
             <div class="mb-3 js-validate-group" data-rule="positiveNumber">
               {{ form_label(editForms[item.id].lipides) }}
               <div class="icon-input">
                 <i class="fa fa-tint"></i>
-                {{ form_widget(editForms[item.id].lipides, {'attr': {'class': 'form-control'}}) }}
+                {{ form_widget(editForms[item.id].lipides, {'attr': {'class': 'form-control js-macro-fat'}}) }}
               </div>
             </div>
             <div class="mb-3 js-validate-group" data-rule="max20NoHtml">
@@ -680,11 +683,12 @@
               {{ form_label(editForms[item.id].regime) }}
               <div class="icon-input">
                 <i class="fa fa-heart"></i>
-                {{ form_widget(editForms[item.id].regime, {'attr': {'class': 'form-control'}}) }}
+                {{ form_widget(editForms[item.id].regime, {'attr': {'class': 'form-control js-user-regime-target'}}) }}
               </div>
             </div>
             <button class="action-btn" type="submit">Enregistrer</button>
           {{ form_end(editForms[item.id]) }}
+          {% endif %}
         </div>
       {% endfor %}
     {% endif %}
@@ -823,6 +827,97 @@
         const isHidden = window.getComputedStyle(form).display === 'none';
         form.style.display = isHidden ? 'block' : 'none';
       });
+    });
+
+    async function refreshRegimeChoices(userSelect) {
+      if (!userSelect) return;
+      const form = userSelect.closest('form');
+      if (!form) return;
+
+      const regimeSelect = form.querySelector('.js-user-regime-target');
+      if (!regimeSelect) return;
+
+      const userId = (userSelect.value || '').trim();
+      const baseUrl = userSelect.dataset.regimeUrlTemplate || '';
+      const previousValue = regimeSelect.value;
+
+      regimeSelect.innerHTML = '';
+
+      const emptyOption = document.createElement('option');
+      emptyOption.value = '';
+      emptyOption.textContent = userId ? '-- Chargement des regimes --' : '-- Choisir d abord un utilisateur --';
+      regimeSelect.appendChild(emptyOption);
+      regimeSelect.value = '';
+
+      if (!userId || !baseUrl) {
+        return;
+      }
+
+      try {
+        const response = await fetch(baseUrl.replace('/0/', '/' + userId + '/'), {
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        const data = await response.json();
+        const items = Array.isArray(data.items) ? data.items : [];
+
+        regimeSelect.innerHTML = '';
+
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = items.length > 0
+          ? '-- Choisir un regime lie a cet utilisateur --'
+          : '-- Aucun regime pour cet utilisateur --';
+        regimeSelect.appendChild(placeholder);
+
+        items.forEach((item) => {
+          const option = document.createElement('option');
+          option.value = String(item.id);
+          option.textContent = item.label || ('Regime #' + item.id);
+          if (previousValue && previousValue === String(item.id)) {
+            option.selected = true;
+          }
+          regimeSelect.appendChild(option);
+        });
+      } catch (error) {
+        regimeSelect.innerHTML = '';
+        const failedOption = document.createElement('option');
+        failedOption.value = '';
+        failedOption.textContent = '-- Impossible de charger les regimes --';
+        regimeSelect.appendChild(failedOption);
+      }
+    }
+
+    document.querySelectorAll('.js-user-regime-source').forEach((userSelect) => {
+      userSelect.addEventListener('change', () => refreshRegimeChoices(userSelect));
+    });
+
+    function recalculateMealCalories(form) {
+      if (!form) return;
+      const proteinInput = form.querySelector('.js-macro-protein');
+      const carbsInput = form.querySelector('.js-macro-carbs');
+      const fatInput = form.querySelector('.js-macro-fat');
+      const caloriesInput = form.querySelector('.js-calories-output');
+      if (!proteinInput || !carbsInput || !fatInput || !caloriesInput) return;
+
+      const protein = parseInt(proteinInput.value || '0', 10) || 0;
+      const carbs = parseInt(carbsInput.value || '0', 10) || 0;
+      const fat = parseInt(fatInput.value || '0', 10) || 0;
+      const total = (protein * 4) + (carbs * 4) + (fat * 9);
+
+      caloriesInput.value = total > 0 ? String(total) : '';
+    }
+
+    document.querySelectorAll('.js-repas-form').forEach((form) => {
+      ['input', 'change'].forEach((eventName) => {
+        form.addEventListener(eventName, (event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLElement)) return;
+          if (target.closest('.js-macro-protein, .js-macro-carbs, .js-macro-fat')) {
+            recalculateMealCalories(form);
+          }
+        });
+      });
+      recalculateMealCalories(form);
     });
 
     // Validator dynamique (classe de validation)

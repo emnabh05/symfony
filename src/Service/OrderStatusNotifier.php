@@ -45,6 +45,7 @@ class OrderStatusNotifier
         $notification = new Notification();
         $notification->setEmail($recipient);
         $notification->setOrderNumber($orderNumber);
+        $notification->setPreviousStatus($oldStatus);
         $notification->setStatus($newStatus);
         $notification->setMessage($message);
         $notification->setOrderRef($order);
@@ -72,7 +73,7 @@ class OrderStatusNotifier
 
     private function shouldSendDeliveryEmail(string $newStatus): bool
     {
-        return strtolower(trim($newStatus)) === 'delivered';
+        return Order::normalizeStatusForStorage($newStatus) === 'DELIVERED';
     }
 
     private function sendDeliveryEmail(Order $order): bool
@@ -117,14 +118,13 @@ class OrderStatusNotifier
             return 'Unknown';
         }
 
-        return match ($status) {
-            'pending' => 'Pending',
-            'accepted' => 'Accepted',
-            'processing' => 'Processing',
-            'on_way' => 'On the way',
-            'delivered' => 'Delivered',
-            'canceled', 'cancelled' => 'Canceled',
-            default => ucfirst(str_replace('_', ' ', $status)),
+        return match (Order::normalizeStatusForDisplay($status)) {
+            Order::STATUS_PENDING => 'Placed',
+            Order::STATUS_PROCESSING => 'In progress',
+            Order::STATUS_ON_WAY => 'On the way',
+            Order::STATUS_DELIVERED => 'Delivered',
+            Order::STATUS_CANCELED => 'Canceled',
+            default => ucfirst(str_replace('_', ' ', Order::normalizeStatusForDisplay($status))),
         };
     }
 }

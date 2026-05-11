@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Routing\Attribute\Route;
 
 class ReviewController extends AbstractController
@@ -132,7 +133,10 @@ class ReviewController extends AbstractController
     private function collectFormErrors(FormInterface $form): array
     {
         $messages = [];
-        foreach ($form->getErrors(true) as $error) {
+        foreach ($form->getErrors(true, true) as $error) {
+            if (!$error instanceof FormError) {
+                continue;
+            }
             $message = trim($error->getMessage());
             if ($message !== '') {
                 $messages[] = $message;

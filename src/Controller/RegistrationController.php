@@ -4,19 +4,17 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
-use App\Service\RecaptchaVerifier;
 use App\Security\AppAuthenticator;
+use App\Service\LegacyUserBridgeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\Component\Form\FormErrorIterator;
 
 class RegistrationController extends AbstractController
 {
@@ -26,8 +24,7 @@ class RegistrationController extends AbstractController
         UserPasswordHasherInterface $hasher,
         Security $security,
         EntityManagerInterface $em,
-        SluggerInterface $slugger,
-        RecaptchaVerifier $recaptchaVerifier
+        LegacyUserBridgeService $legacyUserBridge
     ): Response {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
@@ -35,12 +32,11 @@ class RegistrationController extends AbstractController
 
         if ($form->isSubmitted() && !$form->isValid()) {
             $errors = [];
-            /** @var FormErrorIterator $formErrors */
-            $formErrors = $form->getErrors(true, true);
-            foreach ($formErrors as $error) {
-                $origin = $error->getOrigin();
-                $name = $origin ? $origin->getName() : 'form';
-                $errors[] = $name.': '.$error->getMessage();
+            foreach ($form->getErrors(true, true) as $error) {
+                if (!$error instanceof FormError) {
+                    continue;
+                }
+                $errors[] = trim($error->getMessage());
             }
 
             if ($errors) {
@@ -51,71 +47,176 @@ class RegistrationController extends AbstractController
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $recaptchaToken = (string) $request->request->get('g-recaptcha-response', '');
-            if (
-                $recaptchaVerifier->isConfigured()
-                && $recaptchaToken !== ''
-                && !$recaptchaVerifier->verify($recaptchaToken, $request->getClientIp())
-            ) {
-                $this->addFlash('error', 'Captcha invalide. Veuillez confirmer "Je ne suis pas un robot".');
-                return $this->redirectToRoute('app_register');
+            $plainPassword = (string) $form->get('plainPassword')->getData();
+            $securitySnapshot = $this->passwordSecuritySnapshot($plainPassword);
+
+            $user->setPassword(
+                $hasher->hashPassword(
+                    $user,
+                    $plainPassword
+                )
+            );
+
+            $selectedRole = (string) ($form->get('role')->getData() ?? 'ROLE_PATIENT');
+            $user->setRoles([$selectedRole]);
+            $user->setPasswordScore($securitySnapshot['score']);
+            $user->setPasswordStrength($securitySnapshot['label']);
+            $user->setCompromisedPassword(false);
+            $user->setCompromisedOccurrences(0);
+            $user->setFailedLoginAttempts(0);
+            $user->setRiskScore($securitySnapshot['riskScore']);
+            $user->setAccountStatus('ACTIVE');
+            $user->setPasswordLastChangedAt((new \DateTimeImmutable())->format('Y-m-d H:i:s'));
+
+            $em->persist($user);
+            $em->flush();
+            $legacyUserBridge->syncUser($user);
+
+            $response = $security->login($user, AppAuthenticator::class, 'main');
+            if ($response instanceof Response) {
+                return $response;
             }
 
-            /** @var UploadedFile|null $avatarFile */
-            $avatarFile = $form->get('avatarFile')->getData();
-            if ($avatarFile) {
-                if (!$this->isAllowedAvatarExtension($avatarFile)) {
-                    $this->addFlash('error', 'Invalid image format. Allowed: jpg, jpeg, png, webp, gif.');
-                    return $this->redirectToRoute('app_register');
-                }
-                $originalFilename = pathinfo($avatarFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$this->resolveAvatarExtension($avatarFile);
-
-                try {
-                    $avatarFile->move(
-                        $this->getParameter('app.avatar_upload_dir'),
-                        $newFilename
-                    );
-                } catch (FileException $e) {
-                    $this->addFlash('error', 'Could not upload avatar. Please try again.');
-                }
-
-                $user->setAvatar($newFilename);
-            }
-
-$user->setPassword(
-    $hasher->hashPassword(
-        $user,
-        $form->get('plainPassword')->getData()
-    )
-);
-
-$selectedRole = $form->get('role')->getData() ?? 'ROLE_PATIENT';
-$user->setRoles([$selectedRole]);
-
-$em->persist($user);
-$em->flush();
-
-            return $security->login($user, AppAuthenticator::class, 'main');
+            return $this->redirectToRoute('diet_planner');
         }
 
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
-            'recaptcha_site_key' => (string) $this->getParameter('app.recaptcha_site_key'),
+            'skip_user_context' => true,
         ]);
     }
 
-    private function isAllowedAvatarExtension(UploadedFile $file): bool
+    #[Route('/register/assistant', name: 'app_register_assistant', methods: ['POST'])]
+    public function assistant(Request $request): JsonResponse
     {
-        $ext = strtolower(pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION));
-        return in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'], true);
+        $payload = $this->payload($request);
+        $firstName = $this->titleCase($this->string($payload, 'firstName'));
+        $lastName = $this->titleCase($this->string($payload, 'lastName'));
+        $email = mb_strtolower($this->string($payload, 'email'));
+        $phone = $this->normalizePhone($this->string($payload, 'phone'));
+        $bioDraft = $this->cleanSentence($this->string($payload, 'bio'));
+        $role = $this->string($payload, 'role');
+        $roleLabel = match ($role) {
+            'ROLE_COACH' => 'coach',
+            'ROLE_NUTRITIONIST' => 'nutritionist',
+            'ROLE_ADMIN' => 'admin',
+            default => 'patient',
+        };
+
+        $suggestedUsername = '';
+        if ($email !== '' && str_contains($email, '@')) {
+            $suggestedUsername = (string) strstr($email, '@', true);
+        } else {
+            $suggestedUsername = strtolower(trim($firstName.'.'.$lastName, '.'));
+            $suggestedUsername = preg_replace('/\s+/', '', $suggestedUsername) ?? '';
+        }
+        if ($suggestedUsername === '') {
+            $suggestedUsername = $roleLabel.'_'.substr(preg_replace('/\D+/', '', $phone) ?? '', -4);
+            $suggestedUsername = rtrim($suggestedUsername, '_');
+        }
+
+        $fullName = trim($firstName.' '.$lastName);
+        $identityLead = $fullName !== '' ? $fullName : 'This member';
+        $bio = $bioDraft !== ''
+            ? sprintf('%s is joining Fitopia as a %s. %s', $identityLead, $roleLabel, $bioDraft)
+            : sprintf('%s is joining Fitopia as a %s and is ready to build a healthier routine.', $identityLead, $roleLabel);
+        $summary = $fullName !== ''
+            ? sprintf(
+                '%s profile prepared as %s%s%s.',
+                $fullName,
+                ucfirst($roleLabel),
+                $phone !== '' ? ', phone '.$phone : '',
+                $bioDraft !== '' ? ', bio refined' : ''
+            )
+            : sprintf('Profile ready for a new %s account.', $roleLabel);
+
+        return $this->json([
+            'ok' => true,
+            'firstName' => $firstName,
+            'lastName' => $lastName,
+            'username' => $suggestedUsername,
+            'phone' => $phone,
+            'bio' => $bio,
+            'summary' => $summary,
+        ]);
     }
 
-    private function resolveAvatarExtension(UploadedFile $file): string
+    /**
+     * @return array{score: int, label: string, riskScore: int}
+     */
+    private function passwordSecuritySnapshot(string $plainPassword): array
     {
-        $ext = strtolower(pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION));
-        return in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'], true) ? $ext : 'jpg';
+        $score = min(100, strlen($plainPassword) * 6);
+        if (preg_match('/[A-Z]/', $plainPassword)) {
+            $score += 10;
+        }
+        if (preg_match('/[a-z]/', $plainPassword)) {
+            $score += 10;
+        }
+        if (preg_match('/\d/', $plainPassword)) {
+            $score += 10;
+        }
+        if (preg_match('/[^A-Za-z0-9]/', $plainPassword)) {
+            $score += 10;
+        }
+
+        $score = min(100, $score);
+        $label = $score >= 80 ? 'STRONG' : ($score >= 50 ? 'MEDIUM' : 'WEAK');
+
+        return [
+            'score' => $score,
+            'label' => $label,
+            'riskScore' => max(0, 100 - $score),
+        ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    private function payload(Request $request): array
+    {
+        $content = trim((string) $request->getContent());
+        $decoded = $content !== '' ? json_decode($content, true) : null;
+        if (is_array($decoded)) {
+            return $decoded;
+        }
+
+        return $request->request->all();
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    private function string(array $payload, string $key): string
+    {
+        return trim((string) ($payload[$key] ?? ''));
+    }
+
+    private function titleCase(string $value): string
+    {
+        if ($value === '') {
+            return '';
+        }
+
+        return preg_replace_callback('/\b[\p{L}\p{M}]+\b/u', static function (array $matches): string {
+            $word = mb_strtolower($matches[0]);
+
+            return mb_strtoupper(mb_substr($word, 0, 1)).mb_substr($word, 1);
+        }, $value) ?? $value;
+    }
+
+    private function normalizePhone(string $value): string
+    {
+        return preg_replace('/[^\d+]/', '', $value) ?? '';
+    }
+
+    private function cleanSentence(string $value): string
+    {
+        $value = preg_replace('/\s+/', ' ', trim($value)) ?? '';
+        if ($value === '') {
+            return '';
+        }
+
+        return rtrim($value, " \t\n\r\0\x0B.").'.';
+    }
 }

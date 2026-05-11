@@ -41,8 +41,8 @@ class EventController extends AbstractController
         }
 
         $reviewStats = $eventReviewRepository->getStatsForEvent($eventId);
-        $average = (float) ($reviewStats['average'] ?? 0.0);
-        $reviewCount = (int) ($reviewStats['count'] ?? 0);
+        $average = (float) $reviewStats['average'];
+        $reviewCount = (int) $reviewStats['count'];
         $favoriteCount = $favoriteRepository->countByEvent($eventId);
         $reviews = $eventReviewRepository->findByEvent($eventId, $sort);
 

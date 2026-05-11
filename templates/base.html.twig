@@ -26,7 +26,6 @@
 {% set skipUserContext = skip_user_context|default(false) %}
 
 {% if not skipUserContext %}
-{% include 'partials/topbar.html.twig' %}
 {% include 'partials/navbar.html.twig' %}
 {% endif %}
 
@@ -55,7 +54,7 @@
       <h4 style="margin-bottom:0.5rem;font-weight:800;color:#0b3a3d;">You are offline</h4>
       <p style="color:#475467;">Please connect first to explore the feed and share with the Fitopia community.</p>
       <div style="margin-top:1.25rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
-        <a href="{{ path('app_login') }}" style="background:#0b3a3d;color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:700;text-decoration:none;">Sign in</a>
+        <a href="{{ path('app_login') }}" style="background:#0b3a3d;color:#fff !important;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:700;text-decoration:none;">Sign in</a>
         <a href="{{ path('app_register') }}" style="background:#fff;border:1px solid #0b3a3d;color:#0b3a3d;border-radius:8px;padding:0.5rem 1rem;font-weight:700;text-decoration:none;">Don't have an account? Register now for free</a>
       </div>
     </div>

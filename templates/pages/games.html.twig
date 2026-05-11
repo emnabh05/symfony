@@ -1,0 +1,528 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Fitopia Games{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+  .games-page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #f4f8fb 0%, #edf4f1 100%);
+  }
+
+  .games-shell {
+    width: min(100%, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 28px 0 34px;
+  }
+
+  .games-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+
+  .games-header-left {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .games-back {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 0;
+    background: #eef2f7;
+    color: #4f6c96;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    text-decoration: none;
+  }
+
+  .games-title {
+    margin: 0;
+    color: #0a214c;
+    font-size: 29px;
+    font-weight: 900;
+    line-height: 1.15;
+  }
+
+  .games-subtitle {
+    margin: 6px 0 0;
+    color: #5b78a2;
+    font-size: 16px;
+  }
+
+  .games-score {
+    min-width: 130px;
+    padding: 16px 24px;
+    border-radius: 22px;
+    border: 1px solid #b8efd0;
+    background: rgba(223, 249, 233, 0.78);
+    color: #05603a;
+    font-size: 15px;
+    font-weight: 800;
+    text-align: center;
+  }
+
+  .games-score strong {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 18px;
+  }
+
+  .game-card {
+    position: relative;
+    min-height: 76vh;
+    border-radius: 28px;
+    border: 1px solid #e5edf5;
+    background: #ffffff;
+    box-shadow: 0 18px 42px rgba(14, 30, 37, 0.08);
+    overflow: hidden;
+  }
+
+  .game-canvas {
+    display: block;
+    width: 100%;
+    height: 76vh;
+    min-height: 620px;
+    background:
+      radial-gradient(circle at top left, rgba(37, 183, 116, 0.08), transparent 28%),
+      radial-gradient(circle at top right, rgba(59, 130, 246, 0.06), transparent 22%),
+      linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  }
+
+  .game-overlay,
+  .game-over {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 26px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+  }
+
+  .game-over {
+    display: none;
+  }
+
+  .game-panel {
+    width: min(100%, 620px);
+    text-align: center;
+  }
+
+  .game-panel-title {
+    margin: 0 0 18px;
+    color: #118545;
+    font-size: clamp(42px, 5vw, 64px);
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .game-panel-icons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 12px;
+    color: #2c3441;
+    font-size: clamp(38px, 4vw, 52px);
+  }
+
+  .game-panel-rules {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 56px;
+    margin-bottom: 34px;
+    color: #0f172a;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .game-panel-rules span:first-child {
+    color: #0d8a4a;
+  }
+
+  .game-panel-rules span:last-child {
+    color: #b91c1c;
+  }
+
+  .game-button {
+    border: 0;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #20c75f 0%, #24cc67 100%);
+    color: #ffffff;
+    min-height: 72px;
+    padding: 0 48px;
+    font-size: 18px;
+    font-weight: 900;
+    box-shadow: 0 16px 28px rgba(36, 204, 103, 0.3);
+  }
+
+  .game-over-box {
+    width: min(100%, 480px);
+    padding: 32px 28px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid #e3edf4;
+    box-shadow: 0 22px 46px rgba(15, 23, 42, 0.14);
+    text-align: center;
+  }
+
+  .game-over-box h2 {
+    margin: 0 0 10px;
+    color: #0a214c;
+    font-size: 34px;
+    font-weight: 900;
+  }
+
+  .game-over-box p {
+    margin: 0 0 12px;
+    color: #5c6f8e;
+    font-size: 16px;
+  }
+
+  .game-final-score {
+    margin: 0 0 24px;
+    color: #118545;
+    font-size: 22px;
+    font-weight: 900;
+  }
+
+  .game-helper {
+    position: absolute;
+    left: 24px;
+    bottom: 20px;
+    color: #68819f;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  @media (max-width: 900px) {
+    .games-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .games-header-left {
+      align-items: flex-start;
+    }
+
+    .games-score {
+      width: 100%;
+    }
+
+    .game-canvas {
+      min-height: 560px;
+      height: 70vh;
+    }
+
+    .game-panel-rules {
+      gap: 24px;
+      flex-direction: column;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="games-page">
+  <div class="games-shell">
+    <header class="games-header">
+      <div class="games-header-left">
+        <a href="{{ path('explore_forums_blogs') }}" class="games-back" aria-label="Back to explore">
+          <i class="fa fa-arrow-left"></i>
+        </a>
+        <div>
+          <h1 class="games-title">Fitopia Games</h1>
+          <p class="games-subtitle">Healthy Choice: Catch the vitamins, avoid the junk!</p>
+        </div>
+      </div>
+      <div class="games-score">Score: <strong id="game-score">0</strong></div>
+    </header>
+
+    <div class="game-card">
+      <canvas id="healthy-choice-canvas" class="game-canvas" width="1440" height="900"></canvas>
+
+      <div class="game-overlay" id="game-start-overlay">
+        <div class="game-panel">
+          <h2 class="game-panel-title">Healthy Choice</h2>
+          <div class="game-panel-icons" aria-hidden="true">
+            <span id="game-icon-healthy-1"></span>
+            <span id="game-icon-healthy-2"></span>
+            <span id="game-icon-healthy-3"></span>
+            <span id="game-icon-junk-1"></span>
+            <span id="game-icon-junk-2"></span>
+            <span id="game-icon-junk-3"></span>
+          </div>
+          <div class="game-panel-rules">
+            <span>+10 Points</span>
+            <span>Game Over</span>
+          </div>
+          <button type="button" class="game-button" id="game-start-button">START ADVENTURE</button>
+        </div>
+      </div>
+
+      <div class="game-over" id="game-over-overlay">
+        <div class="game-over-box">
+          <h2>Game Over</h2>
+          <p>You caught junk food. Try again and build a better score.</p>
+          <div class="game-final-score">Final Score: <span id="game-final-score">0</span></div>
+          <button type="button" class="game-button" id="game-restart-button">PLAY AGAIN</button>
+        </div>
+      </div>
+
+      <div class="game-helper">Move your mouse or finger to guide the basket.</div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block javascripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('healthy-choice-canvas');
+    const ctx = canvas ? canvas.getContext('2d') : null;
+    const scoreEl = document.getElementById('game-score');
+    const finalScoreEl = document.getElementById('game-final-score');
+    const startOverlay = document.getElementById('game-start-overlay');
+    const gameOverOverlay = document.getElementById('game-over-overlay');
+    const startButton = document.getElementById('game-start-button');
+    const restartButton = document.getElementById('game-restart-button');
+
+    if (!canvas || !ctx || !scoreEl || !finalScoreEl || !startOverlay || !gameOverOverlay || !startButton || !restartButton) {
+      return;
+    }
+
+    const healthyIcons = [
+      String.fromCodePoint(0x1F34E),
+      String.fromCodePoint(0x1F34C),
+      String.fromCodePoint(0x1F955),
+      String.fromCodePoint(0x1F965),
+      String.fromCodePoint(0x1F353),
+      String.fromCodePoint(0x1F34A)
+    ];
+    const junkIcons = [
+      String.fromCodePoint(0x1F354),
+      String.fromCodePoint(0x1F355),
+      String.fromCodePoint(0x1F369),
+      String.fromCodePoint(0x1F35F),
+      String.fromCodePoint(0x1F366)
+    ];
+
+    const previewIds = [
+      ['game-icon-healthy-1', healthyIcons[0]],
+      ['game-icon-healthy-2', healthyIcons[1]],
+      ['game-icon-healthy-3', healthyIcons[2]],
+      ['game-icon-junk-1', junkIcons[0]],
+      ['game-icon-junk-2', junkIcons[1]],
+      ['game-icon-junk-3', junkIcons[2]]
+    ];
+    previewIds.forEach(([id, icon]) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = icon;
+    });
+
+    const state = {
+      running: false,
+      score: 0,
+      basketX: 0,
+      basketWidth: 136,
+      basketHeight: 26,
+      objects: [],
+      lastSpawnAt: 0,
+      animationFrame: 0,
+      gameAreaRect: null
+    };
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = Math.round(rect.width * ratio);
+      canvas.height = Math.round(rect.height * ratio);
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      state.gameAreaRect = rect;
+      if (state.basketX === 0) {
+        state.basketX = (rect.width - state.basketWidth) / 2;
+      } else {
+        state.basketX = Math.max(0, Math.min(state.basketX, rect.width - state.basketWidth));
+      }
+      draw();
+    }
+
+    function resetState() {
+      state.score = 0;
+      state.objects = [];
+      state.lastSpawnAt = 0;
+      scoreEl.textContent = '0';
+      finalScoreEl.textContent = '0';
+      state.basketX = ((canvas.getBoundingClientRect().width || 1000) - state.basketWidth) / 2;
+    }
+
+    function spawnObject() {
+      const rect = canvas.getBoundingClientRect();
+      const isHealthy = Math.random() < 0.7;
+      const iconPool = isHealthy ? healthyIcons : junkIcons;
+      state.objects.push({
+        x: Math.random() * Math.max(50, rect.width - 70),
+        y: -40,
+        speed: 2.2 + Math.random() * 2.6,
+        emoji: iconPool[Math.floor(Math.random() * iconPool.length)],
+        healthy: isHealthy,
+        size: 34
+      });
+    }
+
+    function drawBackground(width, height) {
+      ctx.clearRect(0, 0, width, height);
+      const sky = ctx.createLinearGradient(0, 0, 0, height);
+      sky.addColorStop(0, '#ffffff');
+      sky.addColorStop(1, '#f6fbff');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.fillStyle = 'rgba(37, 183, 116, 0.08)';
+      ctx.beginPath();
+      ctx.arc(width * 0.12, height * 0.14, 140, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = 'rgba(59, 130, 246, 0.05)';
+      ctx.beginPath();
+      ctx.arc(width * 0.86, height * 0.12, 120, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawBasket(width, height) {
+      const y = height - 72;
+      ctx.fillStyle = '#15803d';
+      roundRect(ctx, state.basketX, y, state.basketWidth, state.basketHeight, 14, true);
+      ctx.fillStyle = '#166534';
+      roundRect(ctx, state.basketX + 14, y + 6, state.basketWidth - 28, 7, 7, true);
+    }
+
+    function drawObjects() {
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.font = '36px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
+      state.objects.forEach((object) => {
+        ctx.fillText(object.emoji, object.x, object.y);
+      });
+    }
+
+    function draw() {
+      const rect = canvas.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+      drawBackground(width, height);
+      drawBasket(width, height);
+      drawObjects();
+    }
+
+    function endGame() {
+      state.running = false;
+      finalScoreEl.textContent = String(state.score);
+      gameOverOverlay.style.display = 'flex';
+      if (state.animationFrame) {
+        window.cancelAnimationFrame(state.animationFrame);
+      }
+    }
+
+    function update(timestamp) {
+      if (!state.running) {
+        return;
+      }
+
+      if (!state.lastSpawnAt || timestamp - state.lastSpawnAt > 950) {
+        spawnObject();
+        state.lastSpawnAt = timestamp;
+      }
+
+      const rect = canvas.getBoundingClientRect();
+      const basketTop = rect.height - 72;
+
+      state.objects = state.objects.filter((object) => {
+        object.y += object.speed;
+
+        const caught =
+          object.y + object.size >= basketTop &&
+          object.y <= basketTop + state.basketHeight &&
+          object.x + object.size >= state.basketX &&
+          object.x <= state.basketX + state.basketWidth;
+
+        if (caught) {
+          if (object.healthy) {
+            state.score += 10;
+            scoreEl.textContent = String(state.score);
+            return false;
+          }
+          endGame();
+          return false;
+        }
+
+        return object.y < rect.height + 40;
+      });
+
+      draw();
+      state.animationFrame = window.requestAnimationFrame(update);
+    }
+
+    function startGame() {
+      resetState();
+      state.running = true;
+      startOverlay.style.display = 'none';
+      gameOverOverlay.style.display = 'none';
+      draw();
+      state.animationFrame = window.requestAnimationFrame(update);
+    }
+
+    function moveBasket(clientX) {
+      const rect = canvas.getBoundingClientRect();
+      const offsetX = clientX - rect.left - state.basketWidth / 2;
+      state.basketX = Math.max(0, Math.min(offsetX, rect.width - state.basketWidth));
+      if (state.running) {
+        draw();
+      }
+    }
+
+    startButton.addEventListener('click', startGame);
+    restartButton.addEventListener('click', startGame);
+
+    window.addEventListener('resize', resizeCanvas);
+    canvas.addEventListener('mousemove', (event) => moveBasket(event.clientX));
+    canvas.addEventListener('touchmove', (event) => {
+      if (!event.touches[0]) return;
+      moveBasket(event.touches[0].clientX);
+    }, { passive: true });
+
+    resizeCanvas();
+    draw();
+
+    function roundRect(context, x, y, width, height, radius, fill) {
+      context.beginPath();
+      context.moveTo(x + radius, y);
+      context.lineTo(x + width - radius, y);
+      context.quadraticCurveTo(x + width, y, x + width, y + radius);
+      context.lineTo(x + width, y + height - radius);
+      context.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      context.lineTo(x + radius, y + height);
+      context.quadraticCurveTo(x, y + height, x, y + height - radius);
+      context.lineTo(x, y + radius);
+      context.quadraticCurveTo(x, y, x + radius, y);
+      context.closePath();
+      if (fill) {
+        context.fill();
+      }
+    }
+  });
+</script>
+{% endblock %}

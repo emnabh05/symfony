@@ -58,8 +58,8 @@ class ApiController extends AbstractController
                 'calories' => $supplement->getCalories(),
                 'description' => $supplement->getDescription(),
                 'image' => $supplement->getImage() ? 'http://localhost:8000/uploads/supplements/' . $supplement->getImage() : null,
-                'createdAt' => $supplement->getCreatedAt()?->format('Y-m-d H:i:s'),
-                'isNew' => $supplement->getCreatedAt() && $supplement->getCreatedAt() > new \DateTime('-30 days'),
+                'createdAt' => $supplement->getCreatedAt()->format('Y-m-d H:i:s'),
+                'isNew' => $supplement->getCreatedAt() > new \DateTime('-30 days'),
             ];
         }, array_values($filteredSupplements));
 
@@ -85,8 +85,8 @@ class ApiController extends AbstractController
             'calories' => $supplement->getCalories(),
             'description' => $supplement->getDescription(),
             'image' => $supplement->getImage() ? 'http://localhost:8000/uploads/supplements/' . $supplement->getImage() : null,
-            'createdAt' => $supplement->getCreatedAt()?->format('Y-m-d H:i:s'),
-            'updatedAt' => $supplement->getUpdatedAt()?->format('Y-m-d H:i:s'),
+            'createdAt' => $supplement->getCreatedAt()->format('Y-m-d H:i:s'),
+            'updatedAt' => $supplement->getUpdatedAt()->format('Y-m-d H:i:s'),
         ];
 
         $response = new JsonResponse($data);

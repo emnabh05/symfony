@@ -1,0 +1,298 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paiement reservation | Fitopia{% endblock %}
+
+{% block body %}
+<style>
+  .payment-shell {
+    padding: 36px 0 54px;
+    background:
+      radial-gradient(circle at top left, rgba(15, 122, 95, 0.08), transparent 30%),
+      linear-gradient(180deg, #f7fbfc 0%, #ffffff 100%);
+  }
+  .payment-grid {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.9fr) minmax(440px, 1.15fr);
+    gap: 24px;
+    align-items: start;
+  }
+  .pay-card {
+    background: #fff;
+    border-radius: 24px;
+    border: 1px solid #e7edf4;
+    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+    padding: 26px 28px;
+  }
+  .pay-card h1,
+  .pay-card h2 {
+    margin: 0 0 8px;
+    color: #12343b;
+    font-weight: 800;
+  }
+  .pay-card h1 { font-size: 2rem; }
+  .pay-card h2 { font-size: 1.8rem; }
+  .pay-muted {
+    color: #6b7b86;
+    margin-bottom: 24px;
+  }
+  .pay-divider {
+    height: 1px;
+    background: #e9eef5;
+    margin: 20px 0 24px;
+  }
+  .pay-summary-title {
+    color: #6a7b82;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .pay-event-name {
+    margin: 0 0 18px;
+    color: #12343b;
+    font-size: 1.9rem;
+    font-weight: 800;
+  }
+  .pay-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 18px;
+    margin-bottom: 22px;
+  }
+  .pay-meta strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #667784;
+    font-size: 0.92rem;
+  }
+  .pay-meta span {
+    color: #12343b;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+  .price-box {
+    border: 1px solid #deebea;
+    background: #f9fcfb;
+    border-radius: 18px;
+    padding: 18px 20px;
+  }
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .price-row:last-child { margin-bottom: 0; }
+  .price-row strong {
+    color: #6f8180;
+    font-size: 0.95rem;
+  }
+  .price-row span {
+    color: #12343b;
+    font-weight: 800;
+  }
+  .price-total {
+    color: #b45309 !important;
+    font-size: 2rem;
+  }
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: #fef3c7;
+    color: #a16207;
+    padding: 8px 16px;
+    font-weight: 800;
+  }
+  .pay-methods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .pay-radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #17363d;
+    font-weight: 700;
+  }
+  .pay-form-grid {
+    display: grid;
+    gap: 18px;
+  }
+  .pay-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: #35505a;
+  }
+  .pay-field input {
+    width: 100%;
+    border: 1px solid #d8e5de;
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-size: 1rem;
+  }
+  .pay-field input:focus {
+    outline: none;
+    border-color: #0f7a5f;
+    box-shadow: 0 0 0 4px rgba(15, 122, 95, 0.12);
+  }
+  .pay-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .pay-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  .pay-btn {
+    border-radius: 14px;
+    padding: 13px 18px;
+    font-weight: 800;
+    border: 1px solid transparent;
+    background: #fff;
+  }
+  .pay-btn-cancel {
+    border-color: #d7dde5;
+    color: #35505a;
+  }
+  .pay-btn-fail {
+    border-color: #fecaca;
+    background: #fff5f5;
+    color: #c2410c;
+  }
+  .pay-btn-success {
+    border-color: #fcd34d;
+    background: #fff8e1;
+    color: #b45309;
+  }
+  .pay-btn-main {
+    border-color: #1d5f4e;
+    background: #1d5f4e;
+    color: #fff;
+  }
+  .pay-footer {
+    margin-top: 18px;
+    color: #6b7b86;
+    font-weight: 600;
+  }
+  @media (max-width: 992px) {
+    .payment-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .pay-meta,
+    .pay-field-row { grid-template-columns: 1fr; }
+  }
+</style>
+
+<section class="payment-shell">
+  <div class="container">
+    <div class="payment-grid">
+      <article class="pay-card">
+        <h1>Paiement de reservation</h1>
+        <p class="pay-muted">Resume avant validation sandbox.</p>
+        <div class="pay-divider"></div>
+
+        <div class="pay-summary-title">Evenement</div>
+        <p class="pay-event-name">{{ event.titre }}</p>
+
+        <div class="pay-meta">
+          <div>
+            <strong>Date</strong>
+            <span>{{ event.dateEvent ? event.dateEvent|date('Y-m-d') : '-' }}</span>
+          </div>
+          <div>
+            <strong>Lieu</strong>
+            <span>{{ event.lieu }}</span>
+          </div>
+          <div>
+            <strong>Client</strong>
+            <span>{{ reservation.nomParticipant }}</span>
+          </div>
+          <div>
+            <strong>Email</strong>
+            <span>{{ reservation.emailParticipant }}</span>
+          </div>
+          <div>
+            <strong>Telephone</strong>
+            <span>{{ reservation.telephoneParticipant ?: '-' }}</span>
+          </div>
+          <div>
+            <strong>Reservation</strong>
+            <span>#{{ reservation.id }}</span>
+          </div>
+        </div>
+
+        <div class="price-box">
+          <div class="price-row">
+            <strong>Prix total</strong>
+            <span class="price-total">{{ reservation.montant|number_format(2, '.', ' ') }} DT</span>
+          </div>
+          <div class="price-row">
+            <strong>Statut actuel</strong>
+            <span class="status-pill">{{ reservation.statut }}</span>
+          </div>
+          <div class="price-row">
+            <strong>Transaction</strong>
+            <span>{{ reservation.transactionId ?: '-' }}</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="pay-card">
+        <h2>Informations de paiement</h2>
+        <p class="pay-muted">Donnees de test uniquement. Rien n'est stocke en base.</p>
+
+        <form method="post" action="{{ path('app_reservation_payment_process', {id: reservation.id}) }}">
+          <input type="hidden" name="_token" value="{{ csrf_token('reservation_payment_' ~ reservation.id) }}">
+
+          <div class="pay-methods">
+            <label class="pay-radio"><input type="radio" name="payment_method" value="card" checked> Carte bancaire</label>
+            <label class="pay-radio"><input type="radio" name="payment_method" value="paypal"> PayPal simule</label>
+            <label class="pay-radio"><input type="radio" name="payment_method" value="wallet"> Wallet simule</label>
+          </div>
+
+          <div class="pay-form-grid">
+            <div class="pay-field">
+              <label for="card_holder">Nom sur la carte</label>
+              <input id="card_holder" name="card_holder" type="text" placeholder="Ex: Emna Ben Hmida" required>
+            </div>
+
+            <div class="pay-field">
+              <label for="card_number">Numero de carte</label>
+              <input id="card_number" name="card_number" type="text" inputmode="numeric" placeholder="16 chiffres" required>
+            </div>
+
+            <div class="pay-field-row">
+              <div class="pay-field">
+                <label for="expiration">Expiration MM/AA</label>
+                <input id="expiration" name="expiration" type="text" placeholder="MM/AA" required>
+              </div>
+              <div class="pay-field">
+                <label for="cvv">CVV</label>
+                <input id="cvv" name="cvv" type="text" inputmode="numeric" placeholder="3 chiffres" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="pay-actions">
+            <button class="pay-btn pay-btn-cancel" type="submit" name="payment_action" value="cancel">Annuler</button>
+            <button class="pay-btn pay-btn-fail" type="submit" name="payment_action" value="failed">Simuler echec</button>
+            <button class="pay-btn pay-btn-success" type="submit" name="payment_action" value="success">Simuler reussi</button>
+            <button class="pay-btn pay-btn-main" type="submit" name="payment_action" value="pay">Payer maintenant</button>
+          </div>
+        </form>
+
+        <p class="pay-footer">Saisissez des donnees de test. Aucune information bancaire n'est stockee.</p>
+      </article>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block footer %}{% endblock %}

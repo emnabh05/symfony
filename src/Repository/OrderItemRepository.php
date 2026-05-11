@@ -13,7 +13,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class OrderItemRepository extends ServiceEntityRepository
 {
-    private const CANCELED_STATUSES = ['canceled', 'cancelled'];
+    private const CANCELED_STATUSES = ['CANCELED', 'CANCELLED', 'canceled', 'cancelled'];
 
     public function __construct(ManagerRegistry $registry)
     {

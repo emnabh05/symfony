@@ -1,119 +1,237 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Home | Fitopia{% endblock %}
+{% block title %}Our Services | Fitopia{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+  :root {
+    --f-green: #15996a;
+    --f-blue: #16384c;
+    --f-dark: #13231d;
+    --f-muted: #5f756d;
+    --f-border: #e3eee7;
+  }
+
+  .services-page {
+    background-color: #ffffff;
+    padding-bottom: 80px;
+  }
+
+  .hero-mini {
+    height: 260px;
+    background: linear-gradient(135deg, #f7fbf8, #eef7f2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-bottom: 1px solid var(--f-border);
+  }
+
+  .hero-mini h1 {
+    font-size: 44px;
+    color: var(--f-dark);
+    margin: 0;
+    font-weight: 800;
+  }
+
+  .hero-mini p {
+    color: var(--f-muted);
+    font-size: 16px;
+    margin-top: 10px;
+  }
+
+  .services-shell {
+    max-width: 1200px;
+    margin: 40px auto 0;
+    padding: 0 20px;
+  }
+
+  .services-grid-main {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 30px;
+  }
+
+  .service-main-card {
+    background: white;
+    border-radius: 24px;
+    border: 1px solid var(--f-border);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+  }
+
+  .service-main-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(21, 153, 106, 0.12);
+  }
+
+  .service-card-img {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+
+  .service-card-img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(19, 35, 29, 0.4), transparent);
+  }
+
+  .service-card-content {
+    padding: 30px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .service-card-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--f-dark);
+    margin: 0;
+  }
+
+  .service-card-desc {
+    font-size: 15px;
+    color: var(--f-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .service-card-footer {
+    padding-top: 10px;
+    margin-top: auto;
+  }
+
+  .btn-explore {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--f-blue);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.2s;
+    width: fit-content;
+  }
+
+  .btn-explore:hover {
+    background: #0d2a3a;
+    color: white;
+  }
+
+  .service-tag {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: var(--f-green);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    z-index: 2;
+  }
+
+  @media (max-width: 768px) {
+    .services-grid-main {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
 
 {% block body %}
+<div class="services-page">
+  <div class="hero-mini">
+    <h1>Explore Our Modules</h1>
+    <p>Premium health and wellness tools designed for your specific goals.</p>
+  </div>
 
-<!-- HERO / SLIDER -->
-<div class="hero-wrap js-fullheight">
-  <div class="home-slider owl-carousel js-fullheight">
-
-    <div class="slider-item js-fullheight" style="background-image:url({{ asset('images/bg_1.jpg') }});">
-      <div class="overlay"></div>
-      <div class="container">
-        <div class="row no-gutters slider-text align-items-center">
-          <div class="col-md-7 ftco-animate">
-            <div class="text w-100">
-              <h2>Welcome to Fitopia</h2>
-              <h1 class="mb-4">Get in shape faster, live your happy life</h1>
-              <p>
-                <a href="#" class="btn btn-primary">Learn more</a>
-                <a href="#" class="btn btn-white">Contact us</a>
-              </p>
-            </div>
+  <div class="services-shell">
+    <div class="services-grid-main">
+      
+      <!-- Diet Planner -->
+      <div class="service-main-card">
+        <div class="service-card-img" style="background-image: url('{{ asset('images/services-2.jpg') }}');">
+          <span class="service-tag">NUTRITION</span>
+        </div>
+        <div class="service-card-content">
+          <h2 class="service-card-title">Diet & Eating Planner</h2>
+          <p class="service-card-desc">Personalized nutrition guidance, meal tracking, and habit coaching to help you build a sustainable healthy eating routine.</p>
+          <div class="service-card-footer">
+            <a href="{{ path('diet_planner') }}" class="btn-explore">Open Planner →</a>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="slider-item js-fullheight" style="background-image:url({{ asset('images/bg_2.jpg') }});">
-      <div class="overlay"></div>
-      <div class="container">
-        <div class="row no-gutters slider-text align-items-center">
-          <div class="col-md-7 ftco-animate">
-            <div class="text w-100">
-              <h2>A Fresh approach to healthy life</h2>
-              <h1 class="mb-4 color-white">Unlock your potential with good nutrition</h1>
-              <p>
-                <a href="#" class="btn btn-primary">Learn more</a>
-                <a href="#" class="btn btn-white">Contact us</a>
-              </p>
-            </div>
+      <!-- Supplements -->
+      <div class="service-main-card">
+        <div class="service-card-img" style="background-image: url('{{ asset('images/services-3.jpg') }}');">
+          <span class="service-tag">SHOP</span>
+        </div>
+        <div class="service-card-content">
+          <h2 class="service-card-title">Supplements Hub</h2>
+          <p class="service-card-desc">Browse our curated catalog of premium supplements, vitamins, and wellness products delivered to your door.</p>
+          <div class="service-card-footer">
+            <a href="{{ path('supplements') }}" class="btn-explore">Browse Catalog →</a>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="slider-item js-fullheight" style="background-image:url({{ asset('images/bg_3.jpg') }});">
-      <div class="overlay"></div>
-      <div class="container">
-        <div class="row no-gutters slider-text align-items-center justify-content-end">
-          <div class="col-md-6 ftco-animate">
-            <div class="text w-100">
-              <h2>Welcome Fitopia</h2>
-              <h1 class="mb-4">You can transform health through habit change</h1>
-              <p>
-                <a href="#" class="btn btn-primary">Learn more</a>
-                <a href="#" class="btn btn-white">Contact us</a>
-              </p>
-            </div>
+      <!-- Fitness Planner -->
+      <div class="service-main-card">
+        <div class="service-card-img" style="background-image: url('{{ asset('images/services-1.jpg') }}');">
+          <span class="service-tag">TRAINING</span>
+        </div>
+        <div class="service-card-content">
+          <h2 class="service-card-title">Fitness Hub</h2>
+          <p class="service-card-desc">Custom workout programs, exercise video library, and private coaching all in one powerful training platform.</p>
+          <div class="service-card-footer">
+            <a href="{{ path('fitness_planner') }}" class="btn-explore">Start Training →</a>
           </div>
         </div>
       </div>
-    </div>
 
+      <!-- Events -->
+      <div class="service-main-card">
+        <div class="service-card-img" style="background-image: url('{{ asset('images/bg_1.jpg') }}');">
+          <span class="service-tag">COMMUNITY</span>
+        </div>
+        <div class="service-card-content">
+          <h2 class="service-card-title">Events & Workshops</h2>
+          <p class="service-card-desc">Join local fitness events, nutrition workshops, and community challenges to stay motivated and connected.</p>
+          <div class="service-card-footer">
+            <a href="{{ path('events') }}" class="btn-explore">Explore Events →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Forum -->
+      <div class="service-main-card">
+        <div class="service-card-img" style="background-image: url('{{ asset('images/coach-1.jpg') }}');">
+          <span class="service-tag">SOCIAL</span>
+        </div>
+        <div class="service-card-content">
+          <h2 class="service-card-title">Forums & Blogs</h2>
+          <p class="service-card-desc">Share your progress, ask questions, and read expert articles from our wellness professionals and community members.</p>
+          <div class="service-card-footer">
+            <a href="{{ path('explore_forums_blogs') }}" class="btn-explore">Join Discussion →</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
-
-<!-- SERVICES -->
-<section class="ftco-section ftco-services">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-4 d-flex services align-self-stretch px-4 ftco-animate">
-        <div class="services-wrap text-center">
-          <div class="img" style="background-image:url({{ asset('images/services-1.jpg') }});"></div>
-          <div class="media-body p-2 mt-3">
-            <h3>Exercise Program</h3>
-            <p>Even the all-powerful Pointing has no control about the blind texts.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4 d-flex services align-self-stretch px-4 ftco-animate">
-        <div class="services-wrap text-center">
-          <div class="img" style="background-image:url({{ asset('images/services-2.jpg') }});"></div>
-          <div class="media-body p-2 mt-3">
-            <h3>Nutrition Plans</h3>
-            <p>Even the all-powerful Pointing has no control about the blind texts.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4 d-flex services align-self-stretch px-4 ftco-animate">
-        <div class="services-wrap text-center">
-          <div class="img" style="background-image:url({{ asset('images/services-3.jpg') }});"></div>
-          <div class="media-body p-2 mt-3">
-            <h3>Diet Program</h3>
-            <p>Even the all-powerful Pointing has no control about the blind texts.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ABOUT -->
-<section class="ftco-section bg-light">
-  <div class="container">
-    <div class="row no-gutters">
-      <div class="col-md-5 img" style="background-image:url({{ asset('images/coach-1.jpg') }});"></div>
-      <div class="col-md-7 wrap-about py-5 ftco-animate">
-        <span class="subheading">Welcome to Fitopia</span>
-        <h2>Hello! Health Care is a natural way of improving your health</h2>
-        <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
 {% endblock %}

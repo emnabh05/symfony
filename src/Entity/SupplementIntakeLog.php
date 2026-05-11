@@ -7,18 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SupplementIntakeLogRepository::class)]
-#[ORM\Table(
-    name: 'supplement_intake_log',
-    uniqueConstraints: [
-        new ORM\UniqueConstraint(
-            name: 'uniq_intake_user_supplement_date',
-            columns: ['user_id', 'supplement_id', 'intake_date']
-        ),
-    ],
-    indexes: [
-        new ORM\Index(name: 'idx_intake_user_date', columns: ['user_id', 'intake_date']),
-    ]
-)]
+#[ORM\Table(name: 'supplement_adherence_logs')]
 #[ORM\HasLifecycleCallbacks]
 class SupplementIntakeLog
 {
@@ -27,18 +16,22 @@ class SupplementIntakeLog
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?User $user = null;
+    #[ORM\Column(name: 'plan_id')]
+    private int $planId = 0;
 
-    #[ORM\ManyToOne(targetEntity: Supplement::class)]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?Supplement $supplement = null;
+    #[ORM\Column(name: 'user_email', length: 255)]
+    private string $userEmail = '';
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[ORM\Column(name: 'supplement_id')]
+    private int $supplementId = 0;
+
+    #[ORM\Column(name: 'log_date', type: Types::DATE_IMMUTABLE)]
     private \DateTimeImmutable $intakeDate;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[ORM\Column(name: 'taken_units')]
+    private int $takenUnits = 1;
+
+    #[ORM\Column(name: 'created_at', type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
 
     public function __construct()
@@ -60,25 +53,36 @@ class SupplementIntakeLog
         return $this->id;
     }
 
-    public function getUser(): ?User
+    public function getUserEmail(): string
     {
-        return $this->user;
+        return $this->userEmail;
     }
 
-    public function setUser(User $user): self
+    public function setUserEmail(string $userEmail): self
     {
-        $this->user = $user;
+        $this->userEmail = $userEmail;
         return $this;
     }
 
-    public function getSupplement(): ?Supplement
+    public function getSupplementId(): int
     {
-        return $this->supplement;
+        return $this->supplementId;
     }
 
-    public function setSupplement(Supplement $supplement): self
+    public function setSupplementId(int $supplementId): self
     {
-        $this->supplement = $supplement;
+        $this->supplementId = $supplementId;
+        return $this;
+    }
+
+    public function getPlanId(): int
+    {
+        return $this->planId;
+    }
+
+    public function setPlanId(int $planId): self
+    {
+        $this->planId = $planId;
         return $this;
     }
 
@@ -96,5 +100,16 @@ class SupplementIntakeLog
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    public function getTakenUnits(): int
+    {
+        return $this->takenUnits;
+    }
+
+    public function setTakenUnits(int $takenUnits): self
+    {
+        $this->takenUnits = max(1, $takenUnits);
+        return $this;
     }
 }

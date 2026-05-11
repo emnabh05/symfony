@@ -81,6 +81,7 @@
     },
     "require-dev": {
         "ahmed-bhs/doctrine-doctor": "^1.0",
+        "phpstan/phpstan": "^2.1",
         "symfony/maker-bundle": "^1.65",
         "symfony/phpunit-bridge": "^8.0",
         "symfony/web-profiler-bundle": "7.4.*"

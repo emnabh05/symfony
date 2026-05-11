@@ -35,6 +35,7 @@ class ParticipationRepository extends ServiceEntityRepository
             ->addSelect('p.nomParticipant AS nom')
             ->addSelect('p.emailParticipant AS email')
             ->addSelect('p.dateInscription AS dateInscription')
+            ->addSelect('e.id AS eventId')
             ->addSelect('e.titre AS eventTitle')
             ->innerJoin('p.event', 'e')
             ->orderBy('p.dateInscription', $sortDirection);

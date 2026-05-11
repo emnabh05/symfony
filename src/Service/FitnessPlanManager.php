@@ -19,11 +19,10 @@ class FitnessPlanManager
         }
 
         $exercises = $plan->getExercisesData();
-        if (!is_array($exercises) || count($exercises) === 0) {
+        if (count($exercises) === 0) {
             throw new \InvalidArgumentException('Le plan doit contenir au moins un exercice.');
         }
 
         return true;
     }
 }
-

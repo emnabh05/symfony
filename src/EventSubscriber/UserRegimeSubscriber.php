@@ -7,14 +7,16 @@ use App\Entity\User;
 use App\Service\NutritionRegimeCalculator;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
+use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Events;
 
 class UserRegimeSubscriber implements EventSubscriber
 {
     private NutritionRegimeCalculator $calculator;
     private EntityManagerInterface $em;
+    /** @var array<string, User> */
     private array $pendingUsers = [];
     private bool $processing = false;
 
@@ -33,12 +35,12 @@ class UserRegimeSubscriber implements EventSubscriber
         ];
     }
 
-    public function postPersist(LifecycleEventArgs $args): void
+    public function postPersist(PostPersistEventArgs $args): void
     {
         $this->queueUser($args->getObject());
     }
 
-    public function postUpdate(LifecycleEventArgs $args): void
+    public function postUpdate(PostUpdateEventArgs $args): void
     {
         $this->queueUser($args->getObject());
     }
@@ -51,9 +53,6 @@ class UserRegimeSubscriber implements EventSubscriber
         $this->processing = true;
 
         foreach ($this->pendingUsers as $user) {
-            if (!$user instanceof User) {
-                continue;
-            }
             $plan = $this->calculator->calculate($user);
             if (!$plan) {
                 continue;
@@ -61,21 +60,25 @@ class UserRegimeSubscriber implements EventSubscriber
 
             $regime = $this->em->getRepository(RegimeAlimentaire::class)->findOneBy(
                 ['user' => $user],
-                ['dateMiseAJour' => 'DESC']
+                ['id' => 'DESC']
             );
             if (!$regime) {
                 $regime = new RegimeAlimentaire();
                 $regime->setUser($user);
             }
 
-            $regime->setObjectif($plan['objectif']);
-            $regime->setTypeRegime($plan['type_regime']);
-            $regime->setCaloriesCible($plan['calories']);
-            $regime->setProteinesCible($plan['proteines']);
-            $regime->setGlucidesCible($plan['glucides']);
-            $regime->setLipidesCible($plan['lipides']);
-            $regime->setRestrictions($plan['restrictions']);
-            $regime->setDateMiseAJour(new \DateTimeImmutable());
+            $regime->setCaloriesCibles($plan['calories']);
+            $regime->setTypeSante($plan['type_regime']);
+            $regime->setRepasAdequats(
+                sprintf(
+                    'objectif=%s; proteines=%d; glucides=%d; lipides=%d; restrictions=%s',
+                    $plan['objectif'],
+                    $plan['proteines'],
+                    $plan['glucides'],
+                    $plan['lipides'],
+                    $plan['restrictions'] ?? ''
+                )
+            );
 
             $this->em->persist($regime);
         }

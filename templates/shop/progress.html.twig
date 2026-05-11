@@ -116,6 +116,36 @@
       background: rgba(255, 255, 255, 0.08);
     }
 
+    .tracker-hero-actions {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tracker-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.08);
+      color: #f5fbff;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .tracker-back-link:hover {
+      color: #ffffff;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.42);
+    }
+
     .tracker-summary-grid {
       margin-top: 18px;
       display: grid;
@@ -482,6 +512,8 @@
   </style>
 {% endblock %}
 
+{% block footer %}{% endblock %}
+
 {% block body %}
 <section class="tracker-page">
   <div class="container tracker-shell">
@@ -489,7 +521,12 @@
       <p class="tracker-eyebrow">Fitopia Smart Consumption Tracker</p>
       <h1>My Supplement Progress</h1>
       <p class="tracker-subtitle">See discipline score, consistency streak, risk level, and estimated timeline for each purchased supplement.</p>
-      <div class="tracker-pill">Synced automatically with your account orders</div>
+      <div class="tracker-hero-actions">
+        <a href="{{ path('app_shop_index') }}" class="tracker-back-link">
+          <i class="fa fa-arrow-left"></i> Retour
+        </a>
+        <div class="tracker-pill">Synced automatically with your account orders</div>
+      </div>
 
       <div class="tracker-summary-grid">
         <div class="tracker-summary-item">
@@ -629,4 +666,3 @@
   </div>
 </section>
 {% endblock %}
-

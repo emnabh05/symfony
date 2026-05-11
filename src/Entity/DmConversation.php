@@ -3,11 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'dm_conversation')]
+#[ORM\Table(name: 'private_conversation')]
 class DmConversation
 {
     #[ORM\Id]
@@ -15,36 +13,37 @@ class DmConversation
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'datetime_immutable')]
-    private \DateTimeImmutable $createdAt;
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: 'user_a_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    private ?User $userA = null;
 
-    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $lastMessageAt = null;
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: 'user_b_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    private ?User $userB = null;
 
-    #[ORM\OneToMany(mappedBy: 'conversation', targetEntity: DmParticipant::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private Collection $participants;
-
-    #[ORM\OneToMany(mappedBy: 'conversation', targetEntity: DmMessage::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private Collection $messages;
+    #[ORM\Column(name: 'updated_at', type: 'datetime_immutable')]
+    private \DateTimeImmutable $lastMessageAt;
 
     public function __construct()
     {
-        $this->participants = new ArrayCollection();
-        $this->messages = new ArrayCollection();
-        $this->createdAt = new \DateTimeImmutable();
+        $this->lastMessageAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int { return $this->id; }
 
-    public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self { $this->createdAt = $createdAt; return $this; }
+    public function getCreatedAt(): \DateTimeImmutable { return $this->lastMessageAt; }
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self { $this->lastMessageAt = $createdAt; return $this; }
 
     public function getLastMessageAt(): ?\DateTimeImmutable { return $this->lastMessageAt; }
-    public function setLastMessageAt(?\DateTimeImmutable $lastMessageAt): self { $this->lastMessageAt = $lastMessageAt; return $this; }
+    public function setLastMessageAt(?\DateTimeImmutable $lastMessageAt): self
+    {
+        $this->lastMessageAt = $lastMessageAt ?? new \DateTimeImmutable();
+        return $this;
+    }
 
-    /** @return Collection<int, DmParticipant> */
-    public function getParticipants(): Collection { return $this->participants; }
+    public function getUserA(): ?User { return $this->userA; }
+    public function setUserA(?User $userA): self { $this->userA = $userA; return $this; }
 
-    /** @return Collection<int, DmMessage> */
-    public function getMessages(): Collection { return $this->messages; }
+    public function getUserB(): ?User { return $this->userB; }
+    public function setUserB(?User $userB): self { $this->userB = $userB; return $this; }
 }

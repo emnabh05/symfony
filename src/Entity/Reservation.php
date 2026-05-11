@@ -10,6 +10,8 @@ use Symfony\Component\Serializer\Attribute\Ignore;
 #[ORM\Table(name: 'reservation')]
 class Reservation
 {
+    public const STATUS_PENDING_PAYMENT = 'EN_ATTENTE_PAIEMENT';
+    public const STATUS_PAID = 'Payee';
     public const STATUS_CONFIRMED = 'Confirmee';
     public const STATUS_USED = 'Utilisee';
     public const STATUS_CANCELLED = 'Annulee';
@@ -28,6 +30,9 @@ class Reservation
 
     #[ORM\Column(name: 'email_participant', length: 150)]
     private string $emailParticipant = '';
+
+    #[ORM\Column(name: 'telephone_participant', length: 30, nullable: true)]
+    private ?string $telephoneParticipant = null;
 
     #[ORM\Column(name: 'date_reservation', type: 'datetime_immutable')]
     private \DateTimeImmutable $dateReservation;
@@ -99,6 +104,17 @@ class Reservation
     public function setEmailParticipant(string $emailParticipant): self
     {
         $this->emailParticipant = $emailParticipant;
+        return $this;
+    }
+
+    public function getTelephoneParticipant(): ?string
+    {
+        return $this->telephoneParticipant;
+    }
+
+    public function setTelephoneParticipant(?string $telephoneParticipant): self
+    {
+        $this->telephoneParticipant = $telephoneParticipant;
         return $this;
     }
 

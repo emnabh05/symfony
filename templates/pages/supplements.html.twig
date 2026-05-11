@@ -6,79 +6,101 @@
   {{ parent() }}
   <link rel="stylesheet" href="{{ asset('css/admin-forms.css') }}">
   <style>
+      :root {
+          --supplement-page-gutter: clamp(18px, 2.8vw, 52px);
+      }
+
+      .shop-section > .container,
+      .checkout-section > .container,
+      section.container {
+          width: calc(100% - (var(--supplement-page-gutter) * 2));
+          max-width: none;
+          padding-left: 0;
+          padding-right: 0;
+      }
+
       .supplement-hero {
           margin: 30px 0 40px;
-          background: #f8fafc;
-          border-radius: 20px;
-          padding: 24px;
       }
 
       .supplement-hero-card {
-          background: white;
-          border-radius: 20px;
-          padding: 28px;
-          display: grid;
-          grid-template-columns: minmax(240px, 360px) 1fr;
-          gap: 28px;
-          box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+          position: relative;
+          min-height: 570px;
+          border-radius: 30px;
+          overflow: hidden;
+          box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
+          background: #08110d;
       }
 
       .supplement-hero-image {
-          width: 100%;
-          aspect-ratio: 1 / 1;
-          border-radius: 18px;
-          overflow: hidden;
-          background: linear-gradient(135deg, #0B2C3D, #1B5E4B);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-size: 44px;
+          position: absolute;
+          inset: 0;
+          background: #08110d;
       }
 
       .supplement-hero-image img {
           width: 100%;
           height: 100%;
           object-fit: cover;
+          object-position: center;
+          display: block;
       }
 
-      .supplement-hero-brand {
+      .supplement-hero-overlay {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: flex-end;
+          justify-content: flex-start;
+          padding: 16px;
+          background: linear-gradient(90deg, rgba(7, 17, 14, 0.28) 0%, rgba(7, 17, 14, 0.10) 34%, rgba(7, 17, 14, 0) 58%);
+      }
+
+      .supplement-hero-panel {
+          width: min(400px, 100%);
+          min-height: 220px;
+          padding: 26px 22px 28px;
+          border-radius: 0 24px 24px 24px;
+          background: linear-gradient(180deg, rgba(10, 24, 31, 0.82) 0%, rgba(10, 24, 31, 0.94) 100%);
+          backdrop-filter: blur(6px);
+      }
+
+      .supplement-hero-badge {
+          display: inline-flex;
+          align-items: center;
+          padding: 8px 14px;
+          border-radius: 999px;
+          background: #ffffff;
+          color: #0c2b22;
           font-size: 12px;
-          letter-spacing: 0.18em;
+          letter-spacing: 0.04em;
           text-transform: uppercase;
-          font-weight: 700;
-          color: #1B5E4B;
-          margin-bottom: 8px;
+          font-weight: 800;
+          margin-bottom: 16px;
       }
 
       .supplement-hero-title {
-          font-size: 28px;
-          font-weight: 800;
-          color: #0B2C3D;
-          margin-bottom: 8px;
+          margin: 0 0 18px;
+          max-width: 320px;
+          font-size: clamp(34px, 4vw, 48px);
+          line-height: 1.04;
+          font-weight: 900;
+          color: #ffffff;
       }
 
       .supplement-hero-meta {
           display: flex;
           flex-wrap: wrap;
-          gap: 12px;
-          font-size: 13px;
-          color: #64748b;
-          margin-bottom: 12px;
+          gap: 10px;
+          margin-bottom: 18px;
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.78);
       }
 
-      .supplement-hero-price {
-          font-size: 30px;
-          font-weight: 800;
-          color: #1B5E4B;
-          margin-bottom: 12px;
-      }
-
-      .supplement-hero-description {
-          font-size: 14px;
-          color: #334155;
-          line-height: 1.6;
-          margin-bottom: 16px;
+      .supplement-hero-meta span {
+          padding: 6px 10px;
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.08);
       }
 
       .supplement-hero-actions {
@@ -90,7 +112,19 @@
       .supplement-hero-actions .btn {
           border-radius: 12px;
           padding: 12px 20px;
-          font-weight: 600;
+          font-weight: 700;
+          border: none;
+      }
+
+      .supplement-hero-actions .btn-primary {
+          background: #ffffff;
+          color: #0c2b22;
+      }
+
+      .supplement-hero-actions .btn-secondary {
+          background: rgba(255, 255, 255, 0.12);
+          color: #ffffff;
+          border: 1px solid rgba(255, 255, 255, 0.18);
       }
 
       .hero-rating {
@@ -99,14 +133,35 @@
       }
 
       @media (max-width: 900px) {
+          .shop-section > .container,
+          .checkout-section > .container,
+          section.container {
+              width: calc(100% - 18px);
+          }
+
           .supplement-hero-card {
-              grid-template-columns: 1fr;
+              min-height: 520px;
+          }
+
+          .supplement-hero-overlay {
+              padding: 12px;
+              background: linear-gradient(180deg, rgba(7, 17, 14, 0.08) 0%, rgba(7, 17, 14, 0.60) 48%, rgba(7, 17, 14, 0.88) 100%);
+          }
+
+          .supplement-hero-panel {
+              width: 100%;
+              border-radius: 22px;
+          }
+
+          .supplement-hero-title {
+              max-width: none;
+              font-size: 28px;
           }
       }
 
       /* Shop Product Grid */
       .shop-section {
-          padding: 60px 0;
+          padding: 0 0 60px;
           background: #f8fafc;
       }
 
@@ -895,27 +950,50 @@
       }
 
       .flow-panels {
-          margin: 14px 0 28px;
-          display: grid;
-          gap: 16px;
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          z-index: 1200;
+      }
+
+      .flow-backdrop {
+          position: fixed;
+          inset: 0;
+          background: rgba(7, 17, 14, 0.34);
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity .25s ease;
+          z-index: 1190;
+      }
+
+      .flow-backdrop.is-open {
+          opacity: 1;
+          pointer-events: auto;
       }
 
       .flow-panel {
+          position: fixed;
+          top: 0;
+          right: 0;
+          width: min(430px, 100vw);
+          height: 100vh;
           background: #fff;
-          border: 1px solid var(--fitopia-line);
-          border-radius: 18px;
+          border-left: 1px solid #dbe7f2;
+          border-radius: 0;
           overflow: hidden;
-          box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
-          max-height: 0;
+          box-shadow: -20px 0 42px rgba(15, 23, 42, 0.14);
+          display: flex;
+          flex-direction: column;
           opacity: 0;
-          transform: translateY(-12px) scale(0.98);
-          transition: max-height .45s ease, opacity .35s ease, transform .35s ease;
+          transform: translateX(100%);
+          transition: opacity .25s ease, transform .3s ease;
+          pointer-events: none;
       }
 
       .flow-panel.is-open {
-          max-height: 3000px;
           opacity: 1;
-          transform: translateY(0) scale(1);
+          transform: translateX(0);
+          pointer-events: auto;
       }
 
       .flow-panel-head {
@@ -923,23 +1001,36 @@
           justify-content: space-between;
           align-items: center;
           gap: 10px;
-          padding: 16px 18px;
-          background: linear-gradient(135deg, #0B2C3D 0%, #1B5E4B 100%);
+          padding: 22px 22px 18px;
+          background: linear-gradient(135deg, #054834 0%, #0a5a45 100%);
           color: #fff;
+      }
+
+      .flow-panel-head-copy {
+          display: grid;
+          gap: 6px;
       }
 
       .flow-panel-head h3 {
           margin: 0;
-          font-size: 20px;
+          font-size: 22px;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
+      }
+
+      .flow-panel-meta {
+          color: rgba(255, 255, 255, 0.9);
+          font-size: 14px;
       }
 
       .flow-close {
           border: 0;
-          background: rgba(255,255,255,.2);
+          background: rgba(255,255,255,.11);
           color: #fff;
-          border-radius: 10px;
-          width: 34px;
-          height: 34px;
+          border-radius: 999px;
+          width: 48px;
+          height: 48px;
+          font-size: 20px;
       }
 
       .inline-cart-body,
@@ -947,13 +1038,48 @@
           padding: 16px;
       }
 
+      .inline-cart-body {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+          background: #ffffff;
+      }
+
+      #inlineCartRows {
+          flex: 1;
+          overflow: auto;
+      }
+
+      .inline-cart-empty {
+          border: 1px solid #dce7f0;
+          border-radius: 24px;
+          padding: 30px 32px;
+          margin-top: 14px;
+          background: #fff;
+      }
+
+      .inline-cart-empty h4 {
+          margin: 0 0 10px;
+          color: #045140;
+          font-size: 20px;
+          font-weight: 900;
+      }
+
+      .inline-cart-empty p {
+          margin: 0;
+          color: #29485d;
+          font-size: 15px;
+          line-height: 1.6;
+      }
+
       .inline-cart-row {
           display: grid;
-          grid-template-columns: 64px 1fr 120px 120px 120px 40px;
+          grid-template-columns: 64px 1fr 96px 92px 96px 40px;
           gap: 12px;
           align-items: center;
           border-bottom: 1px solid #edf2f7;
-          padding: 10px 0;
+          padding: 14px 0;
       }
 
       .inline-cart-thumb {
@@ -985,57 +1111,370 @@
       }
 
       .inline-summary {
-          margin-top: 12px;
+          margin-top: auto;
           border-top: 1px solid #e5edf5;
-          padding-top: 12px;
+          padding: 20px 18px 24px;
+          margin-left: -16px;
+          margin-right: -16px;
+          margin-bottom: -16px;
+          background: #ffffff;
           display: grid;
           gap: 8px;
+          box-shadow: 0 -10px 26px rgba(15, 23, 42, 0.06);
       }
 
       .inline-summary-row {
           display: flex;
           justify-content: space-between;
           color: #4b6074;
+          font-size: 15px;
       }
 
       .inline-summary-total {
           display: flex;
           justify-content: space-between;
-          font-size: 20px;
+          align-items: end;
+          font-size: 22px;
           font-weight: 800;
           color: var(--fitopia-ink);
+          margin-top: 6px;
       }
 
-      .inline-checkout-grid {
+      .inline-summary-total .amount {
+          font-size: 34px;
+          line-height: 1;
+      }
+
+      .inline-cart-submit {
+          width: 100%;
+          margin-top: 14px;
+          min-height: 68px;
+          border: 0;
+          border-radius: 16px;
+          background: #9ebdb8;
+          color: #ffffff;
+          font-size: 17px;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: 0.03em;
+      }
+
+      .inline-cart-submit:hover {
+          color: #ffffff;
+          background: #89afa8;
+      }
+
+      .flow-panel-checkout {
+          top: 24px;
+          left: 50%;
+          right: auto;
+          width: min(1560px, calc(100vw - 52px));
+          height: calc(100vh - 48px);
+          border-radius: 30px;
+          border: 1px solid #dbe7f2;
+          background: #f4f8fe;
+          box-shadow: 0 30px 80px rgba(15, 23, 42, 0.22);
+          transform: translate(-50%, 36px) scale(0.985);
+      }
+
+      .flow-panel-checkout.is-open {
+          transform: translate(-50%, 0) scale(1);
+      }
+
+      .flow-panel-checkout .flow-panel-head {
+          position: relative;
+          justify-content: center;
+          text-align: center;
+          padding: 34px 90px 16px;
+          background: transparent;
+          color: #0b2c3d;
+      }
+
+      .flow-panel-checkout .flow-close {
+          position: absolute;
+          top: 28px;
+          right: 30px;
+          background: #ffffff;
+          color: #0b2c3d;
+          box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+      }
+
+      .checkout-overlay-heading h2 {
+          margin: 0;
+          color: #071c36;
+          font-size: clamp(34px, 3vw, 44px);
+          font-weight: 900;
+          letter-spacing: 0.01em;
+          text-transform: uppercase;
+      }
+
+      .checkout-overlay-heading p {
+          margin: 10px 0 0;
+          color: #687c92;
+          font-size: 17px;
+      }
+
+      .inline-checkout-body {
+          flex: 1;
+          padding: 8px 34px 34px;
+          overflow: auto;
+      }
+
+      .inline-checkout-shell {
           display: grid;
-          grid-template-columns: 1fr 320px;
-          gap: 16px;
+          grid-template-columns: minmax(0, 1fr) 430px;
+          gap: 28px;
+          align-items: start;
+      }
+
+      .inline-checkout-left,
+      .inline-checkout-right {
+          display: grid;
+          gap: 22px;
+      }
+
+      .inline-checkout-card {
+          background: #ffffff;
+          border: 1px solid #dfe8f1;
+          border-radius: 28px;
+          box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+          padding: 34px 38px;
+      }
+
+      .inline-checkout-card h3 {
+          margin: 0 0 24px;
+          color: #071c36;
+          font-size: 23px;
+          font-weight: 900;
       }
 
       .inline-checkout-form .form-row {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 10px;
+          gap: 16px;
       }
 
       .inline-checkout-form .form-group {
-          margin-bottom: 10px;
+          margin-bottom: 16px;
       }
 
       .inline-checkout-form input,
       .inline-checkout-form textarea {
           width: 100%;
-          border: 1px solid var(--fitopia-line);
-          border-radius: 10px;
-          padding: 10px 12px;
+          border: 1px solid #d9e2ed;
+          border-radius: 16px;
+          padding: 18px 18px;
+          background: #ffffff;
+          color: #102a43;
+          font-size: 16px;
+          transition: border-color .2s ease, box-shadow .2s ease;
       }
 
-      .inline-checkout-summary {
-          border: 1px solid #e7edf5;
+      .inline-checkout-form input:focus,
+      .inline-checkout-form textarea:focus {
+          outline: none;
+          border-color: #1cc58f;
+          box-shadow: 0 0 0 4px rgba(28, 197, 143, 0.12);
+      }
+
+      .inline-checkout-form textarea {
+          min-height: 120px;
+          resize: vertical;
+      }
+
+      .inline-payment-list {
+          display: grid;
+          gap: 18px;
+      }
+
+      .inline-payment-option {
+          position: relative;
+      }
+
+      .inline-payment-option input {
+          position: absolute;
+          inset: 0;
+          opacity: 0;
+          cursor: pointer;
+      }
+
+      .inline-payment-card {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          border-radius: 0;
+          padding: 18px 18px;
+          box-shadow: none;
+      }
+
+      .inline-payment-main {
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          color: #0b2440;
+          font-size: 16px;
+          font-weight: 700;
+      }
+
+      .inline-payment-main i {
+          width: auto;
+          color: #132d47;
+      }
+
+      .inline-payment-radio {
+          width: 18px;
+          height: 18px;
+          border-radius: 999px;
+          border: 2px solid #c0cfde;
+          background: #ffffff;
+          box-shadow: inset 0 0 0 4px #ffffff;
+          transition: border-color .2s ease, background .2s ease;
+      }
+
+      .inline-payment-option input:checked + .inline-payment-card {
+          border-color: #1cc58f;
+          background: #f2fff9;
+          box-shadow: none;
+          transform: none;
+      }
+
+      .inline-payment-option input:checked + .inline-payment-card .inline-payment-radio {
+          border-color: #1cc58f;
+          background: #1cc58f;
+      }
+
+      .inline-payment-badge {
+          color: #1cc58f;
+          font-size: 14px;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
+      }
+
+      .inline-checkout-summary-card {
+          position: sticky;
+          top: 0;
+          padding-bottom: 26px;
+      }
+
+      .inline-checkout-summary-items {
+          min-height: 360px;
+          display: grid;
+          align-content: start;
+          gap: 12px;
+          margin-bottom: 18px;
+      }
+
+      .inline-checkout-summary-items .inline-summary-row {
+          padding: 0;
+          color: #4d6277;
+      }
+
+      .inline-checkout-summary-items .inline-summary-row strong {
+          color: #0b2440;
+      }
+
+      .inline-checkout-totals {
+          margin-left: -38px;
+          margin-right: -38px;
+          margin-bottom: 26px;
+          padding: 28px 38px 0;
+          border-top: 1px solid #e4ecf4;
+          display: grid;
+          gap: 16px;
+      }
+
+      .inline-checkout-totals .inline-summary-row {
+          font-size: 15px;
+      }
+
+      .inline-checkout-totals .inline-summary-row strong {
+          color: #0b2440;
+          font-size: 16px;
+      }
+
+      .inline-checkout-totals .discount {
+          color: #ff5252;
+      }
+
+      .inline-checkout-totals .inline-summary-total {
+          margin-top: 12px;
+          align-items: center;
+      }
+
+      .inline-checkout-totals .inline-summary-total span:first-child {
+          text-transform: uppercase;
+      }
+
+      .inline-checkout-totals .inline-summary-total .amount {
+          color: #1cc58f;
+      }
+
+      .inline-checkout-confirm {
+          width: 100%;
+          min-height: 76px;
+          border: 0;
+          border-radius: 18px;
+          background: #1cc58f;
+          color: #ffffff;
+          font-size: 18px;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
+      }
+
+      .inline-checkout-confirm:hover {
+          background: #17b681;
+          color: #ffffff;
+      }
+
+      .inline-checkout-promo-card h3 {
+          margin-bottom: 18px;
+          font-size: 18px;
+      }
+
+      .inline-promo-row {
+          display: flex;
+          gap: 12px;
+      }
+
+      .inline-promo-row input {
+          flex: 1;
+      }
+
+      .inline-promo-row button {
+          border: 0;
           border-radius: 14px;
-          padding: 12px;
-          background: #f9fbfd;
-          height: fit-content;
+          background: #16223a;
+          color: #ffffff;
+          padding: 0 18px;
+          font-size: 15px;
+          font-weight: 800;
+          white-space: nowrap;
+      }
+
+      .inline-discount-feedback {
+          margin: 12px 0 0;
+          min-height: 20px;
+          color: #6a7f93;
+          font-size: 13px;
+          font-weight: 700;
+      }
+
+      .inline-discount-feedback[data-tone="success"] {
+          color: #15805c;
+      }
+
+      .inline-discount-feedback[data-tone="error"] {
+          color: #c13434;
+      }
+
+      .inline-checkout-status {
+          margin: 12px 0 0;
+          color: #1b5e4b;
+          font-weight: 700;
+          text-align: center;
       }
 
       @media (max-width: 900px) {
@@ -1043,12 +1482,68 @@
               grid-template-columns: 56px 1fr;
           }
 
-          .inline-checkout-grid {
+          .flow-panel-checkout {
+              top: 0;
+              left: 0;
+              width: 100vw;
+              height: 100vh;
+              border-radius: 0;
+              transform: translate(0, 100%);
+          }
+
+          .flow-panel-checkout.is-open {
+              transform: translate(0, 0);
+          }
+
+          .flow-panel-checkout .flow-panel-head {
+              padding: 24px 64px 12px 22px;
+              text-align: left;
+              justify-content: flex-start;
+          }
+
+          .flow-panel-checkout .flow-close {
+              top: 18px;
+              right: 18px;
+          }
+
+          .inline-checkout-body {
+              padding: 8px 16px 20px;
+          }
+
+          .inline-checkout-shell {
               grid-template-columns: 1fr;
+              gap: 16px;
+          }
+
+          .inline-checkout-card {
+              padding: 24px 18px;
+              border-radius: 22px;
           }
 
           .inline-checkout-form .form-row {
               grid-template-columns: 1fr;
+          }
+
+          .inline-promo-row {
+              flex-direction: column;
+          }
+
+          .inline-promo-row button {
+              min-height: 52px;
+          }
+
+          .inline-checkout-summary-items {
+              min-height: 0;
+          }
+
+          .inline-checkout-totals {
+              margin-left: -18px;
+              margin-right: -18px;
+              padding: 22px 18px 0;
+          }
+
+          .flow-panel {
+              width: 100vw;
           }
       }
 
@@ -1292,6 +1787,424 @@
           0% { transform: scale(1); }
           45% { transform: scale(1.03); }
           100% { transform: scale(1); }
+      }
+
+      .product-detail-section {
+          padding: 56px 0 72px;
+          background:
+              radial-gradient(circle at top left, rgba(41, 196, 148, 0.12), transparent 32%),
+              linear-gradient(180deg, #f4fcf8 0%, #f8fafc 100%);
+      }
+
+      .product-detail-shell {
+          display: grid;
+          gap: 24px;
+      }
+
+      .product-detail-card,
+      .product-review-panel {
+          background: rgba(255, 255, 255, 0.94);
+          border: 1px solid rgba(27, 94, 75, 0.12);
+          border-radius: 28px;
+          box-shadow: 0 24px 60px rgba(15, 23, 42, 0.10);
+      }
+
+      .product-detail-card {
+          display: grid;
+          grid-template-columns: minmax(280px, 440px) 1fr;
+          gap: 32px;
+          padding: 28px;
+      }
+
+      .product-detail-media {
+          position: relative;
+          min-height: 420px;
+          border-radius: 24px;
+          overflow: hidden;
+          background:
+              radial-gradient(circle at top, rgba(207, 176, 98, 0.42), transparent 22%),
+              linear-gradient(180deg, #031a14 0%, #06100d 100%);
+      }
+
+      .product-detail-media img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+      }
+
+      .product-detail-content {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          padding: 6px 4px;
+      }
+
+      .product-detail-eyebrow {
+          margin: 0;
+          color: #3d7c72;
+          font-size: 14px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+      }
+
+      .product-detail-title {
+          margin: 0;
+          color: #0b2c3d;
+          font-size: clamp(42px, 5vw, 64px);
+          line-height: 0.95;
+          font-weight: 900;
+      }
+
+      .product-detail-meta-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(220px, 1fr));
+          gap: 18px 52px;
+          align-items: start;
+      }
+
+      .product-detail-meta-group {
+          display: grid;
+          gap: 14px;
+      }
+
+      .product-detail-meta-item {
+          display: flex;
+          align-items: baseline;
+          gap: 12px;
+          flex-wrap: wrap;
+      }
+
+      .product-detail-meta-label {
+          color: #6b8799;
+          font-size: 16px;
+          font-weight: 700;
+      }
+
+      .product-detail-meta-value {
+          color: #0b2c3d;
+          font-size: 18px;
+          font-weight: 800;
+      }
+
+      .product-detail-meta-value.is-price {
+          color: #0d6e62;
+          font-size: 22px;
+      }
+
+      .product-detail-description-block h2,
+      .product-review-panel h2,
+      .product-review-list h3 {
+          margin: 0 0 12px;
+          color: #0b2c3d;
+          font-size: 24px;
+          font-weight: 900;
+      }
+
+      .product-detail-description-text {
+          margin: 0;
+          color: #557287;
+          font-size: 16px;
+          line-height: 1.8;
+      }
+
+      .product-detail-actions {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          flex-wrap: wrap;
+      }
+
+      .product-detail-actions .add-to-cart-btn {
+          width: auto;
+          min-width: 250px;
+          padding-inline: 28px;
+          border-radius: 18px;
+          font-size: 15px;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
+      }
+
+      .product-detail-status {
+          color: #0d6e62;
+          font-size: 15px;
+          font-weight: 700;
+      }
+
+      .product-detail-status.is-error {
+          color: #b91c1c;
+      }
+
+      .product-detail-alerts {
+          display: grid;
+          gap: 12px;
+      }
+
+      .product-detail-alert {
+          padding: 14px 18px;
+          border-radius: 16px;
+          font-size: 14px;
+          font-weight: 600;
+      }
+
+      .product-detail-alert.success {
+          background: rgba(22, 163, 74, 0.12);
+          color: #166534;
+      }
+
+      .product-detail-alert.error {
+          background: rgba(220, 38, 38, 0.10);
+          color: #b91c1c;
+      }
+
+      .product-review-panel {
+          padding: 28px;
+      }
+
+      .product-review-header {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 16px;
+          margin-bottom: 18px;
+      }
+
+      .product-review-summary {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          flex-wrap: wrap;
+          color: #6b8799;
+          font-size: 14px;
+          font-weight: 700;
+      }
+
+      .product-review-summary strong {
+          color: #0d6e62;
+          font-size: 16px;
+          font-weight: 900;
+      }
+
+      .product-review-compose {
+          padding: 22px;
+          border-radius: 22px;
+          background: linear-gradient(180deg, rgba(241, 248, 245, 0.95) 0%, rgba(247, 252, 249, 0.98) 100%);
+          border: 1px solid rgba(27, 94, 75, 0.12);
+      }
+
+      .product-review-form {
+          display: grid;
+          gap: 18px;
+      }
+
+      .product-review-stars-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-wrap: wrap;
+      }
+
+      .product-review-stars {
+          display: inline-flex;
+          gap: 10px;
+          flex-wrap: wrap;
+      }
+
+      .rating-star {
+          width: 54px;
+          height: 48px;
+          border-radius: 14px;
+          border: 1px solid #cfe1dc;
+          background: #ffffff;
+          color: #5f7d92;
+          font-size: 22px;
+          transition: all 0.2s ease;
+      }
+
+      .rating-star:hover,
+      .rating-star.is-active {
+          color: #d4a748;
+          border-color: rgba(212, 167, 72, 0.52);
+          box-shadow: 0 12px 24px rgba(212, 167, 72, 0.18);
+          transform: translateY(-1px);
+      }
+
+      .product-review-helper {
+          color: #5f7d92;
+          font-size: 14px;
+          font-weight: 700;
+      }
+
+      .product-review-textarea {
+          width: 100%;
+          min-height: 118px;
+          padding: 18px 20px;
+          border-radius: 18px;
+          border: 1px solid #d5e4df;
+          background: #ffffff;
+          color: #0b2c3d;
+          font-size: 16px;
+          resize: vertical;
+      }
+
+      .product-review-textarea:focus {
+          outline: none;
+          border-color: #1B5E4B;
+          box-shadow: 0 0 0 4px rgba(27, 94, 75, 0.08);
+      }
+
+      .product-review-submit {
+          width: fit-content;
+          min-width: 168px;
+          padding: 14px 20px;
+          border: none;
+          border-radius: 16px;
+          background: linear-gradient(135deg, #1B5E4B 0%, #0B2C3D 100%);
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
+          transition: all 0.3s ease;
+      }
+
+      .product-review-submit:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 16px 28px rgba(27, 94, 75, 0.22);
+      }
+
+      .product-review-login {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 14px 18px;
+          border-radius: 16px;
+          background: #0d6e62;
+          color: #ffffff;
+          font-weight: 800;
+          text-decoration: none;
+      }
+
+      .product-review-login:hover {
+          color: #ffffff;
+          text-decoration: none;
+          background: #0b5b51;
+      }
+
+      .product-review-list {
+          margin-top: 22px;
+      }
+
+      .product-review-items {
+          display: grid;
+          gap: 14px;
+      }
+
+      .product-review-item {
+          padding: 18px 20px;
+          border-radius: 18px;
+          border: 1px solid rgba(27, 94, 75, 0.12);
+          background: #ffffff;
+      }
+
+      .product-review-item-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+          margin-bottom: 10px;
+      }
+
+      .product-review-author {
+          color: #0b2c3d;
+          font-size: 16px;
+          font-weight: 800;
+      }
+
+      .product-review-date {
+          color: #7b97a9;
+          font-size: 13px;
+          font-weight: 600;
+      }
+
+      .product-review-stars-display {
+          margin-bottom: 8px;
+          color: #d4a748;
+          font-size: 15px;
+      }
+
+      .product-review-comment {
+          margin: 0;
+          color: #4d687b;
+          line-height: 1.7;
+      }
+
+      .product-review-empty {
+          margin: 0;
+          color: #6b8799;
+          font-size: 15px;
+          font-weight: 600;
+      }
+
+      @media (max-width: 991px) {
+          .product-detail-card {
+              grid-template-columns: 1fr;
+          }
+
+          .product-detail-media {
+              min-height: 320px;
+          }
+
+          .product-detail-title {
+              font-size: 42px;
+          }
+
+          .product-detail-meta-grid {
+              grid-template-columns: 1fr;
+              gap: 16px;
+          }
+
+          .product-review-header {
+              flex-direction: column;
+          }
+      }
+
+      @media (max-width: 640px) {
+          .product-detail-section {
+              padding: 36px 0 54px;
+          }
+
+          .product-detail-card,
+          .product-review-panel {
+              border-radius: 22px;
+          }
+
+          .product-detail-card,
+          .product-review-panel,
+          .product-review-compose {
+              padding: 18px;
+          }
+
+          .product-detail-title {
+              font-size: 34px;
+          }
+
+          .product-detail-actions .add-to-cart-btn {
+              width: 100%;
+              min-width: 0;
+          }
+
+          .product-review-stars-row {
+              align-items: flex-start;
+              flex-direction: column;
+          }
+
+          .rating-star {
+              width: 48px;
+              height: 44px;
+          }
       }
 
       .quick-view-btn {
@@ -2278,6 +3191,1181 @@
               grid-template-columns: 1fr;
           }
       }
+
+      /* Java store mirror refresh */
+      #supplements-storefront {
+          padding-top: 0;
+      }
+
+      .store-shell {
+          display: grid;
+          gap: 26px;
+      }
+
+      .store-topbar {
+          background: #ffffff;
+          border: 1px solid #dfe7ef;
+          border-radius: 22px;
+          padding: 14px 28px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 18px;
+          box-shadow: 0 14px 28px rgba(15, 23, 42, 0.06);
+      }
+
+      .store-topbar-brand {
+          color: #0c5d4d;
+          font-size: 22px;
+          font-weight: 900;
+          letter-spacing: -0.02em;
+      }
+
+      .store-topbar-nav,
+      .store-topbar-actions {
+          display: flex;
+          align-items: center;
+          gap: 18px;
+          flex-wrap: wrap;
+      }
+
+      .store-topbar-nav a {
+          color: #3b5167;
+          font-weight: 700;
+          text-decoration: none;
+          font-size: 14px;
+      }
+
+      .store-topbar-nav a:hover {
+          color: #0c5d4d;
+      }
+
+      .store-chip-btn {
+          border: 0;
+          border-radius: 999px;
+          background: #f4f5f7;
+          color: #0f2541;
+          min-height: 44px;
+          padding: 0 20px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          font-size: 14px;
+          font-weight: 800;
+          cursor: pointer;
+      }
+
+      .store-chip-btn.primary {
+          background: #0d6a57;
+          color: #fff;
+      }
+
+      .store-hero-shell {
+          border-radius: 34px;
+          border: 2px solid #bfe8d3;
+          background: linear-gradient(180deg, #eef8f4 0%, #edf7f1 100%);
+          box-shadow: 0 24px 44px rgba(15, 23, 42, 0.08);
+          padding: 36px 34px;
+          display: grid;
+          grid-template-columns: minmax(0, 1.02fr) minmax(420px, 0.98fr);
+          gap: 38px;
+          align-items: center;
+      }
+
+      .store-hero-media {
+          position: relative;
+          min-height: 598px;
+          border-radius: 32px;
+          overflow: hidden;
+          background:
+            linear-gradient(135deg, rgba(7, 16, 13, 0.14), rgba(7, 16, 13, 0.14)),
+            url('{{ asset('images/supplements-hero-premium.png') }}') center center / cover no-repeat;
+          border: 3px solid #18c88d;
+          box-shadow:
+            0 26px 46px rgba(10, 28, 20, 0.34),
+            inset 0 0 0 2px rgba(255, 255, 255, 0.12);
+      }
+
+      .store-hero-media::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background:
+            linear-gradient(90deg, rgba(6, 12, 11, 0.58) 0, rgba(6, 12, 11, 0.28) 34%, rgba(6, 12, 11, 0) 58%),
+            linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0, rgba(0, 0, 0, 0) 24%, rgba(0, 0, 0, 0.16) 100%);
+          pointer-events: none;
+          z-index: 0;
+      }
+
+      .store-hero-stage {
+          display: none;
+      }
+
+      .store-hero-stage::before {
+          content: "";
+          position: absolute;
+          top: 28px;
+          left: 44%;
+          width: 110px;
+          height: 110px;
+          border-radius: 50%;
+          background:
+            radial-gradient(circle at 32% 36%, rgba(255, 231, 175, 0.72), rgba(199, 147, 71, 0.16) 55%, rgba(41, 28, 14, 0) 72%);
+          border: 6px solid rgba(169, 131, 71, 0.82);
+          box-shadow:
+            0 0 0 8px rgba(28, 39, 28, 0.28),
+            inset 0 10px 22px rgba(255, 245, 207, 0.14);
+      }
+
+      .store-hero-stage::after {
+          content: "";
+          position: absolute;
+          top: -26px;
+          right: 12px;
+          width: 180px;
+          height: 360px;
+          background:
+            linear-gradient(90deg, rgba(8, 20, 16, 0.1) 0, rgba(8, 20, 16, 0.46) 18%, rgba(17, 45, 30, 0.92) 54%, rgba(2, 12, 8, 1) 100%);
+          border-bottom-left-radius: 140px;
+          filter: blur(0.2px);
+          opacity: 0.95;
+      }
+
+      .hero-shelf {
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 102px;
+          height: 74px;
+          background:
+            linear-gradient(180deg, rgba(46, 30, 17, 0.16) 0, rgba(46, 30, 17, 0.6) 18%, rgba(29, 20, 12, 0.82) 100%),
+            linear-gradient(90deg, #3b2818 0%, #6a4527 43%, #9b6a39 100%);
+          box-shadow:
+            0 -16px 36px rgba(0, 0, 0, 0.3),
+            inset 0 8px 12px rgba(255, 232, 186, 0.08);
+      }
+
+      .hero-shelf::before,
+      .hero-shelf::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          height: 8px;
+      }
+
+      .hero-shelf::before {
+          top: 0;
+          background: linear-gradient(90deg, rgba(255, 225, 170, 0.2), rgba(255, 225, 170, 0.06));
+      }
+
+      .hero-shelf::after {
+          bottom: 0;
+          background: linear-gradient(90deg, rgba(17, 12, 8, 0.6), rgba(17, 12, 8, 0.2));
+      }
+
+      .hero-back-jar {
+          position: absolute;
+          top: 56px;
+          width: 52px;
+          border-radius: 10px;
+          background: linear-gradient(180deg, #231f19 0%, #0f1114 100%);
+          box-shadow: 0 12px 18px rgba(0, 0, 0, 0.32);
+      }
+
+      .hero-back-jar::before {
+          content: "";
+          position: absolute;
+          top: -9px;
+          left: 8px;
+          right: 8px;
+          height: 10px;
+          border-radius: 8px 8px 4px 4px;
+          background: linear-gradient(180deg, #7e6a41 0%, #3c2c18 100%);
+      }
+
+      .hero-back-jar::after {
+          content: "";
+          position: absolute;
+          left: 6px;
+          right: 6px;
+          bottom: 16px;
+          height: 16px;
+          border-radius: 6px;
+          background: linear-gradient(90deg, rgba(212, 179, 113, 0.86), rgba(129, 92, 38, 0.92));
+          opacity: 0.52;
+      }
+
+      .hero-back-jar-left {
+          left: 22px;
+          height: 138px;
+      }
+
+      .hero-back-jar-right {
+          left: 104px;
+          height: 130px;
+      }
+
+      .hero-pack {
+          position: absolute;
+          object-fit: contain;
+          filter: drop-shadow(0 22px 30px rgba(0, 0, 0, 0.44));
+      }
+
+      .hero-pack-main {
+          width: 41%;
+          height: 54%;
+          left: 31%;
+          bottom: 95px;
+          z-index: 4;
+      }
+
+      .hero-pack-left {
+          width: 28%;
+          height: 43%;
+          left: 14%;
+          bottom: 134px;
+          z-index: 3;
+      }
+
+      .hero-pack-right {
+          width: 20%;
+          height: 34%;
+          right: 17%;
+          bottom: 142px;
+          z-index: 3;
+      }
+
+      .hero-pack-mini {
+          width: 17%;
+          height: 30%;
+          left: 4%;
+          bottom: 102px;
+          z-index: 2;
+      }
+
+      .hero-pack-shaker {
+          width: 15%;
+          height: 27%;
+          right: 5%;
+          bottom: 98px;
+          z-index: 4;
+      }
+
+      .hero-scoop {
+          position: absolute;
+          right: 24%;
+          bottom: 84px;
+          width: 116px;
+          height: 28px;
+          border-radius: 999px;
+          background: linear-gradient(90deg, rgba(177, 134, 74, 0.96), rgba(241, 219, 164, 0.9));
+          transform: rotate(-14deg);
+          box-shadow: 0 10px 16px rgba(0, 0, 0, 0.28);
+          z-index: 1;
+      }
+
+      .hero-scoop::before {
+          content: "";
+          position: absolute;
+          right: -12px;
+          top: -8px;
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          background: linear-gradient(180deg, #ab7f49 0%, #f0d695 100%);
+      }
+
+      .hero-scoop::after {
+          content: "";
+          position: absolute;
+          right: -3px;
+          top: -3px;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: rgba(223, 199, 151, 0.62);
+      }
+
+      .store-hero-overlay {
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          width: min(49%, 400px);
+          padding: 24px 28px 30px;
+          background: linear-gradient(180deg, rgba(14, 26, 38, 0) 0%, rgba(14, 26, 38, 0.86) 36%, rgba(14, 26, 38, 0.96) 100%);
+          color: #fff;
+          border-top-right-radius: 30px;
+          z-index: 5;
+      }
+
+      .store-hero-pill {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 30px;
+          padding: 0 14px;
+          border-radius: 999px;
+          background: #fff;
+          color: #08263a;
+          font-size: 12px;
+          font-weight: 900;
+          margin-bottom: 14px;
+      }
+
+      .store-hero-overlay h3 {
+          margin: 0;
+          font-size: clamp(26px, 3vw, 36px);
+          line-height: 1.12;
+          font-weight: 900;
+          letter-spacing: -0.03em;
+          color: #ffffff;
+          text-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
+      }
+
+      .store-hero-copy {
+          padding: 20px 4px;
+          display: grid;
+          align-content: center;
+          gap: 22px;
+      }
+
+      .store-hero-copy .eyebrow {
+          margin: 0;
+          color: #0ec48d;
+          font-size: 13px;
+          letter-spacing: 0.08em;
+          font-weight: 900;
+          text-transform: uppercase;
+      }
+
+      .store-hero-copy h1 {
+          margin: 0;
+          color: #08263a;
+          font-size: clamp(48px, 4vw, 64px);
+          line-height: 0.98;
+          font-weight: 900;
+          letter-spacing: -0.04em;
+          max-width: 520px;
+      }
+
+      .store-hero-copy p {
+          margin: 0;
+          color: #496378;
+          font-size: 17px;
+          line-height: 1.5;
+          max-width: 560px;
+      }
+
+      .store-hero-cta {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 50px;
+          padding: 0 30px;
+          border-radius: 999px;
+          background: #1cc487;
+          color: #fff;
+          text-decoration: none;
+          font-size: 17px;
+          font-weight: 800;
+          box-shadow: 0 16px 32px rgba(28, 196, 135, 0.28);
+          width: 224px;
+      }
+
+      .store-hero-cta:hover {
+          color: #fff;
+          text-decoration: none;
+          background: #14b87b;
+      }
+
+      .store-hero-stats {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 158px));
+          gap: 18px;
+      }
+
+      .store-hero-stat {
+          background: #fff;
+          border-radius: 24px;
+          padding: 18px 22px;
+          border: 1px solid #deedf0;
+          box-shadow: 0 14px 24px rgba(15, 37, 65, 0.06);
+      }
+
+      .store-hero-stat strong {
+          display: block;
+          color: #08263a;
+          font-size: 28px;
+          font-weight: 900;
+          margin-bottom: 2px;
+      }
+
+      .store-hero-stat span {
+          color: #5a7185;
+          font-size: 14px;
+      }
+
+      .store-reco-shell {
+          background: #ffffff;
+          border-radius: 26px;
+          border: 1px solid #e4ebf1;
+          box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+          padding: 28px 30px 34px;
+      }
+
+      .store-reco-top {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 14px;
+          margin-bottom: 28px;
+      }
+
+      .store-reco-top h2 {
+          margin: 0;
+          color: #0d2140;
+          font-size: 18px;
+          font-weight: 900;
+          text-transform: uppercase;
+          display: inline-flex;
+          align-items: center;
+          gap: 14px;
+      }
+
+      .store-reco-top .count {
+          min-width: 40px;
+          height: 32px;
+          border-radius: 999px;
+          background: #1cc487;
+          color: #fff;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 16px;
+      }
+
+      .store-reco-top p {
+          margin: 10px 0 0;
+          color: #0d6a57;
+          font-weight: 700;
+          font-size: 16px;
+      }
+
+      .store-refresh-btn {
+          border: 0;
+          border-radius: 999px;
+          background: #f4f5f7;
+          color: #203750;
+          min-height: 32px;
+          padding: 0 16px;
+          font-size: 14px;
+          font-weight: 700;
+      }
+
+      .store-reco-grid {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 24px;
+      }
+
+      .reco-card.product-card {
+          background: #161d2c;
+          border: 0;
+          border-radius: 28px;
+          box-shadow: none;
+          overflow: hidden;
+          padding: 0;
+          cursor: default;
+      }
+
+      .reco-card.product-card:hover {
+          transform: none;
+          box-shadow: none;
+      }
+
+      .reco-card .reco-body {
+          padding: 24px;
+      }
+
+      .reco-card .reco-note {
+          color: #18d095;
+          font-size: 14px;
+          font-weight: 700;
+          margin-bottom: 26px;
+      }
+
+      .reco-card .reco-name {
+          color: #fff;
+          font-size: 22px;
+          font-weight: 900;
+          margin-bottom: 22px;
+      }
+
+      .reco-card .reco-price {
+          color: #fff;
+          font-size: 18px;
+          font-weight: 800;
+          margin-bottom: 26px;
+      }
+
+      .reco-card .reco-actions {
+          display: grid;
+          grid-template-columns: 48px 48px 1fr;
+          gap: 12px;
+      }
+
+      .reco-card .favorite-btn,
+      .reco-card .quick-view-btn {
+          margin: 0;
+          min-height: 46px;
+          border: 0;
+          border-radius: 14px;
+          background: #2d3547;
+          color: #fff;
+          font-size: 16px;
+          padding: 0;
+      }
+
+      .reco-card .add-to-cart-btn {
+          min-height: 46px;
+          border-radius: 14px;
+          background: #1cc487;
+          box-shadow: none;
+          font-size: 16px;
+      }
+
+      #supplements-storefront .shop-layout {
+          grid-template-columns: 320px 1fr;
+          gap: 28px;
+      }
+
+      #supplements-storefront .shop-sidebar {
+          background: #fff;
+          border: 0;
+          border-radius: 0;
+          padding: 0;
+          overflow: visible;
+          box-shadow: none;
+      }
+
+      .store-filter-head {
+          padding: 8px 24px 0;
+          font-size: 22px;
+          font-weight: 900;
+          color: #0c5d4d;
+          border-bottom: 0;
+      }
+
+      .store-filter-inner {
+          padding: 22px 24px 0;
+      }
+
+      .filter-search-block {
+          margin-bottom: 26px;
+      }
+
+      .filter-search-label {
+          display: block;
+          margin: 0 0 14px;
+          color: #14314d;
+          font-size: 18px;
+          font-weight: 900;
+      }
+
+      .filter-divider {
+          height: 1px;
+          margin: 0 0 28px;
+          background: #edf1f5;
+      }
+
+      #supplements-storefront .filter-search {
+          margin: 0;
+      }
+
+      #supplements-storefront .filter-search input {
+          width: 100%;
+          min-height: 52px;
+          border-radius: 14px;
+          border: 1.5px solid #20c28d;
+          background: #f3fbf8;
+          font-size: 15px;
+          color: #4f6578;
+          padding: 0 14px;
+          outline: none;
+          box-shadow: none;
+      }
+
+      #supplements-storefront .filter-search input::placeholder {
+          color: #9aa7b5;
+      }
+
+      .filter-section-title {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin: 0 0 14px;
+          color: #182d46;
+          font-size: 18px;
+          font-weight: 900;
+      }
+
+      .filter-inline-clear {
+          border: 0;
+          background: transparent;
+          color: #ff513f;
+          font-size: 15px;
+          font-weight: 800;
+          cursor: pointer;
+          padding: 0;
+      }
+
+      #supplements-storefront .filter-group {
+          border: 0;
+          border-radius: 0;
+          margin-bottom: 0;
+          background: transparent;
+      }
+
+      #supplements-storefront .filter-group h3 {
+          display: none;
+      }
+
+      #supplements-storefront .filter-content {
+          padding: 0;
+      }
+
+      #supplements-storefront .filter-options label {
+          padding: 6px 0;
+          font-size: 15px;
+          color: #54708f;
+      }
+
+      #supplements-storefront .filter-checkbox {
+          width: 22px;
+          height: 22px;
+          margin-right: 12px;
+      }
+
+      .favorites-page-shell {
+          display: grid;
+          gap: 26px;
+          margin-top: 18px;
+      }
+
+      .favorites-panel {
+          background: #ffffff;
+          border-radius: 34px;
+          box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+          padding: 30px 32px 36px;
+      }
+
+      .favorites-panel-top,
+      .favorites-reco-top {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 18px;
+          margin-bottom: 24px;
+      }
+
+      .favorites-panel-top h2,
+      .favorites-reco-top h2 {
+          margin: 0;
+          color: #0b2142;
+          font-size: clamp(1.9rem, 2.5vw, 2.8rem);
+          line-height: 1.04;
+          font-weight: 900;
+          letter-spacing: -0.03em;
+          text-transform: uppercase;
+      }
+
+      .favorites-panel-top p,
+      .favorites-reco-top p {
+          margin: 8px 0 0;
+          color: #0aaf73;
+          font-size: 1rem;
+          font-weight: 800;
+      }
+
+      .favorites-panel-action,
+      .favorites-reco-action {
+          border: 0;
+          border-radius: 18px;
+          padding: 12px 24px;
+          background: #f4f6fa;
+          color: #334a62;
+          font-size: 0.98rem;
+          font-weight: 800;
+          cursor: pointer;
+          box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.03);
+      }
+
+      .favorites-panel-action:hover,
+      .favorites-reco-action:hover {
+          background: #edf1f6;
+      }
+
+      .favorites-panel-count-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 40px;
+          height: 40px;
+          margin-left: 12px;
+          border-radius: 999px;
+          background: #16c68a;
+          color: #fff;
+          font-size: 1rem;
+          font-weight: 900;
+      }
+
+      .favorite-showcase-grid {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 18px;
+      }
+
+      .favorite-showcase-card {
+          width: 224px;
+          min-height: 172px;
+          border-radius: 18px;
+          background: #f9fbff;
+          border: 1px solid #eef3f9;
+          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4);
+          padding: 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          position: relative;
+      }
+
+      .favorite-showcase-head {
+          padding-right: 28px;
+      }
+
+      .favorite-showcase-name {
+          display: block;
+          color: #071b39;
+          font-size: 1.05rem;
+          font-weight: 900;
+          line-height: 1.2;
+          text-decoration: none;
+      }
+
+      .favorite-showcase-name:hover {
+          color: #071b39;
+          text-decoration: none;
+      }
+
+      .favorite-showcase-price {
+          display: block;
+          margin-top: 6px;
+          color: #0aa96f;
+          font-size: 0.98rem;
+          font-weight: 900;
+      }
+
+      .favorite-showcase-body {
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 12px;
+          margin-top: auto;
+      }
+
+      .favorite-showcase-thumb {
+          width: 58px;
+          height: 58px;
+          border-radius: 14px;
+          background: #ffffff;
+          display: grid;
+          place-items: center;
+          overflow: hidden;
+          box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+      }
+
+      .favorite-showcase-thumb img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+      }
+
+      .favorite-remove-btn {
+          border: 0;
+          background: transparent;
+          color: #ff4e4e;
+          font-size: 1.25rem;
+          line-height: 1;
+          cursor: pointer;
+          padding: 4px;
+      }
+
+      .favorite-remove-btn:hover {
+          color: #e12727;
+      }
+
+      .favorite-showcase-empty {
+          display: none;
+          margin-top: 4px;
+          border-radius: 20px;
+          padding: 22px 24px;
+          background: #f7fafc;
+          color: #61798b;
+          font-weight: 700;
+      }
+
+      .favorites-panel.is-collapsed .favorite-showcase-grid,
+      .favorites-panel.is-collapsed .favorite-showcase-empty {
+          display: none !important;
+      }
+
+      .favorites-reco-shell {
+          background: #ffffff;
+          border-radius: 34px;
+          box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+          padding: 30px 32px 34px;
+      }
+
+      .favorites-reco-grid {
+          display: grid;
+          grid-auto-flow: column;
+          grid-auto-columns: minmax(340px, 1fr);
+          gap: 24px;
+          overflow-x: auto;
+          padding-bottom: 6px;
+          scrollbar-width: thin;
+      }
+
+      .favorites-reco-grid::-webkit-scrollbar {
+          height: 8px;
+      }
+
+      .favorites-reco-grid::-webkit-scrollbar-thumb {
+          background: rgba(17, 24, 39, 0.18);
+          border-radius: 999px;
+      }
+
+      .favorite-reco-card {
+          min-height: 238px;
+          border-radius: 28px;
+          background: #151d2d;
+          color: #fff;
+          padding: 26px 24px 22px;
+          box-shadow: 0 22px 38px rgba(12, 19, 30, 0.18);
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+      }
+
+      .favorite-reco-note {
+          color: #18ca8b;
+          font-size: 0.95rem;
+          font-weight: 800;
+      }
+
+      .favorite-reco-name {
+          margin: 0;
+          color: #ffffff;
+          font-size: 1.18rem;
+          font-weight: 900;
+          line-height: 1.2;
+      }
+
+      .favorite-reco-price {
+          color: #ffffff;
+          font-size: 1.02rem;
+          font-weight: 800;
+      }
+
+      .favorite-reco-actions {
+          margin-top: auto;
+          display: flex;
+          gap: 14px;
+          align-items: center;
+      }
+
+      .favorite-reco-view {
+          width: 54px;
+          height: 38px;
+          border: 0;
+          border-radius: 12px;
+          background: #2a3446;
+          color: #fff;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+      }
+
+      .favorite-reco-view:hover {
+          background: #334158;
+      }
+
+      .favorite-reco-cart {
+          flex: 1;
+          min-height: 38px;
+          border: 0;
+          border-radius: 14px;
+          background: #18c68b;
+          color: #fff;
+          font-weight: 900;
+          cursor: pointer;
+      }
+
+      .favorite-reco-cart:hover {
+          background: #12b77d;
+      }
+
+      .favorite-reco-cart[disabled] {
+          background: #617189;
+          cursor: not-allowed;
+      }
+
+      @media (max-width: 991px) {
+          .favorites-panel,
+          .favorites-reco-shell {
+              padding: 24px 20px 26px;
+              border-radius: 26px;
+          }
+
+          .favorites-panel-top,
+          .favorites-reco-top {
+              flex-direction: column;
+              align-items: stretch;
+          }
+
+          .favorite-showcase-card {
+              width: 100%;
+          }
+
+          .favorites-reco-grid {
+              grid-auto-columns: minmax(280px, 86vw);
+          }
+      }
+
+      #supplements-storefront .shop-toolbar {
+          background: transparent;
+          box-shadow: none;
+          border: 0;
+          padding: 0 6px;
+          margin-bottom: 20px;
+      }
+
+      #supplements-storefront .results-count {
+          color: #4c6276;
+          font-size: 15px;
+      }
+
+      #supplements-storefront .shop-sort select {
+          min-height: 48px;
+          border-radius: 14px;
+          background: #fff;
+      }
+
+      #supplements-storefront .products-grid {
+          margin-top: 0;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 30px;
+      }
+
+      #supplements-storefront .product-card {
+          border-radius: 30px;
+          border: 1px solid #dff1eb;
+          box-shadow: 0 18px 36px rgba(13, 106, 87, 0.09);
+          overflow: hidden;
+      }
+
+      #supplements-storefront .product-card:hover {
+          transform: translateY(-6px);
+      }
+
+      #supplements-storefront .product-image {
+          position: relative;
+          height: 280px;
+          background: #ffffff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 18px;
+          border-bottom: 0;
+      }
+
+      #supplements-storefront .product-image::after {
+          display: none;
+      }
+
+      #supplements-storefront .product-image img {
+          object-fit: contain;
+          max-width: 100%;
+          max-height: 100%;
+      }
+
+      .product-fav {
+          position: absolute;
+          top: 18px;
+          right: 18px;
+          width: 34px;
+          height: 34px;
+          border-radius: 999px;
+          background: #f5f7fa;
+          color: #cfd7e1;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 17px;
+          border: 0;
+          z-index: 2;
+          cursor: pointer;
+          transition: all .2s ease;
+      }
+
+      .product-fav:hover,
+      .product-fav.is-active,
+      .favorite-btn:hover,
+      .favorite-btn.is-active {
+          color: #ef476f;
+          background: #fff0f4;
+          box-shadow: 0 10px 20px rgba(239, 71, 111, 0.18);
+      }
+
+      .favorite-btn {
+          min-height: 50px;
+          border-radius: 15px;
+          border: 0;
+          margin: 0;
+          background: #f2f4f6;
+          color: #12253c;
+          padding: 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 18px;
+          transition: all .2s ease;
+      }
+
+      #supplements-storefront .product-info {
+          padding: 18px 24px 24px;
+      }
+
+      #supplements-storefront .product-brand {
+          color: #0ac48d;
+          font-size: 12px;
+          letter-spacing: 0.04em;
+          margin-bottom: 8px;
+      }
+
+      #supplements-storefront .product-name {
+          font-size: 20px;
+          min-height: auto;
+          margin-bottom: 10px;
+      }
+
+      #supplements-storefront .product-category {
+          display: none;
+      }
+
+      #supplements-storefront .product-description-mini {
+          color: #70849a;
+          font-size: 14px;
+          line-height: 1.5;
+          min-height: 42px;
+          margin-bottom: 14px;
+      }
+
+      #supplements-storefront .product-price {
+          color: #071a3a;
+          font-size: 30px;
+          margin-bottom: 16px;
+      }
+
+      #supplements-storefront .product-trust,
+      #supplements-storefront .stock-chip,
+      #supplements-storefront .view-details-btn {
+          display: none;
+      }
+
+      .product-actions-inline {
+          display: grid;
+          grid-template-columns: 52px minmax(0, 1fr);
+          gap: 12px;
+          align-items: stretch;
+      }
+
+      #supplements-storefront .favorite-btn,
+      #supplements-storefront .quick-view-btn {
+          width: 52px;
+          min-width: 52px;
+          height: 50px;
+          min-height: 50px;
+          border-radius: 15px;
+          border: 0;
+          margin: 0;
+          background: #f2f4f6;
+          color: #12253c;
+          padding: 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 16px;
+      }
+
+      #supplements-storefront .add-to-cart-btn {
+          height: 50px;
+          min-height: 50px;
+          border-radius: 15px;
+          background: #151d2c;
+          box-shadow: none;
+          color: #ffffff;
+          font-size: 16px;
+          font-weight: 800;
+          letter-spacing: 0;
+      }
+
+      #supplements-storefront .add-to-cart-btn:hover:not(:disabled) {
+          background: #0d6a57;
+          transform: none;
+      }
+
+      @media (max-width: 1400px) {
+          .store-reco-grid,
+          #supplements-storefront .products-grid {
+              grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+      }
+
+      @media (max-width: 1100px) {
+          .store-topbar {
+              flex-direction: column;
+              align-items: flex-start;
+          }
+
+          .store-hero-shell {
+              grid-template-columns: 1fr;
+              gap: 22px;
+          }
+
+          #supplements-storefront .shop-layout {
+              grid-template-columns: 1fr;
+          }
+      }
+
+      @media (max-width: 760px) {
+          .store-reco-grid,
+          #supplements-storefront .products-grid,
+          .store-hero-stats {
+              grid-template-columns: 1fr;
+          }
+
+          .store-hero-media {
+              min-height: 460px;
+          }
+
+          .store-hero-overlay {
+              width: 100%;
+          }
+      }
   </style>
 {% endblock %}
 
@@ -2285,177 +4373,379 @@
 
 {% block body %}
 {% set pageMode = mode|default('supplements') %}
-{% if pageMode == 'shop' %}
-<section class="shop-section" id="products">
+{% set favoritesOnly = pageMode == 'favorites' %}
+{% if pageMode == 'shop' or pageMode == 'favorites' %}
+{% set recommendationSupplements = [] %}
+{% for wantedId in [11, 10, 4, 7, 3] %}
+  {% for item in supplements %}
+    {% if item.id == wantedId %}
+      {% set recommendationSupplements = recommendationSupplements|merge([item]) %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+{% if recommendationSupplements is empty %}
+  {% set recommendationSupplements = supplements|slice(0, 5) %}
+{% endif %}
+{% set heroSupplements = [] %}
+{% for wantedId in [2, 6, 3, 4, 5] %}
+  {% set foundHero = supplements|filter(item => item.id == wantedId)|first %}
+  {% if foundHero %}
+    {% set heroSupplements = heroSupplements|merge([foundHero]) %}
+  {% endif %}
+{% endfor %}
+{% if heroSupplements|length < 5 %}
+  {% set heroSupplements = heroSupplements|merge(supplements|filter(item => heroSupplements|filter(existing => existing.id == item.id) is empty))|slice(0, 5) %}
+{% endif %}
+{% set heroMain = heroSupplements|first %}
+<section class="shop-section" id="products" data-shop-mode="{{ pageMode }}">
   <div class="container">
-    <div class="shop-premium-header">
-      <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;">
-        <div>
-          <h1>Fuel Your Next Level</h1>
-          <p>Science-backed supplements curated for consistent progress, recovery, and performance.</p>
-          <a href="#productsGrid" class="hero-shop-cta"><i class="fa fa-bolt"></i> Explore Supplements</a>
-        </div>
-        <div class="shop-flow-actions">
+    <div class="store-shell" id="supplements-storefront">
+      <div class="store-topbar">
+        <div class="store-topbar-brand">Fitopia Store</div>
+        <div class="store-topbar-nav">
+          <a href="{{ path('explore_forums_blogs') }}">Accueil Forum</a>
           {% if app.user %}
-            <a href="{{ path('app_shop_progress') }}" class="shop-flow-btn">
-              <i class="fa fa-line-chart"></i> My Progress
-            </a>
-            <a href="{{ path('app_shop_leaderboard') }}" class="shop-flow-btn">
-              <i class="fa fa-trophy"></i> Ranking
-            </a>
+            <a href="{{ path('app_shop_progress') }}">Mes Objectifs</a>
           {% endif %}
-          <button type="button" class="shop-flow-btn" id="openInlineCartBtn">
-            <i class="fa fa-shopping-cart"></i> Cart
-          </button>
-          <button type="button" class="shop-flow-btn" id="openInlineCheckoutBtn">
-            <i class="fa fa-credit-card"></i> Checkout
-          </button>
+          <a href="{{ path('app_shop_leaderboard') }}">Classement</a>
+          <a href="{{ path('app_shop_favorites') }}">Mes Favoris</a>
+          <a href="{{ path('app_shop_cart') }}">Mes Commandes</a>
+        </div>
+        <div class="store-topbar-actions">
+          <button type="button" class="store-chip-btn" id="openInlineCartBtn">Panier <i class="fa fa-shopping-basket"></i></button>
+          <button type="button" class="store-chip-btn primary" id="openInlineCheckoutBtn">Payer <i class="fa fa-money"></i></button>
+          <a href="{{ path('app_shop_cart') }}" class="store-chip-btn" style="text-decoration:none;">Notifications</a>
         </div>
       </div>
-      <div class="shop-kpis">
-        <div class="shop-kpi">
-          <span class="label"><i class="fa fa-capsules"></i> Available Products</span>
-          <span class="value">{{ supplements|length }}</span>
-        </div>
-        <div class="shop-kpi">
-          <span class="label"><i class="fa fa-truck"></i> Free Shipping</span>
-          <span class="value">From 100 DT</span>
-        </div>
-        <div class="shop-kpi">
-          <span class="label"><i class="fa fa-lock"></i> Secure Checkout</span>
-          <span class="value">Secure & Fast</span>
-        </div>
-      </div>
-    </div>
 
-    <div class="flow-panels">
+      {% if favoritesOnly %}
+      <div class="favorites-page-shell">
+        <section class="favorites-panel" id="favoritesPanel">
+          <div class="favorites-panel-top">
+            <div>
+              <h2>Mes Coups De Coeur</h2>
+              <p><span id="favoriteSavedCount">{{ supplements|length }}</span> produit(s) sauvegard&eacute;(s)</p>
+            </div>
+            <button type="button" class="favorites-panel-action" id="favoritesHideBtn">Masquer</button>
+          </div>
+
+          <div class="favorite-showcase-grid" id="favoriteShowcaseGrid">
+            {% for supplement in supplements %}
+              <article class="favorite-showcase-card product-card"
+                       data-supplement-id="{{ supplement.id }}"
+                       data-category="{{ supplement.category }}"
+                       data-brand="{{ supplement.brand }}"
+                       data-price="{{ supplement.price }}"
+                       data-name="{{ supplement.name }}"
+                       data-created="{{ supplement.createdAt|date('Y-m-d') }}"
+                       data-stock="{{ supplement.stock }}"
+                       data-detail-url="{{ path('app_shop_product_show', {id: supplement.id}) }}"
+                       data-image="{{ supplement.image ? asset('uploads/supplements/' ~ supplement.image) : asset('images/image_1.jpg') }}"
+                       data-description="{{ (supplement.description ?: 'Premium supplement picked for performance, recovery, and clean nutrition support.')|e('html_attr') }}">
+                <div class="favorite-showcase-head">
+                  <a class="favorite-showcase-name" href="{{ path('app_shop_product_show', {id: supplement.id}) }}">{{ supplement.name }}</a>
+                  <span class="favorite-showcase-price">{{ supplement.price }} DT</span>
+                </div>
+                <div class="favorite-showcase-body">
+                  <div class="favorite-showcase-thumb">
+                    {% if supplement.image %}
+                      <img src="{{ asset('uploads/supplements/' ~ supplement.image) }}" alt="{{ supplement.name }}">
+                    {% else %}
+                      <img src="{{ asset('images/image_1.jpg') }}" alt="{{ supplement.name }}">
+                    {% endif %}
+                  </div>
+                  <button type="button"
+                          class="favorite-remove-btn js-supplement-favorite"
+                          data-id="{{ supplement.id }}"
+                          data-favorite-style="remove"
+                          aria-label="Retirer {{ supplement.name }} des favoris">
+                    <i class="fa fa-times"></i>
+                  </button>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+          <div class="favorite-showcase-empty" id="favoriteShowcaseEmpty">
+            Aucun favori enregistr&eacute; pour le moment. Cliquez sur le c&oelig;ur d&apos;un produit pour le retrouver ici.
+          </div>
+        </section>
+
+        <section class="favorites-reco-shell">
+          <div class="favorites-reco-top">
+            <div>
+              <h2>Recommandations <span class="favorites-panel-count-badge">{{ recommendationSupplements|length }}</span></h2>
+              <p>{{ recommendationSupplements|length }} suggestion(s) ready for you.</p>
+            </div>
+            <button type="button" class="favorites-reco-action" id="storeRecoRefreshBtn">Actualiser</button>
+          </div>
+
+          <div class="favorites-reco-grid store-reco-grid">
+            {% for supplement in recommendationSupplements %}
+              <article class="favorite-reco-card product-card"
+                       data-category="{{ supplement.category }}"
+                       data-brand="{{ supplement.brand }}"
+                       data-price="{{ supplement.price }}"
+                       data-name="{{ supplement.name }}"
+                       data-created="{{ supplement.createdAt|date('Y-m-d') }}"
+                       data-stock="{{ supplement.stock }}"
+                       data-detail-url="{{ path('app_shop_product_show', {id: supplement.id}) }}"
+                       data-image="{{ supplement.image ? asset('uploads/supplements/' ~ supplement.image) : asset('images/image_1.jpg') }}"
+                       data-description="{{ (supplement.description ?: 'Premium supplement picked for performance, recovery, and clean nutrition support.')|e('html_attr') }}">
+                <div class="favorite-reco-note">You bought this product before.</div>
+                <h3 class="favorite-reco-name">{{ supplement.name }}</h3>
+                <div class="favorite-reco-price">{{ supplement.price }} DT</div>
+                <div class="favorite-reco-actions">
+                  <button type="button" class="favorite-reco-view js-quick-view" aria-label="Voir {{ supplement.name }}"><i class="fa fa-eye"></i></button>
+                  {% if supplement.stock > 0 %}
+                    <button type="button" class="favorite-reco-cart add-to-cart-btn" data-id="{{ supplement.id }}" data-name="{{ supplement.name }}">Vite !</button>
+                  {% else %}
+                    <button type="button" class="favorite-reco-cart" disabled>Indisponible</button>
+                  {% endif %}
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        </section>
+      </div>
+      {% else %}
+      <div class="store-hero-shell">
+        <div class="store-hero-media">
+          <div class="store-hero-stage">
+            <div class="hero-back-jar hero-back-jar-left"></div>
+            <div class="hero-back-jar hero-back-jar-right"></div>
+            <div class="hero-shelf"></div>
+            {% if heroSupplements|length > 0 %}
+              <img class="hero-pack hero-pack-main" src="{{ heroMain.image ? asset('uploads/supplements/' ~ heroMain.image) : asset('images/image_1.jpg') }}" alt="{{ heroMain.name }}">
+            {% endif %}
+            {% if heroSupplements|length > 1 %}
+              <img class="hero-pack hero-pack-left" src="{{ asset('uploads/supplements/' ~ heroSupplements[1].image) }}" alt="{{ heroSupplements[1].name }}">
+            {% endif %}
+            {% if heroSupplements|length > 2 %}
+              <img class="hero-pack hero-pack-right" src="{{ asset('uploads/supplements/' ~ heroSupplements[2].image) }}" alt="{{ heroSupplements[2].name }}">
+            {% endif %}
+            {% if heroSupplements|length > 3 %}
+              <img class="hero-pack hero-pack-mini" src="{{ asset('uploads/supplements/' ~ heroSupplements[3].image) }}" alt="{{ heroSupplements[3].name }}">
+            {% endif %}
+            {% if heroSupplements|length > 4 %}
+              <img class="hero-pack hero-pack-shaker" src="{{ asset('uploads/supplements/' ~ heroSupplements[4].image) }}" alt="{{ heroSupplements[4].name }}">
+            {% endif %}
+            <div class="hero-scoop"></div>
+          </div>
+          <div class="store-hero-overlay">
+            <span class="store-hero-pill">PREMIUM NUTRITION</span>
+            <h3>Boostez vos performances avec nos suppl&eacute;ments exclusifs.</h3>
+          </div>
+        </div>
+
+        <div class="store-hero-copy">
+          {% if favoritesOnly %}
+            <p class="eyebrow">Fitopia Favorites</p>
+            <h1>Retrouvez vos suppl&eacute;ments favoris</h1>
+            <p>Les produits ci-dessous correspondent aux c&oelig;urs enregistr&eacute;s depuis votre navigateur sur la boutique.</p>
+            <a href="#productsGrid" class="store-hero-cta">Voir mes favoris</a>
+          {% else %}
+            <p class="eyebrow">Fitopia Supplements</p>
+            <h1>D&eacute;couvrez notre s&eacute;lection exclusive</h1>
+            <p>Optimisez vos r&eacute;sultats avec des produits de haute qualit&eacute;, approuv&eacute;s par des experts pour vos entra&icirc;nements.</p>
+            <a href="#productsGrid" class="store-hero-cta">Acheter maintenant</a>
+          {% endif %}
+          <div class="store-hero-stats">
+            <div class="store-hero-stat">
+              <strong>{% if favoritesOnly %}<span id="favorite-count-hero">{{ supplements|length }}</span>{% else %}100+{% endif %}</strong>
+              <span>{% if favoritesOnly %}favori(s) sauvegard&eacute;(s){% else %}produits certifi&eacute;s{% endif %}</span>
+            </div>
+            <div class="store-hero-stat">
+              <strong>{% if favoritesOnly %}Local{% else %}24h{% endif %}</strong>
+              <span>{% if favoritesOnly %}stockage navigateur{% else %}livraison rapide{% endif %}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section class="store-reco-shell">
+        <div class="store-reco-top">
+          <div>
+            <h2>RECOMMANDATIONS <span class="count">{{ recommendationSupplements|length }}</span></h2>
+            <p>{{ recommendationSupplements|length }} suggestion(s) pr&ecirc;tes pour vous.</p>
+          </div>
+          <button type="button" class="store-refresh-btn" id="storeRecoRefreshBtn">Actualiser</button>
+        </div>
+        <div class="store-reco-grid">
+          {% for supplement in recommendationSupplements %}
+            <div class="product-card reco-card"
+                 data-category="{{ supplement.category }}"
+                 data-brand="{{ supplement.brand }}"
+                 data-price="{{ supplement.price }}"
+                 data-name="{{ supplement.name }}"
+                 data-created="{{ supplement.createdAt|date('Y-m-d') }}"
+                 data-stock="{{ supplement.stock }}"
+                 data-detail-url="{{ path('app_shop_product_show', {id: supplement.id}) }}"
+                 data-image="{{ supplement.image ? asset('uploads/supplements/' ~ supplement.image) : asset('images/image_1.jpg') }}"
+                 data-description="{{ (supplement.description ?: 'Premium supplement picked for performance, recovery, and clean nutrition support.')|e('html_attr') }}">
+              <div class="reco-body">
+                <div class="reco-note">Produit populaire dans les commandes r&eacute;centes.</div>
+                <div class="reco-name">{{ supplement.name }}</div>
+                <div class="reco-price">{{ supplement.price }} DT</div>
+                <div class="reco-actions">
+                  <button type="button" class="favorite-btn js-supplement-favorite" data-id="{{ supplement.id }}" aria-label="Ajouter {{ supplement.name }} aux favoris"><i class="fa fa-heart-o"></i></button>
+                  <button type="button" class="quick-view-btn js-quick-view"><i class="fa fa-eye"></i></button>
+                  {% if supplement.stock > 0 %}
+                    <button class="add-to-cart-btn" data-id="{{ supplement.id }}" data-name="{{ supplement.name }}">Vite !</button>
+                  {% else %}
+                    <button class="add-to-cart-btn" disabled>Indisponible</button>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      <div class="flow-backdrop" id="flowBackdrop"></div>
+      <div class="flow-panels">
       <section class="flow-panel" id="inlineCartPanel">
         <div class="flow-panel-head">
-          <h3><i class="fa fa-shopping-cart"></i> Your Cart</h3>
-          <button type="button" class="flow-close" data-close-panel="inlineCartPanel"><i class="fa fa-times"></i></button>
+          <div class="flow-panel-head-copy">
+            <h3>Votre panier</h3>
+            <div class="flow-panel-meta"><span id="inlineCartCountLabel">0</span> article(s)</div>
+          </div>
+          <button type="button" class="flow-close" data-close-panel="inlineCartPanel"><i class="fa fa-ellipsis-h"></i></button>
         </div>
         <div class="inline-cart-body">
           <div id="inlineCartRows"></div>
           <div class="inline-summary">
-            <div class="inline-summary-row"><span>Subtotal</span><strong id="inlineSubtotal">0 DT</strong></div>
-            <div class="inline-summary-row"><span>Shipping</span><strong id="inlineShipping">7 DT</strong></div>
-            <div class="inline-summary-total"><span>Total</span><span id="inlineTotal">0 DT</span></div>
-            <div style="display:flex;justify-content:flex-end;">
-              <button type="button" class="btn btn-primary" id="goInlineCheckoutBtn">Proceed to Checkout</button>
-            </div>
+            <div class="inline-summary-row"><span>Sous-total</span><strong id="inlineSubtotal">0 DT</strong></div>
+            <div class="inline-summary-row"><span>Livraison</span><strong id="inlineShipping">0 DT</strong></div>
+            <div class="inline-summary-total"><span>Total</span><span class="amount" id="inlineTotal">0 DT</span></div>
+            <button type="button" class="inline-cart-submit" id="goInlineCheckoutBtn">Valider la commande</button>
           </div>
         </div>
       </section>
 
-      <section class="flow-panel" id="inlineCheckoutPanel">
+      <section class="flow-panel flow-panel-checkout" id="inlineCheckoutPanel">
         <div class="flow-panel-head">
-          <h3><i class="fa fa-lock"></i> Secure Checkout</h3>
+          <div class="checkout-overlay-heading">
+            <h2>Finaliser votre commande</h2>
+            <p>Paiement s&eacute;curis&eacute; et livraison rapide par Fitopia</p>
+          </div>
           <button type="button" class="flow-close" data-close-panel="inlineCheckoutPanel"><i class="fa fa-times"></i></button>
         </div>
         <div class="inline-checkout-body">
-          <div class="inline-checkout-grid">
-            <form id="inlineCheckoutForm" class="inline-checkout-form">
-              <div class="form-row">
-                <div class="form-group"><input id="coFirstName" type="text" placeholder="First name" required></div>
-                <div class="form-group"><input id="coLastName" type="text" placeholder="Last name" required></div>
-              </div>
-              <div class="form-group"><input id="coEmail" type="email" placeholder="Email" required></div>
-              <div class="form-group"><input id="coPhone" type="text" placeholder="Phone" required></div>
-              <div class="form-group"><input id="coAddress" type="text" placeholder="Address" required></div>
-              <div class="form-row">
-                <div class="form-group"><input id="coCity" type="text" placeholder="City" required></div>
-                <div class="form-group"><input id="coPostalCode" type="text" placeholder="Postal code" required></div>
-              </div>
-              <div class="form-group"><textarea id="coNotes" rows="3" placeholder="Notes (optional)"></textarea></div>
-              <div class="form-group">
-                <label style="font-size:13px;font-weight:700;color:#21384d;margin-bottom:6px;display:block;">Payment method</label>
-                <div class="payment-methods-selection">
-                  {% for payment in paymentMethods %}
-                    <label class="payment-method-option">
-                      <input type="radio" name="coPaymentMethod" value="{{ payment.id }}" {% if loop.first %}checked{% endif %}>
-                      <div class="payment-method-card"><i class="{{ payment.icon }}"></i> <span>{{ payment.name }}</span></div>
-                    </label>
-                  {% endfor %}
-                </div>
-              </div>
-              <div class="form-group">
-                <input id="coDiscountCode" type="text" placeholder="Discount code">
-              </div>
-              <button type="submit" class="btn btn-primary" style="width:100%;padding:12px;border-radius:10px;">Confirm Order</button>
-            </form>
+          <div class="inline-checkout-shell">
+            <div class="inline-checkout-left">
+              <form id="inlineCheckoutForm" class="inline-checkout-form">
+                <section class="inline-checkout-card">
+                  <h3>Informations de Livraison</h3>
+                  <div class="form-row">
+                    <div class="form-group"><input id="coFirstName" type="text" placeholder="Pr&eacute;nom" value="{{ app.user ? app.user.firstName : '' }}" required></div>
+                    <div class="form-group"><input id="coLastName" type="text" placeholder="Nom" value="{{ app.user ? app.user.lastName : '' }}" required></div>
+                  </div>
+                  <div class="form-group"><input id="coEmail" type="email" placeholder="Email" value="{{ app.user ? app.user.email : '' }}" required></div>
+                  <div class="form-group"><input id="coPhone" type="text" placeholder="T&eacute;l&eacute;phone" required></div>
+                  <div class="form-group"><input id="coAddress" type="text" placeholder="Adresse compl&egrave;te" required></div>
+                  <div class="form-row">
+                    <div class="form-group"><input id="coCity" type="text" placeholder="Ville" required></div>
+                    <div class="form-group"><input id="coPostalCode" type="text" placeholder="Code Postal" required></div>
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;"><textarea id="coNotes" rows="4" placeholder="Notes suppl&eacute;mentaires (&eacute;tage, code porte...)"></textarea></div>
+                </section>
 
-            <aside class="inline-checkout-summary">
-              <h4 style="margin:0 0 8px;color:#0B2C3D;">Order Summary</h4>
-              <div id="inlineCheckoutSummaryItems"></div>
-              <div class="inline-summary" style="margin-top:8px;">
-                <div class="inline-summary-row"><span>Subtotal</span><strong id="coSubtotal">0 DT</strong></div>
-                <div class="inline-summary-row"><span>Shipping</span><strong id="coShipping">7 DT</strong></div>
-                <div class="inline-summary-row"><span>Discount</span><strong id="coDiscount">0 DT</strong></div>
-                <div class="inline-summary-total"><span>Total</span><span id="coTotal">0 DT</span></div>
-              </div>
-              <p id="coStatus" style="margin:10px 0 0;color:#1B5E4B;font-weight:700;"></p>
-            </aside>
+                <section class="inline-checkout-card">
+                  <h3>M&eacute;thode de Paiement</h3>
+                  <div class="inline-payment-list">
+                    {% for payment in paymentMethods %}
+                      <label class="payment-method-option inline-payment-option">
+                        <input type="radio" name="coPaymentMethod" value="{{ payment.id }}" {% if loop.first %}checked{% endif %}>
+                        <div class="payment-method-card inline-payment-card">
+                          <span class="inline-payment-main">
+                            <span class="inline-payment-radio"></span>
+                            <i class="{{ payment.icon }}"></i>
+                            <span>{{ payment.name }}</span>
+                          </span>
+                          <span class="inline-payment-badge">{% if loop.first %}S&eacute;curis&eacute;{% endif %}</span>
+                        </div>
+                      </label>
+                    {% endfor %}
+                  </div>
+                </section>
+              </form>
+            </div>
+
+            <div class="inline-checkout-right">
+              <aside class="inline-checkout-card inline-checkout-summary-card">
+                <h3>R&Eacute;SUM&Eacute; DE LA COMMANDE</h3>
+                <div id="inlineCheckoutSummaryItems" class="inline-checkout-summary-items"></div>
+                <div class="inline-checkout-totals">
+                  <div class="inline-summary-row"><span>Sous-total</span><strong id="coSubtotal">0.00 DT</strong></div>
+                  <div class="inline-summary-row"><span>Livraison</span><strong id="coShipping">7.00 DT</strong></div>
+                  <div class="inline-summary-row"><span>Remise</span><strong class="discount" id="coDiscount">-0.00 DT</strong></div>
+                  <div class="inline-summary-total"><span>Total</span><span class="amount" id="coTotal">7.00 DT</span></div>
+                </div>
+                <button type="submit" form="inlineCheckoutForm" class="inline-checkout-confirm">Confirmer la commande</button>
+                <p id="coStatus" class="inline-checkout-status"></p>
+              </aside>
+
+              <aside class="inline-checkout-card inline-checkout-promo-card">
+                <h3>Code Promo</h3>
+                <div class="inline-promo-row">
+                  <input id="coDiscountCode" type="text" placeholder="Entrez votre code">
+                  <button type="button" id="applyInlineDiscountBtn">Appliquer</button>
+                </div>
+                <p id="coDiscountState" class="inline-discount-feedback"></p>
+              </aside>
+            </div>
           </div>
         </div>
       </section>
     </div>
-    <button type="button" class="floating-cart" id="floatingCartBtn" aria-label="Open cart">
-      <i class="fa fa-shopping-bag"></i> Cart <span class="count" id="floatingCartCount">0</span>
-    </button>
-
+    {% if not favoritesOnly %}
     <div class="shop-layout">
       <aside class="shop-sidebar">
-        <div class="filter-search">
-          <input type="search" id="searchInput" placeholder="Search supplement name...">
-        </div>
-        <div class="filter-group" data-filter="categories">
-          <h3><button type="button" class="filter-toggle" data-target="categories"><span><i class="fa fa-filter"></i> Categories</span><i class="fa fa-chevron-down"></i></button></h3>
-          <div class="filter-content filter-options" id="filter-categories">
-            {% for category in categories %}
-              <label><input type="checkbox" name="category" value="{{ category }}" class="filter-checkbox"> {{ category }}</label>
-            {% endfor %}
-          </div>
-        </div>
-        <div class="filter-group" data-filter="brands">
-          <h3><button type="button" class="filter-toggle" data-target="brands"><span><i class="fa fa-tag"></i> Brands</span><i class="fa fa-chevron-down"></i></button></h3>
-          <div class="filter-content filter-options" id="filter-brands">
-            {% for brand in brands %}
-              <label><input type="checkbox" name="brand" value="{{ brand }}" class="filter-checkbox"> {{ brand }}</label>
-            {% endfor %}
-          </div>
-        </div>
-        <div class="filter-group" data-filter="price">
-          <h3><button type="button" class="filter-toggle" data-target="price"><span><i class="fa fa-dollar-sign"></i> Price Range</span><i class="fa fa-chevron-down"></i></button></h3>
-          <div class="filter-content" id="filter-price">
-            <input type="range" min="0" max="500" value="500" class="price-slider" id="priceSlider">
-            <div class="price-values">
-              <span>0 DT</span>
-              <span id="maxPrice">500 DT</span>
+        <div class="store-filter-head">Filtres</div>
+        <div class="store-filter-inner">
+          <div class="filter-search-block">
+            <label class="filter-search-label" for="searchInput">Recherche</label>
+            <div class="filter-search">
+              <input type="search" id="searchInput" placeholder="Nom du suppl&eacute;ment...">
             </div>
           </div>
-        </div>
-        <div class="filter-actions">
-          <button type="button" class="filter-clear" id="clearFiltersBtn">Clear filters</button>
+          <div class="filter-divider" aria-hidden="true"></div>
+          <div class="filter-section-title">
+            <span>Cat&eacute;gories</span>
+            <button type="button" class="filter-inline-clear" id="clearFiltersBtn">Effacer</button>
+          </div>
+          <div class="filter-group" data-filter="categories">
+            <div class="filter-content filter-options" id="filter-categories">
+              {% for category in categories %}
+                <label><input type="checkbox" name="category" value="{{ category }}" class="filter-checkbox"> {{ category }}</label>
+              {% endfor %}
+            </div>
+          </div>
         </div>
       </aside>
 
       <div class="shop-main">
         <div class="shop-toolbar">
           <div class="results-count">
-            Showing <strong id="showing-count">{{ supplements|length }}</strong> of <strong>{{ supplements|length }}</strong> products
+            {% if favoritesOnly %}
+              Affichage de <strong id="showing-count">{{ supplements|length }}</strong> favori(s) sur <strong>{{ supplements|length }}</strong> produits
+            {% else %}
+              Affichage de <strong id="showing-count">{{ supplements|length }}</strong> sur <strong>{{ supplements|length }}</strong> produits
+            {% endif %}
           </div>
           <div class="shop-sort">
             <select id="sortSelect">
-              <option value="name-asc">Sort by Name (A-Z)</option>
-              <option value="name-desc">Sort by Name (Z-A)</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
-              <option value="newest">Newest First</option>
+              <option value="name-asc">Nom (A-Z)</option>
+              <option value="name-desc">Nom (Z-A)</option>
+              <option value="price-asc">Prix croissant</option>
+              <option value="price-desc">Prix d&eacute;croissant</option>
+              <option value="newest">Plus r&eacute;cents</option>
             </select>
           </div>
         </div>
 
-        <div class="products-grid" id="productsGrid">
+        <div class="products-grid" id="productsGrid" data-favorites-only="{{ favoritesOnly ? '1' : '0' }}">
           {% for supplement in supplements %}
             {% set summary = ratingSummary[supplement.id] ?? {'avg': 0, 'count': 0} %}
             <div class="product-card"
@@ -2465,16 +4755,13 @@
                  data-name="{{ supplement.name }}"
                  data-created="{{ supplement.createdAt|date('Y-m-d') }}"
                  data-stock="{{ supplement.stock }}"
+                 data-detail-url="{{ path('app_shop_product_show', {id: supplement.id}) }}"
                  data-image="{{ supplement.image ? asset('uploads/supplements/' ~ supplement.image) : asset('images/image_1.jpg') }}"
                  data-description="{{ (supplement.description ?: 'Premium supplement picked for performance, recovery, and clean nutrition support.')|e('html_attr') }}">
               {% if supplement.stock < 10 and supplement.stock > 0 %}
                 <span class="badge badge-limited">LIMITED</span>
               {% elseif supplement.stock == 0 %}
                 <span class="badge badge-sold">SOLD OUT</span>
-              {% elseif supplement.createdAt and supplement.createdAt > date('-30 days') %}
-                <span class="badge badge-new">NEW</span>
-              {% elseif loop.index <= 3 %}
-                <span class="badge badge-new">BEST SELLER</span>
               {% endif %}
               <div class="product-image">
                 {% if supplement.image %}
@@ -2489,6 +4776,7 @@
                   <a class="product-link" href="{{ path('app_shop_product_show', {id: supplement.id}) }}">{{ supplement.name }}</a>
                 </h3>
                 <div class="product-category">{{ supplement.category }}</div>
+                <div class="product-description-mini">{{ supplement.description|slice(0, 70) }}{% if supplement.description|length > 70 %}...{% endif %}</div>
                 <div class="product-rating">
                   {% set rounded = summary.avg|default(0)|round(0, 'common') %}
                   {% for i in 1..5 %}
@@ -2508,25 +4796,23 @@
                 {% else %}
                   <div class="stock-chip out"><i class="fa fa-times-circle"></i> Out of stock</div>
                 {% endif %}
-                <button type="button" class="quick-view-btn js-quick-view"><i class="fa fa-search-plus"></i> Quick View</button>
-                <a class="view-details-btn" href="{{ path('app_shop_product_show', {id: supplement.id}) }}">
-                  <i class="fa fa-eye"></i> View Details
-                </a>
-                {% if supplement.stock > 0 %}
-                  <button class="add-to-cart-btn" data-id="{{ supplement.id }}" data-name="{{ supplement.name }}">
-                    <i class="fa fa-shopping-cart"></i> Add to Cart
-                  </button>
-                {% else %}
-                  <button class="add-to-cart-btn" disabled><i class="fa fa-times"></i> Out of Stock</button>
-                {% endif %}
+                <div class="product-actions-inline">
+                  <button type="button" class="quick-view-btn js-quick-view"><i class="fa fa-eye"></i></button>
+                  {% if supplement.stock > 0 %}
+                    <button class="add-to-cart-btn" data-id="{{ supplement.id }}" data-name="{{ supplement.name }}">Ajouter</button>
+                  {% else %}
+                    <button class="add-to-cart-btn" disabled>Rupture</button>
+                  {% endif %}
+                </div>
               </div>
             </div>
           {% else %}
-            <p class="no-products">No products found.</p>
+            <p class="no-products">Aucun produit trouv&eacute;.</p>
           {% endfor %}
         </div>
       </div>
     </div>
+    {% endif %}
 
     <div class="quick-modal" id="quickViewModal" aria-hidden="true">
       <div class="quick-modal-card">
@@ -2539,49 +4825,13 @@
             <p style="margin:0 0 8px;color:#5f7082;" id="quickViewMeta"></p>
             <div style="font-size:32px;font-weight:900;color:#1B5E4B;margin-bottom:12px;" id="quickViewPrice"></div>
             <p style="margin:0 0 16px;color:#445a6e;line-height:1.7;" id="quickViewDesc"></p>
-            <button type="button" class="add-to-cart-btn" id="quickViewAdd"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
+            <button type="button" class="add-to-cart-btn" id="quickViewAdd"><i class="fa fa-shopping-cart"></i> Ajouter au panier</button>
           </div>
         </div>
       </div>
     </div>
 
-    <section class="ai-suggestion-shell" id="aiSuggestionAssistant">
-      <div class="ai-suggestion-top">
-        <div>
-          <p class="ai-suggestion-eyebrow">Fitopia AI Assistant</p>
-          <h2 class="ai-suggestion-title">Tell AI your goal, get supplement picks</h2>
-          <p class="ai-suggestion-copy">
-            Enter your objective and the assistant will suggest supplements using your cart context and catalog signals.
-          </p>
-        </div>
-        <div class="ai-suggestion-controls">
-          <span class="ai-suggestion-chip"><i class="fa fa-magic"></i> AI + Smart fallback</span>
-          <button type="button" class="ai-refresh-btn" id="aiRefreshBtn"><i class="fa fa-refresh"></i> Refresh Mix</button>
-        </div>
-      </div>
-
-      <form id="aiSuggestForm" class="ai-suggestion-form">
-        <input
-          type="text"
-          id="aiGoalInput"
-          maxlength="240"
-          placeholder="Example: I want better recovery and less fatigue after training"
-        >
-        <button type="submit" class="btn btn-primary"><i class="fa fa-paper-plane"></i> Get Suggestions</button>
-      </form>
-
-      <div class="ai-goal-list">
-        <button type="button" class="ai-goal-btn js-ai-goal" data-goal="Build lean muscle and support daily recovery">Lean Muscle</button>
-        <button type="button" class="ai-goal-btn js-ai-goal" data-goal="Improve endurance for long workouts and cardio sessions">Endurance</button>
-        <button type="button" class="ai-goal-btn js-ai-goal" data-goal="Support fat loss while keeping workout energy high">Fat Loss</button>
-        <button type="button" class="ai-goal-btn js-ai-goal" data-goal="Find budget friendly daily health supplements">Budget Daily Stack</button>
-      </div>
-
-      <p class="ai-suggestion-status" id="aiSuggestStatus" data-tone="muted">Describe your goal and click "Get Suggestions".</p>
-      <div class="ai-suggestion-grid" id="aiSuggestGrid">
-        <div class="ai-suggestion-empty">AI suggestions will appear here.</div>
-      </div>
-    </section>
+    </div>
   </div>
 </section>
 {% if newForm is defined and editForm is defined %}
@@ -2651,6 +4901,9 @@
 {% endif %}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+  const supplementFavoriteStorageKey = 'fitopiaSupplementFavorites';
+  const productsSection = document.getElementById('products');
+  const pageMode = productsSection?.dataset.shopMode || 'shop';
   const supplementCatalog = {
     {% for supplement in supplements %}
     '{{ supplement.id }}': {
@@ -2663,15 +4916,98 @@ document.addEventListener('DOMContentLoaded', function () {
     {% endfor %}
   };
 
+  const readFavoriteIds = function () {
+    try {
+      const raw = window.localStorage.getItem(supplementFavoriteStorageKey);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return new Set(Array.isArray(parsed) ? parsed.map((id) => String(id)) : []);
+    } catch (error) {
+      return new Set();
+    }
+  };
+
+  const writeFavoriteIds = function (favoriteIds) {
+    try {
+      window.localStorage.setItem(supplementFavoriteStorageKey, JSON.stringify(Array.from(favoriteIds)));
+    } catch (error) {
+      console.warn('Unable to save supplement favorites.', error);
+    }
+  };
+
+  const favoriteIds = readFavoriteIds();
+  const favoriteButtons = Array.from(document.querySelectorAll('.js-supplement-favorite'));
+  const favoriteShowcaseCards = Array.from(document.querySelectorAll('.favorite-showcase-card'));
+  const favoriteShowcaseEmpty = document.getElementById('favoriteShowcaseEmpty');
+  const favoriteSavedCount = document.getElementById('favoriteSavedCount');
+  const favoritesPanel = document.getElementById('favoritesPanel');
+  const favoritesHideBtn = document.getElementById('favoritesHideBtn');
+
+  const renderFavoriteButton = function (button, isFavorite) {
+    button.classList.toggle('is-active', isFavorite);
+    button.setAttribute('aria-pressed', isFavorite ? 'true' : 'false');
+    if (button.dataset.favoriteStyle === 'remove') {
+      button.innerHTML = '<i class="fa fa-times"></i>';
+      return;
+    }
+    button.innerHTML = isFavorite ? '<i class="fa fa-heart"></i>' : '<i class="fa fa-heart-o"></i>';
+  };
+
+  const syncFavoriteButtons = function (supplementId) {
+    const isFavorite = favoriteIds.has(String(supplementId));
+    favoriteButtons
+      .filter((button) => String(button.dataset.id || '') === String(supplementId))
+      .forEach((button) => renderFavoriteButton(button, isFavorite));
+  };
+
+  favoriteButtons.forEach((button) => {
+    syncFavoriteButtons(button.dataset.id || '');
+    button.addEventListener('click', function () {
+      const supplementId = String(this.dataset.id || '');
+      if (supplementId === '') {
+        return;
+      }
+
+      if (favoriteIds.has(supplementId)) {
+        favoriteIds.delete(supplementId);
+      } else {
+        favoriteIds.add(supplementId);
+      }
+
+      writeFavoriteIds(favoriteIds);
+      syncFavoriteButtons(supplementId);
+      if (favoriteCountHero) {
+        favoriteCountHero.textContent = String(favoriteIds.size);
+      }
+      renderFavoriteShowcase();
+      if (favoritesOnlyMode) {
+        filterProducts();
+      }
+    });
+  });
+
   const products = Array.from(document.querySelectorAll('#productsGrid .product-card'));
   const showingCount = document.getElementById('showing-count');
   const priceSlider = document.getElementById('priceSlider');
   const maxPrice = document.getElementById('maxPrice');
   const productsGrid = document.getElementById('productsGrid');
+  const favoritesOnlyMode = pageMode === 'favorites' || productsGrid?.dataset.favoritesOnly === '1';
+  const favoriteCountHero = document.getElementById('favorite-count-hero');
+  const favoriteEmptyState = (() => {
+    if (!productsGrid) return null;
+    const node = document.createElement('div');
+    node.className = 'ai-suggestion-empty';
+    node.style.gridColumn = '1 / -1';
+    node.style.display = 'none';
+    node.innerHTML = 'Aucun favori enregistr&eacute; pour le moment. Cliquez sur le c&oelig;ur d&apos;un produit pour le retrouver ici.';
+    productsGrid.appendChild(node);
+    return node;
+  })();
   const searchInput = document.getElementById('searchInput');
   const inlineCartPanel = document.getElementById('inlineCartPanel');
   const inlineCheckoutPanel = document.getElementById('inlineCheckoutPanel');
+  const flowBackdrop = document.getElementById('flowBackdrop');
   const inlineCartRows = document.getElementById('inlineCartRows');
+  const inlineCartCountLabel = document.getElementById('inlineCartCountLabel');
   const inlineCheckoutItems = document.getElementById('inlineCheckoutSummaryItems');
   const floatingCartBtn = document.getElementById('floatingCartBtn');
   const floatingCartCount = document.getElementById('floatingCartCount');
@@ -2683,12 +5019,45 @@ document.addEventListener('DOMContentLoaded', function () {
   const aiSuggestGrid = document.getElementById('aiSuggestGrid');
   const aiSuggestStatus = document.getElementById('aiSuggestStatus');
   const aiRefreshBtn = document.getElementById('aiRefreshBtn');
-  const productDetailUrlTemplate = '{{ path('app_shop_product_show', {'id': '__SUPPLEMENT_ID__'}) }}';
+  const storeRecoRefreshBtn = document.getElementById('storeRecoRefreshBtn');
+  const storeRecoGrid = document.querySelector('.store-reco-grid');
+  const productDetailUrlTemplate = '{{ path('app_shop_product_show', {'id': 0}) }}';
   let quickViewSelectedId = null;
   let currentCart = [];
   let aiShownIds = [];
   let aiLastQueryKey = '__default__';
   let inlineCheckoutSubmitting = false;
+
+  if (favoriteCountHero) {
+    favoriteCountHero.textContent = String(favoriteIds.size);
+  }
+  if (favoriteSavedCount) {
+    favoriteSavedCount.textContent = String(favoriteIds.size);
+  }
+
+  function renderFavoriteShowcase() {
+    if (favoriteShowcaseCards.length === 0) return;
+
+    let visibleFavorites = 0;
+    favoriteShowcaseCards.forEach((card) => {
+      const supplementId = String(card.dataset.supplementId || '');
+      const isFavorite = supplementId !== '' && favoriteIds.has(supplementId);
+      card.style.display = isFavorite ? '' : 'none';
+      if (isFavorite) {
+        visibleFavorites += 1;
+      }
+    });
+
+    if (favoriteSavedCount) {
+      favoriteSavedCount.textContent = String(visibleFavorites);
+    }
+    if (favoriteCountHero) {
+      favoriteCountHero.textContent = String(visibleFavorites);
+    }
+    if (favoriteShowcaseEmpty) {
+      favoriteShowcaseEmpty.style.display = visibleFavorites === 0 ? 'block' : 'none';
+    }
+  }
 
   const fmt = (v) => Number(v).toFixed(2) + ' DT';
   const shippingFor = (subtotal) => subtotal >= 100 ? 0 : 7;
@@ -2711,7 +5080,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function renderAiSuggestions(suggestions) {
     if (!aiSuggestGrid) return;
     if (!Array.isArray(suggestions) || suggestions.length === 0) {
-      aiSuggestGrid.innerHTML = '<div class="ai-suggestion-empty">No suggestions available for this prompt. Try a more specific goal.</div>';
+      aiSuggestGrid.innerHTML = '<div class="ai-suggestion-empty">Aucune suggestion disponible pour cette demande. Essayez un objectif plus pr&eacute;cis.</div>';
       return;
     }
 
@@ -2720,15 +5089,15 @@ document.addEventListener('DOMContentLoaded', function () {
       const safeId = id > 0 ? id : 0;
       const source = String(suggestion.source || 'heuristic').toLowerCase();
       const sourceClass = source === 'ai' ? 'ai' : 'heuristic';
-      const sourceLabel = source === 'ai' ? 'AI Match' : 'Smart Match';
-      const reason = escapeHtml(suggestion.reason || 'Good fit for your supplement profile.');
+      const sourceLabel = source === 'ai' ? 'Match IA' : 'Match intelligent';
+      const reason = escapeHtml(suggestion.reason || 'Bonne correspondance pour votre profil de suppl&eacute;mentation.');
       const name = escapeHtml(suggestion.name || 'Supplement');
       const brand = escapeHtml(suggestion.brand || 'Brand');
       const category = escapeHtml(suggestion.category || 'Category');
       const image = escapeHtml(suggestion.image || '{{ asset('images/image_1.jpg') }}');
       const stock = Number(suggestion.stock || 0);
       const score = Number(suggestion.score || 0);
-      const productUrl = productDetailUrlTemplate.replace('__SUPPLEMENT_ID__', String(safeId));
+      const productUrl = productDetailUrlTemplate.replace('/0', '/' + String(safeId));
 
       return `
         <article class="ai-suggestion-card">
@@ -2745,9 +5114,9 @@ document.addEventListener('DOMContentLoaded', function () {
               <strong>${fmt(suggestion.price || 0)}</strong>
             </div>
             <div class="ai-suggestion-actions">
-              <a href="${escapeHtml(productUrl)}" class="btn btn-secondary">View</a>
+              <a href="${escapeHtml(productUrl)}" class="btn btn-secondary">Voir</a>
               <button type="button" class="btn btn-primary js-ai-add" data-id="${safeId}" ${stock > 0 ? '' : 'disabled'}>
-                ${stock > 0 ? 'Add to Cart' : 'Out of Stock'}
+                ${stock > 0 ? 'Ajouter' : 'Rupture'}
               </button>
             </div>
           </div>
@@ -2766,8 +5135,8 @@ document.addEventListener('DOMContentLoaded', function () {
       aiLastQueryKey = queryKey;
     }
 
-    setAiStatus('Analyzing your goal and current cart context...', 'loading');
-    aiSuggestGrid.innerHTML = '<div class="ai-suggestion-empty">Generating recommendations...</div>';
+    setAiStatus('Analyse de votre objectif et de votre panier en cours...', 'loading');
+    aiSuggestGrid.innerHTML = '<div class="ai-suggestion-empty">G&eacute;n&eacute;ration des recommandations...</div>';
 
     return fetch('{{ path('app_shop_ai_suggestions') }}', {
       method: 'POST',
@@ -2796,25 +5165,38 @@ document.addEventListener('DOMContentLoaded', function () {
             aiShownIds = [];
             return requestAiSuggestions(normalizedQuery, focusProductId, false);
           }
-          setAiStatus('No close results found. Try adding details like budget, goal, or timing.', 'warning');
+          setAiStatus('Aucun r&eacute;sultat proche trouv&eacute;. Ajoutez des d&eacute;tails comme le budget, l\'objectif ou le moment d\'utilisation.', 'warning');
           return;
         }
 
         const hasAi = suggestions.some((item) => String(item.source || '').toLowerCase() === 'ai');
-        const sourceLabel = hasAi ? 'AI model recommendations' : 'smart fallback recommendations';
-        setAiStatus(`Showing ${suggestions.length} ${sourceLabel}.`, 'success');
+        const sourceLabel = hasAi ? 'recommandations IA' : 'recommandations intelligentes';
+        setAiStatus(`${suggestions.length} ${sourceLabel} affich&eacute;es.`, 'success');
       })
       .catch(() => {
         renderAiSuggestions([]);
-        setAiStatus('Suggestion service is temporarily unavailable. Please retry.', 'error');
+        setAiStatus('Le service de suggestion est temporairement indisponible. Veuillez r&eacute;essayer.', 'error');
       });
+  }
+
+  function shuffleRecommendations() {
+    if (!storeRecoGrid) return;
+    const cards = Array.from(storeRecoGrid.children);
+    if (cards.length < 2) return;
+    for (let i = cards.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [cards[i], cards[j]] = [cards[j], cards[i]];
+    }
+    cards.forEach((card) => storeRecoGrid.appendChild(card));
   }
 
   function openPanel(panel) {
     [inlineCartPanel, inlineCheckoutPanel].forEach((el) => el && el.classList.remove('is-open'));
     if (panel) {
       panel.classList.add('is-open');
-      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      flowBackdrop?.classList.add('is-open');
+    } else {
+      flowBackdrop?.classList.remove('is-open');
     }
   }
 
@@ -2836,11 +5218,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function renderInlineCart() {
     if (!inlineCartRows) return;
+    const count = currentCart.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+    if (inlineCartCountLabel) {
+      inlineCartCountLabel.textContent = String(count);
+    }
     if (currentCart.length === 0) {
-      inlineCartRows.innerHTML = '<div style="padding:14px;color:#607284;">Your cart is empty. Add a supplement to continue.</div>';
+      inlineCartRows.innerHTML = '<div class="inline-cart-empty"><h4>Votre panier est vide</h4><p>Ajoutez des suppl&eacute;ments pour booster votre routine !</p></div>';
       document.getElementById('inlineSubtotal').textContent = fmt(0);
-      document.getElementById('inlineShipping').textContent = '7.00 DT';
-      document.getElementById('inlineTotal').textContent = fmt(7);
+      document.getElementById('inlineShipping').textContent = fmt(0);
+      document.getElementById('inlineTotal').textContent = fmt(0);
       return;
     }
 
@@ -2874,10 +5260,10 @@ document.addEventListener('DOMContentLoaded', function () {
   function renderInlineCheckoutSummary() {
     if (!inlineCheckoutItems) return;
     if (currentCart.length === 0) {
-      inlineCheckoutItems.innerHTML = '<div style="color:#6d8093;">No items in cart.</div>';
+      inlineCheckoutItems.innerHTML = '<div class="inline-cart-empty"><h4>Votre panier est vide</h4><p>Ajoutez des suppl&eacute;ments pour finaliser votre commande.</p></div>';
       document.getElementById('coSubtotal').textContent = fmt(0);
       document.getElementById('coShipping').textContent = fmt(7);
-      document.getElementById('coDiscount').textContent = fmt(0);
+      document.getElementById('coDiscount').textContent = '-' + fmt(0);
       document.getElementById('coTotal').textContent = fmt(7);
       return;
     }
@@ -2898,6 +5284,17 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('coTotal').textContent = fmt(subtotal + shipping - discount);
   }
 
+  function setInlineDiscountState(message, tone = '') {
+    const node = document.getElementById('coDiscountState');
+    if (!node) return;
+    node.textContent = message;
+    if (tone === '') {
+      node.removeAttribute('data-tone');
+      return;
+    }
+    node.setAttribute('data-tone', tone);
+  }
+
   function fetchCartAndRender() {
     return fetch('{{ path('app_shop_cart_get') }}')
       .then((r) => r.json())
@@ -2911,6 +5308,9 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function filterProducts() {
+    if (products.length === 0) {
+      return;
+    }
     const selectedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map((el) => el.value);
     const selectedBrands = Array.from(document.querySelectorAll('input[name="brand"]:checked')).map((el) => el.value);
     const ceiling = parseFloat(priceSlider ? priceSlider.value : '500');
@@ -2922,13 +5322,23 @@ document.addEventListener('DOMContentLoaded', function () {
       const matchBrand = selectedBrands.length === 0 || selectedBrands.includes(product.dataset.brand);
       const matchPrice = parseFloat(product.dataset.price || '0') <= ceiling;
       const matchSearch = searchTerm === '' || (product.dataset.name || '').toLowerCase().includes(searchTerm);
-      const show = matchCategory && matchBrand && matchPrice && matchSearch;
+      const favoriteButton = product.querySelector('.js-supplement-favorite');
+      const matchFavorite = !favoritesOnlyMode || favoriteIds.has(String(favoriteButton?.dataset.id || ''));
+      const show = matchCategory && matchBrand && matchPrice && matchSearch && matchFavorite;
       product.style.display = show ? '' : 'none';
       if (show) visible++;
     });
 
     if (showingCount) showingCount.textContent = String(visible);
+    if (favoriteEmptyState) {
+      favoriteEmptyState.style.display = favoritesOnlyMode && visible === 0 ? 'block' : 'none';
+    }
   }
+
+  favoritesHideBtn?.addEventListener('click', function () {
+    const collapsed = favoritesPanel?.classList.toggle('is-collapsed');
+    this.textContent = collapsed ? 'Afficher' : 'Masquer';
+  });
 
   document.querySelectorAll('.filter-checkbox').forEach((el) => el.addEventListener('change', filterProducts));
   if (priceSlider) {
@@ -2991,7 +5401,7 @@ document.addEventListener('DOMContentLoaded', function () {
           });
         }
       })
-      .catch(() => alert('Error adding product to cart'))
+      .catch(() => alert('Erreur lors de l\'ajout du produit au panier'))
       .finally(() => {
         if (buttonEl) {
           buttonEl.disabled = false;
@@ -3009,17 +5419,11 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.js-quick-view').forEach((btn) => {
     btn.addEventListener('click', function () {
       const card = this.closest('.product-card');
-      if (!card || !quickModal) return;
-      quickViewSelectedId = card.querySelector('.add-to-cart-btn[data-id]')?.dataset.id || null;
-      document.getElementById('quickViewBrand').textContent = card.dataset.brand || '';
-      document.getElementById('quickViewName').textContent = card.dataset.name || '';
-      document.getElementById('quickViewMeta').textContent = `${card.dataset.category || ''} | Stock ${card.dataset.stock || '0'}`;
-      document.getElementById('quickViewPrice').textContent = `${Number(card.dataset.price || 0).toFixed(2)} DT`;
-      document.getElementById('quickViewDesc').textContent = card.dataset.description || '';
-      document.getElementById('quickViewImage').src = card.dataset.image || '{{ asset('images/image_1.jpg') }}';
-      quickAdd.disabled = Number(card.dataset.stock || 0) <= 0;
-      quickModal.classList.add('open');
-      quickModal.setAttribute('aria-hidden', 'false');
+      if (!card) return;
+      const detailUrl = card.dataset.detailUrl || '';
+      if (detailUrl !== '') {
+        window.location.href = detailUrl;
+      }
     });
   });
 
@@ -3050,6 +5454,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const query = (aiGoalInput?.value || '').trim();
     requestAiSuggestions(query, quickViewSelectedId);
   });
+  storeRecoRefreshBtn?.addEventListener('click', shuffleRecommendations);
 
   document.querySelectorAll('.js-ai-goal').forEach((button) => {
     button.addEventListener('click', function () {
@@ -3086,10 +5491,35 @@ document.addEventListener('DOMContentLoaded', function () {
     btn.addEventListener('click', function () {
       const id = this.getAttribute('data-close-panel');
       document.getElementById(id)?.classList.remove('is-open');
+      flowBackdrop?.classList.remove('is-open');
     });
   });
+  flowBackdrop?.addEventListener('click', function () {
+    [inlineCartPanel, inlineCheckoutPanel].forEach((el) => el && el.classList.remove('is-open'));
+    flowBackdrop.classList.remove('is-open');
+  });
 
-  document.getElementById('coDiscountCode')?.addEventListener('input', renderInlineCheckoutSummary);
+  document.getElementById('coDiscountCode')?.addEventListener('input', function () {
+    renderInlineCheckoutSummary();
+    if ((this.value || '').trim() === '') {
+      setInlineDiscountState('');
+    }
+  });
+
+  document.getElementById('applyInlineDiscountBtn')?.addEventListener('click', function () {
+    const code = (document.getElementById('coDiscountCode')?.value || '').trim();
+    if (code === '') {
+      setInlineDiscountState('Entrez un code promo si vous en avez un.');
+      renderInlineCheckoutSummary();
+      return;
+    }
+    if (code.toLowerCase() === 'ali123') {
+      setInlineDiscountState('Code promo appliqu&eacute; : 10% de remise sur le sous-total.', 'success');
+    } else {
+      setInlineDiscountState('Code promo invalide.', 'error');
+    }
+    renderInlineCheckoutSummary();
+  });
 
   inlineCartRows?.addEventListener('click', function (event) {
     const btn = event.target.closest('button[data-act]');
@@ -3186,6 +5616,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
   });
+
+  renderFavoriteShowcase();
 
   fetchCartAndRender()
     .then(() => requestAiSuggestions(''))
@@ -3497,91 +5929,245 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 {% elseif pageMode == 'product' %}
-<section style="padding:60px 0;background:#f8fafc;">
+<section class="product-detail-section">
   <div class="container">
-    <div style="display:grid;grid-template-columns:minmax(280px,420px) 1fr;gap:40px;background:white;border-radius:20px;padding:30px;">
-      <div style="width:100%;aspect-ratio:1/1;border-radius:16px;overflow:hidden;background:#f1f5f9;">
-        {% if supplement.image %}
-          <img src="{{ asset('uploads/supplements/' ~ supplement.image) }}" alt="{{ supplement.name }}" style="width:100%;height:100%;object-fit:cover;">
-        {% else %}
-          <img src="{{ asset('images/image_1.jpg') }}" alt="{{ supplement.name }}" style="width:100%;height:100%;object-fit:cover;">
-        {% endif %}
-      </div>
-      <div>
-        <div style="font-size:13px;color:#1B5E4B;font-weight:600;margin-bottom:10px;text-transform:uppercase;">{{ supplement.brand }}</div>
-        <h1 style="font-size:28px;font-weight:700;color:#0B2C3D;margin-bottom:10px;">{{ supplement.name }}</h1>
-        <div style="margin-bottom:14px;">
-          {% set roundedProduct = ratingAverage|default(0)|round(0, 'common') %}
-          {% for i in 1..5 %}
-            <i class="fa {% if i <= roundedProduct %}fa-star{% else %}fa-star-o{% endif %}"></i>
+    <div class="product-detail-shell">
+      {% set successFlashes = app.flashes('success') %}
+      {% set errorFlashes = app.flashes('error') %}
+      {% if successFlashes or errorFlashes %}
+        <div class="product-detail-alerts">
+          {% for message in successFlashes %}
+            <div class="product-detail-alert success">{{ message }}</div>
           {% endfor %}
-          <span>({{ ratingCount|default(0) }})</span>
+          {% for message in errorFlashes %}
+            <div class="product-detail-alert error">{{ message }}</div>
+          {% endfor %}
         </div>
-        <div style="font-size:30px;font-weight:800;color:#1B5E4B;margin-bottom:12px;">{{ supplement.price }} DT</div>
-        <p style="font-size:14px;color:#334155;line-height:1.7;margin-bottom:20px;">{{ supplement.description }}</p>
-        {% if supplement.stock > 0 %}
-          <button class="add-to-cart-btn" data-id="{{ supplement.id }}" data-name="{{ supplement.name }}"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
-        {% else %}
-          <button class="add-to-cart-btn" disabled><i class="fa fa-times"></i> Out of Stock</button>
-        {% endif %}
-      </div>
-    </div>
-    <div style="margin-top:34px;">
-      <h3>Ratings & Comments</h3>
-      <div class="review-form" style="background:#fff;padding:20px;border-radius:14px;margin-bottom:20px;">
-        {% if app.user %}
-          <form method="post" action="{{ path('app_shop_product_review', {id: supplement.id}) }}">
-            <input type="hidden" name="_token" value="{{ csrf_token('review' ~ supplement.id) }}">
-            <div class="form-group">
-              <label>Rating *</label>
-              <div id="ratingInput">{% for v in 1..5 %}<button type="button" class="rating-star" data-value="{{ v }}"><i class="fa fa-star-o"></i></button>{% endfor %}</div>
-              <input type="hidden" id="review-rating" name="rating" required>
+      {% endif %}
+
+      <div class="product-detail-card">
+        <div class="product-detail-media">
+          {% if supplement.image %}
+            <img src="{{ asset('uploads/supplements/' ~ supplement.image) }}" alt="{{ supplement.name }}">
+          {% else %}
+            <img src="{{ asset('images/image_1.jpg') }}" alt="{{ supplement.name }}">
+          {% endif %}
+        </div>
+
+        <div class="product-detail-content">
+          <p class="product-detail-eyebrow">Product details</p>
+          <h1 class="product-detail-title">{{ supplement.name }}</h1>
+
+          <div class="product-detail-meta-grid">
+            <div class="product-detail-meta-group">
+              <div class="product-detail-meta-item">
+                <span class="product-detail-meta-label">Brand:</span>
+                <span class="product-detail-meta-value">{{ supplement.brand }}</span>
+              </div>
+              <div class="product-detail-meta-item">
+                <span class="product-detail-meta-label">Category:</span>
+                <span class="product-detail-meta-value">{{ supplement.category }}</span>
+              </div>
+              <div class="product-detail-meta-item">
+                <span class="product-detail-meta-label">Price:</span>
+                <span class="product-detail-meta-value is-price">{{ supplement.price }} DT</span>
+              </div>
+              <div class="product-detail-meta-item">
+                <span class="product-detail-meta-label">Calories:</span>
+                <span class="product-detail-meta-value">{{ supplement.calories ?? 0 }} kcal</span>
+              </div>
             </div>
-            <div class="form-group">
-              <label for="review-comment">Comment *</label>
-              <textarea id="review-comment" name="comment" required style="width:100%;min-height:120px;"></textarea>
+
+            <div class="product-detail-meta-group">
+              <div class="product-detail-meta-item">
+                <span class="product-detail-meta-label">Stock:</span>
+                <span class="product-detail-meta-value">{{ supplement.stock }}</span>
+              </div>
+              <div class="product-detail-meta-item">
+                <span class="product-detail-meta-label">Posted at:</span>
+                <span class="product-detail-meta-value">{{ supplement.createdAt ? supplement.createdAt|date('d M Y H:i') : 'N/A' }}</span>
+              </div>
+              <div class="product-detail-meta-item">
+                <span class="product-detail-meta-label">Updated at:</span>
+                <span class="product-detail-meta-value">{{ supplement.updatedAt ? supplement.updatedAt|date('d M Y H:i') : 'N/A' }}</span>
+              </div>
             </div>
-            <button type="submit" class="review-submit">Submit Review</button>
-          </form>
-        {% else %}
-          <a href="{{ path('app_login') }}" class="btn btn-primary">Sign in to review</a>
-        {% endif %}
-      </div>
-      {% for review in reviews %}
-        <div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><strong>{{ review.name }}</strong><small>{{ review.createdAt|date('Y-m-d') }}</small></div>
-          <div>
-            {% set roundedReview = review.rating|default(0)|round(0, 'common') %}
-            {% for i in 1..5 %}
-              <i class="fa {% if i <= roundedReview %}fa-star{% else %}fa-star-o{% endif %}"></i>
-            {% endfor %}
           </div>
-          <p style="margin:8px 0 0;">{{ review.comment }}</p>
+
+          <div class="product-detail-description-block">
+            <h2>Description</h2>
+            <p class="product-detail-description-text">{{ supplement.description }}</p>
+          </div>
+
+          <div class="product-detail-actions">
+            {% if supplement.stock > 0 %}
+              <button class="add-to-cart-btn" data-id="{{ supplement.id }}" data-name="{{ supplement.name }}" id="productDetailAddToCart">
+                <i class="fa fa-shopping-cart"></i> Add to Cart
+              </button>
+              <span class="product-detail-status" id="productDetailStatus">Product loaded. You can add it to cart.</span>
+            {% else %}
+              <button class="add-to-cart-btn" disabled>
+                <i class="fa fa-times"></i> Out of Stock
+              </button>
+              <span class="product-detail-status is-error" id="productDetailStatus">This product is currently unavailable.</span>
+            {% endif %}
+          </div>
         </div>
-      {% else %}
-        <p>No reviews yet.</p>
-      {% endfor %}
+      </div>
+
+      <div class="product-review-panel">
+        <div class="product-review-header">
+          <h2>Ratings & Comments</h2>
+          <div class="product-review-summary">
+            <span>Average:</span>
+            <strong>
+              {% if ratingCount|default(0) > 0 %}
+                {{ ratingAverage|default(0)|number_format(1, '.', '') }}/5
+              {% else %}
+                No rating yet
+              {% endif %}
+            </strong>
+            <span>{{ ratingCount|default(0) }} review{{ ratingCount|default(0) > 1 ? 's' : '' }}</span>
+          </div>
+        </div>
+
+        <div class="product-review-compose">
+          {% if app.user %}
+            <form method="post" action="{{ path('app_shop_product_review', {id: supplement.id}) }}" class="product-review-form">
+              <input type="hidden" name="_token" value="{{ csrf_token('review' ~ supplement.id) }}">
+              <input type="hidden" id="review-rating" name="rating" required>
+
+              <div class="product-review-stars-row">
+                <div class="product-review-stars" id="ratingInput">
+                  {% for v in 1..5 %}
+                    <button type="button" class="rating-star" data-value="{{ v }}" aria-label="Rate {{ v }} star{{ v > 1 ? 's' : '' }}">
+                      <i class="fa fa-star-o"></i>
+                    </button>
+                  {% endfor %}
+                </div>
+                <span class="product-review-helper" id="ratingHelper">Choose a rating (1-5 stars).</span>
+              </div>
+
+              <textarea id="review-comment" name="comment" class="product-review-textarea" placeholder="Write your comment about this product..." required></textarea>
+
+              <button type="submit" class="product-review-submit">Submit Review</button>
+            </form>
+          {% else %}
+            <a href="{{ path('app_login') }}" class="product-review-login">Sign in to review</a>
+          {% endif %}
+
+          <div class="product-review-list">
+            <h3>Recent comments</h3>
+            <div class="product-review-items">
+              {% for review in reviews %}
+                <article class="product-review-item">
+                  <div class="product-review-item-head">
+                    <span class="product-review-author">{{ review.name }}</span>
+                    <span class="product-review-date">{{ review.createdAt|date('d M Y H:i') }}</span>
+                  </div>
+                  <div class="product-review-stars-display">
+                    {% set roundedReview = review.rating|default(0)|round(0, 'common') %}
+                    {% for i in 1..5 %}
+                      <i class="fa {% if i <= roundedReview %}fa-star{% else %}fa-star-o{% endif %}"></i>
+                    {% endfor %}
+                  </div>
+                  <p class="product-review-comment">{{ review.comment }}</p>
+                </article>
+              {% else %}
+                <p class="product-review-empty">No reviews yet. Be the first to leave one.</p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  document.querySelectorAll('.add-to-cart-btn[data-id]').forEach((button) => {
-    button.addEventListener('click', function () {
+  const addToCartButton = document.getElementById('productDetailAddToCart');
+  const detailStatus = document.getElementById('productDetailStatus');
+  if (addToCartButton) {
+    addToCartButton.addEventListener('click', function () {
       const supplementId = this.dataset.id;
+      const originalLabel = this.innerHTML;
+      this.disabled = true;
+      this.classList.add('adding');
+      this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Adding...';
+      if (detailStatus) {
+        detailStatus.textContent = 'Adding product to cart...';
+        detailStatus.classList.remove('is-error');
+      }
+
       fetch('{{ path('app_shop_cart_add') }}', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ supplementId, quantity: 1 })
-      }).then((r) => r.json()).then((d) => { if (d.success) { if (typeof updateCartCount === 'function') updateCartCount(); window.location.href = '{{ path('app_shop_checkout') }}'; }});
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ supplementId, quantity: 1 })
+      })
+        .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+        .then(({ ok, data }) => {
+          if (!ok || !data.success) {
+            throw new Error(data.message || 'Unable to add this product to cart.');
+          }
+
+          if (typeof updateCartCount === 'function') {
+            updateCartCount();
+          }
+
+          if (detailStatus) {
+            detailStatus.textContent = data.message || 'Product added to cart.';
+            detailStatus.classList.remove('is-error');
+          }
+        })
+        .catch((error) => {
+          if (detailStatus) {
+            detailStatus.textContent = error && error.message ? error.message : 'Unable to add this product to cart.';
+            detailStatus.classList.add('is-error');
+          }
+        })
+        .finally(() => {
+          this.disabled = false;
+          this.classList.remove('adding');
+          this.innerHTML = originalLabel;
+        });
     });
-  });
+  }
+
   const ratingInput = document.getElementById('ratingInput');
   const ratingValue = document.getElementById('review-rating');
+  const ratingHelper = document.getElementById('ratingHelper');
   if (!ratingInput || !ratingValue) return;
   let selected = 0;
+  const stars = Array.from(ratingInput.querySelectorAll('.rating-star'));
+
+  const renderStars = function (activeValue) {
+    stars.forEach((starButton) => {
+      const starValue = parseInt(starButton.dataset.value || '0', 10);
+      const active = starValue <= activeValue;
+      starButton.classList.toggle('is-active', active);
+      starButton.innerHTML = active ? '<i class="fa fa-star"></i>' : '<i class="fa fa-star-o"></i>';
+    });
+  };
+
+  ratingInput.addEventListener('mouseover', function (e) {
+    const hoveredStar = e.target.closest('.rating-star');
+    if (!hoveredStar) return;
+    renderStars(parseInt(hoveredStar.dataset.value || '0', 10));
+  });
+
+  ratingInput.addEventListener('mouseout', function () {
+    renderStars(selected);
+  });
+
   ratingInput.addEventListener('click', function (e) {
-    const b = e.target.closest('.rating-star'); if (!b) return;
-    selected = parseInt(b.dataset.value || '0', 10); ratingValue.value = selected;
-    ratingInput.querySelectorAll('.rating-star').forEach((s) => { const v = parseInt(s.dataset.value || '0', 10); s.innerHTML = v <= selected ? '<i class="fa fa-star"></i>' : '<i class="fa fa-star-o"></i>'; });
+    const clickedStar = e.target.closest('.rating-star');
+    if (!clickedStar) return;
+    selected = parseInt(clickedStar.dataset.value || '0', 10);
+    ratingValue.value = selected;
+    renderStars(selected);
+    if (ratingHelper) {
+      ratingHelper.textContent = 'Selected rating: ' + selected + '/5';
+    }
   });
 });
 </script>
@@ -3815,44 +6401,31 @@ document.addEventListener('DOMContentLoaded', function () {
   <section class="supplement-hero" aria-label="Featured supplement">
       <div class="supplement-hero-card">
           <div class="supplement-hero-image">
-              {% if heroSupplement.image %}
-                  <img src="{{ asset('uploads/supplements/' ~ heroSupplement.image) }}" alt="{{ heroSupplement.name }}">
-              {% else %}
-                  <i class="fas fa-capsules"></i>
-              {% endif %}
-          </div>
-          <div>
-              <div class="supplement-hero-brand">{{ heroSupplement.brand }}</div>
-              <h2 class="supplement-hero-title">{{ heroSupplement.name }}</h2>
-              <div class="hero-rating">
-                  <i class="fa fa-star"></i>
-                  <i class="fa fa-star"></i>
-                  <i class="fa fa-star"></i>
-                  <i class="fa fa-star-o"></i>
-                  <i class="fa fa-star-o"></i>
-                  <span class="text-muted">Featured pick</span>
-              </div>
-              <div class="supplement-hero-meta">
-                  <span>Category: {{ heroSupplement.category }}</span>
-                  <span>Stock: {{ heroSupplement.stock }}</span>
-              </div>
-              <div class="supplement-hero-price">{{ heroSupplement.price }} DT</div>
-              <p class="supplement-hero-description">
-                  {{ heroSupplement.description ?: 'Premium supplement picked from your inventory.' }}
-              </p>
-              <div class="supplement-hero-actions">
-                  {% if heroSupplement.stock > 0 %}
-                      <button class="btn btn-primary js-hero-add" data-id="{{ heroSupplement.id }}" data-name="{{ heroSupplement.name }}">
-                          <i class="fa fa-shopping-cart"></i> Add to Cart
-                      </button>
-                  {% else %}
-                      <button class="btn btn-secondary" disabled>
-                          <i class="fa fa-times"></i> Out of Stock
-                      </button>
-                  {% endif %}
-                  <a href="{{ path('app_supplement_edit', {'id': heroSupplement.id}) }}" class="btn btn-secondary">
-                      <i class="fas fa-edit"></i> Edit Featured
-                  </a>
+              <img src="{{ asset('images/supplements-hero-premium.png') }}" alt="Premium nutrition supplements">
+              <div class="supplement-hero-overlay">
+                  <div class="supplement-hero-panel">
+                      <div class="supplement-hero-badge">Premium Nutrition</div>
+                      <h2 class="supplement-hero-title">Boostez vos performances avec nos suppléments exclusifs.</h2>
+                      <div class="supplement-hero-meta">
+                          <span>{{ heroSupplement.brand }}</span>
+                          <span>{{ heroSupplement.category }}</span>
+                          <span>{{ heroSupplement.stock }} en stock</span>
+                      </div>
+                      <div class="supplement-hero-actions">
+                          {% if heroSupplement.stock > 0 %}
+                              <button class="btn btn-primary js-hero-add" data-id="{{ heroSupplement.id }}" data-name="{{ heroSupplement.name }}">
+                                  <i class="fa fa-shopping-cart"></i> Commander
+                              </button>
+                          {% else %}
+                              <button class="btn btn-secondary" disabled>
+                                  <i class="fa fa-times"></i> Rupture de stock
+                              </button>
+                          {% endif %}
+                          <a href="{{ path('app_shop_product_show', {'id': heroSupplement.id}) }}" class="btn btn-secondary">
+                              <i class="fa fa-eye"></i> Voir le produit
+                          </a>
+                      </div>
+                  </div>
               </div>
           </div>
       </div>

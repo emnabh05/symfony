@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="940.0" prefWidth="1600.0"
+            styleClass="diet-setup-root"
+            stylesheets="@styles/admin-theme.css,@styles/diet-setup.css,@styles/diet-front-symfony.css"
+            xmlns="http://javafx.com/javafx/22.0.2"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.esprit.Pidev3A49.controllers.DietProfileSetupController">
+
+    <top>
+        <VBox styleClass="navbar-container">
+            <HBox alignment="CENTER_LEFT" styleClass="top-navbar-strip">
+                <Label text="Phone no: +216 58 938 889 or email us: customerservice@fitopia.com" styleClass="top-navbar-text" />
+                <Region HBox.hgrow="ALWAYS" />
+                <HBox spacing="10">
+                    <Label text="FB" styleClass="social-icon" />
+                    <Label text="X" styleClass="social-icon" />
+                    <Label text="IG" styleClass="social-icon" />
+                </HBox>
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="navbar-shell">
+                <VBox alignment="CENTER" spacing="0">
+                    <Label text="&#127811;" styleClass="navbar-logo-icon" />
+                    <Label text="FITOPIA" styleClass="navbar-logo-text" />
+                </VBox>
+
+                <Region prefWidth="20" />
+
+                <Label text="Home" styleClass="navbar-btn-home-active" />
+                <Label text="About&#10;Fitopia" textAlignment="CENTER" styleClass="navbar-btn-home" />
+
+                <Region prefWidth="10" />
+
+                <Button mnemonicParsing="false" onAction="#openDietPlanner" text="EXPLORE&#10;OUR&#10;DIET&amp;EATING&#10;PLANNER" textAlignment="CENTER" styleClass="navbar-btn-blue-active" />
+                <Button mnemonicParsing="false" onAction="#openSupplements" text="EXPLORE&#10;OUR&#10;SUPPLEMENTS" textAlignment="CENTER" styleClass="navbar-btn-blue" />
+                <Button mnemonicParsing="false" onAction="#openFitness" text="EXPLORE&#10;OUR&#10;FITNESS&#10;PLANNER" textAlignment="CENTER" styleClass="navbar-btn-blue" />
+                <Button mnemonicParsing="false" onAction="#openEvents" text="EXPLORE&#10;OUR&#10;EVENTS" textAlignment="CENTER" styleClass="navbar-btn-blue" />
+                <Button mnemonicParsing="false" onAction="#openForum" text="EXPLORE&#10;FORUMS&amp;BLOGS" textAlignment="CENTER" styleClass="navbar-btn-blue" />
+
+                <Region HBox.hgrow="ALWAYS" />
+
+                <HBox alignment="CENTER_RIGHT" spacing="12">
+                    <MenuButton fx:id="sessionProfileMenu" mnemonicParsing="false" text="&#128100;" visible="false" managed="false" styleClass="navbar-avatar-menu">
+                        <items>
+                            <MenuItem fx:id="sessionProfileNameItem" disable="true" mnemonicParsing="false" text="Connected profile" />
+                            <MenuItem fx:id="sessionProfileEmailItem" disable="true" mnemonicParsing="false" text="email@fitopia.com" />
+                            <MenuItem fx:id="sessionProfileRoleItem" disable="true" mnemonicParsing="false" text="ROLE_USER" />
+                            <SeparatorMenuItem />
+                            <MenuItem fx:id="sessionProfileActionItem" mnemonicParsing="false" onAction="#openSessionProfile" text="View my profile" />
+                        </items>
+                    </MenuButton>
+                    <Button mnemonicParsing="false" onAction="#logout" text="LOGOUT" styleClass="navbar-btn-red" />
+                </HBox>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="front-scroll">
+            <content>
+                <VBox spacing="28.0" styleClass="diet-setup-page">
+                    <padding>
+                        <Insets top="28.0" right="32.0" bottom="36.0" left="32.0" />
+                    </padding>
+
+                    <HBox spacing="26.0" styleClass="diet-setup-hero">
+                        <VBox prefWidth="430.0" spacing="16.0" styleClass="diet-setup-hero-copy">
+                            <Label text="FITOPIA DIET SETUP" styleClass="diet-setup-kicker" />
+                            <Label text="Build your nutrition profile before entering the planner" wrapText="true" styleClass="diet-setup-title" />
+                            <Label text="Renseignez vos informations une seule fois. Fitopia calcule automatiquement votre BMI, votre type de santé, vos calories cibles et une base de repas adaptés avant d’ouvrir votre espace Diet." wrapText="true" styleClass="diet-setup-subtitle" />
+                            <VBox spacing="10.0" styleClass="diet-setup-note-card">
+                                <Label text="What happens next" styleClass="diet-setup-note-title" />
+                                <Label text="After you confirm, your profile is saved and you are redirected directly to Explore Our Diet with the same session and navbar." wrapText="true" styleClass="diet-setup-note-text" />
+                            </VBox>
+                        </VBox>
+
+                        <VBox spacing="18.0" styleClass="diet-setup-form-shell" HBox.hgrow="ALWAYS">
+                            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                    <Label text="Complete your nutrition setup" styleClass="diet-setup-form-title" />
+                                    <Label text="Professional onboarding card before your diet planner." styleClass="diet-setup-form-subtitle" />
+                                </VBox>
+                            </HBox>
+
+                            <GridPane hgap="18.0" vgap="18.0" styleClass="diet-setup-grid">
+                                <columnConstraints>
+                                    <ColumnConstraints percentWidth="33.333" />
+                                    <ColumnConstraints percentWidth="33.333" />
+                                    <ColumnConstraints percentWidth="33.333" />
+                                </columnConstraints>
+
+                                <VBox spacing="10.0" styleClass="diet-setup-field-card">
+                                    <Label text="Taille (cm)" styleClass="diet-setup-field-label" />
+                                    <TextField fx:id="tailleField" promptText="175" styleClass="diet-setup-text-field" />
+                                </VBox>
+
+                                <VBox spacing="10.0" styleClass="diet-setup-field-card" GridPane.columnIndex="1">
+                                    <Label text="Poids (kg)" styleClass="diet-setup-field-label" />
+                                    <TextField fx:id="poidsField" promptText="72" styleClass="diet-setup-text-field" />
+                                </VBox>
+
+                                <VBox spacing="10.0" styleClass="diet-setup-field-card" GridPane.columnIndex="2">
+                                    <Label text="Age" styleClass="diet-setup-field-label" />
+                                    <TextField fx:id="ageField" promptText="29" styleClass="diet-setup-text-field" />
+                                </VBox>
+
+                                <VBox spacing="10.0" styleClass="diet-setup-field-card" GridPane.rowIndex="1">
+                                    <Label text="BMI (auto)" styleClass="diet-setup-field-label" />
+                                    <TextField fx:id="bmiField" editable="false" styleClass="diet-setup-text-field diet-setup-text-field-readonly diet-setup-auto-field" />
+                                </VBox>
+
+                                <VBox spacing="10.0" styleClass="diet-setup-field-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                    <Label text="Type sante (auto)" styleClass="diet-setup-field-label" />
+                                    <ComboBox fx:id="typeSanteCombo" maxWidth="1.7976931348623157E308" styleClass="diet-setup-combo" />
+                                </VBox>
+
+                                <VBox spacing="10.0" styleClass="diet-setup-field-card" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                    <Label text="Calories cibles (auto)" styleClass="diet-setup-field-label" />
+                                    <TextField fx:id="caloriesField" editable="false" styleClass="diet-setup-text-field diet-setup-text-field-readonly diet-setup-auto-field" />
+                                </VBox>
+
+                                <VBox spacing="10.0" styleClass="diet-setup-field-card diet-setup-field-card-large" GridPane.columnSpan="3" GridPane.rowIndex="2">
+                                    <Label text="Repas adequats (auto)" styleClass="diet-setup-field-label" />
+                                    <TextArea fx:id="repasField" prefHeight="120.0" wrapText="true" styleClass="diet-setup-text-area" />
+                                </VBox>
+                            </GridPane>
+
+                            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                <Label fx:id="statusLabel" text="Fill your data and Fitopia will prepare your diet profile automatically." styleClass="diet-setup-status" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Button mnemonicParsing="false" onAction="#submitAndOpenDiet" styleClass="primary-button" text="OK" />
+                            </HBox>
+                        </VBox>
+                    </HBox>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>

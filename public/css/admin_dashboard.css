@@ -1,0 +1,587 @@
+:root {
+    --fitopia-green: #0F4C45;
+    --fitopia-green-light: #31655B;
+    --fitopia-green-lighter: #387163;
+    --fitopia-bg: #F4F7F6;
+    --fitopia-card-bg: #FFFFFF;
+    --fitopia-text-dark: #153F46;
+    --fitopia-text-light: #7e8a8f;
+    --fitopia-danger: #B42318;
+    --fitopia-success: #118265;
+    --sidebar-width: 308px;
+    --layout-gap: 16px;
+    --content-left-padding: 0px;
+    --layout-right-padding: 30px;
+    --content-vertical-padding: 30px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--fitopia-bg);
+    margin: 0;
+    padding: 0 0 0 calc(var(--sidebar-width) + var(--layout-gap));
+    color: var(--fitopia-text-dark);
+    overflow-x: hidden;
+    min-height: 100dvh;
+}
+
+/* Sidebar Styles */
+.admin-sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    max-width: var(--sidebar-width);
+    height: 100dvh;
+    background: linear-gradient(180deg, #0f4c45 0%, #0b5a52 100%);
+    color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: grid;
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+    padding: 30px 22px 30px;
+    z-index: 1000;
+    border-radius: 0 28px 28px 0;
+    box-shadow: 18px 0 38px rgba(8, 46, 42, 0.14);
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 38px;
+}
+
+.logo-box {
+    width: 46px;
+    height: 46px;
+    background-color: white;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-mark {
+    color: var(--fitopia-green);
+    font-weight: 900;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.logo-caption {
+    color: #7e8a8f;
+    font-weight: 800;
+    font-size: 6.5px;
+    text-transform: uppercase;
+}
+
+.sidebar-title {
+    font-weight: 900;
+    font-size: 21px;
+    line-height: 1.2;
+}
+
+.user-card {
+    background-color: var(--fitopia-green-light);
+    border-radius: 20px;
+    padding: 18px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 34px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.user-avatar {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #7eaab6 0%, #8dbfcc 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 18px;
+    border: 3px solid rgba(255, 255, 255, 0.58);
+    box-shadow: 0 8px 24px rgba(3, 22, 20, 0.16);
+}
+
+.user-mail {
+    font-weight: 800;
+    font-size: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nav-section-title {
+    background-color: var(--fitopia-green-light);
+    border-radius: 20px;
+    padding: 18px 18px;
+    font-weight: 900;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    width: 100%;
+}
+
+.nav-section-title:visited,
+.nav-link-btn:visited,
+.submenu-link:visited {
+    color: inherit;
+}
+
+.nav-section-title:hover,
+.nav-section-title.active {
+    background-color: var(--fitopia-green-lighter);
+}
+
+.nav-section-title:hover {
+    transform: translateX(2px);
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 2px;
+}
+
+.nav-section-icon,
+.nav-link-icon,
+.logout-icon {
+    min-width: 24px;
+    text-align: center;
+}
+
+.nav-link-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 14px 14px;
+    border-radius: 18px;
+    font-weight: 900;
+    font-size: 15px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    text-decoration: none;
+    width: 100%;
+    min-height: 58px;
+}
+
+.nav-link-main {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+}
+
+.nav-link-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    min-width: 24px;
+    font-size: 16px;
+    color: #ffffff;
+    opacity: 0.95;
+    flex-shrink: 0;
+}
+
+.nav-link-label,
+.nav-section-label {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.25;
+}
+
+.nav-link-btn:hover,
+.nav-link-btn.active,
+.nav-accordion.is-open > .nav-link-btn {
+    background-color: var(--fitopia-green-lighter);
+}
+
+.nav-link-btn.active {
+    background-color: #387163;
+}
+
+.nav-link-btn:hover {
+    transform: translateX(2px);
+}
+
+.nav-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.nav-accordion-trigger {
+    appearance: none;
+}
+
+.nav-caret {
+    display: none;
+}
+
+.submenu {
+    display: none;
+    padding: 2px 0 0 38px;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.submenu-link {
+    padding: 8px 0 8px 2px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 13px;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    opacity: 0.9;
+}
+
+.submenu.is-open {
+    display: flex;
+}
+
+.submenu-link:hover,
+.submenu-link.active {
+    background-color: rgba(255, 255, 255, 0.14);
+    opacity: 1;
+}
+
+.submenu-link:hover {
+    transform: translateX(2px);
+}
+
+.logout-container {
+    margin-top: 26px;
+    padding-top: 18px;
+    background: transparent;
+}
+
+.logout-btn {
+    background-color: white;
+    border: none;
+    color: var(--fitopia-green);
+    padding: 16px 22px;
+    border-radius: 18px;
+    font-weight: 900;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    width: 224px;
+    text-decoration: none;
+    box-shadow: 0 14px 32px rgba(9, 48, 42, 0.18);
+    margin-left: 4px;
+}
+
+.logout-btn:visited,
+.logout-btn:hover,
+.logout-btn:active {
+    color: var(--fitopia-green);
+}
+
+/* Main Content Styles */
+.main-content {
+    margin-left: 0;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    padding: var(--content-vertical-padding) var(--layout-right-padding) 36px 0;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+}
+
+.main-content > * {
+    max-width: 100%;
+}
+
+.main-content > :last-child {
+    margin-bottom: 0;
+}
+
+.main-content img,
+.main-content table,
+.main-content iframe,
+.main-content canvas,
+.main-content svg {
+    max-width: 100%;
+}
+
+.admin-shell-inner,
+.users-shell {
+    width: 100%;
+    max-width: 100%;
+}
+
+.content-header {
+    background: linear-gradient(to right, #07505B, #118465);
+    border-radius: 26px;
+    padding: 36px 34px;
+    color: white;
+    margin-bottom: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.content-header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.content-header p {
+    font-size: 16px;
+    color: rgba(255,255,255,0.92);
+    max-width: 600px;
+}
+
+.header-accent {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 150px;
+    height: 150px;
+    background-color: rgba(255,255,255,0.08);
+    border-radius: 0 26px 0 120px;
+}
+
+/* Stats Cards */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.stat-card {
+    background-color: #F8FBFA;
+    border: 1px solid #DCE9E5;
+    border-radius: 18px;
+    padding: 18px;
+}
+
+.stat-label {
+    color: #496170;
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    color: #123748;
+    font-size: 30px;
+    font-weight: 900;
+}
+
+.stat-sub {
+    color: #118265;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+/* Action Cards */
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.action-card {
+    background-color: white;
+    border-radius: 22px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+    border: 1px solid transparent;
+}
+
+.action-card:hover {
+    transform: translateY(-2px);
+    border-color: #4BA98A;
+}
+
+.action-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #EAF2EF;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 20px;
+    color: #0A4450;
+}
+
+.action-card h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.action-card p {
+    font-size: 16px;
+    color: #6B7280;
+    margin: 0;
+}
+
+/* Forms and Lists */
+.card-section {
+    background-color: white;
+    border-radius: 24px;
+    padding: 28px;
+    margin-bottom: 0;
+    max-width: 100%;
+}
+
+@media (max-width: 960px) {
+    body {
+        padding: 0;
+    }
+
+    .admin-sidebar {
+        position: relative;
+        width: auto;
+        height: auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        border-radius: 0 0 28px 28px;
+        overflow-y: visible;
+    }
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        max-width: 100%;
+        padding: 22px 18px 28px;
+        min-height: auto;
+        gap: 22px;
+    }
+
+    .nav-links {
+        overflow-y: visible;
+        padding-right: 0;
+    }
+}
+
+.section-title {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.section-desc {
+    font-size: 16px;
+    color: #6B7280;
+    margin-bottom: 22px;
+}
+
+.form-container {
+    background-color: #FCFCFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 20px;
+    padding: 24px;
+}
+
+.form-group {
+    background-color: #FCFCFC;
+    border: 1px solid #E6EAEE;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 15px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    color: var(--fitopia-text-dark);
+}
+
+.form-group.required label {
+    color: var(--fitopia-danger);
+}
+
+.form-control {
+    width: 100%;
+    height: 52px;
+    background-color: white;
+    border: 1px solid #D9DEE7;
+    border-radius: 12px;
+    padding: 0 15px;
+    font-size: 15px;
+    outline: none;
+}
+
+.form-control:focus {
+    border-color: var(--fitopia-green);
+}
+
+textarea.form-control {
+    height: 120px;
+    padding: 15px;
+}
+
+.btn-primary {
+    background: linear-gradient(to right, #0B4A56, #13866A);
+    border: none;
+    color: white;
+    padding: 14px 24px;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    background-color: white;
+    border: 1px solid #D4E2EA;
+    color: #496170;
+    padding: 14px 24px;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+}

@@ -1,10 +1,11 @@
 when@dev:
     web_profiler:
-        toolbar: true
+        toolbar: false
 
     framework:
         profiler:
-            collect_serializer_data: true
+            # Serializer profiling is expensive in large dev containers on Windows.
+            collect_serializer_data: false
 
 when@test:
     framework:

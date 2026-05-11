@@ -2,9 +2,340 @@
 
 {% block title %}Tables | Fitopia{% endblock %}
 
+{% block stylesheets %}
+<style>
+  .tables-shell {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  .tables-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 28px;
+    padding: 34px 36px;
+    background: linear-gradient(135deg, #0c4f4c 0%, #13645b 55%, #1b8a72 100%);
+    color: #fff;
+    box-shadow: 0 22px 46px rgba(12, 79, 76, 0.22);
+  }
+
+  .tables-hero::after {
+    content: "";
+    position: absolute;
+    right: -56px;
+    top: -56px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .tables-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .tables-hero h1 {
+    margin: 0 0 12px;
+    font-size: 2.35rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+  }
+
+  .tables-hero p {
+    margin: 0;
+    max-width: 760px;
+    font-size: 1.08rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .tables-hero-actions {
+    margin-top: 22px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .tables-hero-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 800;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+  }
+
+  .tables-hero-link.primary {
+    background: #ffffff;
+    color: #0f4c45;
+  }
+
+  .tables-hero-link.secondary {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+  }
+
+  .tables-hero-link:hover {
+    transform: translateY(-1px);
+  }
+
+  .tables-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .tables-card {
+    background: #ffffff;
+    border: 1px solid #e5efec;
+    border-radius: 24px;
+    padding: 24px 22px 22px;
+    box-shadow: 0 16px 38px rgba(15, 23, 42, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 220px;
+  }
+
+  .tables-card-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #edf7f3 0%, #e4f1ed 100%);
+    color: #0f4c45;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+
+  .tables-card h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: #10243f;
+  }
+
+  .tables-card p {
+    margin: 0;
+    color: #68778c;
+    line-height: 1.65;
+    font-size: 0.98rem;
+  }
+
+  .tables-card-link {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    padding: 11px 16px;
+    border-radius: 14px;
+    background: #0f4c45;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 800;
+  }
+
+  .tables-overview {
+    background: #ffffff;
+    border: 1px solid #e5efec;
+    border-radius: 24px;
+    padding: 26px 24px;
+    box-shadow: 0 16px 38px rgba(15, 23, 42, 0.06);
+  }
+
+  .tables-overview h2 {
+    margin: 0 0 18px;
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #10243f;
+  }
+
+  .tables-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .tables-overview-item {
+    border-radius: 18px;
+    padding: 18px 16px;
+    background: #f8fbfa;
+    border: 1px solid #dfe9e6;
+  }
+
+  .tables-overview-label {
+    color: #68778c;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+
+  .tables-overview-value {
+    color: #123748;
+    font-size: 1.7rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .tables-overview-sub {
+    margin-top: 8px;
+    color: #118265;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  @media (max-width: 1200px) {
+    .tables-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tables-overview-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .tables-hero {
+      padding: 26px 22px;
+    }
+
+    .tables-hero h1 {
+      font-size: 1.9rem;
+    }
+
+    .tables-grid,
+    .tables-overview-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block body %}
-  <div class="page-title">Tables</div>
-  <div class="card">
-    <p style="color:#6b7280;">Select a management section from the Tables menu.</p>
-  </div>
+<div class="tables-shell">
+  <section class="tables-hero">
+    <div class="tables-kicker">
+      <i class="fa fa-shield"></i>
+      Admin Workspace
+    </div>
+    <h1>Tables</h1>
+    <p>Centralisez toutes les gestions de Fitopia depuis un espace admin clair, moderne et rapide a parcourir. Choisissez une section dans le menu ou utilisez les raccourcis ci-dessous.</p>
+    <div class="tables-hero-actions">
+      <a href="{{ path('admin_users') }}" class="tables-hero-link primary">
+        <i class="fa fa-users"></i>
+        Gestion utilisateur
+      </a>
+      <a href="{{ path('admin_stocks') }}" class="tables-hero-link secondary">
+        <i class="fa fa-shopping-cart"></i>
+        Gestion supplements
+      </a>
+    </div>
+  </section>
+
+  <section class="tables-overview">
+    <h2>Vue d'ensemble</h2>
+    <div class="tables-overview-grid">
+      <div class="tables-overview-item">
+        <div class="tables-overview-label">Modules admin</div>
+        <div class="tables-overview-value">6</div>
+        <div class="tables-overview-sub">Tous accessibles depuis la sidebar</div>
+      </div>
+      <div class="tables-overview-item">
+        <div class="tables-overview-label">Gestion comptes</div>
+        <div class="tables-overview-value">Users</div>
+        <div class="tables-overview-sub">Creation, roles et suivi</div>
+      </div>
+      <div class="tables-overview-item">
+        <div class="tables-overview-label">Gestion contenu</div>
+        <div class="tables-overview-value">Forum</div>
+        <div class="tables-overview-sub">Blog, interactions et moderation</div>
+      </div>
+      <div class="tables-overview-item">
+        <div class="tables-overview-label">Gestion operationnelle</div>
+        <div class="tables-overview-value">Core</div>
+        <div class="tables-overview-sub">Events, trainings, nutrition, stock</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tables-grid">
+    <article class="tables-card">
+      <div class="tables-card-icon"><i class="fa fa-users"></i></div>
+      <h2>Gestion utilisateur</h2>
+      <p>Administrez les comptes, les roles et les statuts des utilisateurs dans l'ecosysteme Fitopia.</p>
+      <a href="{{ path('admin_users') }}" class="tables-card-link">
+        Ouvrir
+        <i class="fa fa-arrow-right"></i>
+      </a>
+    </article>
+
+    <article class="tables-card">
+      <div class="tables-card-icon"><i class="fa fa-comment"></i></div>
+      <h2>Forum et blog</h2>
+      <p>Supervisez les publications, les interactions et l'experience communautaire depuis un seul espace.</p>
+      <a href="{{ path('admin_blog_forum') }}" class="tables-card-link">
+        Ouvrir
+        <i class="fa fa-arrow-right"></i>
+      </a>
+    </article>
+
+    <article class="tables-card">
+      <div class="tables-card-icon"><i class="fa fa-calendar"></i></div>
+      <h2>Evenements</h2>
+      <p>Gerez les evenements, les reservations, les participants et le suivi organisationnel du planning.</p>
+      <a href="{{ path('admin_events') }}" class="tables-card-link">
+        Ouvrir
+        <i class="fa fa-arrow-right"></i>
+      </a>
+    </article>
+
+    <article class="tables-card">
+      <div class="tables-card-icon"><i class="fa fa-line-chart"></i></div>
+      <h2>Entrainements</h2>
+      <p>Pilotez les programmes, les tendances sportives et les parcours d'entrainement proposes aux utilisateurs.</p>
+      <a href="{{ path('admin_trainings') }}" class="tables-card-link">
+        Ouvrir
+        <i class="fa fa-arrow-right"></i>
+      </a>
+    </article>
+
+    <article class="tables-card">
+      <div class="tables-card-icon"><i class="fa fa-pagelines"></i></div>
+      <h2>Alimentation</h2>
+      <p>Organisez les repas, les regimes et la gestion nutritionnelle depuis l'interface d'administration.</p>
+      <a href="{{ path('admin_nutrition') }}" class="tables-card-link">
+        Ouvrir
+        <i class="fa fa-arrow-right"></i>
+      </a>
+    </article>
+
+    <article class="tables-card">
+      <div class="tables-card-icon"><i class="fa fa-shopping-cart"></i></div>
+      <h2>Supplements</h2>
+      <p>Accedez rapidement aux produits et aux commandes pour piloter la partie stock et boutique.</p>
+      <a href="{{ path('admin_stocks') }}" class="tables-card-link">
+        Ouvrir
+        <i class="fa fa-arrow-right"></i>
+      </a>
+    </article>
+  </section>
+</div>
 {% endblock %}

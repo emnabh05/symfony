@@ -1,0 +1,173 @@
+.planner-root,
+.diet-setup-root {
+    -fx-font-family: "Poppins", "Segoe UI", sans-serif;
+    -fx-background-color: #f4f7fd;
+}
+
+.front-scroll,
+.front-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.navbar-container {
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent transparent #dfe7f3 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.top-navbar-strip {
+    -fx-background-color: #f8fbff;
+    -fx-padding: 8 30 8 30;
+    -fx-border-color: transparent transparent #e6edf6 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.top-navbar-text,
+.social-icon {
+    -fx-text-fill: #6f84a0;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+}
+
+.navbar-shell {
+    -fx-background-color: #ffffff;
+    -fx-padding: 10 30 10 30;
+}
+
+.navbar-logo-icon {
+    -fx-font-size: 26px;
+}
+
+.navbar-logo-text {
+    -fx-text-fill: #0f4a5a;
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+}
+
+.navbar-btn-home,
+.navbar-btn-home-active {
+    -fx-text-fill: #1f334d;
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+    -fx-padding: 10 14 10 14;
+    -fx-background-radius: 10;
+}
+
+.navbar-btn-home-active {
+    -fx-background-color: #eff4f8;
+    -fx-text-fill: #0f4a5a;
+}
+
+.navbar-btn-blue,
+.navbar-btn-blue-active {
+    -fx-background-radius: 10;
+    -fx-padding: 8 14 8 14;
+    -fx-font-size: 11px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #ffffff;
+    -fx-background-color: #16384c;
+    -fx-cursor: hand;
+}
+
+.navbar-btn-blue-active {
+    -fx-background-color: #0f7a5f;
+}
+
+.navbar-btn-red {
+    -fx-background-color: #b42318;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 12px;
+    -fx-font-weight: 900;
+    -fx-padding: 8 16 8 16;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+}
+
+.navbar-avatar-menu {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #0f2541;
+    -fx-font-weight: 800;
+    -fx-background-radius: 999;
+}
+
+.diet-setup-page {
+    -fx-background-color: #f4f7fd;
+}
+
+.diet-setup-hero {
+    -fx-background-color: #eef8f1;
+    -fx-background-radius: 32;
+    -fx-border-color: #d9ece0;
+    -fx-border-radius: 32;
+    -fx-padding: 28;
+}
+
+.diet-setup-kicker {
+    -fx-text-fill: #00b978;
+    -fx-font-size: 12px;
+    -fx-font-weight: 900;
+}
+
+.diet-setup-title,
+.diet-setup-form-title {
+    -fx-text-fill: #08263a;
+    -fx-font-weight: 900;
+}
+
+.diet-setup-subtitle,
+.diet-setup-form-subtitle,
+.diet-setup-note-text,
+.diet-setup-status {
+    -fx-text-fill: #50677e;
+}
+
+.diet-setup-note-card,
+.diet-setup-form-shell,
+.diet-setup-field-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 24;
+    -fx-border-color: #dfe7f3;
+    -fx-border-radius: 24;
+}
+
+.diet-setup-form-shell {
+    -fx-padding: 24;
+}
+
+.diet-setup-note-card,
+.diet-setup-field-card {
+    -fx-padding: 14 16 14 16;
+}
+
+.diet-setup-field-label {
+    -fx-text-fill: #6f84a0;
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+}
+
+.diet-setup-text-field,
+.diet-setup-text-area,
+.diet-setup-combo {
+    -fx-background-color: #f8fbff;
+    -fx-background-radius: 16;
+    -fx-border-color: #dfe7f3;
+    -fx-border-radius: 16;
+    -fx-text-fill: #0f2541;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+}
+
+.diet-setup-text-area .content {
+    -fx-background-color: #f8fbff;
+    -fx-background-radius: 16;
+}
+
+.primary-button {
+    -fx-background-color: #12c48b;
+    -fx-text-fill: #ffffff;
+    -fx-background-radius: 999;
+    -fx-font-size: 14px;
+    -fx-font-weight: 900;
+    -fx-padding: 10 24 10 24;
+    -fx-cursor: hand;
+}

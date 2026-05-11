@@ -23,7 +23,7 @@ class OrderRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('o')
             ->andWhere('o.status = :status')
-            ->setParameter('status', $status)
+            ->setParameter('status', Order::normalizeStatusForStorage($status))
             ->orderBy('o.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
@@ -40,5 +40,13 @@ class OrderRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-}
 
+    public function findOneByOrderNumber(string $orderNumber): ?Order
+    {
+        if (preg_match('/(\d+)$/', $orderNumber, $matches) !== 1) {
+            return null;
+        }
+
+        return $this->find((int) $matches[1]);
+    }
+}

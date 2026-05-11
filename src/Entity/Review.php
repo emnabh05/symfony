@@ -7,7 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ReviewRepository::class)]
-#[ORM\Table(name: 'supplement_review')]
+#[ORM\Table(name: 'supplement_reviews')]
 #[ORM\HasLifecycleCallbacks]
 class Review
 {
@@ -32,7 +32,7 @@ class Review
     #[ORM\Column(type: Types::TEXT)]
     private string $comment = '';
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(name: 'created_at', type: Types::DATETIME_MUTABLE)]
     private \DateTimeInterface $createdAt;
 
     public function __construct()

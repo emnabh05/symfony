@@ -56,7 +56,7 @@ class OrderController extends AbstractController
             return $this->redirectToRoute('app_order_show', ['id' => $order->getId()]);
         }
 
-        $allowedStatuses = ['pending', 'accepted', 'delivered', 'canceled'];
+        $allowedStatuses = ['pending', 'processing', 'on_way', 'delivered', 'canceled'];
         if (!in_array($newStatus, $allowedStatuses, true)) {
             $this->addFlash('error', 'Invalid status selected.');
             return $this->redirectToRoute('app_order_show', ['id' => $order->getId()]);

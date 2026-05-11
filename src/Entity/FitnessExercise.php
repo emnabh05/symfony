@@ -24,35 +24,36 @@ class FitnessExercise
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(name: 'muscle_group', length: 100)]
     private string $muscleGroup = '';
 
     #[ORM\Column(length: 50)]
     private string $difficulty = '';
 
-    #[ORM\Column(nullable: true)]
-    private ?int $sets = null;
+    #[ORM\Column(name: 'sets_count')]
+    private int $sets = 0;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $repetitions = null;
+    #[ORM\Column]
+    private int $repetitions = 0;
 
-    #[ORM\Column(length: 500, nullable: true)]
+    #[ORM\Column(name: 'video_url', length: 500, nullable: true)]
     private ?string $videoUrl = null;
 
-    #[ORM\Column(length: 500, nullable: true)]
+    #[ORM\Column(name: 'image_url', length: 500, nullable: true)]
     private ?string $imageUrl = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $duration = null;
+    #[ORM\Column]
+    private int $duration = 0;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[ORM\Column(length: 20, options: ['default' => 'both'])]
+    private string $place = 'both';
+
+    #[ORM\Column(name: 'created_at', type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[ORM\Column(name: 'updated_at', type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $updatedAt;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?User $user = null;
 
     /** @var Collection<int, FitnessProgram> */
@@ -130,25 +131,25 @@ class FitnessExercise
         return $this;
     }
 
-    public function getSets(): ?int
+    public function getSets(): int
     {
         return $this->sets;
     }
 
     public function setSets(?int $sets): static
     {
-        $this->sets = $sets;
+        $this->sets = max(0, (int) ($sets ?? 0));
         return $this;
     }
 
-    public function getRepetitions(): ?int
+    public function getRepetitions(): int
     {
         return $this->repetitions;
     }
 
     public function setRepetitions(?int $repetitions): static
     {
-        $this->repetitions = $repetitions;
+        $this->repetitions = max(0, (int) ($repetitions ?? 0));
         return $this;
     }
 
@@ -174,14 +175,31 @@ class FitnessExercise
         return $this;
     }
 
-    public function getDuration(): ?int
+    public function getDuration(): int
     {
         return $this->duration;
     }
 
     public function setDuration(?int $duration): static
     {
-        $this->duration = $duration;
+        $this->duration = max(0, (int) ($duration ?? 0));
+        return $this;
+    }
+
+    public function getPlace(): string
+    {
+        return $this->place;
+    }
+
+    public function setPlace(?string $place): static
+    {
+        $normalized = strtolower(trim((string) $place));
+        $this->place = match ($normalized) {
+            'gym', 'salle' => 'gym',
+            'home', 'maison' => 'home',
+            default => 'both',
+        };
+
         return $this;
     }
 

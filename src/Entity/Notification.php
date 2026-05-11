@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: NotificationRepository::class)]
+#[ORM\Table(name: 'supplement_order_notifications')]
 #[ORM\HasLifecycleCallbacks]
 class Notification
 {
@@ -15,26 +16,27 @@ class Notification
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(name: 'recipient_email', length: 255)]
     private string $email = '';
 
-    #[ORM\Column(length: 50)]
-    private string $orderNumber = '';
+    private ?string $orderNumberOverride = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(name: 'previous_status', length: 50, nullable: true)]
+    private ?string $previousStatus = null;
+
+    #[ORM\Column(name: 'new_status', length: 50)]
     private string $status = '';
 
     #[ORM\Column(type: Types::TEXT)]
     private string $message = '';
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(name: 'created_at', type: Types::DATETIME_MUTABLE)]
     private \DateTimeInterface $createdAt;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $readAt = null;
 
     #[ORM\ManyToOne(targetEntity: Order::class)]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    #[ORM\JoinColumn(name: 'order_id', nullable: true, onDelete: 'SET NULL')]
     private ?Order $orderRef = null;
 
     public function __construct()
@@ -66,23 +68,28 @@ class Notification
 
     public function getOrderNumber(): string
     {
-        return $this->orderNumber;
+        if ($this->orderRef instanceof Order) {
+            return $this->orderRef->getOrderNumber();
+        }
+
+        return $this->orderNumberOverride ?? '';
     }
 
     public function setOrderNumber(string $orderNumber): static
     {
-        $this->orderNumber = $orderNumber;
+        $normalized = trim($orderNumber);
+        $this->orderNumberOverride = $normalized !== '' ? $normalized : null;
         return $this;
     }
 
     public function getStatus(): string
     {
-        return $this->status;
+        return Order::normalizeStatusForDisplay($this->status);
     }
 
     public function setStatus(string $status): static
     {
-        $this->status = $status;
+        $this->status = Order::normalizeStatusForStorage($status);
         return $this;
     }
 
@@ -100,6 +107,22 @@ class Notification
     public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function getPreviousStatus(): ?string
+    {
+        return $this->previousStatus !== null
+            ? Order::normalizeStatusForDisplay($this->previousStatus)
+            : null;
+    }
+
+    public function setPreviousStatus(?string $previousStatus): static
+    {
+        $this->previousStatus = $previousStatus !== null
+            ? Order::normalizeStatusForStorage($previousStatus)
+            : null;
+
+        return $this;
     }
 
     public function getReadAt(): ?\DateTimeInterface

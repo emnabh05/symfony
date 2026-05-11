@@ -4,12 +4,6 @@
 
 {% block stylesheets %}
 <style>
-  .field-icon {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-  .field-icon i { color: #0b3a3d; }
   .profile-card {
     min-height: 70vh;
     width: 100%;
@@ -20,7 +14,7 @@
     align-items: center;
     padding: 1.5rem 1.75rem;
     border-radius: 14px;
-    background: linear-gradient(135deg, #0b3a3d 0%, #0d5b50 55%, #0f7a5f 100%);
+    background: linear-gradient(160deg, #0b5f61 0%, #176f69 50%, #2f8a7d 100%);
     color: #fff;
     margin-bottom: 1.5rem;
   }
@@ -48,9 +42,6 @@
   .profile-grid .full {
     grid-column: 1 / -1;
   }
-  .profile-grid .full {
-    grid-column: 1 / -1;
-  }
   .icon-input {
     position: relative;
   }
@@ -63,28 +54,14 @@
     font-size: 1.05rem;
   }
   .icon-input input,
-  .icon-input select {
+  .icon-input textarea {
     padding-left: 44px;
-    height: 48px;
+    min-height: 48px;
     font-size: 1rem;
   }
-  .icon-input input::placeholder {
-    color: #9aa4b2;
-  }
-  .form-card .form-control {
-    border-radius: 12px;
-    border-color: #dbe4ef;
-  }
-  .form-card .form-label {
-    font-weight: 600;
-    color: #0f172a;
-    margin-bottom: 0.35rem;
-  }
-  .form-card {
-    padding: 2rem;
-  }
-  .form-card h5 {
-    font-size: 1.1rem;
+  .icon-input textarea {
+    min-height: 110px;
+    padding-top: 0.9rem;
   }
   .form-card {
     background: #ffffff;
@@ -98,37 +75,19 @@
     font-weight: 700;
     color: #0f172a;
   }
+  .form-control {
+    border-radius: 12px;
+    border-color: #dbe4ef;
+  }
   .save-row {
     display: flex;
     justify-content: flex-end;
     margin-top: 1.5rem;
   }
-  .danger-zone {
-    margin-top: 2rem;
-    padding: 1.5rem;
-    border-radius: 14px;
-    border: 1px solid #fecaca;
-    background: #fff5f5;
-  }
-  .danger-zone h5 {
-    margin: 0 0 0.35rem;
-    font-weight: 700;
-    color: #991b1b;
-  }
-  .danger-zone p {
-    margin: 0 0 1rem;
-    color: #7f1d1d;
-  }
-  .danger-btn {
-    background: #b91c1c;
-    border: none;
-    color: #fff;
-    border-radius: 10px;
-    padding: 0.65rem 1.2rem;
-    font-weight: 700;
-  }
   @media (max-width: 991px) {
-    .profile-grid { grid-template-columns: 1fr; }
+    .profile-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 {% endblock %}
@@ -139,10 +98,11 @@
     <div class="profile-hero">
       <div>
         <div class="title">Fitopia Admin Profile</div>
-        <div class="subtitle">Update your personal information and contact details</div>
+        <div class="subtitle">Update the same core account fields used in the Java project</div>
       </div>
       <img class="profile-avatar" src="{{ path('app_profile_avatar_view') }}?v={{ app.user and app.user.avatar ? app.user.avatar|url_encode : 'none' }}" alt="Admin avatar">
     </div>
+
     {% for message in app.flashes('success') %}
       <div class="alert alert-success">{{ message }}</div>
     {% endfor %}
@@ -150,79 +110,72 @@
       <div class="alert alert-danger">{{ message }}</div>
     {% endfor %}
 
-    {{ form_start(profileForm, {'attr': {'enctype': 'multipart/form-data'}}) }}
+    {{ form_start(profileForm) }}
     <div class="form-card">
       <h5>Account Information</h5>
       <div class="profile-grid">
-      <div>
-        {{ form_label(profileForm.firstName, 'First name', {'label_attr': {'class': 'field-icon'}}) }}
-        <div class="icon-input">
-          <i class="fa fa-user-circle"></i>
-          {{ form_widget(profileForm.firstName, {'attr': {'class': 'form-control'}}) }}
+        <div>
+          {{ form_label(profileForm.firstName, 'First name') }}
+          <div class="icon-input">
+            <i class="fa fa-user-circle"></i>
+            {{ form_widget(profileForm.firstName, {'attr': {'class': 'form-control'}}) }}
+          </div>
+          {{ form_errors(profileForm.firstName) }}
         </div>
-        {{ form_errors(profileForm.firstName) }}
-      </div>
-      <div>
-        {{ form_label(profileForm.lastName, 'Last name', {'label_attr': {'class': 'field-icon'}}) }}
-        <div class="icon-input">
-          <i class="fa fa-user-circle-o"></i>
-          {{ form_widget(profileForm.lastName, {'attr': {'class': 'form-control'}}) }}
+
+        <div>
+          {{ form_label(profileForm.lastName, 'Last name') }}
+          <div class="icon-input">
+            <i class="fa fa-user-circle-o"></i>
+            {{ form_widget(profileForm.lastName, {'attr': {'class': 'form-control'}}) }}
+          </div>
+          {{ form_errors(profileForm.lastName) }}
         </div>
-        {{ form_errors(profileForm.lastName) }}
-      </div>
-      <div class="full">
-        {{ form_label(profileForm.username, 'Username', {'label_attr': {'class': 'field-icon'}}) }}
-        <div class="icon-input">
-          <i class="fa fa-id-card-o"></i>
-          {{ form_widget(profileForm.username, {'attr': {'class': 'form-control'}}) }}
+
+        <div class="full">
+          {{ form_label(profileForm.username, 'Username') }}
+          <div class="icon-input">
+            <i class="fa fa-id-card-o"></i>
+            {{ form_widget(profileForm.username, {'attr': {'class': 'form-control'}}) }}
+          </div>
+          {{ form_errors(profileForm.username) }}
         </div>
-        {{ form_errors(profileForm.username) }}
-      </div>
-      <div class="full">
-        {{ form_label(profileForm.email, 'Email', {'label_attr': {'class': 'field-icon'}}) }}
-        <div class="icon-input">
-          <i class="fa fa-envelope-open"></i>
-          {{ form_widget(profileForm.email, {'attr': {'class': 'form-control'}}) }}
+
+        <div class="full">
+          {{ form_label(profileForm.email, 'Email') }}
+          <div class="icon-input">
+            <i class="fa fa-envelope-open"></i>
+            {{ form_widget(profileForm.email, {'attr': {'class': 'form-control'}}) }}
+          </div>
+          {{ form_errors(profileForm.email) }}
         </div>
-        {{ form_errors(profileForm.email) }}
-      </div>
-      <div>
-        {{ form_label(profileForm.phone, 'Phone', {'label_attr': {'class': 'field-icon'}}) }}
-        <div class="icon-input">
-          <i class="fa fa-mobile"></i>
-          {{ form_widget(profileForm.phone, {'attr': {'class': 'form-control'}}) }}
+
+        <div>
+          {{ form_label(profileForm.phone, 'Phone') }}
+          <div class="icon-input">
+            <i class="fa fa-mobile"></i>
+            {{ form_widget(profileForm.phone, {'attr': {'class': 'form-control'}}) }}
+          </div>
+          {{ form_errors(profileForm.phone) }}
         </div>
-        {{ form_errors(profileForm.phone) }}
-      </div>
-      <div>
-        {{ form_label(profileForm.birthDate, 'Birth date', {'label_attr': {'class': 'field-icon'}}) }}
-        <div class="icon-input">
-          <i class="fa fa-calendar-check-o"></i>
-          {{ form_widget(profileForm.birthDate, {'attr': {'class': 'form-control'}}) }}
+
+        <div>
+          {{ form_label(profileForm.birthDate, 'Birth date') }}
+          <div class="icon-input">
+            <i class="fa fa-calendar-check-o"></i>
+            {{ form_widget(profileForm.birthDate, {'attr': {'class': 'form-control'}}) }}
+          </div>
+          {{ form_errors(profileForm.birthDate) }}
         </div>
-        {{ form_errors(profileForm.birthDate) }}
-      </div>
-      <div>
-        {{ form_label(profileForm.gender, 'Gender', {'label_attr': {'class': 'field-icon'}}) }}
-        <div class="icon-input">
-          <i class="fa fa-venus-mars"></i>
-          {{ form_widget(profileForm.gender, {'attr': {'class': 'form-control'}}) }}
+
+        <div class="full">
+          {{ form_label(profileForm.bio, 'Bio') }}
+          <div class="icon-input">
+            <i class="fa fa-info-circle"></i>
+            {{ form_widget(profileForm.bio, {'attr': {'class': 'form-control'}}) }}
+          </div>
+          {{ form_errors(profileForm.bio) }}
         </div>
-        {{ form_errors(profileForm.gender) }}
-      </div>
-      <div>
-        {{ form_label(profileForm.avatarFile, 'Avatar profile picture', {'label_attr': {'class': 'field-icon'}}) }}
-        <div class="icon-input">
-          <i class="fa fa-image"></i>
-          {{ form_widget(profileForm.avatarFile, {'attr': {'class': 'form-control'}}) }}
-        </div>
-        {{ form_errors(profileForm.avatarFile) }}
-        <div style="margin-top:0.6rem;">
-          <button type="button" class="btn btn-outline-dark btn-sm" id="admin-generate-avatar-btn">
-            <i class="fa fa-magic"></i> Generate personalized avatar
-          </button>
-        </div>
-      </div>
       </div>
     </div>
 
@@ -231,38 +184,5 @@
       <button class="btn btn-dark" style="background:#0b3a3d;border:none;border-radius:10px;padding:0.7rem 1.2rem;color:#fff;font-weight:600;font-size:1rem;">Save Changes</button>
     </div>
     {{ form_end(profileForm, {'render_rest': false}) }}
-
-    <form id="admin-generate-avatar-form" method="post" action="{{ path('admin_profile_avatar_generate') }}">
-      <input type="hidden" name="_token" value="{{ csrf_token('admin_generate_avatar') }}">
-    </form>
-
-    <div class="danger-zone">
-      <h5>Remove account</h5>
-      <p>This action is permanent and will delete your admin account.</p>
-      <form method="post" action="{{ path('admin_profile_delete') }}" data-confirm="Are you sure you want to delete your account? This cannot be undone.">
-        <input type="hidden" name="_token" value="{{ csrf_token('delete_admin_profile') }}">
-        <button type="submit" class="danger-btn">Remove account</button>
-      </form>
-    </div>
   </div>
-{% endblock %}
-
-{% block javascripts %}
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const form = document.querySelector('form[data-confirm]');
-    const avatarBtn = document.getElementById('admin-generate-avatar-btn');
-    const avatarForm = document.getElementById('admin-generate-avatar-form');
-    form?.addEventListener('submit', (event) => {
-      const message = form.getAttribute('data-confirm') || 'Are you sure?';
-      if (!confirm(message)) {
-        event.preventDefault();
-      }
-    });
-
-    avatarBtn?.addEventListener('click', () => {
-      avatarForm?.submit();
-    });
-  });
-</script>
 {% endblock %}

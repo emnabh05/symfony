@@ -14,21 +14,24 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
     #[Route(path: '/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(Request $request, AuthenticationUtils $authenticationUtils): Response
     {
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
 
+        $this->refreshLoginChallenge($request->getSession());
+
         return $this->render('security/login.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error,
-            'recaptcha_site_key' => (string) $this->getParameter('app.recaptcha_site_key'),
+            'anti_robot_question' => (string) $request->getSession()->get('login_challenge_question', ''),
             'skip_user_context' => true,
         ]);
     }
@@ -46,8 +49,7 @@ class SecurityController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
         SmartAvatarService $smartAvatarService
-    ): Response
-    {
+    ): Response {
         $email = trim((string) $request->query->get('email'));
         $resolvedUser = null;
 
@@ -55,7 +57,12 @@ class SecurityController extends AbstractController
             $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
 
             if ($user instanceof User && $user->getAvatar()) {
-                $avatarPath = $this->getParameter('kernel.project_dir').'/public/uploads/avatars/'.basename((string) $user->getAvatar());
+                $projectDir = $this->getParameter('kernel.project_dir');
+                if (is_string($projectDir)) {
+                    $avatarPath = $projectDir.'/public/uploads/avatars/'.basename((string) $user->getAvatar());
+                } else {
+                    $avatarPath = '';
+                }
                 if ($this->isValidAvatarFile($avatarPath)) {
                     return new BinaryFileResponse($avatarPath);
                 }
@@ -72,7 +79,6 @@ class SecurityController extends AbstractController
             ->setLastName('User')
             ->setPhone('0000000000')
             ->setBirthDate(new \DateTimeImmutable('2000-01-01'))
-            ->setGender('male')
             ->setPassword('placeholder');
         $svg = $smartAvatarService->buildSimpleAvatarSvg($fallbackUser, 160);
 
@@ -103,37 +109,35 @@ class SecurityController extends AbstractController
 
         try {
             $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
-        } catch (DbalException|\PDOException $e) {
+        } catch (DbalException|\PDOException) {
             try {
                 $connection = $em->getConnection();
                 $connection->close();
-                $connection->connect();
                 $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
             } catch (\Throwable) {
                 $this->addFlash('error', 'Database is unavailable. Please try again in a moment.');
                 return $this->redirectToRoute('app_login');
             }
         }
-        if (!$user instanceof User || !$user->isFaceIdEnabled() || $user->getFaceIdTokenHash() === null) {
+
+        $referenceToken = $user instanceof User ? $this->resolveStoredFaceReferenceToken($user) : null;
+        $storedHash = $referenceToken ? hash('sha256', $referenceToken) : null;
+
+        if (!$user instanceof User || !$user->isFaceIdEnabled() || ($referenceToken === null && $storedHash === null)) {
             $this->addFlash('error', 'Face ID is not configured for this account.');
             return $this->redirectToRoute('app_login');
         }
 
         $verified = false;
-        if (
-            $faceCompare->isConfigured()
-            && $user->getFaceIdReferenceToken() !== null
-            && $user->getFaceIdReferenceToken() !== ''
-        ) {
+        if ($referenceToken !== null && $referenceToken !== '') {
             try {
-                $verified = $faceCompare->compareFaceTokens($user->getFaceIdReferenceToken(), $faceIdToken);
+                $verified = $faceCompare->compareFaceTokens($referenceToken, $faceIdToken);
             } catch (\RuntimeException) {
                 $this->addFlash('error', 'Face ID provider is unavailable. Please use password login.');
                 return $this->redirectToRoute('app_login');
             }
-        } else {
-            $incomingHash = hash('sha256', $faceIdToken);
-            $verified = $user->getFaceIdTokenHash() !== null && hash_equals($user->getFaceIdTokenHash(), $incomingHash);
+        } elseif ($storedHash !== null) {
+            $verified = hash_equals($storedHash, hash('sha256', $faceIdToken));
         }
 
         if (!$verified) {
@@ -150,7 +154,7 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('admin_dashboard');
         }
 
-        return $this->redirectToRoute('app_profile');
+        return $this->redirectToRoute('diet_planner');
     }
 
     #[Route(path: '/login/face-id/camera', name: 'app_login_face_id_camera', methods: ['POST'])]
@@ -179,12 +183,12 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
+        $referenceToken = $user instanceof User ? $this->resolveStoredFaceReferenceToken($user) : null;
         if (!$user instanceof User || !$user->isFaceIdEnabled()) {
             $this->addFlash('error', 'Face ID is not configured for this account.');
             return $this->redirectToRoute('app_login');
         }
 
-        $referenceToken = $user->getFaceIdReferenceToken();
         if ($referenceToken === null || $referenceToken === '') {
             $this->addFlash('error', 'Face ID is not enrolled for this account.');
             return $this->redirectToRoute('app_login');
@@ -218,7 +222,7 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('admin_dashboard');
         }
 
-        return $this->redirectToRoute('app_profile');
+        return $this->redirectToRoute('diet_planner');
     }
 
     #[Route(path: '/login/face-id/enroll-camera', name: 'app_login_face_id_enroll_camera', methods: ['POST'])]
@@ -248,7 +252,7 @@ class SecurityController extends AbstractController
         $session = $request->getSession();
         $pendingId = (int) $session->get('2fa_pending_user_id', 0);
         if ($pendingId !== (int) $user->getId()) {
-            return $this->redirectToRoute('app_profile');
+            return $this->redirectToRoute('diet_planner');
         }
 
         if ($request->isMethod('POST')) {
@@ -281,10 +285,39 @@ class SecurityController extends AbstractController
                 return $this->redirectToRoute('admin_dashboard');
             }
 
-            return $this->redirectToRoute('app_profile');
+            return $this->redirectToRoute('diet_planner');
         }
 
         return $this->render('security/2fa_check.html.twig');
+    }
+
+    private function refreshLoginChallenge(SessionInterface $session): void
+    {
+        $left = random_int(2, 9);
+        $right = random_int(2, 9);
+
+        $session->set('login_challenge_question', sprintf('Anti-robot : combien font %d x %d ?', $left, $right));
+        $session->set('login_challenge_answer', (string) ($left * $right));
+    }
+
+    private function resolveStoredFaceReferenceToken(User $user): ?string
+    {
+        $directToken = trim((string) $user->getFaceIdReferenceToken());
+        if ($directToken !== '') {
+            return $directToken;
+        }
+
+        $raw = trim((string) $user->getFaceImagePath());
+        if ($raw === '') {
+            return null;
+        }
+
+        if (str_starts_with($raw, 'face-token:')) {
+            $token = trim(substr($raw, strlen('face-token:')));
+            return $token !== '' ? $token : null;
+        }
+
+        return null;
     }
 
     private function isValidAvatarFile(string $path): bool

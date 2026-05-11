@@ -3,7 +3,8 @@
 namespace App\Security;
 
 use App\Entity\User;
-use App\Service\RecaptchaVerifier;
+use App\Service\LegacyUserBridgeService;
+use App\Service\UserPasswordCompatibilityService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
@@ -29,40 +30,49 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
 
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
-        private UserPasswordHasherInterface $passwordHasher,
         private EntityManagerInterface $em,
-        private RecaptchaVerifier $recaptchaVerifier
-    )
-    {
+        private LegacyUserBridgeService $legacyUserBridge,
+        private UserPasswordCompatibilityService $passwordCompatibility
+    ) {
     }
 
     public function authenticate(Request $request): Passport
     {
-        $recaptchaToken = (string) $request->request->get('g-recaptcha-response', '');
-        if (
-            $this->recaptchaVerifier->isConfigured()
-            && $recaptchaToken !== ''
-            && !$this->recaptchaVerifier->verify($recaptchaToken, $request->getClientIp())
-        ) {
-            throw new CustomUserMessageAuthenticationException('Captcha invalide. Veuillez confirmer "Je ne suis pas un robot".');
+        $session = $request->getSession();
+        $expectedAnswer = trim((string) $session->get('login_challenge_answer', ''));
+        $providedAnswer = trim($request->getPayload()->getString('anti_robot_answer'));
+        $session->remove('login_challenge_answer');
+        $session->remove('login_challenge_question');
+
+        if ($expectedAnswer === '' || $providedAnswer === '' || !hash_equals($expectedAnswer, $providedAnswer)) {
+            throw new CustomUserMessageAuthenticationException('Verification anti-robot invalide.');
         }
 
-        $email = strtolower(trim($request->getPayload()->getString('email')));
+        $identifier = trim($request->getPayload()->getString('email'));
+        if ($identifier === '') {
+            throw new CustomUserMessageAuthenticationException('Email or username is required.');
+        }
 
-        $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
+        $normalizedIdentifier = mb_strtolower($identifier);
+        $session->set(SecurityRequestAttributes::LAST_USERNAME, $identifier);
 
         $password = $request->getPayload()->getString('password');
 
         return new Passport(
-            new UserBadge($email, function (string $identifier): User {
+            new UserBadge($normalizedIdentifier, function () use ($normalizedIdentifier): UserInterface {
                 $user = $this->em->getRepository(User::class)
                     ->createQueryBuilder('u')
-                    ->where('u.email = :identifier')
-                    ->orWhere('u.username = :identifier')
-                    ->setParameter('identifier', $identifier)
+                    ->where('LOWER(u.email) = :identifier')
+                    ->orWhere('LOWER(u.username) = :identifier')
+                    ->setParameter('identifier', $normalizedIdentifier)
                     ->setMaxResults(1)
                     ->getQuery()
                     ->getOneOrNullResult();
+
+                if (!$user instanceof User) {
+                    $user = $this->legacyUserBridge->findOrImportByIdentifier($normalizedIdentifier);
+                }
+
                 if (!$user instanceof User) {
                     throw new CustomUserMessageAuthenticationException('Account not found for this email/username.');
                 }
@@ -74,57 +84,7 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
                     return false;
                 }
 
-                if ($this->passwordHasher->isPasswordValid($user, $plainPassword)) {
-                    return true;
-                }
-
-                $storedPassword = (string) $user->getPassword();
-
-                // Native password_hash()/password_verify() fallback for legacy bcrypt/argon hashes.
-                if ($storedPassword !== '' && password_verify($plainPassword, $storedPassword)) {
-                    $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
-                    $this->em->flush();
-                    return true;
-                }
-
-                if ($storedPassword !== '' && hash_equals($storedPassword, $plainPassword)) {
-                    // Legacy plain-text password fallback: upgrade to a secure hash on successful login.
-                    $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
-                    $this->em->flush();
-                    return true;
-                }
-
-                // Legacy crypt() fallback (old PHP hashes).
-                $legacyCrypt = @crypt($plainPassword, $storedPassword);
-                if (is_string($legacyCrypt) && $legacyCrypt !== '' && hash_equals($storedPassword, $legacyCrypt)) {
-                    $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
-                    $this->em->flush();
-                    return true;
-                }
-
-                // Legacy md5/sha1/sha256 hex hashes fallback.
-                if (preg_match('/^[a-f0-9]{32}$/i', $storedPassword) && hash_equals(strtolower($storedPassword), md5($plainPassword))) {
-                    $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
-                    $this->em->flush();
-                    return true;
-                }
-                if (preg_match('/^[a-f0-9]{40}$/i', $storedPassword) && hash_equals(strtolower($storedPassword), sha1($plainPassword))) {
-                    $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
-                    $this->em->flush();
-                    return true;
-                }
-                if (preg_match('/^[a-f0-9]{64}$/i', $storedPassword) && hash_equals(strtolower($storedPassword), hash('sha256', $plainPassword))) {
-                    $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
-                    $this->em->flush();
-                    return true;
-                }
-                if (preg_match('/^[a-f0-9]{128}$/i', $storedPassword) && hash_equals(strtolower($storedPassword), hash('sha512', $plainPassword))) {
-                    $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
-                    $this->em->flush();
-                    return true;
-                }
-
-                return false;
+                return $this->passwordCompatibility->verifyAndUpgrade($user, $plainPassword);
             }, $password),
             [
                 new CsrfTokenBadge('authenticate', $request->getPayload()->getString('_csrf_token')),
@@ -137,15 +97,7 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
     {
         $user = $token->getUser();
         if ($user instanceof User) {
-            $session = $request->getSession();
-            if ($user->isTwoFactorEnabled() && ($user->getTwoFactorSecret() ?? '') !== '') {
-                $session->set('2fa_pending_user_id', (int) $user->getId());
-                $session->set('2fa_verified', false);
-                $session->set('2fa_attempts', 0);
-                return new RedirectResponse($this->urlGenerator->generate('app_2fa_check'));
-            }
-            $session->remove('2fa_pending_user_id');
-            $session->set('2fa_verified', true);
+            $request->getSession()->set('2fa_verified', true);
         }
 
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
@@ -156,7 +108,7 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($this->urlGenerator->generate('admin_dashboard'));
         }
 
-        return new RedirectResponse($this->urlGenerator->generate('app_profile'));
+        return new RedirectResponse($this->urlGenerator->generate('diet_planner'));
     }
 
     protected function getLoginUrl(Request $request): string

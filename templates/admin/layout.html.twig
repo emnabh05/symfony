@@ -4,293 +4,435 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Fitopia Admin{% endblock %}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ asset('css/admin_dashboard.css') }}?v=20260509-sidebar-structure-3">
     <style>
-      :root {
-        --fitopia-dark: #0b3a3d;
-        --fitopia-mid: #0d5b50;
-        --fitopia-light: #0f7a5f;
-        --ink: #0f172a;
-        --muted: #6b7280;
-        --bg: #f7faf9;
+      body.admin-back-layout {
+        padding-left: calc(var(--sidebar-width) + var(--layout-gap)) !important;
       }
+
+      body.admin-back-layout .main-content {
+        margin-left: 0 !important;
+        width: auto !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        padding-left: 0 !important;
+      }
+
+      @media (max-width: 960px) {
+        body.admin-back-layout {
+          padding-left: 0 !important;
+        }
+
+        body.admin-back-layout .main-content {
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+      }
+
       * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: "Poppins", sans-serif;
-        background: var(--bg);
-        color: var(--ink);
+
+      .legacy-main-content {
+        padding-top: 28px;
       }
-      .admin-shell {
-        display: grid;
-        grid-template-columns: 260px 1fr;
-        min-height: 100vh;
+
+      .admin-shell-inner {
+        width: 100%;
+        max-width: 1180px;
       }
-      .sidebar {
-        background: linear-gradient(180deg, var(--fitopia-dark), var(--fitopia-mid));
-        color: #fff;
-        padding: 1.5rem 1.25rem;
-        position: sticky;
-        top: 0;
-        height: 100vh;
-      }
-      .brand-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-        color: #fff;
-        text-decoration: none;
-      }
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-bottom: 2rem;
-      }
-      .brand img {
-        width: 42px;
-        height: 42px;
-        border-radius: 10px;
-        background: #fff;
-        padding: 6px;
-      }
-      .brand span {
-        font-weight: 700;
-        letter-spacing: 0.3px;
-      }
-      .nav {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-      }
-      .nav-item {
-        margin-bottom: 0.5rem;
-      }
-      .nav-link {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        padding: 0.85rem 1rem;
-        border-radius: 10px;
-        color: #fff;
-        text-decoration: none;
-        background: rgba(255, 255, 255, 0.08);
-        transition: all 0.2s ease;
-        font-size: 1rem;
-        font-weight: 600;
-      }
-      .nav-link.active {
-        background: rgba(255, 255, 255, 0.22);
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
-      }
-      .nav-link:hover {
-        background: rgba(255, 255, 255, 0.18);
-      }
-      .submenu {
-        list-style: none;
-        margin: 0.6rem 0 0 1.2rem;
-        padding: 0;
-        display: none;
-      }
-      .nav-item:hover .submenu {
-        display: block;
-      }
-      .submenu a {
-        display: block;
-        padding: 0.55rem 0.7rem;
-        color: #e6fffa;
-        text-decoration: none;
-        font-size: 0.98rem;
-        font-weight: 500;
-        border-radius: 8px;
-      }
-      .submenu a:hover {
-        text-decoration: underline;
-      }
-      .submenu a.active {
-        background: rgba(255, 255, 255, 0.2);
-        text-decoration: none;
-      }
-      .admin-mini {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        padding: 0.6rem 0.75rem;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.12);
-        margin-bottom: 1.2rem;
-      }
-      .admin-mini img {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid rgba(255, 255, 255, 0.5);
-      }
-      .admin-mini .name {
-        font-weight: 600;
-        font-size: 0.95rem;
-        color: #fff;
-      }
-      .logout-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-top: 2rem;
-        background: #fff;
-        color: var(--fitopia-dark);
-        border-radius: 10px;
-        padding: 0.6rem 0.9rem;
-        font-weight: 700;
-        text-decoration: none;
-      }
-      .modal-backdrop {
-        position: fixed;
-        inset: 0;
-        background: rgba(15, 23, 42, 0.5);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 1050;
-      }
-      .modal-card {
-        background: #fff;
-        border-radius: 14px;
-        padding: 1.5rem;
-        width: min(520px, 92vw);
-        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
-        text-align: center;
-      }
-      .modal-card h4 {
-        margin-bottom: 0.5rem;
-        font-weight: 800;
-        color: #b42318;
-      }
-      .modal-card p {
-        color: #475467;
-      }
-      .modal-actions {
-        margin-top: 1.25rem;
-        display: flex;
-        gap: 0.75rem;
-        justify-content: center;
-      }
-      .btn-cancel {
-        background: #e2e8f0;
-        border: none;
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
-        font-weight: 600;
-      }
-      .btn-confirm {
-        background: #b42318;
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
-        font-weight: 700;
-      }
-      .content {
-        padding: 2.5rem 2.5rem 3rem;
-      }
+
       .page-title {
-        font-size: 1.6rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
+        margin: 0 0 18px;
+        font-size: 2rem;
+        font-weight: 900;
+        color: #11243d;
+        letter-spacing: -0.02em;
       }
+
+      .page-subtitle {
+        margin: 6px 0 0;
+        color: #6f8094;
+        font-size: 1rem;
+      }
+
       .card {
         background: #fff;
-        border-radius: 16px;
-        box-shadow: 0 18px 50px rgba(14, 30, 37, 0.12);
+        border-radius: 20px;
+        box-shadow: 0 22px 50px rgba(17, 36, 61, 0.08);
         padding: 2rem;
+        border: 1px solid #eef3f6;
       }
-      @media (max-width: 991px) {
-        .admin-shell {
-          grid-template-columns: 1fr;
+
+      .page-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .back-btn {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: #ffffff;
+        border: 1px solid #dbe6eb;
+        color: #0f4c45;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        box-shadow: 0 10px 24px rgba(15, 76, 69, 0.08);
+      }
+
+      .alert {
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 16px;
+        font-weight: 700;
+        border: 1px solid transparent;
+      }
+
+      .alert-success {
+        background: #ecfdf5;
+        color: #166534;
+        border-color: #a7f3d0;
+      }
+
+      .alert-danger {
+        background: #fef2f2;
+        color: #991b1b;
+        border-color: #fecaca;
+      }
+
+      .alert-info {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border-color: #bfdbfe;
+      }
+
+      .alert-warning {
+        background: #fffbeb;
+        color: #92400e;
+        border-color: #fde68a;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 11px 16px;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .btn-sm {
+        padding: 8px 12px;
+        font-size: 0.84rem;
+        border-radius: 10px;
+      }
+
+      .btn-primary {
+        background: #0f4c45;
+        color: #fff;
+        box-shadow: 0 12px 24px rgba(15, 76, 69, 0.16);
+      }
+
+      .btn-secondary {
+        background: #eef4f3;
+        color: #0f4c45;
+        border-color: #d8e5e2;
+      }
+
+      .btn-success {
+        background: #118265;
+        color: #fff;
+      }
+
+      .btn-danger {
+        background: #b42318;
+        color: #fff;
+      }
+
+      .btn-dark {
+        background: #0b3a3d;
+        color: #fff;
+      }
+
+      .btn-outline-primary {
+        background: #fff;
+        color: #0f4c45;
+        border-color: #9fc8c0;
+      }
+
+      .btn-outline-secondary {
+        background: #fff;
+        color: #5b6b7d;
+        border-color: #d8e0e8;
+      }
+
+      .btn-outline-danger {
+        background: #fff;
+        color: #b42318;
+        border-color: #f3b5b1;
+      }
+
+      .form-control {
+        width: 100%;
+        min-height: 46px;
+        padding: 11px 14px;
+        border-radius: 12px;
+        border: 1px solid #d6e1e8;
+        background: #fff;
+        color: #153f46;
+        font: inherit;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: #0f7a5f;
+        box-shadow: 0 0 0 3px rgba(15, 122, 95, 0.12);
+      }
+
+      textarea.form-control {
+        min-height: 110px;
+        resize: vertical;
+      }
+
+      .form-label {
+        display: inline-block;
+        margin-bottom: 8px;
+        font-weight: 700;
+        color: #27465b;
+      }
+
+      .table-responsive {
+        overflow-x: auto;
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 680px;
+      }
+
+      .table th,
+      .table td {
+        padding: 14px 12px;
+        border-bottom: 1px solid #edf2f7;
+        text-align: left;
+      }
+
+      .table th {
+        font-size: 0.84rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #63758a;
+      }
+
+      .table td {
+        color: #1f3447;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 800;
+      }
+
+      .badge-info {
+        background: #e0f2fe;
+        color: #075985;
+      }
+
+      .text-muted {
+        color: #6b7280;
+      }
+
+      .d-flex {
+        display: flex;
+      }
+
+      .gap-2 {
+        gap: 0.5rem;
+      }
+
+      .flex-wrap {
+        flex-wrap: wrap;
+      }
+
+      .mb-0 { margin-bottom: 0; }
+      .mb-3 { margin-bottom: 1rem; }
+      .mb-4 { margin-bottom: 1.5rem; }
+      .mt-2 { margin-top: 0.5rem; }
+      .mt-3 { margin-top: 1rem; }
+      .ml-2 { margin-left: 0.5rem; }
+
+      @media (max-width: 960px) {
+        .legacy-main-content {
+          padding-top: 22px;
         }
-        .sidebar {
-          height: auto;
-          position: relative;
+
+        .page-title {
+          font-size: 1.7rem;
+        }
+
+        .page-header {
+          align-items: flex-start;
         }
       }
     </style>
     {% block stylesheets %}{% endblock %}
   </head>
-  <body>
-    <div class="admin-shell">
-      <aside class="sidebar">
-        <div class="brand">
-          <a class="brand-link" href="{{ path('admin_dashboard') }}">
-            <img src="{{ asset('images/logo.png') }}" alt="Fitopia logo">
-            <span>Fitopia Admin</span>
-          </a>
+  <body class="admin-back-layout">
+    {% set currentRoute = app.request.attributes.get('_route')|default('') %}
+    {% set isStocksRoute = currentRoute starts with 'admin_stocks' %}
+    {% set isStockProductsRoute = currentRoute == 'admin_stocks' or currentRoute starts with 'admin_stocks_supplement_' %}
+    {% set isStockOrdersRoute = currentRoute starts with 'admin_stocks_payment_' %}
+    <aside class="admin-sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-box">
+          <span class="logo-mark">F</span>
+          <span class="logo-caption">FITOPIA</span>
         </div>
-        <div class="admin-mini">
-          <img src="{% if app.user and app.user.avatar %}{{ asset('uploads/avatars/' ~ app.user.avatar) }}{% else %}{{ asset('images/logo.png') }}{% endif %}" alt="Admin avatar">
-          <div class="name">
-            {{ app.user ? app.user.userIdentifier : 'Admin' }}
-          </div>
-        </div>
-        <ul class="nav">
-          <li class="nav-item">
-            <a href="{{ path('admin_tables') }}" class="nav-link{% if app.request.attributes.get('_route') == 'admin_tables' %} active{% endif %}">
-              <i class="fa fa-table"></i>
-              Tables
-            </a>
-            <ul class="submenu">
-              <li><a href="{{ path('admin_users') }}" class="{% if app.request.attributes.get('_route') == 'admin_users' %}active{% endif %}"><i class="fa fa-users"></i> Gestion utilisateur</a></li>
-              <li><a href="{{ path('admin_blog_forum') }}" class="{% if app.request.attributes.get('_route') == 'admin_blog_forum' %}active{% endif %}"><i class="fa fa-comments"></i> Gestion forum et blog</a></li>
-              <li><a href="{{ path('admin_stocks') }}" class="{% if app.request.attributes.get('_route') == 'admin_stocks' %}active{% endif %}"><i class="fa fa-cubes"></i> Gestion des stock</a></li>
-              <li><a href="{{ path('admin_events') }}" class="{% if app.request.attributes.get('_route') == 'admin_events' %}active{% endif %}"><i class="fa fa-calendar"></i> Gestion des evenements</a></li>
-              <li><a href="{{ path('admin_checkin_index') }}" class="{% if app.request.attributes.get('_route') starts with 'admin_checkin_' %}active{% endif %}"><i class="fa fa-qrcode"></i> Check-in QR</a></li>
-              <li><a href="{{ path('admin_loyalty') }}" class="{% if app.request.attributes.get('_route') == 'admin_loyalty' %}active{% endif %}"><i class="fa fa-diamond"></i> Gestion fidelite clients</a></li>
-              <li><a href="{{ path('admin_trainings') }}" class="{% if app.request.attributes.get('_route') == 'admin_trainings' %}active{% endif %}"><i class="fa fa-dumbbell"></i> Gestion des entrainement</a></li>
-              <li><a href="{{ path('admin_nutrition') }}" class="{% if app.request.attributes.get('_route') == 'admin_nutrition' %}active{% endif %}"><i class="fa fa-leaf"></i> Gestion alimentation</a></li>
-            </ul>
-          </li>
-        </ul>
-        <a href="#" class="logout-btn" id="admin-logout-btn">
-          <i class="fa fa-sign-out"></i> Logout
-        </a>
-      </aside>
+        <span class="sidebar-title">Fitopia Admin</span>
+      </div>
 
-      <main class="content">
-        {% block body %}{% endblock %}
-      </main>
-    </div>
-    <div class="modal-backdrop" id="logout-modal">
-      <div class="modal-card">
-        <h4>Leaving so soon?</h4>
-        <p>We’ll be here when you’re ready to continue managing Fitopia.</p>
-        <div class="modal-actions">
-          <button class="btn-cancel" type="button" id="logout-cancel-btn">Cancel</button>
-          <button class="btn-confirm" type="button" id="logout-confirm-btn">Logout</button>
+      <div class="user-card">
+        <div class="user-avatar">
+          {{ app.user and app.user.email ? app.user.email|first|upper : 'A' }}
+        </div>
+        <div class="user-mail">
+          {{ app.user and app.user.email ? app.user.email : 'admin@fitopia.com' }}
         </div>
       </div>
-    </div>
-    {% block javascripts %}{% endblock %}
+
+      <a href="{{ path('admin_tables') }}" class="nav-section-title {{ currentRoute == 'admin_tables' ? 'active' : '' }}">
+        <span class="nav-link-icon"><i class="fa fa-table"></i></span>
+        <span class="nav-section-label">Tables</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="{{ path('admin_users') }}" class="nav-link-btn {{ currentRoute == 'admin_users' ? 'active' : '' }}">
+          <span class="nav-link-main">
+            <span class="nav-link-icon"><i class="fa fa-users"></i></span>
+            <span class="nav-link-label">Gestion utilisateur</span>
+          </span>
+        </a>
+        <a href="{{ path('admin_blog_forum') }}" class="nav-link-btn {{ currentRoute == 'admin_blog_forum' ? 'active' : '' }}">
+          <span class="nav-link-main">
+            <span class="nav-link-icon"><i class="fa fa-comment"></i></span>
+            <span class="nav-link-label">Gestion forum et blog</span>
+          </span>
+        </a>
+        <a href="{{ path('admin_events') }}" class="nav-link-btn {{ currentRoute == 'admin_events' ? 'active' : '' }}">
+          <span class="nav-link-main">
+            <span class="nav-link-icon"><i class="fa fa-calendar"></i></span>
+            <span class="nav-link-label">Gestion des evenements</span>
+          </span>
+        </a>
+        <a href="{{ path('admin_trainings') }}" class="nav-link-btn {{ currentRoute == 'admin_trainings' ? 'active' : '' }}">
+          <span class="nav-link-main">
+            <span class="nav-link-icon"><i class="fa fa-line-chart"></i></span>
+            <span class="nav-link-label">Gestion des entrainements</span>
+          </span>
+        </a>
+        <a href="{{ path('admin_nutrition') }}" class="nav-link-btn {{ currentRoute == 'admin_nutrition' ? 'active' : '' }}">
+          <span class="nav-link-main">
+            <span class="nav-link-icon"><i class="fa fa-pagelines"></i></span>
+            <span class="nav-link-label">Gestion alimentation</span>
+          </span>
+        </a>
+
+        <div class="nav-accordion {{ isStocksRoute ? 'is-open' : '' }}" data-sidebar-accordion>
+          <button
+            type="button"
+            class="nav-link-btn nav-accordion-trigger {{ isStocksRoute ? 'active' : '' }}"
+            data-sidebar-trigger
+            aria-expanded="{{ isStocksRoute ? 'true' : 'false' }}"
+          >
+            <span class="nav-link-main">
+              <span class="nav-link-icon"><i class="fa fa-shopping-cart"></i></span>
+              <span>Gestion supplements</span>
+            </span>
+            <span class="nav-caret" aria-hidden="true"></span>
+          </button>
+
+          <div class="submenu {{ isStocksRoute ? 'is-open' : '' }}" data-sidebar-panel>
+            <a
+              href="{{ path('admin_stocks') }}#supplements-list-section"
+              class="submenu-link {{ isStockProductsRoute ? 'active' : '' }}"
+              data-submenu-link="products"
+            >
+              Produits
+            </a>
+            <a
+              href="{{ path('admin_stocks') }}#supplements-orders-section"
+              class="submenu-link {{ isStockOrdersRoute ? 'active' : '' }}"
+              data-submenu-link="orders"
+            >
+              Commandes
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="logout-container">
+        <a href="{{ path('app_logout') }}" class="logout-btn">
+          <span class="logout-icon">&#8618;</span>
+          <span>Logout</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main-content legacy-main-content">
+      {% block body %}{% endblock %}
+    </main>
+
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const openBtn = document.getElementById('admin-logout-btn');
-        const modal = document.getElementById('logout-modal');
-        const cancelBtn = document.getElementById('logout-cancel-btn');
-        const confirmBtn = document.getElementById('logout-confirm-btn');
-        if (!openBtn || !modal || !cancelBtn || !confirmBtn) return;
-        openBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          modal.style.display = 'flex';
-        });
-        cancelBtn.addEventListener('click', () => {
-          modal.style.display = 'none';
-        });
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal) modal.style.display = 'none';
-        });
-        confirmBtn.addEventListener('click', () => {
-          window.location.href = "{{ path('app_logout') }}";
-        });
+      document.addEventListener('DOMContentLoaded', function () {
+        const accordion = document.querySelector('[data-sidebar-accordion]');
+        const trigger = document.querySelector('[data-sidebar-trigger]');
+        const submenu = document.querySelector('[data-sidebar-panel]');
+        const submenuLinks = document.querySelectorAll('[data-submenu-link]');
+
+        if (accordion && trigger && submenu) {
+          trigger.addEventListener('click', function () {
+            const isOpen = accordion.classList.toggle('is-open');
+            submenu.classList.toggle('is-open', isOpen);
+            trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+          });
+        }
+
+        if (window.location.hash === '#supplements-orders-section') {
+          submenuLinks.forEach(function (link) {
+            link.classList.toggle('active', link.dataset.submenuLink === 'orders');
+          });
+        } else if (window.location.hash === '#supplements-list-section' || window.location.pathname.endsWith('/admin/stocks')) {
+          submenuLinks.forEach(function (link) {
+            if (link.dataset.submenuLink === 'products' && !document.querySelector('[data-submenu-link="orders"].active')) {
+              link.classList.add('active');
+            }
+          });
+        }
       });
     </script>
+    {% block javascripts %}{% endblock %}
   </body>
 </html>

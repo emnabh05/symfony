@@ -6,6 +6,17 @@ use App\Entity\User;
 
 class NutritionRegimeCalculator
 {
+    /**
+     * @return array{
+     *     objectif: string,
+     *     type_regime: string,
+     *     calories: int,
+     *     proteines: int,
+     *     glucides: int,
+     *     lipides: int,
+     *     restrictions: string|null
+     * }|null
+     */
     public function calculate(User $user): ?array
     {
         $weight = $user->getWeight();
@@ -18,7 +29,7 @@ class NutritionRegimeCalculator
         $birthDate = $user->getBirthDate();
 
         $bmr = null;
-        if ($birthDate && $gender && $height) {
+        if ($height !== null && $height > 0) {
             $age = $this->calculateAge($birthDate);
             $bmr = 10 * $weight + 6.25 * $height - 5 * $age + ($gender === 'male' ? 5 : -161);
         }
@@ -51,8 +62,12 @@ class NutritionRegimeCalculator
         ];
     }
 
-    private function calculateAge(\DateTimeInterface $birthDate): int
+    private function calculateAge(?\DateTimeInterface $birthDate): int
     {
+        if (!$birthDate instanceof \DateTimeInterface) {
+            return 30;
+        }
+
         $now = new \DateTimeImmutable();
         return (int) $now->diff($birthDate)->y;
     }
@@ -70,6 +85,7 @@ class NutritionRegimeCalculator
     private function determineGoal(User $user): string
     {
         $goals = $user->getFitnessGoals() ?? [];
+        /** @var list<string> $goals */
         $goals = array_map('strtolower', $goals);
 
         if (in_array('weight_loss', $goals, true)) {
@@ -98,9 +114,13 @@ class NutritionRegimeCalculator
         };
     }
 
+    /**
+     * @return array{protein: float, carb: float, fat: float}
+     */
     private function macroTargets(string $goal, User $user): array
     {
         $prefs = $user->getDietaryPreferences() ?? [];
+        /** @var list<string> $prefs */
         $prefs = array_map('strtolower', $prefs);
 
         if (in_array('keto', $prefs, true)) {
@@ -118,6 +138,7 @@ class NutritionRegimeCalculator
     private function determineDietType(User $user): string
     {
         $prefs = $user->getDietaryPreferences() ?? [];
+        /** @var list<string> $prefs */
         $prefs = array_map('strtolower', $prefs);
 
         if (in_array('keto', $prefs, true)) {
@@ -131,6 +152,7 @@ class NutritionRegimeCalculator
         }
 
         $conditions = $user->getHealthConditions() ?? [];
+        /** @var list<string> $conditions */
         $conditionsStr = strtolower(implode(' ', $conditions));
         if (str_contains($conditionsStr, 'diabet')) {
             return 'diabetique';
@@ -152,7 +174,7 @@ class NutritionRegimeCalculator
             $parts[] = $c;
         }
 
-        $parts = array_values(array_filter(array_map('trim', $parts)));
+        $parts = array_values(array_filter(array_map(static fn (mixed $value): string => trim((string) $value), $parts)));
         return $parts ? implode(', ', $parts) : null;
     }
 }

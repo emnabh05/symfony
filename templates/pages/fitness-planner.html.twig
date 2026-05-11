@@ -16,27 +16,29 @@
       --fp-soft: #f0f6f7;
       --fp-shadow: 0 14px 42px rgba(10, 36, 54, 0.1);
       --fp-radius: 18px;
+      --fp-page-gutter: clamp(18px, 2.6vw, 52px);
     }
 
     .fitness-page {
       background: var(--fp-bg);
       min-height: calc(100vh - 160px);
-      padding: 2.4rem 0 3rem;
+      padding: 1.6rem 0 3.2rem;
     }
 
     .fitness-shell {
-      width: min(1200px, 92vw);
+      width: calc(100% - (var(--fp-page-gutter) * 2));
+      max-width: none;
       margin: 0 auto;
       display: grid;
-      gap: 1.3rem;
+      gap: 1.5rem;
     }
 
     .fitness-hero {
-      border-radius: calc(var(--fp-radius) + 6px);
-      background: linear-gradient(130deg, #0b5750 0%, #1b7f73 65%, #44a89f 100%);
-      color: #fff;
+      border-radius: 34px;
+      background: linear-gradient(180deg, rgba(250, 255, 251, 0.96), rgba(245, 251, 248, 0.96));
+      border: 1px solid #d7ebe2;
       box-shadow: var(--fp-shadow);
-      padding: 2rem 1.7rem;
+      padding: 22px;
       position: relative;
       overflow: hidden;
     }
@@ -44,68 +46,234 @@
     .fitness-hero::after {
       content: "";
       position: absolute;
-      width: 280px;
-      height: 280px;
+      inset: 0;
+      background:
+        radial-gradient(circle at 8% 10%, rgba(30, 197, 143, 0.12), transparent 24%),
+        radial-gradient(circle at 95% 0%, rgba(204, 233, 221, 0.55), transparent 28%);
+      pointer-events: none;
+    }
+
+    .fitness-hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(380px, 0.95fr);
+      gap: 38px;
+      align-items: stretch;
+    }
+
+    .fitness-hero-visual {
+      min-height: 720px;
+      border-radius: 0;
+      overflow: hidden;
+      position: relative;
+      background:
+        linear-gradient(180deg, rgba(3, 35, 24, 0.18) 0%, rgba(3, 35, 24, 0.2) 100%),
+        url('{{ asset('images/fitness/fitness_planner_banner.png') }}') center/cover no-repeat;
+      box-shadow: 0 18px 40px rgba(6, 28, 34, 0.16);
+    }
+
+    .fitness-hero-visual::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(8, 25, 32, 0.08) 0%, rgba(6, 55, 43, 0.58) 100%);
+    }
+
+    .fitness-hero-overlay {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+      padding: 0 28px 28px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .fitness-hero-chip {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 10px 18px;
       border-radius: 50%;
-      right: -95px;
-      top: -120px;
-      background: rgba(255, 255, 255, 0.14);
-    }
-
-    .fitness-hero h1 {
-      color: #fff;
-      font-size: clamp(1.8rem, 2.8vw, 2.55rem);
-      margin: 0 0 .5rem;
-      font-weight: 800;
+      border-radius: 999px;
+      background: #ffffff;
+      color: #0d7c61;
+      font-size: 14px;
+      font-weight: 900;
       letter-spacing: .01em;
+      text-transform: uppercase;
+      box-shadow: 0 14px 28px rgba(12, 63, 56, 0.12);
     }
 
-    .fitness-hero p {
-      color: rgba(255, 255, 255, .9);
-      max-width: 700px;
+    .fitness-hero-visual-copy {
+      max-width: 500px;
+      color: #ffffff;
+      font-size: clamp(28px, 3.2vw, 46px);
+      font-weight: 900;
+      line-height: 1.16;
       margin: 0;
-      font-size: 1.03rem;
+      text-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .fitness-hero-copy {
+      display: grid;
+      align-content: start;
+      gap: 18px;
+      padding: 22px 12px 0 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .fitness-hero-kicker {
+      color: #00a878;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin: 0;
+    }
+
+    .fitness-hero-title {
+      color: #04263b;
+      font-size: clamp(42px, 4.2vw, 82px);
+      line-height: 1.08;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      margin: 0;
+      max-width: 12ch;
+    }
+
+    .fitness-hero-subtitle {
+      color: #476477;
+      max-width: 26ch;
+      margin: 0;
+      font-size: clamp(17px, 1.5vw, 22px);
+      line-height: 1.5;
+    }
+
+    .fitness-hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
     }
 
     .fitness-stats {
-      margin-top: 1.2rem;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: .8rem;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
     }
 
     .fitness-stat {
-      border: 1px solid rgba(255, 255, 255, .35);
-      background: rgba(255, 255, 255, .1);
-      border-radius: 14px;
-      padding: .75rem .95rem;
+      border: 1px solid #dcebe3;
+      background: #ffffff;
+      border-radius: 28px;
+      padding: 22px 20px 18px;
+      box-shadow: 0 12px 32px rgba(10, 36, 54, 0.07);
     }
 
     .fitness-stat .v {
-      font-size: 1.25rem;
-      font-weight: 700;
-      line-height: 1.2;
+      color: #063b39;
+      font-size: clamp(26px, 2vw, 40px);
+      font-weight: 900;
+      line-height: 1.05;
     }
 
     .fitness-stat .l {
-      font-size: .81rem;
-      letter-spacing: .02em;
-      opacity: .9;
+      margin-top: 8px;
+      display: block;
+      color: #6a7d91;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .fitness-hero-note {
+      border-radius: 28px;
+      background: #1b9669;
+      color: #ffffff;
+      padding: 22px 22px 18px;
+      display: grid;
+      gap: 8px;
+      box-shadow: 0 18px 42px rgba(17, 108, 79, 0.18);
+    }
+
+    .fitness-hero-note strong {
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .fitness-hero-note p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.96);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .fitness-info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .fitness-info-card {
+      background: #ffffff;
+      border: 1px solid #dcebe3;
+      border-radius: 28px;
+      padding: 24px 26px;
+      box-shadow: 0 12px 32px rgba(10, 36, 54, 0.06);
+    }
+
+    .fitness-info-card h3 {
+      margin: 0 0 10px;
+      color: #04263b;
+      font-size: clamp(22px, 1.8vw, 32px);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .fitness-info-card p {
+      margin: 0;
+      color: #4f697b;
+      font-size: 15px;
+      line-height: 1.45;
     }
 
     .fitness-nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .55rem;
+      display: grid;
+      grid-template-columns: auto 1fr;
       align-items: center;
+      gap: 18px;
+      background: #ffffff;
+      border: 1px solid #dcebe3;
+      border-radius: 28px;
+      padding: 18px 24px;
+      box-shadow: 0 12px 32px rgba(10, 36, 54, 0.06);
+    }
+
+    .fitness-nav-title {
+      color: #063b39;
+      font-size: 22px;
+      font-weight: 900;
+      margin: 0;
+      white-space: nowrap;
+    }
+
+    .fitness-nav-tabs {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .fitness-tab {
-      border: 1px solid var(--fp-border);
-      background: #fff;
+      border: 1px solid transparent;
+      background: transparent;
       border-radius: 999px;
-      padding: .5rem .95rem;
-      font-weight: 600;
+      padding: 14px 22px;
+      font-weight: 800;
+      font-size: 15px;
       color: var(--fp-text);
       cursor: pointer;
       transition: all .2s ease;
@@ -113,17 +281,18 @@
 
     .fitness-tab:hover { transform: translateY(-1px); }
     .fitness-tab.is-active {
-      background: var(--fp-primary);
-      color: #fff;
-      border-color: var(--fp-primary);
+      background: #e7f8f0;
+      color: #00a878;
+      border-color: #cfeadf;
+      box-shadow: inset 0 -3px 0 #1cc58f;
     }
 
     .fitness-card {
       background: var(--fp-card);
-      border-radius: var(--fp-radius);
-      border: 1px solid var(--fp-border);
-      box-shadow: 0 10px 28px rgba(10, 36, 54, 0.06);
-      padding: 1.2rem;
+      border-radius: 30px;
+      border: 1px solid #dcebe3;
+      box-shadow: 0 12px 32px rgba(10, 36, 54, 0.06);
+      padding: 26px;
     }
 
     .fitness-toolbar {
@@ -242,21 +411,24 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: .7rem;
-      margin-bottom: .7rem;
+      gap: 1rem;
+      margin-bottom: 1rem;
       flex-wrap: wrap;
     }
 
     .section-head h2 {
       margin: 0;
-      font-size: 1.34rem;
-      color: var(--fp-text);
-      font-weight: 750;
+      font-size: clamp(28px, 2.2vw, 44px);
+      color: #183b37;
+      font-weight: 900;
+      letter-spacing: -0.02em;
     }
 
     .section-head p {
       margin: 0;
-      color: var(--fp-muted);
+      color: #5f7282;
+      font-size: 16px;
+      line-height: 1.45;
     }
 
     .exercise-list {
@@ -509,39 +681,111 @@
       padding: .8rem .95rem;
     }
 
+    .programs-structure-shell {
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      padding: 0;
+    }
+
     .program-category-list {
       display: grid;
-      gap: 1rem;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 28px 34px;
+      padding: 22px 34px 0;
+      align-items: stretch;
     }
 
     .program-hero-card {
       position: relative;
-      border-radius: 18px;
-      min-height: 140px;
+      width: 100%;
+      grid-column: span 2;
+      min-height: 118px;
+      border-radius: 26px;
       overflow: hidden;
-      background-color: #0a3a38;
-      background-size: cover;
-      background-position: center;
-      box-shadow: 0 10px 24px rgba(6, 28, 34, .22);
+      background: #ffffff;
+      border: 1px solid #e3edf1;
+      box-shadow: 0 14px 32px rgba(10, 36, 54, .08);
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      padding: 20px 16px;
+      text-align: center;
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background .22s ease;
     }
 
     .program-hero-card::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, rgba(8, 25, 32, .8) 0%, rgba(8, 25, 32, .2) 60%, rgba(8, 25, 32, 0) 100%);
+      display: none;
+    }
+
+    .program-hero-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 38px rgba(18, 105, 81, .14);
+      border-color: #bde5d1;
+      background: linear-gradient(140deg, #ffffff 0%, #f2fff8 100%);
     }
 
     .program-hero-title {
       position: relative;
       z-index: 1;
-      color: #fff;
-      font-weight: 800;
-      font-size: 1.15rem;
-      letter-spacing: .02em;
+      color: #064e3b;
+      font-weight: 900;
+      font-size: 20px;
+      letter-spacing: -.01em;
       text-transform: none;
-      padding: 1.1rem 1.2rem;
       margin: 0;
+    }
+
+    .program-hero-subtitle {
+      position: relative;
+      z-index: 1;
+      margin: 6px 0 0;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .program-category-list .program-hero-card:nth-child(6) { grid-column: 2 / span 2; }
+    .program-category-list .program-hero-card:nth-child(7) { grid-column: 4 / span 2; }
+    .program-category-list .program-hero-card:nth-child(8) { grid-column: 6 / span 2; }
+    .program-category-list .program-hero-card:nth-child(9) { grid-column: 8 / span 2; }
+
+
+    .planner-action-btn {
+      min-width: 128px;
+      min-height: 56px;
+      border-radius: 18px;
+      font-size: 16px;
+      font-weight: 900;
+      padding: 0 22px;
+    }
+
+    .programs-footer-strip {
+      margin-top: 36px;
+      border-radius: 28px 28px 0 0;
+      background: #178a60;
+      color: #ffffff;
+      text-align: center;
+      padding: 22px 18px 20px;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.01em;
+      box-shadow: 0 18px 34px rgba(17, 108, 79, 0.18);
+    }
+
+    .fitness-page-footer-strip {
+      width: calc(100% - (var(--fp-page-gutter) * 2));
+      margin: 28px auto 0;
+      border-radius: 28px 28px 0 0;
+      background: #178a60;
+      color: #ffffff;
+      text-align: center;
+      padding: 22px 18px 20px;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.01em;
+      box-shadow: 0 18px 34px rgba(17, 108, 79, 0.18);
     }
 
     .program-hero-card.is-clickable { cursor: pointer; }
@@ -708,6 +952,76 @@
     .fp-location-list {
       display: grid;
       gap: .8rem;
+    }
+
+    .fp-imc-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .fp-imc-grid input,
+    .fp-imc-grid select {
+      border: 1px solid var(--fp-border);
+      border-radius: 14px;
+      min-height: 48px;
+      padding: .65rem .85rem;
+      background: #ffffff;
+      color: var(--fp-text);
+      width: 100%;
+    }
+
+    .fp-imc-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .fp-imc-result {
+      display: grid;
+      gap: 12px;
+      border-radius: 18px;
+      border: 1px solid #dcebe3;
+      background: linear-gradient(150deg, #ffffff 0%, #f5fff9 100%);
+      padding: 16px;
+    }
+
+    .fp-imc-result[hidden] {
+      display: none !important;
+    }
+
+    .fp-imc-score {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .fp-imc-score strong {
+      color: #063b39;
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .fp-imc-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: #ecfdf5;
+      color: #116149;
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .fp-imc-note {
+      margin: 0;
+      color: #5f7282;
+      font-size: 14px;
+      line-height: 1.5;
     }
 
     .fp-location-card {
@@ -975,6 +1289,473 @@
       color: var(--fp-muted);
     }
 
+    #fp-exercise-modal .fp-modal-card {
+      width: min(1180px, 97vw);
+      background: #f7fbf8;
+      border-radius: 26px;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    #fp-exercise-modal .fp-modal-header,
+    #fp-video-modal .fp-modal-header {
+      background: #ffffff;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 1.1rem 1.2rem 1rem;
+      border-bottom: 1px solid #e3ece9;
+    }
+
+    #fp-exercise-modal .fp-modal-header > div:nth-child(2),
+    #fp-video-modal .fp-modal-header > div:nth-child(2) {
+      justify-self: end;
+      text-align: right;
+    }
+
+    #fp-exercise-modal .fp-modal-title,
+    #fp-video-modal .fp-modal-title {
+      font-size: 1.25rem;
+      color: #073f41;
+    }
+
+    #fp-exercise-modal .fp-modal-subtitle,
+    #fp-video-modal .fp-modal-subtitle {
+      font-size: .95rem;
+      color: #577083;
+      font-weight: 700;
+    }
+
+    .fp-java-selection-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin: 1rem 1rem 0;
+      padding: .85rem 1rem;
+      border: 1px solid #e3ece9;
+      border-radius: 20px;
+      background: #f8fbfe;
+    }
+
+    .fp-java-selection-status {
+      color: #46637a;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .fp-java-confirm-btn {
+      min-width: 215px;
+      min-height: 56px;
+      border: 0;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #1d9b68 0%, #22b573 100%);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 900;
+      box-shadow: 0 14px 24px rgba(29, 155, 104, .22);
+    }
+
+    .fp-java-confirm-btn[disabled] {
+      background: #b9c8c9;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    #fp-exercise-modal .fp-exercise-shell {
+      display: block;
+      padding: 1rem;
+    }
+
+    .fp-session-hidden {
+      display: none;
+    }
+
+    #fp-exercise-modal .fp-exercise-list {
+      display: grid;
+      gap: 1rem;
+      max-height: calc(100vh - 270px);
+      overflow: auto;
+      padding-right: .15rem;
+    }
+
+    .fp-java-exercise-card {
+      display: grid;
+      grid-template-columns: 260px 1fr 240px;
+      gap: 1.2rem;
+      align-items: center;
+      padding: 1rem 1.15rem;
+      border: 1px solid #e1ece7;
+      border-radius: 30px;
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(9, 34, 46, .05);
+    }
+
+    .fp-java-exercise-card.is-demo {
+      cursor: pointer;
+    }
+
+    .fp-java-exercise-media {
+      width: 100%;
+      height: 164px;
+      border-radius: 24px;
+      overflow: hidden;
+      background: #dff0e7;
+      box-shadow: inset 0 0 0 1px rgba(9, 34, 46, .05);
+      display: grid;
+      place-items: center;
+    }
+
+    .fp-java-exercise-media img,
+    .fp-java-exercise-media video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .fp-java-exercise-copy {
+      display: grid;
+      gap: .55rem;
+      align-content: center;
+    }
+
+    .fp-java-exercise-name {
+      margin: 0;
+      color: #004f54;
+      font-size: 1.18rem;
+      font-weight: 900;
+      line-height: 1.18;
+    }
+
+    .fp-java-exercise-subtitle {
+      margin: 0;
+      color: #5f7284;
+      font-size: .98rem;
+    }
+
+    .fp-java-exercise-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+    }
+
+    .fp-java-exercise-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 0 .95rem;
+      border-radius: 999px;
+      background: #eef8f3;
+      color: #0d5d52;
+      font-size: .86rem;
+      font-weight: 800;
+    }
+
+    .fp-java-exercise-actions {
+      display: grid;
+      gap: .9rem;
+    }
+
+    .fp-java-demo-btn,
+    .fp-java-add-btn {
+      min-height: 56px;
+      border-radius: 20px;
+      font-size: 1rem;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    .fp-java-demo-btn {
+      border: 1px solid #cbe5d8;
+      background: #ffffff;
+      color: #0d4a4f;
+    }
+
+    .fp-java-add-btn {
+      border: 0;
+      background: linear-gradient(135deg, #1d9b68 0%, #22b573 100%);
+      color: #fff;
+      box-shadow: 0 14px 24px rgba(29, 155, 104, .18);
+    }
+
+    .fp-java-add-btn.is-added {
+      background: #0f6b63;
+    }
+
+    #fp-video-modal .fp-video-modal-card {
+      width: min(1230px, 97vw);
+      background: #f8fbf8;
+      border-radius: 26px;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .fp-training-shell {
+      padding: 1rem;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 1rem;
+      max-height: calc(100vh - 120px);
+      overflow: auto;
+    }
+
+    .fp-training-topstats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .9rem;
+    }
+
+    .fp-training-stat {
+      min-height: 72px;
+      border: 1px solid #d8ebe0;
+      border-radius: 22px;
+      background: #eef8f3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .8rem;
+      color: #0b4f52;
+      font-weight: 900;
+    }
+
+    .fp-training-stat span {
+      font-size: .95rem;
+      text-transform: uppercase;
+    }
+
+    .fp-training-stat strong {
+      font-size: 1.85rem;
+      line-height: 1;
+    }
+
+    .fp-training-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1.9fr) minmax(290px, .8fr);
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .fp-training-main {
+      display: grid;
+      gap: .9rem;
+    }
+
+    .fp-training-intro {
+      border: 1px solid #dcece4;
+      border-radius: 26px;
+      background: #ffffff;
+      padding: 1rem 1.1rem;
+      display: grid;
+      gap: .35rem;
+    }
+
+    .fp-training-phase-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      min-height: 34px;
+      padding: 0 .9rem;
+      border-radius: 999px;
+      background: #eef8f3;
+      color: #0f6b63;
+      font-size: .82rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .fp-training-main .fp-video-title {
+      font-size: 1.2rem;
+    }
+
+    .fp-training-media {
+      border: 1px solid #dcece4;
+      border-radius: 26px;
+      background: #eaf7f0;
+      padding: .95rem;
+    }
+
+    #fp-video-modal .fp-video-player {
+      max-height: 430px;
+      min-height: 320px;
+      border-radius: 22px;
+      background: #dff0e7;
+    }
+
+    #fp-video-modal iframe.fp-video-player {
+      min-height: 430px;
+      height: 430px;
+      border-radius: 22px;
+      background: #dff0e7;
+    }
+
+    .fp-training-bottom {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .fp-training-bottom .fitness-btn {
+      min-height: 58px;
+      border-radius: 22px;
+      font-size: 1rem;
+      font-weight: 900;
+    }
+
+    .fp-training-footer-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(220px, 1fr);
+      gap: 1rem;
+      align-items: center;
+      margin-top: .1rem;
+      position: sticky;
+      bottom: 0;
+      z-index: 4;
+      padding-top: .9rem;
+      padding-bottom: .2rem;
+      background: linear-gradient(180deg, rgba(248, 251, 248, 0) 0%, rgba(248, 251, 248, .92) 20%, rgba(248, 251, 248, 1) 100%);
+    }
+
+    .fp-training-footer-actions .fitness-btn {
+      min-height: 58px;
+      border-radius: 22px;
+      font-size: 1rem;
+      font-weight: 900;
+    }
+
+    .fp-training-sidebar {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .fp-training-sidecard {
+      border: 1px solid #dcece4;
+      border-radius: 26px;
+      background: #ffffff;
+      padding: 1rem;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .fp-training-sidecard h4 {
+      margin: 0;
+      color: #083f4b;
+      font-size: 1.05rem;
+      font-weight: 900;
+    }
+
+    .fp-training-icon-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .8rem;
+    }
+
+    .fp-training-icon-btn {
+      min-height: 56px;
+      border: 1px solid #d7ebe0;
+      border-radius: 20px;
+      background: #f8fbfe;
+      color: #0b4f52;
+      font-size: 1.35rem;
+      cursor: pointer;
+    }
+
+    .fp-training-icon-btn.is-active {
+      background: #0f6b63;
+      color: #fff;
+      border-color: #0f6b63;
+    }
+
+    .fp-training-volume {
+      width: 100%;
+      accent-color: #0f6b63;
+    }
+
+    .fp-training-sidebtn {
+      min-height: 56px;
+      border-radius: 20px;
+      border: 1px solid #d7ebe0;
+      background: #f8fbfe;
+      color: #0b4f52;
+      font-size: 1rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .fp-training-sidebtn.primary {
+      background: linear-gradient(135deg, #1d9b68 0%, #22b573 100%);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .fp-training-coach-line {
+      color: #5b7380;
+      font-size: .9rem;
+      line-height: 1.45;
+      min-height: 42px;
+    }
+
+    .fp-training-playlist {
+      display: grid;
+      gap: .7rem;
+    }
+
+    .fp-training-playlist-item {
+      min-height: 48px;
+      border: 1px solid #d7ebe0;
+      border-radius: 18px;
+      background: #ffffff;
+      color: #0b3046;
+      font-size: 1rem;
+      font-weight: 900;
+      text-align: left;
+      padding: 0 1rem;
+      cursor: pointer;
+    }
+
+    .fp-training-playlist-item.is-active {
+      background: linear-gradient(135deg, #1d9b68 0%, #22b573 100%);
+      border-color: transparent;
+      color: #fff;
+    }
+
+    .fp-training-hidden {
+      display: none;
+    }
+
+    @media (max-width: 980px) {
+      .fp-java-selection-strip,
+      .fp-training-bottom,
+      .fp-training-footer-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .fp-java-exercise-card,
+      .fp-training-body,
+      .fp-training-topstats {
+        grid-template-columns: 1fr;
+      }
+
+      .fp-java-exercise-actions {
+        grid-template-columns: 1fr;
+      }
+
+      #fp-exercise-modal .fp-exercise-list,
+      .fp-training-shell {
+        max-height: none;
+      }
+
+      #fp-video-modal .fp-video-player,
+      #fp-video-modal iframe.fp-video-player {
+        min-height: 220px;
+        height: 260px;
+      }
+    }
+
     .coach-shell {
       padding: 1rem;
     }
@@ -1043,39 +1824,39 @@
     }
 
     .coach-item-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .45rem;
-      color: var(--fp-muted);
-      font-size: .82rem;
-      font-weight: 650;
+      display: grid;
+      gap: 4px;
+      color: #7b8ca1;
+      font-size: 14px;
+      font-weight: 500;
     }
 
     .coach-item-availability {
       margin: 0;
-      color: var(--fp-muted);
-      font-size: .8rem;
+      color: #7b8ca1;
+      font-size: 14px;
+      line-height: 1.35;
     }
 
     .coach-item .fitness-btn {
-      margin-top: .15rem;
-      width: 100%;
+      margin-top: 0;
+      width: auto;
       justify-content: center;
     }
 
     .coach-profile {
-      border: 1px solid var(--fp-border);
-      border-radius: 16px;
+      border: 1px solid #dcebe3;
+      border-radius: 28px;
       background: #fff;
-      padding: .85rem;
-      display: grid;
-      gap: .65rem;
-      box-shadow: 0 6px 14px rgba(10, 36, 54, .06);
+      padding: 22px;
+      display: none;
+      gap: .8rem;
+      box-shadow: 0 12px 30px rgba(10, 36, 54, .06);
     }
 
     .coach-profile-media {
-      min-height: 200px;
-      border-radius: 14px;
+      min-height: 240px;
+      border-radius: 22px;
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -1084,32 +1865,32 @@
 
     .coach-profile-name {
       margin: 0;
-      font-size: 1.2rem;
-      font-weight: 850;
-      color: var(--fp-text);
+      font-size: 1.55rem;
+      font-weight: 900;
+      color: #063b39;
     }
 
     .coach-profile-role {
       margin: 0;
-      color: #0f6b63;
-      font-size: .9rem;
-      font-weight: 700;
+      color: #0f9d68;
+      font-size: 1rem;
+      font-weight: 800;
     }
 
     .coach-profile-meta {
       display: flex;
       flex-wrap: wrap;
       gap: .55rem;
-      color: var(--fp-muted);
-      font-size: .83rem;
+      color: #64748b;
+      font-size: .9rem;
       font-weight: 650;
     }
 
     .coach-profile-bio,
     .coach-profile-availability {
       margin: 0;
-      color: var(--fp-muted);
-      font-size: .88rem;
+      color: #64748b;
+      font-size: .94rem;
       line-height: 1.5;
     }
 
@@ -1121,16 +1902,16 @@
     }
 
     .coach-list-title {
-      color: var(--fp-text);
-      font-size: .84rem;
-      font-weight: 780;
+      color: #063b39;
+      font-size: .92rem;
+      font-weight: 900;
     }
 
     .coach-list {
       margin: 0;
       padding-left: 1rem;
-      color: var(--fp-muted);
-      font-size: .84rem;
+      color: #64748b;
+      font-size: .9rem;
       display: grid;
       gap: .25rem;
     }
@@ -1180,6 +1961,462 @@
 
     .coach-booking-panel[hidden] {
       display: none !important;
+    }
+
+    .explore-premium-toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 12px;
+      align-items: center;
+      margin-top: 18px;
+    }
+
+    .explore-premium-toolbar .explore-ai-input {
+      min-height: 58px;
+      border-radius: 24px;
+      padding: 0 20px;
+      font-size: 15px;
+      background: #ffffff;
+      border-color: #cfe4db;
+    }
+
+    .explore-filter-btn,
+    .explore-reset-btn {
+      min-height: 56px;
+      padding: 0 26px;
+      border-radius: 22px;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .explore-reset-btn {
+      background: #ffffff;
+      border: 1px solid #cfe4db;
+      color: #063b39;
+    }
+
+    .explore-premium-status {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin: 16px 0 18px;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .explore-premium-status strong {
+      color: #1f7a63;
+      font-weight: 900;
+    }
+
+    .explore-premium-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .explore-premium-player {
+      border-radius: 30px;
+      overflow: hidden;
+      border: 1px solid #cfe4db;
+      background: #ffffff;
+      box-shadow: 0 16px 36px rgba(12, 63, 56, 0.08);
+    }
+
+    .explore-premium-stage {
+      position: relative;
+      min-height: 520px;
+      background: linear-gradient(135deg, #edf9f3 0%, #e8f6f1 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .explore-premium-stage iframe,
+    .explore-premium-stage video,
+    .explore-premium-stage img {
+      width: 100%;
+      height: 100%;
+      min-height: 488px;
+      border: 0;
+      object-fit: cover;
+      border-radius: 20px;
+      background: #092029;
+      display: block;
+    }
+
+    .explore-premium-caption {
+      position: absolute;
+      left: 18px;
+      bottom: 0;
+      transform: translateY(-18px);
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      min-height: 42px;
+      padding: 0 18px;
+      border-radius: 14px;
+      background: rgba(82, 96, 111, 0.88);
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 900;
+      box-shadow: 0 16px 28px rgba(7, 20, 29, 0.16);
+    }
+
+    .explore-premium-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 16px 18px;
+      background: #fbfefd;
+      border-top: 1px solid #d9ebe4;
+      flex-wrap: wrap;
+    }
+
+    .explore-premium-btn {
+      min-height: 54px;
+      border-radius: 18px;
+      padding: 0 20px;
+      border: 1px solid #cfe4db;
+      background: #ffffff;
+      color: #083744;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .explore-premium-btn.is-primary {
+      background: #1aa06f;
+      color: #ffffff;
+      border-color: #1aa06f;
+    }
+
+    .explore-premium-volume {
+      width: 140px;
+      accent-color: #1aa06f;
+    }
+
+    .explore-premium-like {
+      min-width: 134px;
+    }
+
+    .explore-premium-playlist {
+      display: grid;
+      gap: 12px;
+    }
+
+    .explore-premium-playlist h3 {
+      margin: 0 0 2px;
+      color: #183b37;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .explore-playlist-box {
+      max-height: 582px;
+      overflow: auto;
+      padding-right: 4px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .explore-playlist-item {
+      border: 1px solid #d9ebe4;
+      border-radius: 16px;
+      background: #ffffff;
+      padding: 12px 14px;
+      display: grid;
+      gap: 4px;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(12, 63, 56, 0.04);
+      transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+
+    .explore-playlist-item:hover,
+    .explore-playlist-item.is-active {
+      border-color: #9fe0c3;
+      box-shadow: 0 14px 28px rgba(26, 160, 111, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .explore-playlist-title {
+      color: #063b39;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1.3;
+    }
+
+    .explore-playlist-meta {
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .explore-playlist-prefix {
+      color: #00b06b;
+      font-weight: 900;
+      margin-right: 6px;
+    }
+
+    .coach-shell {
+      padding: 0;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+    }
+
+    .coach-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .coach-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .coach-item {
+      border: 1px solid #dcebe3;
+      border-radius: 30px;
+      background: #ffffff;
+      padding: 24px 26px;
+      display: grid;
+      grid-template-columns: 124px minmax(0, 1fr) auto;
+      gap: 22px;
+      align-items: center;
+      box-shadow: 0 14px 34px rgba(10, 36, 54, 0.06);
+      transition: border-color .22s ease, box-shadow .22s ease, transform .22s ease;
+    }
+
+    .coach-item:hover,
+    .coach-item.is-active {
+      border-color: #9fe0c3;
+      box-shadow: 0 18px 36px rgba(26, 160, 111, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .coach-item-photo {
+      width: 124px;
+      height: 124px;
+      border-radius: 999px;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #dce9ee;
+      border: 3px solid #10b981;
+      box-shadow: 0 10px 20px rgba(16, 185, 129, 0.12);
+    }
+
+    .coach-item-body {
+      padding: 0;
+      display: grid;
+      gap: 8px;
+      align-content: center;
+    }
+
+    .coach-item-badge {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      min-height: 32px;
+      padding: 0 16px;
+      border-radius: 999px;
+      background: #effcf5;
+      color: #00b06b;
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .coach-item-name {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 900;
+      color: #063b39;
+      line-height: 1.2;
+    }
+
+    .coach-item-speciality {
+      display: none;
+    }
+
+    .coach-item-meta {
+      display: grid;
+      gap: 4px;
+      color: #7b8ca1;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .coach-item-meta-line {
+      color: #7b8ca1;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .coach-item-cta {
+      min-width: 226px;
+      min-height: 58px;
+      border-radius: 20px;
+      background: #1aa06f;
+      color: #ffffff;
+      border: 0;
+      font-size: 16px;
+      font-weight: 900;
+      padding: 0 24px;
+    }
+
+    .coach-profile {
+      border: 1px solid #dcebe3;
+      border-radius: 28px;
+      background: #ffffff;
+      padding: 22px 28px 28px;
+      display: none;
+      gap: 18px;
+      box-shadow: 0 12px 30px rgba(10, 36, 54, .06);
+    }
+
+    .coach-profile.is-visible {
+      display: grid;
+    }
+
+    .coach-profile-head {
+      display: grid;
+      gap: 6px;
+    }
+
+    .coach-profile-topline {
+      margin: 0;
+      color: #6f8094;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .coach-profile-divider {
+      height: 1px;
+      background: #dcebe3;
+    }
+
+    .coach-profile-section {
+      display: grid;
+      gap: 14px;
+    }
+
+    .coach-profile-section h4 {
+      margin: 0;
+      color: #063b39;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .coach-profile-helper {
+      margin: 0;
+      color: #6f8094;
+      font-size: 14px;
+    }
+
+    .coach-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .coach-form-grid input,
+    #fp-coach-message-input,
+    #fp-coach-slot-select {
+      border: 1px solid #dcebe3;
+      border-radius: 22px;
+      min-height: 58px;
+      padding: 0 20px;
+      background: #fbfefd;
+      color: #063b39;
+      font-size: 15px;
+      width: 100%;
+    }
+
+    .coach-form-grid input:nth-child(3) {
+      grid-column: 1 / 2;
+    }
+
+    .coach-slot-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    #fp-coach-slot-select {
+      max-width: 310px;
+      color: #6f8094;
+      appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, #b3bcc7 50%), linear-gradient(135deg, #b3bcc7 50%, transparent 50%);
+      background-position: calc(100% - 26px) calc(50% - 2px), calc(100% - 18px) calc(50% - 2px);
+      background-size: 8px 8px, 8px 8px;
+      background-repeat: no-repeat;
+      padding-right: 42px;
+    }
+
+    #fp-coach-message-input {
+      min-height: 88px;
+      padding-top: 16px;
+      padding-bottom: 16px;
+      resize: vertical;
+    }
+
+    .coach-date-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .coach-date-btn {
+      border: 1px solid #cfe4db;
+      background: #ffffff;
+      color: #063b39;
+      border-radius: 999px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: border-color .2s ease, background .2s ease, color .2s ease;
+    }
+
+    .coach-date-btn.is-active {
+      background: #1aa06f;
+      border-color: #1aa06f;
+      color: #fff;
+    }
+
+    .coach-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .coach-actions .fitness-btn {
+      min-height: 58px;
+      border-radius: 20px;
+      padding-left: 24px;
+      padding-right: 24px;
+      font-size: 15px;
+      font-weight: 900;
+      flex: 0 0 auto;
+    }
+
+    .coach-message-hint {
+      margin: 0;
+      color: #6f8094;
+      font-size: 13px;
+      line-height: 1.45;
     }
 
     .coach-date-grid {
@@ -1318,6 +2555,71 @@
     }
 
     @media (max-width: 860px) {
+      .fitness-shell,
+      .fitness-page-footer-strip {
+        width: calc(100% - 18px);
+      }
+
+      .fitness-hero-grid,
+      .fitness-info-grid,
+      .program-category-list {
+        grid-template-columns: 1fr;
+      }
+
+      .fitness-hero-copy {
+        padding-right: 0;
+      }
+
+      .fitness-hero-visual {
+        min-height: 420px;
+      }
+
+      .fitness-nav {
+        grid-template-columns: 1fr;
+      }
+
+      .fitness-nav-tabs {
+        justify-content: flex-start;
+      }
+
+      .fitness-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .program-category-list {
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      .program-hero-card,
+      .program-category-list .program-hero-card:nth-child(6),
+      .program-category-list .program-hero-card:nth-child(7),
+      .program-category-list .program-hero-card:nth-child(8),
+      .program-category-list .program-hero-card:nth-child(9) {
+        grid-column: auto;
+      }
+
+      .coach-item {
+        grid-template-columns: 1fr;
+        justify-items: start;
+      }
+
+      .coach-form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .coach-form-grid input:nth-child(3) {
+        grid-column: auto;
+      }
+
+      .coach-slot-row {
+        align-items: stretch;
+      }
+
+      #fp-coach-slot-select {
+        max-width: none;
+      }
+
       .fitness-toolbar { grid-template-columns: 1fr; }
       .trends-toolbar { grid-template-columns: 1fr; }
       .coach-layout { grid-template-columns: 1fr; }
@@ -1330,22 +2632,56 @@
 <section class="fitness-page">
   <div class="fitness-shell">
     <div class="fitness-hero">
-      <h1>Fitness Planner Command Center</h1>
-      <p>Integrated from your external fitness module into one premium page: discover plans, manage training programs, and maintain your exercise library without leaving this screen.</p>
-      <div class="fitness-stats">
-        <div class="fitness-stat">
-          <div class="v">{{ stats.programs }}</div>
-          <div class="l">Programs Available</div>
+      <div class="fitness-hero-grid">
+        <div class="fitness-hero-visual">
+          <div class="fitness-hero-overlay">
+            <span class="fitness-hero-chip">Fitness Stories</span>
+            <p class="fitness-hero-visual-copy">Train smarter, recover better, and stay consistent with a routine that feels premium.</p>
+          </div>
         </div>
-        <div class="fitness-stat">
-          <div class="v">{{ stats.exercises }}</div>
-          <div class="l">Exercises Library</div>
-        </div>
-        <div class="fitness-stat">
-          <div class="v">{{ stats.avgDuration }} min</div>
-          <div class="l">Avg Session Duration</div>
+        <div class="fitness-hero-copy">
+          <p class="fitness-hero-kicker">Fitopia Fitness</p>
+          <h1 class="fitness-hero-title">A wow fitness hub built for real training momentum</h1>
+          <p class="fitness-hero-subtitle">Programs, exercise management, workout tracking, video explore feed and private coaching now live inside one white-and-green experience.</p>
+          <div class="fitness-hero-actions">
+            <button type="button" class="fitness-btn fitness-btn-primary planner-action-btn" id="fp-scroll-planner">See the planner</button>
+            <button type="button" class="fitness-btn fitness-btn-soft planner-action-btn" id="fp-open-space">Open my space</button>
+          </div>
+          <div class="fitness-stats">
+            <div class="fitness-stat">
+              <div class="v">1500+</div>
+              <span class="l">members supported</span>
+            </div>
+            <div class="fitness-stat">
+              <div class="v">6</div>
+              <span class="l">private coaches</span>
+            </div>
+            <div class="fitness-stat">
+              <div class="v">24/7</div>
+              <span class="l">training inspiration</span>
+            </div>
+          </div>
+          <div class="fitness-hero-note">
+            <strong>Inside this hub</strong>
+            <p>Create exercises, launch guided programs, monitor progress, watch fitness videos and book a coach without leaving the page.</p>
+          </div>
         </div>
       </div>
+    </div>
+
+    <div class="fitness-info-grid">
+      <article class="fitness-info-card">
+        <h3>Plans that keep moving</h3>
+        <p>Confirmed sessions, recent history and performance tracking stay visible in one place.</p>
+      </article>
+      <article class="fitness-info-card">
+        <h3>Explore that feels alive</h3>
+        <p>A real fitness video feed with filters, autoplay controls and a brighter premium player.</p>
+      </article>
+      <article class="fitness-info-card">
+        <h3>Coaching with impact</h3>
+        <p>Book private sessions, calculate BMI and jump into the right program faster.</p>
+      </article>
     </div>
 
     {% for label, messages in app.flashes %}
@@ -1366,29 +2702,56 @@
       'Abdos': asset('images/fitness/abdos.jpg'),
       'Entrainement du corps entier': asset('images/fitness/corps-entier.jpg')
     } %}
+    {% set programTitleMap = {
+      'Poitrine': 'Poitrine',
+      'Dos': 'Dos',
+      'Jambes': 'Jambes',
+      'Fessier': 'Fessier',
+      'Epaules': 'Epaules',
+      'Biceps': 'Biceps',
+      'Triceps': 'Triceps',
+      'Avant-bras': 'Avant-bras',
+      'Abdos': 'Abdos',
+      'Entrainement du corps entier': 'Corps entier'
+    } %}
+    {% set programSubtitleMap = {
+      'Poitrine': 'Pectoraux & Force',
+      'Dos': 'Largeur & Epaisseur',
+      'Jambes': 'Puissance & Appuis',
+      'Fessier': 'Tonification & Galbe',
+      'Epaules': 'Carrure & Mobilite',
+      'Biceps': 'Volume & Definition',
+      'Triceps': 'Force & Extension',
+      'Avant-bras': 'Grip & Endurance',
+      'Abdos': 'Gainage & Core',
+      'Entrainement du corps entier': 'Full Body & Cardio'
+    } %}
     {% set exerciseImageMap = {} %}
     {% for ex in exercises %}
       {% set exerciseImageMap = exerciseImageMap|merge({ (ex.name): ex.imageUrl }) %}
     {% endfor %}
+    {% set exerciseCountByGroup = {} %}
+    {% for group in exerciseGroups %}
+      {% set exerciseCountByGroup = exerciseCountByGroup|merge({ (group.label): group.items|length }) %}
+    {% endfor %}
 
-    {% if not tablesReady %}
-      <div class="alert-inline">Fitness planner tables are missing. Run migration `Version20260211130000` then reload this page.</div>
-    {% endif %}
-
-    <div class="fitness-nav">
-      <a class="fitness-tab {{ activeView == 'plans' ? 'is-active' : '' }}" href="{{ path('fitness_planner', {view: 'plans'}) }}" data-view="plans"><i class="fa fa-th-large"></i> Plans</a>
-      <a class="fitness-tab {{ activeView == 'manage' ? 'is-active' : '' }}" href="{{ path('fitness_planner', {view: 'manage'}) }}" data-view="manage"><i class="fa fa-cogs"></i> Programs</a>
-      <a class="fitness-tab {{ activeView == 'exercises' ? 'is-active' : '' }}" href="{{ path('fitness_planner', {view: 'exercises'}) }}" data-view="exercises"><i class="fa fa-list-ul"></i> Exercises</a>
-      <a class="fitness-tab {{ activeView == 'explore' ? 'is-active' : '' }}" href="{{ path('fitness_planner', {view: 'explore'}) }}" data-view="explore"><i class="fa fa-compass"></i> Explore</a>
-      <a class="fitness-tab {{ activeView == 'coach' ? 'is-active' : '' }}" href="{{ path('fitness_planner', {view: 'coach'}) }}" data-view="coach"><i class="fa fa-user-circle-o"></i> Coach</a>
+    <div class="fitness-nav" id="fp-planner-anchor">
+      <h2 class="fitness-nav-title">Fitness Hub</h2>
+      <div class="fitness-nav-tabs">
+        <a class="fitness-tab {{ activeView == 'plans' ? 'is-active' : '' }}" href="{{ path('fitness_planner', {view: 'plans'}) }}" data-view="plans">Mes seances</a>
+        <a class="fitness-tab {{ activeView == 'manage' ? 'is-active' : '' }}" href="{{ path('fitness_planner', {view: 'manage'}) }}" data-view="manage">My Programs</a>
+        <a class="fitness-tab {{ activeView == 'exercises' ? 'is-active' : '' }}" href="{{ path('fitness_planner', {view: 'exercises'}) }}" data-view="exercises">Exercises</a>
+        <a class="fitness-tab {{ activeView == 'explore' ? 'is-active' : '' }}" href="{{ path('fitness_planner', {view: 'explore'}) }}" data-view="explore">Explore</a>
+        <a class="fitness-tab {{ activeView == 'coach' ? 'is-active' : '' }}" href="{{ path('fitness_planner', {view: 'coach'}) }}" data-view="coach">Coach</a>
+      </div>
     </div>
 
     <div class="section {{ activeView == 'plans' ? 'is-active' : '' }}" data-section="plans">
       <div class="fitness-card">
         <div class="section-head">
           <div>
-            <h2>Explore Training Plans</h2>
-            <p>Tes séances confirmées apparaissent ici.</p>
+            <h2>Mes seances enregistrees</h2>
+            <p>Quand vous ajoutez des exercices depuis My Programs puis cliquez sur Confirmer, votre seance apparait ici.</p>
           </div>
         </div>
         <div id="fp-user-plans-list" class="fp-user-plans"></div>
@@ -1404,7 +2767,6 @@
         'Epaules',
         'Biceps',
         'Triceps',
-        'Avant-bras',
         'Abdos',
         'Entrainement du corps entier'
       ] %}
@@ -1430,22 +2792,24 @@
         {% set programImageMap = programImageMap|merge({ (plan.title): plan.imageUrl }) %}
       {% endfor %}
 
-      <div class="fitness-card mt-3">
+      <div class="fitness-card programs-structure-shell mt-3">
         <div class="section-head">
           <div>
             <h2>Liste des programmes</h2>
-            <p>Accès rapide par groupe musculaire, avec focus Poitrine.</p>
+            <p>Acces rapide par groupe musculaire. Calcule ton IMC pour une recommandation personnalisee.</p>
           </div>
+          <button type="button" class="fitness-btn fitness-btn-primary planner-action-btn" id="fp-open-imc">Mon IMC</button>
         </div>
         <div class="program-category-list">
           {% for category in programCategories %}
-            {% set catImage = externalImageMap[category]|default('') %}
-            <div class="program-hero-card is-clickable" data-program="{{ category }}" style="{{ catImage ? 'background-image:url(' ~ catImage ~ ');' : '' }}">
-              <h3 class="program-hero-title">{{ category }}</h3>
+            <div class="program-hero-card is-clickable" data-program="{{ category }}">
+              <h3 class="program-hero-title">{{ programTitleMap[category]|default(category) }}</h3>
+              <p class="program-hero-subtitle">
+                {{ exerciseCountByGroup[category]|default(0) }} exercice(s) - {{ programSubtitleMap[category]|default('Programme premium') }}
+              </p>
             </div>
           {% endfor %}
         </div>
-
         {# Poitrine levels table removed per request #}
       </div>
     </div>
@@ -1454,11 +2818,11 @@
       <div class="fitness-card">
         <div class="section-head">
           <div>
-            <h2>{{ exerciseInEdit ? 'Update Exercise' : 'Create Exercise' }}</h2>
-            <p>Build and maintain your full exercise library.</p>
+            <h2>Gestion des exercices</h2>
+            <p>Ajoute, modifie et organise ta bibliotheque d'exercices comme dans le planner Java.</p>
           </div>
           {% if exerciseInEdit %}
-            <a href="{{ path('fitness_planner', {view: 'exercises'}) }}" class="fitness-btn fitness-btn-soft"><i class="fa fa-times"></i> Cancel Edit</a>
+            <a href="{{ path('fitness_planner', {view: 'exercises'}) }}" class="fitness-btn fitness-btn-soft"><i class="fa fa-times"></i> Annuler</a>
           {% endif %}
         </div>
 
@@ -1477,7 +2841,7 @@
               <option value="Dos" {{ exerciseInEdit and exerciseInEdit.muscleGroup == 'Dos' ? 'selected' : '' }}>Dos</option>
               <option value="Jambes" {{ exerciseInEdit and exerciseInEdit.muscleGroup == 'Jambes' ? 'selected' : '' }}>Jambes</option>
               <option value="Fessier" {{ exerciseInEdit and exerciseInEdit.muscleGroup == 'Fessier' ? 'selected' : '' }}>Fessier</option>
-              <option value="Epaules" {{ exerciseInEdit and exerciseInEdit.muscleGroup == 'Epaules' ? 'selected' : '' }}>Epaules</option>
+              <option value="Epaules" {{ exerciseInEdit and (exerciseInEdit.muscleGroup == 'Epaules' or exerciseInEdit.muscleGroup == 'Épaules') ? 'selected' : '' }}>Epaules</option>
               <option value="Biceps" {{ exerciseInEdit and exerciseInEdit.muscleGroup == 'Biceps' ? 'selected' : '' }}>Biceps</option>
               <option value="Triceps" {{ exerciseInEdit and exerciseInEdit.muscleGroup == 'Triceps' ? 'selected' : '' }}>Triceps</option>
               <option value="Avant-bras" {{ exerciseInEdit and exerciseInEdit.muscleGroup == 'Avant-bras' ? 'selected' : '' }}>Avant-bras</option>
@@ -1492,39 +2856,53 @@
             <input type="number" min="1" name="sets" placeholder="Sets" value="{{ exerciseInEdit and exerciseInEdit.sets ? exerciseInEdit.sets : '' }}">
             <input type="number" min="1" name="repetitions" placeholder="Repetitions" value="{{ exerciseInEdit and exerciseInEdit.repetitions ? exerciseInEdit.repetitions : '' }}">
             <input type="number" min="1" name="duration" placeholder="Duration (min)" value="{{ exerciseInEdit and exerciseInEdit.duration ? exerciseInEdit.duration : '' }}">
+            <select name="place">
+              <option value="both" {{ not exerciseInEdit or exerciseInEdit.place == 'both' ? 'selected' : '' }}>Salle / Maison</option>
+              <option value="gym" {{ exerciseInEdit and exerciseInEdit.place == 'gym' ? 'selected' : '' }}>Salle de sport</option>
+              <option value="home" {{ exerciseInEdit and exerciseInEdit.place == 'home' ? 'selected' : '' }}>Maison</option>
+            </select>
             <input type="url" name="image_url" placeholder="Image URL" value="{{ exerciseInEdit ? exerciseInEdit.imageUrl : '' }}">
             <input type="url" name="video_url" placeholder="Video URL" value="{{ exerciseInEdit ? exerciseInEdit.videoUrl : '' }}">
             <textarea class="full" name="description" placeholder="Description">{{ exerciseInEdit ? exerciseInEdit.description : '' }}</textarea>
           </div>
           <div class="program-actions mt-3">
-            <button class="fitness-btn fitness-btn-primary" type="submit"><i class="fa fa-save"></i> {{ exerciseInEdit ? 'Save Exercise' : 'Create Exercise' }}</button>
+            <button class="fitness-btn fitness-btn-primary" type="submit"><i class="fa fa-save"></i> {{ exerciseInEdit ? 'Enregistrer l\'exercice' : 'Ajouter l\'exercice' }}</button>
           </div>
         </form>
 
         <div class="exercise-list">
-          {% for ex in exercises %}
+          {% for group in exerciseGroups %}
             <article class="exercise-row">
               <div class="top">
-                <div class="name">{{ ex.name }}</div>
-                <div class="program-actions">
-                  <a class="fitness-btn fitness-btn-soft" href="{{ path('fitness_planner', {view: 'exercises', exercise_edit: ex.id}) }}"><i class="fa fa-pencil"></i> Edit</a>
-                  <form method="post" action="{{ path('fitness_planner') }}" onsubmit="return confirm('Delete this exercise?')">
-                    <input type="hidden" name="_token" value="{{ csrf_token('fitness_planner') }}">
-                    <input type="hidden" name="action" value="delete_exercise">
-                    <input type="hidden" name="id" value="{{ ex.id }}">
-                    <input type="hidden" name="redirect_view" value="exercises">
-                    <button class="fitness-btn fitness-btn-danger" type="submit"><i class="fa fa-trash"></i> Delete</button>
-                  </form>
-                </div>
+                <div class="name">{{ group.label }}</div>
+                <div class="meta">{{ group.items|length }} exercice(s)</div>
               </div>
-              <div class="meta">
-                <span><i class="fa fa-map-signs"></i> {{ ex.muscleGroup }}</span>
+            </article>
+            {% for ex in group.items %}
+              <article class="exercise-row">
+                <div class="top">
+                  <div class="name">{{ ex.name }}</div>
+                  <div class="program-actions">
+                    <a class="fitness-btn fitness-btn-soft" href="{{ path('fitness_planner', {view: 'exercises', exercise_edit: ex.id}) }}"><i class="fa fa-pencil"></i> Edit</a>
+                    <form method="post" action="{{ path('fitness_planner') }}" onsubmit="return confirm('Delete this exercise?')">
+                      <input type="hidden" name="_token" value="{{ csrf_token('fitness_planner') }}">
+                      <input type="hidden" name="action" value="delete_exercise">
+                      <input type="hidden" name="id" value="{{ ex.id }}">
+                      <input type="hidden" name="redirect_view" value="exercises">
+                      <button class="fitness-btn fitness-btn-danger" type="submit"><i class="fa fa-trash"></i> Delete</button>
+                    </form>
+                  </div>
+                </div>
+                <div class="meta">
+                <span><i class="fa fa-map-signs"></i> {{ group.label }}</span>
                 <span><i class="fa fa-signal"></i> {{ ex.difficulty }}</span>
+                <span><i class="fa fa-home"></i> {{ ex.place == 'gym' ? 'Salle' : (ex.place == 'home' ? 'Maison' : 'Salle / Maison') }}</span>
                 {% if ex.sets %}<span>{{ ex.sets }} sets</span>{% endif %}
                 {% if ex.repetitions %}<span>{{ ex.repetitions }} reps</span>{% endif %}
                 {% if ex.duration %}<span>{{ ex.duration }} min</span>{% endif %}
-              </div>
-            </article>
+                </div>
+              </article>
+            {% endfor %}
           {% else %}
             <article class="exercise-row">
               <div class="name">No exercises yet</div>
@@ -1540,54 +2918,39 @@
       <div class="fitness-card explore-card">
         <div class="section-head">
           <div>
-            <h2>Explore</h2>
-            <p>Swipe/scroll vertical: haut = exercice suivant, bas = précédent.</p>
+            <h2>Explore - Fitness video feed</h2>
+            <p>Filter, autoplay and switch between local clips and YouTube inspiration in one smoother player.</p>
           </div>
         </div>
-        <div class="explore-ai-bar">
-          <input id="fp-explore-ai-query" class="explore-ai-input" type="text" placeholder="Ex: perte de poids, cardio, abdos, debutant...">
-          <button id="fp-explore-ai-generate" type="button" class="fitness-btn fitness-btn-primary"><i class="fa fa-magic"></i> IA Import videos</button>
+        <div class="explore-premium-toolbar">
+          <input id="fp-explore-ai-query" class="explore-ai-input" type="text" placeholder="Filtrer : abdos, dos, biceps, HIIT...">
+          <button id="fp-explore-ai-generate" type="button" class="fitness-btn fitness-btn-primary explore-filter-btn">Filtrer</button>
+          <button id="fp-explore-reset" type="button" class="explore-reset-btn">Tout</button>
+        </div>
+        <div class="explore-premium-status">
+          <span id="fp-explore-count-line">0 videos disponibles</span>
+          <strong id="fp-explore-now-playing">Selectionne une video</strong>
         </div>
 
-        <div class="explore-shell">
-          <aside class="explore-progress" aria-hidden="true">
-            <div class="explore-progress-count" id="fp-explore-count">1/1</div>
-            <div class="explore-progress-track">
-              <div class="explore-progress-fill" id="fp-explore-fill"></div>
+        <div class="explore-premium-layout">
+          <div class="explore-premium-player">
+            <div class="explore-premium-stage" id="fp-explore-stage">
+              <div id="fp-explore-stage-media"></div>
+              <div class="explore-premium-caption" id="fp-explore-stage-caption">Aucune video selectionnee</div>
             </div>
-          </aside>
-
-          <div class="explore-feed" id="fp-explore-feed">
-            <article class="explore-slide"
-              data-name="Feed IA Fitopia"
-              data-video=""
-              data-image=""
-              data-description="Clique sur IA Import videos pour charger un flux sport automatiquement."
-              data-muscle="Corps entier"
-              data-difficulty="Beginner"
-              data-duration="3">
-              <div class="explore-media"></div>
-              <div class="explore-overlay"></div>
-              <div class="explore-content">
-                <div class="explore-top">
-                  <h3>Feed IA Fitopia</h3>
-                  <div class="explore-badges">
-                    <span class="explore-badge">Corps entier</span>
-                    <span class="explore-badge">Beginner</span>
-                    <span class="explore-badge">Sans materiel</span>
-                  </div>
-                  <div class="explore-meta">~3 min a maitriser</div>
-                </div>
-                <p class="explore-tip">Clique sur IA Import videos pour charger un flux sport automatiquement.</p>
-                <div class="explore-actions">
-                  <button type="button" class="explore-btn" data-action="favorite">&#10084; Favori</button>
-                  <button type="button" class="explore-btn" data-action="add">+ Ajouter au plan</button>
-                  <button type="button" class="explore-btn" data-action="try">30s Essayer</button>
-                  <button type="button" class="explore-btn" data-action="details">i Details</button>
-                </div>
-              </div>
-            </article>
+            <div class="explore-premium-controls">
+              <button type="button" class="explore-premium-btn" id="fp-explore-prev">Prec</button>
+              <button type="button" class="explore-premium-btn is-primary" id="fp-explore-play">Pause</button>
+              <button type="button" class="explore-premium-btn" id="fp-explore-next">Suiv</button>
+              <button type="button" class="explore-premium-btn" id="fp-explore-mute">Mute</button>
+              <input type="range" min="0" max="1" step="0.01" value="0.8" class="explore-premium-volume" id="fp-explore-volume">
+              <button type="button" class="explore-premium-btn explore-premium-like" id="fp-explore-like">❤️ 0</button>
+            </div>
           </div>
+          <aside class="explore-premium-playlist">
+            <h3>Playlist</h3>
+            <div class="explore-playlist-box" id="fp-explore-playlist"></div>
+          </aside>
         </div>
       </div>
     </div>
@@ -1596,8 +2959,8 @@
       <div class="fitness-card coach-shell">
         <div class="section-head">
           <div>
-            <h2>Module Coach</h2>
-            <p>Choisis un coach, consulte son profil detaille et lance une reservation rapide.</p>
+            <h2>Private coaches</h2>
+            <p>Choisissez un coach, reservez un creneau et lancez votre accompagnement prive.</p>
           </div>
         </div>
 
@@ -1605,58 +2968,83 @@
           <div class="coach-grid" id="fp-coach-grid"></div>
 
           <aside class="coach-profile" id="fp-coach-profile">
-            <div class="coach-profile-media" id="fp-coach-photo"></div>
-            <h3 class="coach-profile-name" id="fp-coach-name">Selectionne un coach</h3>
-            <p class="coach-profile-role" id="fp-coach-speciality"></p>
-            <div class="coach-profile-meta">
-              <span id="fp-coach-rating"><i class="fa fa-star"></i> --</span>
-              <span id="fp-coach-experience"><i class="fa fa-briefcase"></i> --</span>
-              <span id="fp-coach-phone"><i class="fa fa-phone"></i> --</span>
-              <span id="fp-coach-email"><i class="fa fa-envelope"></i> --</span>
+            <div class="coach-profile-head">
+              <h3 class="coach-profile-name" id="fp-coach-booking-title">Reserver avec un coach</h3>
+              <p class="coach-profile-topline" id="fp-coach-booking-subtitle">Selectionnez un coach pour afficher le formulaire de reservation.</p>
             </div>
-            <p class="coach-profile-bio" id="fp-coach-bio"></p>
-            <p class="coach-profile-availability" id="fp-coach-availability"></p>
+            <div class="coach-profile-divider"></div>
 
-            <div class="coach-list-block">
-              <div class="coach-list-title">Certifications</div>
-              <ul class="coach-list" id="fp-coach-certifications"></ul>
-            </div>
-            <div class="coach-list-block">
-              <div class="coach-list-title">Specialites</div>
-              <ul class="coach-list" id="fp-coach-skills"></ul>
-            </div>
-            <div class="coach-list-block">
-              <div class="coach-list-title">Programmes proposes</div>
-              <ul class="coach-list" id="fp-coach-programs"></ul>
-            </div>
-
-            <label class="coach-message-label" for="fp-coach-message-input">Message</label>
-            <textarea id="fp-coach-message-input" rows="3" placeholder="Ex: Bonjour, je veux reserver une seance cette semaine."></textarea>
-
-            <div class="coach-booking-panel" id="fp-coach-booking" hidden>
-              <div class="coach-list-title">Calendrier des dates disponibles</div>
-              <div class="coach-date-grid" id="fp-coach-date-grid"></div>
-              <label class="coach-message-label" for="fp-coach-slot-select">Creneau</label>
-              <select id="fp-coach-slot-select"></select>
-              <div class="coach-actions">
-                <button type="button" class="fitness-btn fitness-btn-primary" id="fp-coach-book-confirm"><i class="fa fa-check"></i> Confirmer reservation</button>
-                <button type="button" class="fitness-btn fitness-btn-soft" id="fp-coach-book-cancel"><i class="fa fa-times"></i> Annuler</button>
+            <div class="coach-profile-section">
+              <h4>Vos informations</h4>
+              <div class="coach-form-grid">
+                <input type="text" id="fp-coach-client-name" placeholder="Nom complet *" value="{{ app.user ? ((app.user.firstName ?? '') ~ ' ' ~ (app.user.lastName ?? ''))|trim : '' }}">
+                <input type="email" id="fp-coach-client-email" placeholder="Email *" value="{{ app.user ? app.user.email : '' }}">
+                <input type="text" id="fp-coach-client-phone" placeholder="Telephone *">
               </div>
             </div>
 
-            <div class="coach-actions">
-              <button type="button" class="fitness-btn fitness-btn-primary" id="fp-coach-book"><i class="fa fa-calendar"></i> Reserver</button>
-              <button type="button" class="fitness-btn fitness-btn-soft" id="fp-coach-send"><i class="fa fa-commenting"></i> Envoyer message</button>
+            <div class="coach-profile-section">
+              <h4>Choisissez un creneau disponible</h4>
+              <p class="coach-profile-helper">Cliquez sur une date puis selectionnez l'heure</p>
+              <div class="coach-date-grid" id="fp-coach-date-grid"></div>
+              <div class="coach-slot-row">
+                <label class="coach-message-label" for="fp-coach-slot-select">Heure :</label>
+                <select id="fp-coach-slot-select" disabled>
+                  <option value="">Selectionner l'heure</option>
+                </select>
+              </div>
             </div>
-            <p class="coach-message-hint" id="fp-coach-message-hint">Envoi automatique par backend email vers le coach selectionne.</p>
+
+            <div class="coach-profile-section">
+              <textarea id="fp-coach-message-input" rows="3" placeholder="Message optionnel (objectifs, niveau, questions...)"></textarea>
+            </div>
+
+            <div class="coach-actions">
+              <button type="button" class="fitness-btn fitness-btn-primary" id="fp-coach-book-confirm">Confirmer la reservation</button>
+              <button type="button" class="fitness-btn fitness-btn-soft" id="fp-coach-book-cancel">Annuler</button>
+            </div>
+            <p class="coach-message-hint" id="fp-coach-message-hint">La reservation sera envoyee au coach selectionne par email.</p>
           </aside>
         </div>
       </div>
     </div>
 
-
   </div>
+  <div class="fitness-page-footer-strip">Fitopia Fitness Planner - premium white and green front experience</div>
 </section>
+
+<div class="fp-modal" id="fp-imc-modal" aria-hidden="true">
+  <div class="fp-modal-card" role="dialog" aria-modal="true" aria-labelledby="fp-imc-title">
+    <div class="fp-modal-header">
+      <button class="fp-modal-back" type="button" id="fp-imc-close">&#8592; Retour</button>
+      <div>
+        <h3 class="fp-modal-title" id="fp-imc-title">Mon IMC</h3>
+        <p class="fp-modal-subtitle">Calcule ton indice et ouvre le programme recommande.</p>
+      </div>
+      <div></div>
+    </div>
+    <div class="fp-imc-grid">
+      <input type="number" id="fp-imc-weight" min="1" step="0.1" placeholder="Poids (kg)">
+      <input type="number" id="fp-imc-height" min="1" step="0.1" placeholder="Taille (cm)">
+      <select id="fp-imc-sex">
+        <option value="Homme">Homme</option>
+        <option value="Femme">Femme</option>
+      </select>
+      <div class="fp-imc-actions">
+        <button type="button" class="fitness-btn fitness-btn-primary" id="fp-imc-calculate">Calculer</button>
+        <button type="button" class="fitness-btn fitness-btn-soft" id="fp-imc-launch" disabled>Ouvrir le programme</button>
+      </div>
+      <div class="fp-imc-result" id="fp-imc-result" hidden>
+        <div class="fp-imc-score">
+          <strong id="fp-imc-value">--</strong>
+          <span class="fp-imc-badge" id="fp-imc-category">En attente</span>
+        </div>
+        <p class="fp-imc-note" id="fp-imc-advice">Entre ton poids et ta taille pour recevoir un conseil immediate.</p>
+        <p class="fp-imc-note"><strong>Programme recommande :</strong> <span id="fp-imc-program">--</span></p>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="fp-modal" id="fp-program-modal" aria-hidden="true">
   <div class="fp-modal-card" role="dialog" aria-modal="true" aria-labelledby="fp-modal-title">
@@ -1713,18 +3101,18 @@
       </div>
       <div></div>
     </div>
+    <div class="fp-java-selection-strip">
+      <div class="fp-java-selection-status" id="fp-selection-status">Aucun exercice selectionne.</div>
+      <button class="fp-java-confirm-btn" type="button" id="fp-session-start">Confirmer la seance</button>
+    </div>
     <div class="fp-exercise-shell">
       <div class="fp-exercise-list" id="fp-exercise-list"></div>
-      <aside class="fp-session-panel">
-        <h4 class="fp-session-title">Ma séance :</h4>
+      <div class="fp-session-hidden" aria-hidden="true">
         <div class="fp-session-count" id="fp-session-count">0 exercices</div>
         <div class="fp-session-meta" id="fp-session-time">Temps estimé : 0 min</div>
         <div class="fp-session-list" id="fp-session-list"></div>
-        <div class="fp-session-actions">
-          <button class="fitness-btn fitness-btn-primary" type="button" id="fp-session-start">Confirmer</button>
-          <button class="fitness-btn fitness-btn-soft" type="button" id="fp-session-clear">Vider</button>
-        </div>
-      </aside>
+        <button class="fitness-btn fitness-btn-soft" type="button" id="fp-session-clear">Vider</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1734,83 +3122,87 @@
     <div class="fp-modal-header">
       <button class="fp-modal-back" type="button" id="fp-video-close">&#8592; Retour</button>
       <div>
-        <h3 class="fp-modal-title" id="fp-video-title">Video</h3>
+        <h3 class="fp-modal-title" id="fp-video-title">Session d'entrainement</h3>
         <p class="fp-modal-subtitle" id="fp-video-subtitle">Exercice</p>
       </div>
       <div></div>
     </div>
-    <div class="fp-video-meta">
-      <p class="fp-video-title" id="fp-video-name"></p>
-      <p class="fp-video-subtitle" id="fp-video-desc">Clique sur lecture pour demarrer.</p>
-    </div>
-    <video class="fp-video-player" id="fp-video-player" controls playsinline disablepictureinpicture></video>
-    <iframe
-      class="fp-video-player"
-      id="fp-video-iframe"
-      title="Video exercice"
-      frameborder="0"
-      allow="autoplay; encrypted-media"
-      allowfullscreen
-      loading="lazy"
-      referrerpolicy="strict-origin-when-cross-origin"
-      hidden
-    ></iframe>
-    <div class="hiit-card" id="hiit-card">
-      <h4 class="hiit-title">Workout Music + Timer (HIIT)</h4>
-      <div class="hiit-meta">
-        <span>Work : <strong>30s</strong></span>
-        <span>Rest : <strong>15s</strong></span>
-        <span>Rounds : <strong id="hiit-round-meta">1/8</strong></span>
-      </div>
-      <div class="hiit-timer">
-        <div class="hiit-phase">
-          <div class="label">Round</div>
-          <div class="value" id="hiit-round-label">1/8</div>
+    <div class="fp-training-shell">
+      <div class="fp-training-topstats">
+        <div class="fp-training-stat">
+          <span>ROUND</span>
+          <strong id="hiit-round-label">1 / 8</strong>
         </div>
-        <div class="hiit-phase">
-          <div class="label">Phase</div>
-          <div class="value is-work" id="hiit-phase-label">WORK</div>
-        </div>
-        <div class="hiit-phase">
-          <div class="label">Temps restant</div>
-          <div class="value" id="hiit-time-remaining">00:30</div>
+        <div class="fp-training-stat">
+          <span>CHRONO</span>
+          <strong id="hiit-time-remaining">00:30</strong>
         </div>
       </div>
-      <div class="hiit-audio-grid">
-        <label class="hiit-field" for="hiit-playlist">
-          <span>Playlist</span>
-          <select id="hiit-playlist">
-            <option value="hiit">HIIT Boost</option>
-            <option value="strength">Strength Power</option>
-            <option value="chill">Chill Stretch</option>
-            <option value="cardio">Cardio Run</option>
-          </select>
-        </label>
-        <label class="hiit-field" for="hiit-volume">
-          <span>Volume global</span>
-          <input id="hiit-volume" type="range" min="0" max="1" step="0.01" value="1" />
-        </label>
-      </div>
-      <div class="hiit-meta">
-        <span>Volume applique automatiquement: <strong>WORK 80% / REST 30% / STRETCH 20%</strong></span>
-        <span><strong id="hiit-volume-label">100%</strong></span>
-      </div>
-      <div class="hiit-timer">
-        <div class="hiit-phase">
-          <div class="label">Musique</div>
-          <div class="value" id="hiit-track-label">HIIT Boost</div>
+
+      <div class="fp-training-body">
+        <div class="fp-training-main">
+          <div class="fp-training-intro">
+            <div class="fp-training-phase-pill" id="hiit-phase-label">WORK</div>
+            <div class="fp-video-meta fp-training-meta">
+              <p class="fp-video-title" id="fp-video-name"></p>
+              <p class="fp-video-subtitle" id="fp-video-desc">Video demo, timer and integrated playlist.</p>
+            </div>
+          </div>
+
+          <div class="fp-training-media">
+            <video class="fp-video-player" id="fp-video-player" controls playsinline disablepictureinpicture></video>
+            <iframe
+              class="fp-video-player"
+              id="fp-video-iframe"
+              title="Video exercice"
+              frameborder="0"
+              allow="autoplay; encrypted-media"
+              allowfullscreen
+              loading="lazy"
+              referrerpolicy="strict-origin-when-cross-origin"
+              hidden
+            ></iframe>
+          </div>
+
         </div>
+
+        <aside class="fp-training-sidebar">
+          <div class="fp-training-sidecard">
+            <h4>Audio &amp; IA</h4>
+            <div class="fp-training-icon-row">
+              <button class="fp-training-icon-btn" type="button" id="hiit-music-toggle" aria-label="Musique"><i class="fa fa-music"></i></button>
+              <button class="fp-training-icon-btn" type="button" id="hiit-next-track" aria-label="Playlist suivante"><i class="fa fa-step-forward"></i></button>
+              <button class="fp-training-icon-btn" type="button" id="hiit-mute" aria-label="Activer ou couper le son"><i class="fa fa-volume-up"></i></button>
+            </div>
+            <input id="hiit-volume" class="fp-training-volume" type="range" min="0" max="1" step="0.01" value="1" />
+            <button class="fp-training-sidebtn" type="button" id="hiit-coach-toggle">Coach IA On</button>
+            <button class="fp-training-sidebtn" type="button" id="session-next">Exercice suivant</button>
+            <div class="fp-training-coach-line" id="hiit-coach-line" aria-live="polite">Coach IA: pret.</div>
+          </div>
+
+          <div class="fp-training-sidecard">
+            <h4>Session Playlist</h4>
+            <div class="fp-training-playlist" id="fp-training-playlist"></div>
+          </div>
+
+          <div class="fp-training-hidden" aria-hidden="true">
+            <div id="hiit-round-meta">1/8</div>
+            <div id="hiit-volume-label">100%</div>
+            <div id="hiit-track-label">Cardio Pulse</div>
+            <button type="button" id="hiit-reset">Reset</button>
+            <select id="hiit-playlist">
+              <option value="cardio">Cardio Pulse</option>
+              <option value="hiit">HIIT Energy</option>
+              <option value="strength">Strength Drive</option>
+              <option value="chill">Chill Focus</option>
+            </select>
+          </div>
+        </aside>
       </div>
-      <div class="hiit-coach-line" id="hiit-coach-line" aria-live="polite">Coach IA: pret.</div>
-      <div class="hiit-actions">
-        <button class="fitness-btn fitness-btn-primary" type="button" id="hiit-start">Start</button>
+
+      <div class="fp-training-footer-actions">
+        <button class="fitness-btn fitness-btn-primary" type="button" id="hiit-start">Demarrer l'exercice</button>
         <button class="fitness-btn fitness-btn-soft" type="button" id="hiit-pause">Pause</button>
-        <button class="fitness-btn fitness-btn-soft" type="button" id="hiit-reset">Reset</button>
-        <button class="fitness-btn fitness-btn-soft" type="button" id="hiit-music-toggle">Music Play</button>
-        <button class="fitness-btn fitness-btn-soft" type="button" id="hiit-next-track">Next Music</button>
-        <button class="fitness-btn fitness-btn-soft" type="button" id="hiit-mute">Mute</button>
-        <button class="fitness-btn fitness-btn-soft" type="button" id="hiit-coach-toggle">Coach IA On</button>
-        <button class="fitness-btn fitness-btn-soft" type="button" id="session-next">Exercice suivant</button>
       </div>
       <audio class="hiit-hidden-audio" id="hiit-music-audio" preload="auto" loop src="{{ asset('audio/hiit.mp3') }}"></audio>
       <audio class="hiit-hidden-audio" id="hiit-beep-audio" preload="auto" src="{{ asset('audio/beep.mp3') }}"></audio>
@@ -1876,6 +3268,22 @@
         }
       }));
 
+      const plannerAnchor = document.getElementById('fp-planner-anchor');
+      const scrollPlannerBtn = document.getElementById('fp-scroll-planner');
+      const openSpaceBtn = document.getElementById('fp-open-space');
+      const imcModal = document.getElementById('fp-imc-modal');
+      const imcOpenBtn = document.getElementById('fp-open-imc');
+      const imcCloseBtn = document.getElementById('fp-imc-close');
+      const imcCalculateBtn = document.getElementById('fp-imc-calculate');
+      const imcLaunchBtn = document.getElementById('fp-imc-launch');
+      const imcWeightInput = document.getElementById('fp-imc-weight');
+      const imcHeightInput = document.getElementById('fp-imc-height');
+      const imcSexInput = document.getElementById('fp-imc-sex');
+      const imcResult = document.getElementById('fp-imc-result');
+      const imcValue = document.getElementById('fp-imc-value');
+      const imcCategory = document.getElementById('fp-imc-category');
+      const imcAdvice = document.getElementById('fp-imc-advice');
+      const imcProgram = document.getElementById('fp-imc-program');
       const modal = document.getElementById('fp-program-modal');
       const modalTitle = document.getElementById('fp-modal-title');
       const modalSubtitle = document.getElementById('fp-modal-subtitle');
@@ -1906,9 +3314,11 @@
       const sessionList = document.getElementById('fp-session-list');
       const sessionStart = document.getElementById('fp-session-start');
       const sessionClear = document.getElementById('fp-session-clear');
+      const sessionStatus = document.getElementById('fp-selection-status');
       const sessionProgress = document.getElementById('session-progress');
       const sessionRest = document.getElementById('session-rest');
       const sessionNext = document.getElementById('session-next');
+      const trainingPlaylist = document.getElementById('fp-training-playlist');
       const userPlansList = document.getElementById('fp-user-plans-list');
       const planCreateUrl = '{{ path('fitness_planner_plan_create') }}';
       const planDeleteUrlTemplate = '{{ path('fitness_planner_plan_delete', {id: '__ID__'}) }}';
@@ -1923,6 +3333,7 @@
       const trendsStatus = document.getElementById('fp-trends-status');
       let selectedProgram = '';
       let selectedPlace = '';
+      let selectedDifficulty = '';
       let sessionExercises = [];
       let sessionIndex = 0;
       let sessionRestTimer = null;
@@ -1953,6 +3364,124 @@
       }
       const allTrends = Array.isArray(initialTrends) ? initialTrends : [];
       let trendsFetchDebounce = null;
+      let imcRecommendedProgram = '';
+
+      scrollPlannerBtn?.addEventListener('click', () => {
+        plannerAnchor?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      openSpaceBtn?.addEventListener('click', () => {
+        setView('plans');
+        syncViewInUrl('plans');
+        plannerAnchor?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      const openImcModal = () => {
+        if (!imcModal) return;
+        imcModal.classList.add('is-open');
+        imcModal.setAttribute('aria-hidden', 'false');
+      };
+
+      const closeImcModal = () => {
+        if (!imcModal) return;
+        imcModal.classList.remove('is-open');
+        imcModal.setAttribute('aria-hidden', 'true');
+      };
+
+      const computeImcRecommendation = (bmi) => {
+        if (bmi < 18.5) {
+          return {
+            category: 'Insuffisance ponderale',
+            color: '#3b82f6',
+            advice: 'Augmentez votre apport calorique et faites de la musculation.',
+            program: 'Corps entier',
+            label: 'Prise de masse - Corps entier (Debutant)'
+          };
+        }
+        if (bmi < 25) {
+          return {
+            category: 'Poids normal',
+            color: '#22c55e',
+            advice: 'Excellent. Maintenez votre condition avec un programme equilibre.',
+            program: 'Poitrine',
+            label: 'Programme equilibre - Poitrine + Dos'
+          };
+        }
+        if (bmi < 30) {
+          return {
+            category: 'Surpoids',
+            color: '#f59e0b',
+            advice: 'Combinez cardio et musculation pour perdre du poids progressivement.',
+            program: 'Jambes',
+            label: 'Cardio + Jambes (Debutant)'
+          };
+        }
+        if (bmi < 35) {
+          return {
+            category: 'Obesite moderee',
+            color: '#f97316',
+            advice: 'Commencez doucement avec des exercices a faible impact.',
+            program: 'Entrainement du corps entier',
+            label: 'Corps entier leger (Debutant)'
+          };
+        }
+        return {
+          category: 'Obesite severe',
+          color: '#ef4444',
+          advice: 'Consultez un medecin avant de commencer. Marche et mobilite recommandees.',
+          program: 'Abdos',
+          label: 'Mobilite & Abdos (Debutant)'
+        };
+      };
+
+      imcOpenBtn?.addEventListener('click', openImcModal);
+      imcCloseBtn?.addEventListener('click', closeImcModal);
+      imcModal?.addEventListener('click', (event) => {
+        if (event.target === imcModal) {
+          closeImcModal();
+        }
+      });
+
+      imcCalculateBtn?.addEventListener('click', () => {
+        const weight = Number(String(imcWeightInput?.value || '').replace(',', '.'));
+        const heightCm = Number(String(imcHeightInput?.value || '').replace(',', '.'));
+        const sex = String(imcSexInput?.value || 'Homme');
+        if (!weight || !heightCm || weight <= 0 || heightCm <= 0) {
+          if (imcResult) imcResult.hidden = false;
+          if (imcValue) imcValue.textContent = '--';
+          if (imcCategory) {
+            imcCategory.textContent = 'Valeurs invalides';
+            imcCategory.style.color = '#ef4444';
+          }
+          if (imcAdvice) imcAdvice.textContent = 'Entrez des valeurs valides (poids en kg, taille en cm).';
+          if (imcProgram) imcProgram.textContent = '--';
+          if (imcLaunchBtn) imcLaunchBtn.disabled = true;
+          imcRecommendedProgram = '';
+          return;
+        }
+
+        const bmi = weight / Math.pow(heightCm / 100, 2);
+        const result = computeImcRecommendation(bmi, sex);
+        imcRecommendedProgram = result.program;
+        if (imcResult) imcResult.hidden = false;
+        if (imcValue) imcValue.textContent = bmi.toFixed(1);
+        if (imcCategory) {
+          imcCategory.textContent = result.category;
+          imcCategory.style.color = result.color;
+        }
+        if (imcAdvice) imcAdvice.textContent = result.advice;
+        if (imcProgram) imcProgram.textContent = result.label;
+        if (imcLaunchBtn) imcLaunchBtn.disabled = false;
+      });
+
+      imcLaunchBtn?.addEventListener('click', () => {
+        if (!imcRecommendedProgram) return;
+        closeImcModal();
+        setView('manage');
+        syncViewInUrl('manage');
+        plannerAnchor?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        window.setTimeout(() => openModal(imcRecommendedProgram), 180);
+      });
 
       const clearVideoPlayer = () => {
         if (!videoPlayer) return;
@@ -1988,6 +3517,7 @@
           videoPlayer.disablePictureInPicture = true;
           videoPlayer.setAttribute('disablepictureinpicture', 'disablepictureinpicture');
           videoPlayer.src = source.src;
+          videoPlayer.poster = metadata.image || '';
           videoPlayer.setAttribute('controls', 'controls');
           videoPlayer.controls = true;
           videoPlayer.playsInline = true;
@@ -1999,13 +3529,13 @@
           return false;
         }
 
-        if (videoTitle) videoTitle.textContent = metadata.title || 'Video';
+        if (videoTitle) videoTitle.textContent = metadata.title || "Session d'entrainement";
         if (videoSubtitle) videoSubtitle.textContent = metadata.subtitle || 'Exercice';
         if (videoName) videoName.textContent = metadata.name || '';
         if (videoDesc) {
-          videoDesc.textContent = source.type === 'youtube'
-            ? 'Video YouTube en incrustation.'
-            : 'Clique sur lecture pour demarrer.';
+          videoDesc.textContent = metadata.description || (source.type === 'youtube'
+            ? 'Video YouTube integree.'
+            : 'Clique sur lecture pour demarrer.');
         }
 
         const modalCard = videoModal.querySelector('.fp-modal-card');
@@ -2047,6 +3577,7 @@
       };
 
       const openExerciseModal = (levelLabel) => {
+        selectedDifficulty = levelLabel || '';
         if (exerciseTitle) {
           exerciseTitle.textContent = selectedProgram || 'Programme';
         }
@@ -2055,6 +3586,7 @@
         }
 
         const exerciseImageMap = {{ exerciseImageMapJs|json_encode|raw }};
+        const dynamicProgramExercises = {{ exerciseLibraryByGroup|json_encode|raw }};
         const programImageMap = {{ externalImageMapJs|json_encode|raw }};
         const overrideExerciseImages = {
           'Developpe couche avec barre': '{{ asset('images/fitness/exercises/developpe-couche-avec-barre.webp') }}',
@@ -2078,7 +3610,7 @@
           'Developpe couche a la poulie vis a vis': '{{ asset('videos/fitness/developpe-couche-poulie-vis-a-vis.mp4') }}',
           'Developpe poitrine prise marteau a un bras assis': '{{ asset('videos/fitness/developpe-prise-marteau-un-bras-assis.mp4') }}'
         };
-        const programExercises = {
+        const hardcodedProgramExercises = {
           'Poitrine': {
             'Débutant': [
               'Developpe couche avec barre',
@@ -2098,7 +3630,21 @@
           }
         };
 
-        const list = (programExercises[selectedProgram] && programExercises[selectedProgram][levelLabel]) || [];
+        const levelKeyMap = {
+          'Débutant': 'Beginner',
+          'Avance': 'Intermediate',
+          'Expert': 'Advanced'
+        };
+        const selectedPlaceKey = selectedPlace === 'À la salle de sport' ? 'gym' : 'home';
+        const dbGroup = dynamicProgramExercises[selectedProgram] || {};
+        const dbExercises = (dbGroup[levelKeyMap[levelLabel] || ''] || []).filter((entry) => !entry.place || entry.place === 'both' || entry.place === selectedPlaceKey);
+        const dbAnyLevelExercises = Object.values(dbGroup).flat().filter((entry) => !entry.place || entry.place === 'both' || entry.place === selectedPlaceKey);
+        const fallbackExercises = (hardcodedProgramExercises[selectedProgram] && hardcodedProgramExercises[selectedProgram][levelLabel]) || [];
+        const list = dbExercises.length > 0
+          ? dbExercises
+          : dbAnyLevelExercises.length > 0
+            ? dbAnyLevelExercises
+          : fallbackExercises.map((name) => ({ name, image: '', video: '' }));
         if (exerciseList) {
           exerciseList.innerHTML = '';
           if (list.length === 0) {
@@ -2107,61 +3653,113 @@
             empty.textContent = 'Aucun exercice disponible pour ce choix.';
             exerciseList.appendChild(empty);
           } else {
-            list.forEach((name) => {
-              const image = (overrideExerciseImages && overrideExerciseImages[name])
+            list.forEach((exerciseEntry) => {
+              const name = typeof exerciseEntry === 'string' ? exerciseEntry : (exerciseEntry.name || '');
+              const image = (exerciseEntry && exerciseEntry.image)
+                || (overrideExerciseImages && overrideExerciseImages[name])
                 || (exerciseImageMap && exerciseImageMap[name])
                 || (programImageMap && programImageMap[selectedProgram])
                 || '';
-              const video = (exerciseVideoMap && exerciseVideoMap[name]) || '';
+              const video = (exerciseEntry && exerciseEntry.video)
+                || (exerciseVideoMap && exerciseVideoMap[name])
+                || '';
+              const place = (exerciseEntry && exerciseEntry.place)
+                ? (exerciseEntry.place === 'gym' ? 'Salle' : exerciseEntry.place === 'home' ? 'Maison' : 'Salle / Maison')
+                : (selectedPlaceKey === 'gym' ? 'Salle' : 'Maison');
               const item = document.createElement('div');
-              item.className = 'fp-exercise-item';
-              const hasThumb = !!image;
-              if (!hasThumb) {
-                item.classList.add('no-thumb');
-              }
+              item.className = 'fp-java-exercise-card';
               if (video) {
-                item.classList.add('has-video');
+                item.classList.add('is-demo');
                 item.dataset.video = video;
                 item.dataset.exercise = name;
               }
-              if (hasThumb) {
-                const thumb = document.createElement('div');
-                thumb.className = 'fp-exercise-thumb';
-                thumb.style.backgroundImage = `url('${image}')`;
-                item.appendChild(thumb);
+
+              const media = document.createElement('div');
+              media.className = 'fp-java-exercise-media';
+              if (image) {
+                const thumb = document.createElement('img');
+                thumb.src = image;
+                thumb.alt = name;
+                media.appendChild(thumb);
+              } else {
+                media.textContent = name.slice(0, 2).toUpperCase();
               }
-              const label = document.createElement('div');
-              label.className = 'fp-exercise-name';
+
+              const copy = document.createElement('div');
+              copy.className = 'fp-java-exercise-copy';
+              const label = document.createElement('h4');
+              label.className = 'fp-java-exercise-name';
               label.textContent = name;
+              const subtitle = document.createElement('p');
+              subtitle.className = 'fp-java-exercise-subtitle';
+              subtitle.textContent = 'Video demo, timer and integrated playlist';
+              const chips = document.createElement('div');
+              chips.className = 'fp-java-exercise-chips';
+              const placeChip = document.createElement('span');
+              placeChip.className = 'fp-java-exercise-chip';
+              placeChip.textContent = selectedPlace || 'Programme';
+              const levelChip = document.createElement('span');
+              levelChip.className = 'fp-java-exercise-chip';
+              levelChip.textContent = levelLabel || 'Debutant';
+              const placeChipInfo = document.createElement('span');
+              placeChipInfo.className = 'fp-java-exercise-chip';
+              placeChipInfo.textContent = place;
+              chips.appendChild(placeChip);
+              chips.appendChild(levelChip);
+              chips.appendChild(placeChipInfo);
+              copy.appendChild(label);
+              copy.appendChild(subtitle);
+              copy.appendChild(chips);
+
               const actionWrap = document.createElement('div');
-              actionWrap.className = 'fp-exercise-row-action';
-              actionWrap.appendChild(label);
-              const addBtn = document.createElement('button');
-              addBtn.type = 'button';
-              addBtn.className = 'fitness-btn fitness-btn-soft fp-exercise-action';
-              addBtn.textContent = '+ Ajouter à ma séance';
-              addBtn.addEventListener('click', (evt) => {
-                evt.stopPropagation();
-                if (!sessionExercises.find((e) => e.name === name)) {
-                  sessionExercises.push({ name, video });
-                  renderSessionPanel();
-                }
-              });
-              actionWrap.appendChild(addBtn);
-              item.appendChild(actionWrap);
-              item.addEventListener('click', () => {
-                resetHiit();
-                startHiit();
+              actionWrap.className = 'fp-java-exercise-actions';
+              const demoBtn = document.createElement('button');
+              demoBtn.type = 'button';
+              demoBtn.className = 'fp-java-demo-btn';
+              demoBtn.textContent = 'Voir la demo';
+              const openPreview = () => {
                 if (!video) return;
                 const source = normalizeVideoSource(video);
                 const opened = openVideoModalWithSource(source, {
-                  title: 'Video de l’exercice',
-                  subtitle: `${selectedProgram} - ${selectedPlace}`,
-                  name
+                  title: "Session d'entrainement",
+                  subtitle: [selectedProgram, selectedPlace, selectedDifficulty].filter(Boolean).join(' - '),
+                  name,
+                  image,
+                  description: 'Video demo, timer and integrated playlist'
                 });
                 if (!opened) {
                   alert('Impossible d\'ouvrir cette video en incrustation.');
                 }
+              };
+              demoBtn.addEventListener('click', (evt) => {
+                evt.stopPropagation();
+                openPreview();
+              });
+
+              const addBtn = document.createElement('button');
+              addBtn.type = 'button';
+              addBtn.className = 'fp-java-add-btn';
+              const alreadyAdded = sessionExercises.some((e) => e.name === name);
+              addBtn.textContent = alreadyAdded ? '+ Ajouter a ma seance (1)' : '+ Ajouter a ma seance';
+              if (alreadyAdded) {
+                addBtn.classList.add('is-added');
+              }
+              addBtn.addEventListener('click', (evt) => {
+                evt.stopPropagation();
+                if (!sessionExercises.find((e) => e.name === name)) {
+                  sessionExercises.push({ name, video });
+                  addBtn.textContent = '+ Ajouter a ma seance (1)';
+                  addBtn.classList.add('is-added');
+                  renderSessionPanel();
+                }
+              });
+              actionWrap.appendChild(demoBtn);
+              actionWrap.appendChild(addBtn);
+              item.appendChild(media);
+              item.appendChild(copy);
+              item.appendChild(actionWrap);
+              item.addEventListener('click', () => {
+                openPreview();
               });
               exerciseList.appendChild(item);
             });
@@ -2229,6 +3827,7 @@
 
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
+          closeImcModal();
           closeModal();
           closeLevelModal();
           closeExerciseModal();
@@ -2264,10 +3863,10 @@
       const hiitStretchVolume = 0.2;
 
       const hiitPlaylists = [
-        { id: 'hiit', label: 'HIIT Boost', src: '{{ asset('audio/hiit.mp3') }}' },
-        { id: 'strength', label: 'Strength Power', src: '{{ asset('audio/strength.mp3') }}' },
-        { id: 'chill', label: 'Chill Stretch', src: '{{ asset('audio/chill.m4a') }}' },
-        { id: 'cardio', label: 'Cardio Run', src: '{{ asset('audio/cardio.mp3') }}' }
+        { id: 'cardio', label: 'Cardio Pulse', src: '{{ asset('audio/cardio.mp3') }}' },
+        { id: 'hiit', label: 'HIIT Energy', src: '{{ asset('audio/hiit.mp3') }}' },
+        { id: 'strength', label: 'Strength Drive', src: '{{ asset('audio/strength.mp3') }}' },
+        { id: 'chill', label: 'Chill Focus', src: '{{ asset('audio/chill.m4a') }}' }
       ];
 
       let hiitPhase = 'work';
@@ -2294,12 +3893,16 @@
 
       const updateMusicToggleLabel = () => {
         if (!hiitMusicToggle || !hiitMusicAudio) return;
-        hiitMusicToggle.textContent = hiitMusicAudio.paused ? 'Music Play' : 'Music Pause';
+        hiitMusicToggle.innerHTML = '<i class="fa fa-music"></i>';
+        hiitMusicToggle.classList.toggle('is-active', !hiitMusicAudio.paused);
+        hiitMusicToggle.setAttribute('aria-label', hiitMusicAudio.paused ? 'Lancer la musique' : 'Pause musique');
       };
 
       const updateMuteLabel = () => {
         if (!hiitMute) return;
-        hiitMute.textContent = hiitMuted ? 'Unmute' : 'Mute';
+        hiitMute.innerHTML = `<i class="fa ${hiitMuted ? 'fa-volume-off' : 'fa-volume-up'}"></i>`;
+        hiitMute.classList.toggle('is-active', hiitMuted);
+        hiitMute.setAttribute('aria-label', hiitMuted ? 'Activer le son' : 'Couper le son');
       };
 
       const updateCoachToggleLabel = () => {
@@ -2313,6 +3916,24 @@
       };
 
       const getPlaylistIndexById = (id) => hiitPlaylists.findIndex((entry) => entry.id === id);
+
+      const renderTrainingPlaylist = () => {
+        if (!trainingPlaylist) return;
+        trainingPlaylist.innerHTML = '';
+        hiitPlaylists.forEach((track, index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'fp-training-playlist-item';
+          button.textContent = track.label;
+          if (index === hiitPlaylistIndex) {
+            button.classList.add('is-active');
+          }
+          button.addEventListener('click', () => {
+            setHiitPlaylistByIndex(index, true);
+          });
+          trainingPlaylist.appendChild(button);
+        });
+      };
 
       const pickCoachVoice = () => {
         if (!hiitSpeechSupported) return;
@@ -2411,6 +4032,7 @@
         if (hiitTrackLabel && hiitPlaylists[hiitPlaylistIndex]) {
           hiitTrackLabel.textContent = hiitPlaylists[hiitPlaylistIndex].label;
         }
+        renderTrainingPlaylist();
       };
 
       const playHiitMusic = () => {
@@ -2672,8 +4294,18 @@
         resetHiit();
       };
 
-      if (hiitStart) hiitStart.addEventListener('click', startHiit);
-      if (hiitPause) hiitPause.addEventListener('click', pauseHiit);
+      if (hiitStart) hiitStart.addEventListener('click', () => {
+        startHiit();
+        if (videoPlayer && !videoPlayer.hidden && videoPlayer.src) {
+          videoPlayer.play().catch(() => {});
+        }
+      });
+      if (hiitPause) hiitPause.addEventListener('click', () => {
+        pauseHiit();
+        if (videoPlayer && !videoPlayer.hidden) {
+          videoPlayer.pause();
+        }
+      });
       if (hiitReset) hiitReset.addEventListener('click', resetHiit);
 
       if (hiitMusicToggle) {
@@ -2759,11 +4391,24 @@
       resetHiit();
 
       const renderSessionPanel = () => {
-        if (!sessionCount || !sessionTime || !sessionList) return;
-        sessionCount.textContent = `${sessionExercises.length} exercices`;
+        const exerciseCount = sessionExercises.length;
+        if (sessionCount) {
+          sessionCount.textContent = `${exerciseCount} exercices`;
+        }
         const estimatedSeconds = sessionExercises.length * 90;
         const mins = Math.max(0, Math.ceil(estimatedSeconds / 60));
-        sessionTime.textContent = `Temps estimé : ${mins} min`;
+        if (sessionTime) {
+          sessionTime.textContent = `Temps estime : ${mins} min`;
+        }
+        if (sessionStatus) {
+          sessionStatus.textContent = exerciseCount === 0
+            ? 'Aucun exercice selectionne.'
+            : `${exerciseCount} exercice(s) en attente de confirmation.`;
+        }
+        if (sessionStart) {
+          sessionStart.disabled = exerciseCount === 0;
+        }
+        if (!sessionList) return;
         sessionList.innerHTML = '';
         sessionExercises.forEach((ex) => {
           const row = document.createElement('div');
@@ -2893,23 +4538,13 @@
 
       const coachGrid = document.getElementById('fp-coach-grid');
       const coachProfile = document.getElementById('fp-coach-profile');
-      const coachPhoto = document.getElementById('fp-coach-photo');
-      const coachName = document.getElementById('fp-coach-name');
-      const coachSpeciality = document.getElementById('fp-coach-speciality');
-      const coachRating = document.getElementById('fp-coach-rating');
-      const coachExperience = document.getElementById('fp-coach-experience');
-      const coachPhone = document.getElementById('fp-coach-phone');
-      const coachEmail = document.getElementById('fp-coach-email');
-      const coachBio = document.getElementById('fp-coach-bio');
-      const coachAvailability = document.getElementById('fp-coach-availability');
-      const coachCertifications = document.getElementById('fp-coach-certifications');
-      const coachSkills = document.getElementById('fp-coach-skills');
-      const coachPrograms = document.getElementById('fp-coach-programs');
+      const coachBookingTitle = document.getElementById('fp-coach-booking-title');
+      const coachBookingSubtitle = document.getElementById('fp-coach-booking-subtitle');
+      const coachClientName = document.getElementById('fp-coach-client-name');
+      const coachClientEmail = document.getElementById('fp-coach-client-email');
+      const coachClientPhone = document.getElementById('fp-coach-client-phone');
       const coachMessageInput = document.getElementById('fp-coach-message-input');
-      const coachBookBtn = document.getElementById('fp-coach-book');
-      const coachSendBtn = document.getElementById('fp-coach-send');
       const coachMessageHint = document.getElementById('fp-coach-message-hint');
-      const coachBookingPanel = document.getElementById('fp-coach-booking');
       const coachDateGrid = document.getElementById('fp-coach-date-grid');
       const coachSlotSelect = document.getElementById('fp-coach-slot-select');
       const coachBookConfirmBtn = document.getElementById('fp-coach-book-confirm');
@@ -2918,8 +4553,8 @@
       const coachCatalog = [
         {
           id: 'coach-ahmed',
-          name: 'Coach Ahmed',
-          speciality: 'Boxe',
+          name: 'Ahmed Chebbi',
+          speciality: 'BOXE & CARDIO',
           phone: '+21625010582',
           email: 'ahmedchebbi323@gmail.com',
           rating: 4.8,
@@ -2937,8 +4572,8 @@
         },
         {
           id: 'coach-ali',
-          name: 'Coach Ali',
-          speciality: 'Musculation',
+          name: 'Ali Ben Salah',
+          speciality: 'MUSCULATION & FORCE',
           phone: '+21653919881',
           email: '',
           rating: 4.9,
@@ -2956,8 +4591,8 @@
         },
         {
           id: 'coach-omar',
-          name: 'Coach Omar',
-          speciality: 'Judo',
+          name: 'Omar Khelifi',
+          speciality: 'JUDO & PREP PHYSIQUE',
           phone: '+21658936689',
           email: 'omarAlitouaitiesp@gmail.com',
           rating: 4.7,
@@ -2975,8 +4610,8 @@
         },
         {
           id: 'coach-sarah',
-          name: 'Coach Sarah',
-          speciality: 'Yoga',
+          name: 'Sarah Jardak',
+          speciality: 'YOGA & MOBILITE',
           phone: '+21628759998',
           email: 'sarahJardaksara03@gmail.com',
           rating: 4.9,
@@ -2994,8 +4629,8 @@
         },
         {
           id: 'coach-rania',
-          name: 'Coach Rania',
-          speciality: 'Danse orientale',
+          name: 'Rania Landolsi',
+          speciality: 'DANSE & CARDIO',
           phone: '+21658860916',
           email: 'landolssiranya@gmail.com',
           rating: 4.6,
@@ -3014,8 +4649,8 @@
         },
         {
           id: 'coach-emna',
-          name: 'Coach Emna',
-          speciality: 'Pilates',
+          name: 'Emna Ben Hssine',
+          speciality: 'PILATES & POSTURE',
           phone: '+21655487965',
           email: 'bhemna05@gmail.com',
           rating: 4.8,
@@ -3078,25 +4713,15 @@
         return data;
       };
 
-      const fillCoachList = (target, values) => {
-        if (!target) return;
-        target.innerHTML = '';
-        values.forEach((entry) => {
-          const li = document.createElement('li');
-          li.textContent = entry;
-          target.appendChild(li);
-        });
-      };
-
       const hideCoachBookingPanel = () => {
-        if (!coachBookingPanel) return;
-        coachBookingPanel.hidden = true;
+        if (!coachProfile) return;
+        coachProfile.classList.remove('is-visible');
         selectedCoachDateKey = '';
         selectedCoachWindow = '';
         coachBookingDates = [];
         if (coachDateGrid) coachDateGrid.innerHTML = '';
         if (coachSlotSelect) {
-          coachSlotSelect.innerHTML = '';
+          coachSlotSelect.innerHTML = '<option value="">Selectionner l\'heure</option>';
           coachSlotSelect.disabled = true;
         }
       };
@@ -3141,7 +4766,7 @@
 
       const renderCoachSlotOptions = (dateKey) => {
         if (!coachSlotSelect) return;
-        coachSlotSelect.innerHTML = '';
+        coachSlotSelect.innerHTML = '<option value="">Selectionner l\'heure</option>';
 
         const entry = coachBookingDates.find((item) => item.key === dateKey);
         if (!entry || !Array.isArray(entry.ranges) || entry.ranges.length === 0) {
@@ -3163,17 +4788,26 @@
       };
 
       const renderCoachBookingPanel = (coach) => {
-        if (!coachBookingPanel || !coachDateGrid) return;
+        if (!coachProfile || !coachDateGrid) return;
 
         coachBookingDates = getCoachAvailableDates(coach, 35);
         selectedCoachDateKey = '';
         selectedCoachWindow = '';
         coachDateGrid.innerHTML = '';
+        coachProfile.classList.add('is-visible');
+        if (coachBookingTitle) {
+          coachBookingTitle.textContent = `Reserver avec ${coach.name} - ${coach.speciality}`;
+        }
+        if (coachBookingSubtitle) {
+          coachBookingSubtitle.textContent = `Tel: ${coach.phone} | Disponibilites: ${coach.availability}`;
+        }
+        if (coachMessageInput) {
+          coachMessageInput.value = '';
+        }
 
         if (coachBookingDates.length === 0) {
-          coachBookingPanel.hidden = false;
           if (coachSlotSelect) {
-            coachSlotSelect.innerHTML = '';
+            coachSlotSelect.innerHTML = '<option value="">Selectionner l\'heure</option>';
             coachSlotSelect.disabled = true;
           }
           setCoachHint(`Aucune date disponible pour ${coach.name} sur les 5 prochaines semaines.`);
@@ -3192,37 +4826,7 @@
         selectedCoachDateKey = coachBookingDates[0].key;
         setActiveCoachDate(selectedCoachDateKey);
         renderCoachSlotOptions(selectedCoachDateKey);
-        coachBookingPanel.hidden = false;
         setCoachHint(`Selectionne une date puis confirme pour envoyer un email a ${coach.name}.`);
-      };
-
-      const renderCoachDetail = (coach) => {
-        if (!coach) return;
-        hideCoachBookingPanel();
-        if (coachPhoto) {
-          coachPhoto.style.backgroundImage = coach.photo ? `url("${coach.photo}")` : '';
-        }
-        if (coachName) coachName.textContent = coach.name;
-        if (coachSpeciality) coachSpeciality.textContent = coach.speciality;
-        if (coachRating) coachRating.innerHTML = `<i class="fa fa-star"></i> ${coach.rating.toFixed(1)}/5`;
-        if (coachExperience) coachExperience.innerHTML = `<i class="fa fa-briefcase"></i> ${coach.experienceYears} ans d'experience`;
-        if (coachPhone) coachPhone.innerHTML = `<i class="fa fa-phone"></i> ${coach.phone}`;
-        if (coachEmail) coachEmail.innerHTML = `<i class="fa fa-envelope"></i> ${coach.email || '--'}`;
-        if (coachBio) coachBio.textContent = coach.bio;
-        if (coachAvailability) coachAvailability.textContent = `Disponibilite: ${coach.availability}`;
-
-        const skillEntries = Array.isArray(coach.specialties) ? [...coach.specialties] : [];
-        if (coach.playlist) {
-          skillEntries.push(`Playlist preferee: ${coach.playlist}`);
-        }
-
-        fillCoachList(coachCertifications, Array.isArray(coach.certifications) ? coach.certifications : []);
-        fillCoachList(coachSkills, skillEntries);
-        fillCoachList(coachPrograms, Array.isArray(coach.programs) ? coach.programs : []);
-
-        if (coachMessageInput) {
-          coachMessageInput.value = `Bonjour ${coach.name}, je souhaite reserver une seance avec vous.`;
-        }
       };
 
       const setActiveCoachCard = (coachId) => {
@@ -3238,7 +4842,6 @@
         if (!coach) return;
         selectedCoachId = coach.id;
         setActiveCoachCard(selectedCoachId);
-        renderCoachDetail(coach);
       };
 
       const renderCoachCards = () => {
@@ -3252,15 +4855,14 @@
           card.innerHTML = `
             <div class="coach-item-photo" style="${coach.photo ? `background-image:url('${coach.photo}')` : ''}"></div>
             <div class="coach-item-body">
+              <span class="coach-item-badge">${coach.speciality}</span>
               <h3 class="coach-item-name">${coach.name}</h3>
-              <p class="coach-item-speciality">${coach.speciality}</p>
               <div class="coach-item-meta">
-                <span><i class="fa fa-star"></i> ${coach.rating.toFixed(1)}/5</span>
-                <span><i class="fa fa-clock-o"></i> ${coach.experienceYears} ans</span>
+                <span class="coach-item-meta-line">Call: ${coach.phone}</span>
+                <span class="coach-item-meta-line">Disponibilites: ${coach.availability}</span>
               </div>
-              <p class="coach-item-availability"><i class="fa fa-calendar"></i> ${coach.availability}</p>
-              <button type="button" class="fitness-btn fitness-btn-soft" data-coach-id="${coach.id}"><i class="fa fa-user"></i> Voir profil</button>
             </div>
+            <button type="button" class="coach-item-cta" data-coach-id="${coach.id}" data-coach-action="book">Prendre rendez-vous</button>
           `;
           coachGrid.appendChild(card);
         });
@@ -3276,6 +4878,13 @@
           const coachId = trigger.getAttribute('data-coach-id');
           if (!coachId) return;
           selectCoach(coachId);
+          if (trigger.getAttribute('data-coach-action') === 'book') {
+            const coach = findCoachById(coachId);
+            if (coach) {
+              renderCoachBookingPanel(coach);
+              coachProfile?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
         });
       }
 
@@ -3294,14 +4903,6 @@
       if (coachSlotSelect) {
         coachSlotSelect.addEventListener('change', () => {
           selectedCoachWindow = String(coachSlotSelect.value || '').trim();
-        });
-      }
-
-      if (coachBookBtn) {
-        coachBookBtn.addEventListener('click', () => {
-          const coach = findCoachById(selectedCoachId);
-          if (!coach) return;
-          renderCoachBookingPanel(coach);
         });
       }
 
@@ -3329,6 +4930,14 @@
             return;
           }
 
+          const clientName = String(coachClientName?.value || '').trim();
+          const clientEmail = String(coachClientEmail?.value || '').trim();
+          const clientPhone = String(coachClientPhone?.value || '').trim();
+          if (clientName === '' || clientEmail === '' || clientPhone === '') {
+            setCoachHint('Remplis ton nom, ton email et ton telephone avant de confirmer.');
+            return;
+          }
+
           const customMessage = String(coachMessageInput?.value || '').trim();
           try {
             await sendCoachEmailOnServer({
@@ -3339,7 +4948,12 @@
               coachEmail: coach.email || '',
               reservationDate: dateEntry.longLabel,
               reservationSlot: slot,
-              clientMessage: customMessage || 'Je confirme ma reservation.'
+              clientMessage: [
+                `Nom: ${clientName}`,
+                `Email: ${clientEmail}`,
+                `Telephone: ${clientPhone}`,
+                customMessage !== '' ? `Message: ${customMessage}` : 'Message: Aucun message complementaire.'
+              ].join(' | ')
             });
           } catch (error) {
             const details = error instanceof Error ? error.message : 'email_send_failed';
@@ -3349,31 +4963,6 @@
 
           setCoachHint(`Reservation confirmee. Email envoye au coach ${coach.name} pour ${dateEntry.longLabel} ${slot}.`);
           hideCoachBookingPanel();
-        });
-      }
-
-      if (coachSendBtn) {
-        coachSendBtn.addEventListener('click', async () => {
-          const coach = findCoachById(selectedCoachId);
-          if (!coach) return;
-
-          const text = String(coachMessageInput?.value || '').trim();
-          try {
-            await sendCoachEmailOnServer({
-              kind: 'message',
-              coachName: coach.name,
-              coachSpeciality: coach.speciality,
-              coachPhone: coach.phone,
-              coachEmail: coach.email || '',
-              clientMessage: text || 'Bonjour, je souhaite discuter du programme.'
-            });
-          } catch (error) {
-            const details = error instanceof Error ? error.message : 'email_send_failed';
-            setCoachHint(`Echec envoi SMS: ${details}`);
-            return;
-          }
-
-          setCoachHint(`Message email envoye au coach ${coach.name}.`);
         });
       }
 
@@ -4087,9 +5676,11 @@
         }
 
         const opened = openVideoModalWithSource(source, {
-          title: 'Video de l’exercice',
-          subtitle: `${selectedProgram} - ${selectedPlace}`,
-          name: current.name
+          title: "Session d'entrainement",
+          subtitle: [selectedProgram, selectedPlace, selectedDifficulty].filter(Boolean).join(' - '),
+          name: current.name,
+          image: ({{ exerciseImageMapJs|json_encode|raw }})[current.name] || '',
+          description: 'Video demo, timer and integrated playlist'
         });
         if (!opened) {
           alert('Impossible d\'ouvrir cette video en incrustation.');
@@ -4116,6 +5707,295 @@
         sessionClear.addEventListener('click', () => {
           sessionExercises = [];
           renderSessionPanel();
+        });
+      }
+
+      const premiumExploreQuery = document.getElementById('fp-explore-ai-query');
+      const premiumExploreFilterBtn = document.getElementById('fp-explore-ai-generate');
+      const premiumExploreResetBtn = document.getElementById('fp-explore-reset');
+      const premiumExplorePlaylist = document.getElementById('fp-explore-playlist');
+      const premiumExploreStageMedia = document.getElementById('fp-explore-stage-media');
+      const premiumExploreCaption = document.getElementById('fp-explore-stage-caption');
+      const premiumExploreCountLine = document.getElementById('fp-explore-count-line');
+      const premiumExploreNowPlaying = document.getElementById('fp-explore-now-playing');
+      const premiumExplorePrev = document.getElementById('fp-explore-prev');
+      const premiumExplorePlay = document.getElementById('fp-explore-play');
+      const premiumExploreNext = document.getElementById('fp-explore-next');
+      const premiumExploreMute = document.getElementById('fp-explore-mute');
+      const premiumExploreVolume = document.getElementById('fp-explore-volume');
+      const premiumExploreLike = document.getElementById('fp-explore-like');
+
+      const premiumExploreLibrary = [
+        { id: 'back-home-5', title: 'Back Intense at Home - 5 min', desc: 'Workout dos intense 5 min sans equipement.', meta: 'Dos | Maison | 5 min', category: 'dos', sourceType: 'video', src: '{{ asset('videos/fitness/local/back-home-5min.mp4') }}' },
+        { id: 'circuit-abdos-20', title: 'Circuit Abdos Complet - 20 min', desc: 'Circuit abdos complet a suivre en temps reel.', meta: 'Abdos | Core | 20 min', category: 'abdos', sourceType: 'video', src: '{{ asset('videos/fitness/local/abdos-complet-20min.mp4') }}' },
+        { id: 'pectoraux-builder', title: 'Pectoraux Muscles - 5 min', desc: 'Entrainement pectoraux a la maison.', meta: 'Poitrine | Maison | 5 min', category: 'poitrine', sourceType: 'video', src: '{{ asset('videos/fitness/local/pectoraux-5min.mp4') }}' },
+        { id: 'triceps-dumbbells', title: 'Triceps Workout - Dumbbells 10 min', desc: '10 min de triceps avec halteres.', meta: 'Triceps | Halteres | 10 min', category: 'triceps', sourceType: 'video', src: '{{ asset('videos/fitness/local/triceps-dumbbells-10min.mp4') }}' },
+        { id: 'biceps-burning', title: 'Biceps Burning - 15 min', desc: '15 min de biceps avec halteres par Caroline Girvan.', meta: 'Biceps | Halteres | 15 min', category: 'biceps', sourceType: 'video', src: '{{ asset('videos/fitness/local/biceps-15min.mp4') }}' },
+        { id: 'chest-youtube', title: 'Chest Workout - Poitrine Builder', desc: 'Seance poitrine complete pour debutants.', meta: 'Poitrine | YouTube | Gym', category: 'poitrine', sourceType: 'youtube', youtubeId: 'IODxDxX7oi4' },
+        { id: 'dos-strong-flow', title: 'Dos Strong Flow', desc: 'Renforcement du dos, colonne neutre.', meta: 'Dos | YouTube | Posture', category: 'dos', sourceType: 'youtube', youtubeId: 'roCP6wCXPqo' },
+        { id: 'jambes-power-squat', title: 'Jambes Power Squat', desc: 'Squats et fentes pour des jambes puissantes.', meta: 'Jambes | YouTube | Force', category: 'jambes', sourceType: 'youtube', youtubeId: 'aclHkVaku9U' },
+        { id: 'fessier-focus', title: 'Fessier Focus - Hip Thrust', desc: 'Contracte les fessiers en haut du mouvement.', meta: 'Fessier | YouTube | Maison', category: 'fessier', sourceType: 'youtube', youtubeId: 'Xyd_fa5zoEU' },
+        { id: 'epaules-sculpt', title: 'Epaules Sculpt', desc: 'Amplitude controlee, ne monte pas les epaules.', meta: 'Epaules | YouTube | Halteres', category: 'epaules', sourceType: 'youtube', youtubeId: 'qEwKCR5JCog' },
+        { id: 'abdos-core-10', title: 'Abdos Core 10 min', desc: '10 min de core intense, dos colle au sol.', meta: 'Abdos | YouTube | Core', category: 'abdos', sourceType: 'youtube', youtubeId: 'AnYl6Nk9GOA' },
+        { id: 'corps-entier-hiit', title: 'Corps Entier HIIT', desc: 'Full body haute intensite, respire en rythme.', meta: 'HIIT | YouTube | Corps entier', category: 'hiit', sourceType: 'youtube', youtubeId: 'ml6cT4AZdqI' }
+      ];
+
+      let premiumExploreItems = [...premiumExploreLibrary];
+      let premiumExploreIndex = 0;
+      let premiumExploreLikes = Number(window.localStorage?.getItem('fp_explore_like_count') || '0') || 0;
+      let premiumExplorePlayer = null;
+      let premiumExplorePlayerType = 'none';
+      let premiumExploreYoutubeReady = null;
+      let premiumExploreMountVersion = 0;
+
+      const renderPremiumExploreLike = () => {
+        if (premiumExploreLike) {
+          premiumExploreLike.textContent = `❤️ ${premiumExploreLikes}`;
+        }
+      };
+
+      const loadPremiumExploreYoutubeApi = () => {
+        if (window.YT?.Player) {
+          return Promise.resolve(window.YT);
+        }
+
+        if (premiumExploreYoutubeReady) {
+          return premiumExploreYoutubeReady;
+        }
+
+        premiumExploreYoutubeReady = new Promise((resolve, reject) => {
+          const previousHandler = window.onYouTubeIframeAPIReady;
+          window.onYouTubeIframeAPIReady = () => {
+            if (typeof previousHandler === 'function') {
+              previousHandler();
+            }
+            resolve(window.YT);
+          };
+
+          const existingScript = document.querySelector('script[data-fp-youtube-api="true"]');
+          if (existingScript) {
+            window.setTimeout(() => {
+              if (window.YT?.Player) {
+                resolve(window.YT);
+              }
+            }, 50);
+            return;
+          }
+
+          const script = document.createElement('script');
+          script.src = 'https://www.youtube.com/iframe_api';
+          script.async = true;
+          script.dataset.fpYoutubeApi = 'true';
+          script.onerror = () => reject(new Error('YouTube API load failed'));
+          document.head.appendChild(script);
+        });
+
+        return premiumExploreYoutubeReady;
+      };
+
+      const destroyPremiumExplorePlayer = () => {
+        if (premiumExplorePlayerType === 'video' && premiumExplorePlayer?.pause) {
+          premiumExplorePlayer.pause();
+        }
+        if (premiumExplorePlayerType === 'youtube' && premiumExplorePlayer?.destroy) {
+          premiumExplorePlayer.destroy();
+        }
+        premiumExplorePlayer = null;
+        premiumExplorePlayerType = 'none';
+      };
+
+      const mountPremiumExploreVideo = (item) => {
+        if (!premiumExploreStageMedia) return;
+        premiumExploreMountVersion += 1;
+        const mountVersion = premiumExploreMountVersion;
+        destroyPremiumExplorePlayer();
+        premiumExploreStageMedia.innerHTML = '';
+        if (item.sourceType === 'youtube' && item.youtubeId) {
+          const mount = document.createElement('div');
+          mount.id = `fp-explore-youtube-${item.id}`;
+          premiumExploreStageMedia.appendChild(mount);
+          premiumExplorePlayerType = 'youtube';
+          if (premiumExplorePlay) premiumExplorePlay.textContent = 'Pause';
+          if (premiumExploreMute) premiumExploreMute.textContent = 'Mute';
+
+          loadPremiumExploreYoutubeApi()
+            .then(() => {
+              if (mountVersion !== premiumExploreMountVersion || !document.getElementById(mount.id)) {
+                return;
+              }
+              premiumExplorePlayer = new window.YT.Player(mount.id, {
+                videoId: item.youtubeId,
+                playerVars: {
+                  autoplay: 1,
+                  controls: 1,
+                  rel: 0,
+                  playsinline: 1,
+                  modestbranding: 1
+                },
+                events: {
+                  onReady: (event) => {
+                    try {
+                      event.target.setVolume(Math.round(Number(premiumExploreVolume?.value || '0.8') * 100));
+                      event.target.unMute();
+                      event.target.playVideo();
+                    } catch (error) {}
+                  },
+                  onStateChange: (event) => {
+                    if (!premiumExplorePlay) return;
+                    if (event.data === window.YT.PlayerState.PLAYING) {
+                      premiumExplorePlay.textContent = 'Pause';
+                    }
+                    if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.ENDED) {
+                      premiumExplorePlay.textContent = 'Play';
+                    }
+                  }
+                }
+              });
+            })
+            .catch(() => {
+              premiumExploreStageMedia.innerHTML = '<div class="explore-media-fallback"><p class="explore-media-fallback-label">Impossible de charger la video YouTube pour le moment.</p></div>';
+            });
+          return;
+        }
+
+        const video = document.createElement('video');
+        video.src = item.src;
+        video.autoplay = true;
+        video.loop = false;
+        video.controls = false;
+        video.muted = false;
+        video.playsInline = true;
+        video.preload = 'metadata';
+        video.volume = Number(premiumExploreVolume?.value || '0.8');
+        premiumExploreStageMedia.appendChild(video);
+        premiumExplorePlayer = video;
+        premiumExplorePlayerType = 'video';
+        video.play().catch(() => {});
+        if (premiumExplorePlay) premiumExplorePlay.textContent = 'Pause';
+        if (premiumExploreMute) premiumExploreMute.textContent = video.muted ? 'Unmute' : 'Mute';
+      };
+
+      const setPremiumExploreActive = (index) => {
+        if (!premiumExploreItems.length) {
+          destroyPremiumExplorePlayer();
+          if (premiumExplorePlaylist) premiumExplorePlaylist.innerHTML = '';
+          if (premiumExploreStageMedia) premiumExploreStageMedia.innerHTML = '<div class="explore-media-fallback"><p class="explore-media-fallback-label">Aucune video ne correspond a ce filtre.</p></div>';
+          if (premiumExploreCaption) premiumExploreCaption.textContent = 'Aucune video';
+          if (premiumExploreNowPlaying) premiumExploreNowPlaying.textContent = 'Aucune video disponible';
+          if (premiumExploreCountLine) premiumExploreCountLine.textContent = '0 videos disponibles';
+          return;
+        }
+
+        premiumExploreIndex = ((index % premiumExploreItems.length) + premiumExploreItems.length) % premiumExploreItems.length;
+        const current = premiumExploreItems[premiumExploreIndex];
+        mountPremiumExploreVideo(current);
+        if (premiumExploreCaption) premiumExploreCaption.textContent = current.title;
+        if (premiumExploreNowPlaying) premiumExploreNowPlaying.textContent = current.title;
+        if (premiumExploreCountLine) premiumExploreCountLine.textContent = `${premiumExploreItems.length} videos disponibles`;
+
+        Array.from(premiumExplorePlaylist?.querySelectorAll('.explore-playlist-item') || []).forEach((node, nodeIndex) => {
+          node.classList.toggle('is-active', nodeIndex === premiumExploreIndex);
+        });
+      };
+
+      const renderPremiumExplorePlaylist = () => {
+        if (!premiumExplorePlaylist) return;
+        premiumExplorePlaylist.innerHTML = '';
+        premiumExploreItems.forEach((item, index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'explore-playlist-item';
+          const prefix = item.sourceType === 'youtube' ? '[>]' : '[V]';
+          button.innerHTML = `
+            <div class="explore-playlist-title"><span class="explore-playlist-prefix">${prefix}</span>${item.title}</div>
+            <div class="explore-playlist-meta">${item.meta}</div>
+          `;
+          button.addEventListener('click', () => setPremiumExploreActive(index));
+          premiumExplorePlaylist.appendChild(button);
+        });
+        setPremiumExploreActive(0);
+      };
+
+      const filterPremiumExplore = () => {
+        const query = String(premiumExploreQuery?.value || '').trim().toLowerCase();
+        premiumExploreItems = premiumExploreLibrary.filter((item) => {
+          if (query === '') return true;
+          return `${item.title} ${item.desc} ${item.meta} ${item.category}`.toLowerCase().includes(query);
+        });
+        renderPremiumExplorePlaylist();
+      };
+
+      if (premiumExplorePlaylist && premiumExploreStageMedia) {
+        renderPremiumExplorePlaylist();
+        renderPremiumExploreLike();
+
+        premiumExploreFilterBtn?.addEventListener('click', filterPremiumExplore);
+        premiumExploreQuery?.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            filterPremiumExplore();
+          }
+        });
+        premiumExploreResetBtn?.addEventListener('click', () => {
+          if (premiumExploreQuery) premiumExploreQuery.value = '';
+          premiumExploreItems = [...premiumExploreLibrary];
+          renderPremiumExplorePlaylist();
+        });
+        premiumExplorePrev?.addEventListener('click', () => setPremiumExploreActive(premiumExploreIndex - 1));
+        premiumExploreNext?.addEventListener('click', () => setPremiumExploreActive(premiumExploreIndex + 1));
+        premiumExplorePlay?.addEventListener('click', () => {
+          if (!premiumExplorePlayer) return;
+          if (premiumExplorePlayerType === 'youtube' && window.YT?.PlayerState) {
+            const state = premiumExplorePlayer.getPlayerState?.();
+            if (state === window.YT.PlayerState.PLAYING) {
+              premiumExplorePlayer.pauseVideo?.();
+              premiumExplorePlay.textContent = 'Play';
+            } else {
+              premiumExplorePlayer.playVideo?.();
+              premiumExplorePlay.textContent = 'Pause';
+            }
+            return;
+          }
+          if (premiumExplorePlayer.paused) {
+            premiumExplorePlayer.play().catch(() => {});
+            premiumExplorePlay.textContent = 'Pause';
+          } else {
+            premiumExplorePlayer.pause();
+            premiumExplorePlay.textContent = 'Play';
+          }
+        });
+        premiumExploreMute?.addEventListener('click', () => {
+          if (!premiumExplorePlayer) return;
+          if (premiumExplorePlayerType === 'youtube') {
+            const muted = premiumExplorePlayer.isMuted?.();
+            if (muted) {
+              premiumExplorePlayer.unMute?.();
+              premiumExploreMute.textContent = 'Mute';
+            } else {
+              premiumExplorePlayer.mute?.();
+              premiumExploreMute.textContent = 'Unmute';
+            }
+            return;
+          }
+          premiumExplorePlayer.muted = !premiumExplorePlayer.muted;
+          premiumExploreMute.textContent = premiumExplorePlayer.muted ? 'Unmute' : 'Mute';
+        });
+        premiumExploreVolume?.addEventListener('input', () => {
+          if (!premiumExplorePlayer) return;
+          if (premiumExplorePlayerType === 'youtube') {
+            premiumExplorePlayer.setVolume?.(Math.round(Number(premiumExploreVolume.value || '0.8') * 100));
+            return;
+          }
+          premiumExplorePlayer.volume = Number(premiumExploreVolume.value || '0.8');
+        });
+        premiumExploreLike?.addEventListener('click', () => {
+          premiumExploreLikes += 1;
+          try {
+            window.localStorage?.setItem('fp_explore_like_count', String(premiumExploreLikes));
+          } catch (error) {
+            // Ignore storage issues.
+          }
+          renderPremiumExploreLike();
         });
       }
 

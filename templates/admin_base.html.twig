@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}Fitopia Admin{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ asset('css/admin_dashboard.css') }}?v=20260509-sidebar-structure-3">
+    <style>
+        body.admin-back-layout {
+            padding-left: calc(var(--sidebar-width) + var(--layout-gap)) !important;
+        }
+
+        body.admin-back-layout .main-content {
+            margin-left: 0 !important;
+            width: auto !important;
+            max-width: none !important;
+            min-width: 0 !important;
+            padding-left: 0 !important;
+        }
+
+        @media (max-width: 960px) {
+            body.admin-back-layout {
+                padding-left: 0 !important;
+            }
+
+            body.admin-back-layout .main-content {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+        }
+    </style>
+    {% block stylesheets %}{% endblock %}
+</head>
+<body class="admin-back-layout">
+    {% set currentRoute = app.request.attributes.get('_route')|default('') %}
+    {% set isStocksRoute = currentRoute starts with 'admin_stocks' %}
+    {% set isStockProductsRoute = currentRoute == 'admin_stocks' or currentRoute starts with 'admin_stocks_supplement_' %}
+    {% set isStockOrdersRoute = currentRoute starts with 'admin_stocks_payment_' %}
+    <aside class="admin-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-box">
+                <span class="logo-mark">F</span>
+                <span class="logo-caption">FITOPIA</span>
+            </div>
+            <span class="sidebar-title">Fitopia Admin</span>
+        </div>
+
+        <div class="user-card">
+            <div class="user-avatar">
+                {{ app.user.email|first|upper|default('A') }}
+            </div>
+            <div class="user-mail">
+                {{ app.user.email|default('admin@fitopia.com') }}
+            </div>
+        </div>
+
+        <a href="{{ path('admin_tables') }}" class="nav-section-title {{ currentRoute == 'admin_tables' ? 'active' : '' }}">
+            <span class="nav-link-icon"><i class="fa fa-table"></i></span>
+            <span class="nav-section-label">Tables</span>
+        </a>
+
+        <nav class="nav-links">
+            <a href="{{ path('admin_users') }}" class="nav-link-btn {{ currentRoute == 'admin_users' ? 'active' : '' }}">
+                <span class="nav-link-main">
+                    <span class="nav-link-icon"><i class="fa fa-users"></i></span>
+                    <span class="nav-link-label">Gestion utilisateur</span>
+                </span>
+            </a>
+            <a href="{{ path('admin_blog_forum') }}" class="nav-link-btn {{ currentRoute == 'admin_blog_forum' ? 'active' : '' }}">
+                <span class="nav-link-main">
+                    <span class="nav-link-icon"><i class="fa fa-comment"></i></span>
+                    <span class="nav-link-label">Gestion forum et blog</span>
+                </span>
+            </a>
+            <a href="{{ path('admin_events') }}" class="nav-link-btn {{ currentRoute == 'admin_events' ? 'active' : '' }}">
+                <span class="nav-link-main">
+                    <span class="nav-link-icon"><i class="fa fa-calendar"></i></span>
+                    <span class="nav-link-label">Gestion des evenements</span>
+                </span>
+            </a>
+            <a href="{{ path('admin_trainings') }}" class="nav-link-btn {{ currentRoute == 'admin_trainings' ? 'active' : '' }}">
+                <span class="nav-link-main">
+                    <span class="nav-link-icon"><i class="fa fa-line-chart"></i></span>
+                    <span class="nav-link-label">Gestion des entrainements</span>
+                </span>
+            </a>
+            <a href="{{ path('admin_nutrition') }}" class="nav-link-btn {{ currentRoute == 'admin_nutrition' ? 'active' : '' }}">
+                <span class="nav-link-main">
+                    <span class="nav-link-icon"><i class="fa fa-pagelines"></i></span>
+                    <span class="nav-link-label">Gestion alimentation</span>
+                </span>
+            </a>
+
+            <div class="nav-accordion {{ isStocksRoute ? 'is-open' : '' }}" data-sidebar-accordion>
+                <button
+                    type="button"
+                    class="nav-link-btn nav-accordion-trigger {{ isStocksRoute ? 'active' : '' }}"
+                    data-sidebar-trigger
+                    aria-expanded="{{ isStocksRoute ? 'true' : 'false' }}"
+                >
+                    <span class="nav-link-main">
+                        <span class="nav-link-icon"><i class="fa fa-shopping-cart"></i></span>
+                        <span>Gestion supplements</span>
+                    </span>
+                    <span class="nav-caret" aria-hidden="true"></span>
+                </button>
+
+                <div class="submenu {{ isStocksRoute ? 'is-open' : '' }}" data-sidebar-panel>
+                    <a
+                        href="{{ path('admin_stocks') }}#supplements-list-section"
+                        class="submenu-link {{ isStockProductsRoute ? 'active' : '' }}"
+                        data-submenu-link="products"
+                    >
+                        Produits
+                    </a>
+                    <a
+                        href="{{ path('admin_stocks') }}#supplements-orders-section"
+                        class="submenu-link {{ isStockOrdersRoute ? 'active' : '' }}"
+                        data-submenu-link="orders"
+                    >
+                        Commandes
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="logout-container">
+            <a href="{{ path('app_logout') }}" class="logout-btn">
+                <span class="logout-icon">&#8618;</span>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        {% block body %}{% endblock %}
+    </main>
+
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const accordion = document.querySelector('[data-sidebar-accordion]');
+            const trigger = document.querySelector('[data-sidebar-trigger]');
+            const submenu = document.querySelector('[data-sidebar-panel]');
+            const submenuLinks = document.querySelectorAll('[data-submenu-link]');
+
+            if (accordion && trigger && submenu) {
+                trigger.addEventListener('click', function () {
+                    const isOpen = accordion.classList.toggle('is-open');
+                    submenu.classList.toggle('is-open', isOpen);
+                    trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                });
+            }
+
+            if (window.location.hash === '#supplements-orders-section') {
+                submenuLinks.forEach(function (link) {
+                    link.classList.toggle('active', link.dataset.submenuLink === 'orders');
+                });
+            } else if (window.location.hash === '#supplements-list-section' || window.location.pathname.endsWith('/admin/stocks')) {
+                submenuLinks.forEach(function (link) {
+                    if (link.dataset.submenuLink === 'products' && !document.querySelector('[data-submenu-link="orders"].active')) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
+    </script>
+    {% block javascripts %}{% endblock %}
+</body>
+</html>

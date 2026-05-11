@@ -7,14 +7,10 @@ use App\Entity\OrderItem;
 use App\Entity\Review;
 use App\Entity\Supplement;
 use App\Entity\User;
-use App\Repository\NotificationRepository;
+use App\Repository\OrderRepository;
 use App\Repository\SupplementRepository;
-use App\Service\AiProductSuggestionService;
-use App\Service\MonthlyLeaderboardService;
-use App\Service\SmartSubstituteEngine;
 use App\Service\SupplementProgressService;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,7 +18,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/shop')]
@@ -31,8 +26,6 @@ class ShopController extends AbstractController
     public function __construct(
         private SupplementRepository $supplementRepository,
         private EntityManagerInterface $entityManager,
-        private SmartSubstituteEngine $smartSubstituteEngine,
-        private AiProductSuggestionService $aiProductSuggestionService,
         #[Autowire('%env(string:MAILER_DSN)%')]
         private readonly string $mailerDsn = 'null://null',
     ) {
@@ -41,7 +34,6 @@ class ShopController extends AbstractController
     #[Route('', name: 'app_shop_index', methods: ['GET'])]
     public function index(Request $request): Response
     {
-        // Get all supplements
         $supplements = $this->supplementRepository->findCatalogLimited();
         $supplementIds = array_map(static fn($supplement) => $supplement->getId(), $supplements);
         $reviewRepository = $this->entityManager->getRepository(Review::class);
@@ -49,7 +41,6 @@ class ShopController extends AbstractController
             ? $reviewRepository->getSummaryForSupplements($supplementIds)
             : [];
         
-        // Get unique categories and brands
         $categories = array_unique(array_map(fn($s) => $s->getCategory(), $supplements));
         $brands = array_unique(array_map(fn($s) => $s->getBrand(), $supplements));
         
@@ -73,10 +64,115 @@ class ShopController extends AbstractController
         ]);
     }
 
+    #[Route('/favorites', name: 'app_shop_favorites', methods: ['GET'])]
+    public function favorites(): Response
+    {
+        $supplements = $this->supplementRepository->findCatalogLimited();
+        $supplementIds = array_map(static fn ($supplement) => $supplement->getId(), $supplements);
+        $reviewRepository = $this->entityManager->getRepository(Review::class);
+        $ratingSummary = method_exists($reviewRepository, 'getSummaryForSupplements')
+            ? $reviewRepository->getSummaryForSupplements($supplementIds)
+            : [];
+
+        $categories = array_unique(array_map(fn ($s) => $s->getCategory(), $supplements));
+        $brands = array_unique(array_map(fn ($s) => $s->getBrand(), $supplements));
+
+        sort($categories);
+        sort($brands);
+
+        return $this->render('pages/supplements.html.twig', [
+            'mode' => 'favorites',
+            'supplements' => $supplements,
+            'categories' => $categories,
+            'brands' => $brands,
+            'ratingSummary' => $ratingSummary,
+            'paymentMethods' => [],
+        ]);
+    }
+
+    #[Route('/product/{id}', name: 'app_shop_product_show', methods: ['GET'], requirements: ['id' => '\d+'])]
+    public function productShow(Supplement $supplement): Response
+    {
+        $supplements = $this->supplementRepository->findCatalogLimited();
+        $supplementIds = array_values(array_unique(array_filter(array_map(
+            static fn (Supplement $item): ?int => $item->getId(),
+            array_merge($supplements, [$supplement])
+        ))));
+
+        $reviewRepository = $this->entityManager->getRepository(Review::class);
+        $ratingSummary = method_exists($reviewRepository, 'getSummaryForSupplements')
+            ? $reviewRepository->getSummaryForSupplements($supplementIds)
+            : [];
+        $productSummary = method_exists($reviewRepository, 'getSummaryForSupplement')
+            ? $reviewRepository->getSummaryForSupplement((int) $supplement->getId())
+            : ['avg' => 0.0, 'count' => 0];
+        $reviews = method_exists($reviewRepository, 'findBySupplement')
+            ? $reviewRepository->findBySupplement((int) $supplement->getId(), 30)
+            : [];
+
+        $categories = array_unique(array_map(fn ($s) => $s->getCategory(), $supplements));
+        $brands = array_unique(array_map(fn ($s) => $s->getBrand(), $supplements));
+        sort($categories);
+        sort($brands);
+
+        return $this->render('pages/supplements.html.twig', [
+            'mode' => 'product',
+            'supplements' => $supplements,
+            'categories' => $categories,
+            'brands' => $brands,
+            'ratingSummary' => $ratingSummary,
+            'paymentMethods' => [],
+            'supplement' => $supplement,
+            'selectedSupplement' => $supplement,
+            'reviews' => $reviews,
+            'ratingAverage' => $productSummary['avg'] ?? 0.0,
+            'ratingCount' => $productSummary['count'] ?? 0,
+        ]);
+    }
+
+    #[Route('/product/{id}/review', name: 'app_shop_product_review', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function productReview(Supplement $supplement, Request $request): Response
+    {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            $this->addFlash('error', 'Please sign in to leave a review.');
+
+            return $this->redirectToRoute('app_login');
+        }
+
+        if (!$this->isCsrfTokenValid('review'.$supplement->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Invalid review request.');
+
+            return $this->redirectToRoute('app_shop_product_show', ['id' => $supplement->getId()]);
+        }
+
+        $rating = max(1, min(5, (int) $request->request->get('rating', 0)));
+        $comment = trim((string) $request->request->get('comment', ''));
+        if ($comment === '') {
+            $this->addFlash('error', 'Comment is required.');
+
+            return $this->redirectToRoute('app_shop_product_show', ['id' => $supplement->getId()]);
+        }
+
+        $review = new Review();
+        $review
+            ->setSupplement($supplement)
+            ->setName(trim(($user->getFirstName() ?? '').' '.($user->getLastName() ?? '')) ?: ($user->getUsername() ?: $user->getEmail()))
+            ->setEmail($user->getEmail())
+            ->setRating($rating)
+            ->setComment($comment);
+
+        $this->entityManager->persist($review);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Review submitted successfully.');
+
+        return $this->redirectToRoute('app_shop_product_show', ['id' => $supplement->getId()]);
+    }
+
     #[Route('/cart', name: 'app_shop_cart', methods: ['GET'])]
     public function cart(SessionInterface $session): Response
     {
-        // Ensure session is started
         if (!$session->isStarted()) {
             $session->start();
         }
@@ -84,12 +180,6 @@ class ShopController extends AbstractController
         $cart = $session->get('cart', []);
         $cartItems = [];
         $subtotal = 0;
-
-        // Debug: Log what's in the session
-        error_log("=== CART PAGE DEBUG ===");
-        error_log("Session ID: " . $session->getId());
-        error_log("Cart from session: " . json_encode($cart));
-        error_log("Cart count: " . count($cart));
 
         foreach ($cart as $item) {
             $supplement = $this->supplementRepository->find($item['id']);
@@ -103,9 +193,6 @@ class ShopController extends AbstractController
                 $subtotal += $itemTotal;
             }
         }
-
-        error_log("Cart items count: " . count($cartItems));
-        error_log("======================");
 
         return $this->render('pages/supplements.html.twig', [
             'mode' => 'cart',
@@ -148,18 +235,11 @@ class ShopController extends AbstractController
         }
 
         $requestedTotal = $existingQuantity + $quantity;
-        $availableStock = (int) ($supplement->getStock() ?? 0);
+        $availableStock = (int) $supplement->getStock();
         if ($requestedTotal > $availableStock) {
-            $substitutes = $this->smartSubstituteEngine->suggestForSupplement($supplement, $quantity, 4);
-
             return new JsonResponse([
                 'success' => false,
-                'message' => sprintf(
-                    'Only %d unit(s) available for "%s".',
-                    $availableStock,
-                    (string) $supplement->getName()
-                ),
-                'substitutes' => $this->formatSubstituteSuggestions($substitutes),
+                'message' => sprintf('Only %d unit(s) available.', $availableStock),
             ], 409);
         }
 
@@ -208,22 +288,15 @@ class ShopController extends AbstractController
             return new JsonResponse(['success' => false, 'message' => 'Supplement not found'], 404);
         }
 
-        $availableStock = (int) ($supplement->getStock() ?? 0);
+        $availableStock = (int) $supplement->getStock();
         if ($quantity > $availableStock) {
-            $substitutes = $this->smartSubstituteEngine->suggestForSupplement($supplement, $quantity, 4);
-
             return new JsonResponse([
                 'success' => false,
-                'message' => sprintf(
-                    'Requested quantity exceeds stock. Available: %d',
-                    $availableStock
-                ),
-                'substitutes' => $this->formatSubstituteSuggestions($substitutes),
+                'message' => sprintf('Requested quantity exceeds stock. Available: %d', $availableStock),
             ], 409);
         }
         
         $cart = $session->get('cart', []);
-        
         foreach ($cart as &$item) {
             if ($item['id'] == $supplementId) {
                 $item['quantity'] = $quantity;
@@ -232,7 +305,6 @@ class ShopController extends AbstractController
         }
         
         $session->set('cart', $cart);
-
         return new JsonResponse(['success' => true]);
     }
 
@@ -256,131 +328,12 @@ class ShopController extends AbstractController
     #[Route('/cart/get', name: 'app_shop_cart_get', methods: ['GET'])]
     public function getCart(SessionInterface $session): JsonResponse
     {
-        // Ensure session is started
         if (!$session->isStarted()) {
             $session->start();
         }
 
         $cart = $session->get('cart', []);
         return new JsonResponse(['cart' => $cart, 'count' => count($cart)]);
-    }
-
-    #[Route('/ai-suggestions', name: 'app_shop_ai_suggestions', methods: ['POST'])]
-    public function aiSuggestions(Request $request, SessionInterface $session): JsonResponse
-    {
-        $payload = json_decode($request->getContent(), true);
-        if (!is_array($payload)) {
-            $payload = [];
-        }
-
-        $query = trim((string) ($payload['query'] ?? ''));
-        if (strlen($query) > 240) {
-            $query = substr($query, 0, 240);
-        }
-        $normalizedQuery = strtolower(preg_replace('/\s+/', ' ', $query) ?? '');
-        if ($normalizedQuery === '') {
-            $normalizedQuery = '__default__';
-        }
-
-        $limit = max(1, min(8, (int) ($payload['limit'] ?? 6)));
-        $focusProductId = (int) ($payload['focusProductId'] ?? 0);
-        $focusProduct = $focusProductId > 0 ? $this->supplementRepository->find($focusProductId) : null;
-        $excludeIds = [];
-        foreach ((array) ($payload['excludeIds'] ?? []) as $excludeId) {
-            $excludeId = (int) $excludeId;
-            if ($excludeId > 0) {
-                $excludeIds[] = $excludeId;
-            }
-        }
-
-        if (!$session->isStarted()) {
-            $session->start();
-        }
-
-        $cart = $session->get('cart', []);
-        $cartProductIds = [];
-        foreach ($cart as $row) {
-            $id = (int) ($row['id'] ?? 0);
-            if ($id > 0) {
-                $cartProductIds[] = $id;
-            }
-        }
-        $cartProductIds = array_values(array_unique($cartProductIds));
-        $excludeIds = array_values(array_unique($excludeIds));
-
-        $history = $session->get('ai_suggestion_history', []);
-        if (!is_array($history)) {
-            $history = [];
-        }
-        $historyForQuery = array_values(array_filter(
-            array_map('intval', (array) ($history[$normalizedQuery] ?? [])),
-            static fn (int $id): bool => $id > 0
-        ));
-        $combinedExclusions = array_values(array_unique(array_merge($cartProductIds, $excludeIds, $historyForQuery)));
-
-        $rawSuggestions = $this->aiProductSuggestionService->suggest(
-            $this->supplementRepository->findCatalogLimited(),
-            $focusProduct instanceof Supplement ? $focusProduct : null,
-            $combinedExclusions,
-            $query,
-            $limit
-        );
-
-        if (count($rawSuggestions) < $limit && count($historyForQuery) > 0) {
-            // Relax previous-history exclusions if the result set gets too narrow.
-            $relaxedExclusions = array_values(array_unique(array_merge($cartProductIds, $excludeIds)));
-            $rawSuggestions = $this->aiProductSuggestionService->suggest(
-                $this->supplementRepository->findCatalogLimited(),
-                $focusProduct instanceof Supplement ? $focusProduct : null,
-                $relaxedExclusions,
-                $query,
-                $limit
-            );
-        }
-
-        $suggestions = [];
-        foreach ($rawSuggestions as $row) {
-            $supplement = $row['supplement'] ?? null;
-            if (!$supplement instanceof Supplement || $supplement->getId() === null) {
-                continue;
-            }
-
-            $suggestions[] = [
-                'id' => (int) $supplement->getId(),
-                'name' => (string) $supplement->getName(),
-                'brand' => (string) $supplement->getBrand(),
-                'category' => (string) $supplement->getCategory(),
-                'price' => (float) $supplement->getPrice(),
-                'stock' => (int) ($supplement->getStock() ?? 0),
-                'image' => $supplement->getImage()
-                    ? '/uploads/supplements/' . ltrim((string) $supplement->getImage(), '/')
-                    : '/images/image_1.jpg',
-                'reason' => (string) ($row['reason'] ?? 'Good fit for your supplement plan.'),
-                'score' => round((float) ($row['score'] ?? 0), 2),
-                'source' => (string) ($row['source'] ?? 'heuristic'),
-            ];
-        }
-
-        $returnedIds = array_values(array_filter(
-            array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $suggestions),
-            static fn (int $id): bool => $id > 0
-        ));
-        $history[$normalizedQuery] = array_slice(
-            array_values(array_unique(array_merge($returnedIds, $historyForQuery))),
-            0,
-            30
-        );
-        $session->set('ai_suggestion_history', $history);
-
-        return new JsonResponse([
-            'success' => true,
-            'suggestions' => $suggestions,
-            'meta' => [
-                'query' => $query,
-                'count' => count($suggestions),
-                'excluded' => count($combinedExclusions),
-            ],
-        ]);
     }
 
     #[Route('/checkout', name: 'app_shop_checkout', methods: ['GET'])]
@@ -408,7 +361,6 @@ class ShopController extends AbstractController
             }
         }
 
-        // Hardcoded payment methods
         $paymentMethods = [
             ['id' => 'visa', 'name' => 'Visa', 'icon' => 'fab fa-cc-visa'],
             ['id' => 'mastercard', 'name' => 'Mastercard', 'icon' => 'fab fa-cc-mastercard'],
@@ -428,30 +380,6 @@ class ShopController extends AbstractController
         ]);
     }
 
-    #[Route('/payment/visa', name: 'app_shop_payment_visa', methods: ['GET'])]
-    public function paymentVisa(): Response
-    {
-        return $this->render('pages/supplements.html.twig', [
-            'mode' => 'payment_visa',
-            'supplements' => $this->supplementRepository->findCatalogLimited(),
-            'categories' => [],
-            'brands' => [],
-            'ratingSummary' => [],
-        ]);
-    }
-
-    #[Route('/payment/paypal', name: 'app_shop_payment_paypal', methods: ['GET'])]
-    public function paymentPaypal(): Response
-    {
-        return $this->render('pages/supplements.html.twig', [
-            'mode' => 'payment_paypal',
-            'supplements' => $this->supplementRepository->findCatalogLimited(),
-            'categories' => [],
-            'brands' => [],
-            'ratingSummary' => [],
-        ]);
-    }
-
     #[Route('/order/create', name: 'app_shop_order_create', methods: ['POST'])]
     public function createOrder(Request $request, SessionInterface $session, MailerInterface $mailer): JsonResponse
     {
@@ -462,7 +390,6 @@ class ShopController extends AbstractController
             return new JsonResponse(['success' => false, 'message' => 'Cart is empty'], 400);
         }
 
-        // Create order
         $order = new Order();
         $authenticatedUser = $this->getUser();
         if ($authenticatedUser instanceof User) {
@@ -476,247 +403,179 @@ class ShopController extends AbstractController
         $order->setCity($data['city']);
         $order->setPostalCode($data['postalCode']);
         $order->setNotes($data['notes'] ?? null);
-
-        // Set payment method
         $order->setPaymentMethod($data['paymentMethod'] ?? 'Unknown');
 
-        // Validate stock and calculate totals
         $subtotal = 0;
-        $stockIssues = [];
-        $cartRows = [];
-
         foreach ($cart as $item) {
             $supplement = $this->supplementRepository->find($item['id']);
             if ($supplement) {
                 $quantity = max(1, (int) ($item['quantity'] ?? 1));
-                $availableStock = (int) ($supplement->getStock() ?? 0);
-
-                if ($quantity > $availableStock) {
-                    $stockIssues[] = [
-                        'supplement' => $this->formatSupplement($supplement),
-                        'requested' => $quantity,
-                        'available' => $availableStock,
-                        'substitutes' => $this->formatSubstituteSuggestions(
-                            $this->smartSubstituteEngine->suggestForSupplement($supplement, $quantity, 3)
-                        ),
-                    ];
-                    continue;
-                }
-
-                $cartRows[] = [
-                    'supplement' => $supplement,
-                    'quantity' => $quantity,
-                ];
+                $orderItem = new OrderItem();
+                $orderItem->setSupplement($supplement);
+                $orderItem->setQuantity($quantity);
+                $price = (float) $supplement->getPrice();
+                $orderItem->setPrice(number_format($price, 2, '.', ''));
+                $orderItem->setTotal(number_format($price * $quantity, 2, '.', ''));
+                $order->addOrderItem($orderItem);
+                $subtotal += $orderItem->getTotal();
+                $supplement->setStock(max(0, ((int) $supplement->getStock()) - $quantity));
             }
-        }
-
-        if (count($stockIssues) > 0) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'Some products in your cart are out of stock or have limited availability.',
-                'issues' => $stockIssues,
-            ], 409);
-        }
-
-        if (count($cartRows) === 0) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'No valid products were found in your cart.',
-            ], 400);
-        }
-
-        foreach ($cartRows as $row) {
-            /** @var Supplement $supplement */
-            $supplement = $row['supplement'];
-            $quantity = (int) $row['quantity'];
-
-            $orderItem = new OrderItem();
-            $orderItem->setSupplement($supplement);
-            $orderItem->setQuantity($quantity);
-            $orderItem->setPrice($supplement->getPrice());
-            $orderItem->setTotal($supplement->getPrice() * $quantity);
-            $order->addOrderItem($orderItem);
-
-            $subtotal += $orderItem->getTotal();
-
-            // Deduct stock immediately so the inventory stays consistent after checkout.
-            $supplement->setStock(max(0, ((int) $supplement->getStock()) - $quantity));
         }
 
         $order->setSubtotal($subtotal);
+        $shipping = $subtotal >= 100 ? 0.0 : 7.0;
+        $order->setShipping(number_format($shipping, 2, '.', ''));
+        $order->setTotal(number_format($subtotal + $shipping, 2, '.', ''));
 
-        // Calculate shipping (7 DT, free if > 100 DT)
-        $shipping = $subtotal >= 100 ? 0 : 7;
-        $order->setShipping($shipping);
-
-        // Apply discount if code provided
-        $discount = 0;
-        if (!empty($data['discountCode']) && strtolower($data['discountCode']) === 'ali123') {
-            $discount = $subtotal * 0.10; // 10% discount
-            $order->setDiscountCode($data['discountCode']);
-        }
-        $order->setDiscount($discount);
-
-        // Calculate total
-        $total = $subtotal + $shipping - $discount;
-        $order->setTotal($total);
-
-        // Save order
         $this->entityManager->persist($order);
         $this->entityManager->flush();
 
-        $emailResult = $this->sendOrderConfirmationEmail($mailer, $order);
-
-        // Clear cart
         $session->remove('cart');
 
-        $response = [
+        return new JsonResponse([
             'success' => true,
             'orderNumber' => $order->getOrderNumber(),
-            'orderId' => $order->getId(),
-            'emailSent' => $emailResult['sent'],
-            'emailTransport' => $emailResult['transport'],
-        ];
-
-        if (!$emailResult['sent'] && $emailResult['transport'] !== 'null_transport') {
-            $response['emailWarning'] = 'Order created, but confirmation email could not be sent.';
-            $response['emailError'] = $emailResult['error'];
-        }
-
-        return new JsonResponse($response);
-    }
-
-    /**
-     * @return array{sent: bool, transport: string, error: string|null}
-     */
-    private function sendOrderConfirmationEmail(MailerInterface $mailer, Order $order): array
-    {
-        $recipient = trim((string) $order->getEmail());
-        if ($recipient === '' || !filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
-            return [
-                'sent' => false,
-                'transport' => 'invalid_recipient',
-                'error' => 'Customer email is invalid.',
-            ];
-        }
-
-        $fromAddress = $_ENV['MAILER_FROM'] ?? 'no-reply@fitopia.local';
-        $fromName = $_ENV['MAILER_FROM_NAME'] ?? 'Fitopia Supplements';
-
-        if (!filter_var($fromAddress, FILTER_VALIDATE_EMAIL)) {
-            return [
-                'sent' => false,
-                'transport' => 'invalid_from',
-                'error' => 'MAILER_FROM is invalid. Use a real sender email.',
-            ];
-        }
-
-        $subject = sprintf('Order %s confirmed', $order->getOrderNumber() ?? '');
-        $recipientName = trim($order->getFirstName() . ' ' . $order->getLastName());
-
-        $email = (new TemplatedEmail())
-            ->from(new Address($fromAddress, $fromName))
-            ->to(new Address($recipient, $recipientName))
-            ->subject($subject)
-            ->htmlTemplate('emails/order_confirmation.html.twig')
-            ->textTemplate('emails/order_confirmation.txt.twig')
-            ->context([
-                'order' => $order,
-            ]);
-
-        if ($this->isNullTransport()) {
-            if ($this->sendWithNativeMailFallback($recipient, $fromAddress, $fromName, $subject, $order)) {
-                return ['sent' => true, 'transport' => 'php_mail', 'error' => null];
-            }
-
-            error_log('Order confirmation email skipped: MAILER_DSN is null transport and PHP mail fallback failed.');
-            return [
-                'sent' => false,
-                'transport' => 'null_transport',
-                'error' => 'MAILER_DSN is null://null, so Symfony mailer is disabled.',
-            ];
-        }
-
-        try {
-            $mailer->send($email);
-            return ['sent' => true, 'transport' => 'symfony_mailer', 'error' => null];
-        } catch (\Throwable $e) {
-            $error = $e->getMessage();
-            error_log('Order confirmation email failed: ' . $error);
-
-            if ($this->sendWithNativeMailFallback($recipient, $fromAddress, $fromName, $subject, $order)) {
-                return ['sent' => true, 'transport' => 'php_mail', 'error' => null];
-            }
-
-            return [
-                'sent' => false,
-                'transport' => 'none',
-                'error' => 'SMTP send failed: ' . $error,
-            ];
-        }
-    }
-
-    private function sendWithNativeMailFallback(
-        string $recipient,
-        string $fromAddress,
-        string $fromName,
-        string $subject,
-        Order $order
-    ): bool {
-        if (!function_exists('mail')) {
-            return false;
-        }
-
-        $subject = $this->sanitizeHeader($subject);
-        $fromName = $this->sanitizeHeader($fromName);
-
-        $body = sprintf(
-            "Hello %s,\n\n"
-            . "Thank you for your order.\n"
-            . "Order number: %s\n"
-            . "Total: %s DT\n"
-            . "Payment: %s\n\n"
-            . "We will process your order shortly.\n\n"
-            . "Fitopia Supplements\n",
-            trim($order->getFirstName() . ' ' . $order->getLastName()),
-            (string) $order->getOrderNumber(),
-            (string) $order->getTotal(),
-            (string) $order->getPaymentMethod()
-        );
-
-        $headers = [
-            'From: "' . $fromName . '" <' . $fromAddress . '>',
-            'Reply-To: ' . $fromAddress,
-            'MIME-Version: 1.0',
-            'Content-Type: text/plain; charset=UTF-8',
-        ];
-
-        return (bool) @mail($recipient, $subject, $body, implode("\r\n", $headers));
-    }
-
-    private function isNullTransport(): bool
-    {
-        $dsn = strtolower(trim($this->mailerDsn));
-        return $dsn === '' || str_starts_with($dsn, 'null://');
-    }
-
-    private function sanitizeHeader(string $value): string
-    {
-        return str_replace(["\r", "\n"], '', $value);
-    }
-
-    #[Route('/order/success/{orderNumber}', name: 'app_shop_order_success', methods: ['GET'])]
-    public function orderSuccess(string $orderNumber, EntityManagerInterface $entityManager): Response
-    {
-        $order = $entityManager->getRepository(Order::class)->findOneBy(['orderNumber' => $orderNumber]);
-
-        if (!$order) {
-            return $this->redirectToRoute('app_shop_index');
-        }
-
-        return $this->render('shop/order_success.html.twig', [
-            'order' => $order,
         ]);
+    }
+
+    #[Route('/ai-suggestions', name: 'app_shop_ai_suggestions', methods: ['POST'])]
+    public function aiSuggestions(Request $request): JsonResponse
+    {
+        $payload = json_decode($request->getContent(), true);
+        if (!is_array($payload)) {
+            $payload = [];
+        }
+
+        $query = trim((string) ($payload['query'] ?? ''));
+        $focusProductId = (int) ($payload['focusProductId'] ?? 0);
+        $limit = max(1, min(12, (int) ($payload['limit'] ?? 6)));
+        $excludeIds = array_values(array_unique(array_filter(array_map(
+            static fn (mixed $value): int => (int) $value,
+            is_array($payload['excludeIds'] ?? null) ? $payload['excludeIds'] : []
+        ), static fn (int $id): bool => $id > 0)));
+
+        $catalog = $this->supplementRepository->findInStockCatalog(180);
+        if ($catalog === []) {
+            return new JsonResponse(['suggestions' => []]);
+        }
+
+        $focusSupplement = $focusProductId > 0 ? $this->supplementRepository->find($focusProductId) : null;
+        $focusCategory = $focusSupplement instanceof Supplement ? strtolower(trim((string) $focusSupplement->getCategory())) : '';
+        $focusBrand = $focusSupplement instanceof Supplement ? strtolower(trim((string) $focusSupplement->getBrand())) : '';
+
+        $reviewRepository = $this->entityManager->getRepository(Review::class);
+        $ratingSummary = method_exists($reviewRepository, 'getSummaryForSupplements')
+            ? $reviewRepository->getSummaryForSupplements(array_map(
+                static fn (Supplement $supplement): ?int => $supplement->getId(),
+                $catalog
+            ))
+            : [];
+
+        $queryLower = strtolower($query);
+        $goalProfile = $this->buildGoalProfile($queryLower);
+        $rows = [];
+
+        foreach ($catalog as $supplement) {
+            $supplementId = (int) ($supplement->getId() ?? 0);
+            if ($supplementId <= 0 || in_array($supplementId, $excludeIds, true)) {
+                continue;
+            }
+
+            $haystack = strtolower(trim(implode(' ', array_filter([
+                $supplement->getName(),
+                $supplement->getBrand(),
+                $supplement->getCategory(),
+                $supplement->getDescription(),
+                $supplement->getManufacturer(),
+            ]))));
+
+            $score = 12.0;
+            $reasonParts = [];
+
+            if ($focusSupplement instanceof Supplement && $supplementId === (int) $focusSupplement->getId()) {
+                continue;
+            }
+
+            if ($queryLower !== '') {
+                $keywordMatches = 0;
+                foreach ($goalProfile['keywords'] as $keyword) {
+                    if ($keyword !== '' && str_contains($haystack, $keyword)) {
+                        $keywordMatches++;
+                    }
+                }
+
+                if ($keywordMatches > 0) {
+                    $score += min(42, $keywordMatches * 9);
+                    $reasonParts[] = 'matches your goal';
+                }
+            }
+
+            if ($focusCategory !== '' && strtolower((string) $supplement->getCategory()) === $focusCategory) {
+                $score += 18;
+                $reasonParts[] = 'same category as your selected product';
+            }
+
+            if ($focusBrand !== '' && strtolower((string) $supplement->getBrand()) === $focusBrand) {
+                $score += 8;
+                $reasonParts[] = 'same brand family';
+            }
+
+            if (in_array(strtolower((string) $supplement->getCategory()), $goalProfile['preferredCategories'], true)) {
+                $score += 20;
+                $reasonParts[] = 'fits this training objective';
+            }
+
+            $summary = $ratingSummary[$supplementId] ?? ['avg' => 0.0, 'count' => 0];
+            $score += min(14, ((float) ($summary['avg'] ?? 0.0)) * 2.2);
+            $score += min(10, ((int) ($summary['count'] ?? 0)) * 0.8);
+            $score += min(10, max(0, (int) $supplement->getStock()) / 8);
+
+            if ($queryLower === '') {
+                $reasonParts[] = 'popular in-stock option';
+            }
+
+            $rows[] = [
+                'entity' => $supplement,
+                'score' => round(min(99, max(1, $score)), 1),
+                'reason' => $this->buildSuggestionReason($reasonParts, $goalProfile['label']),
+                'source' => $queryLower !== '' ? 'ai' : 'heuristic',
+            ];
+        }
+
+        usort($rows, static function (array $left, array $right): int {
+            if ($left['score'] !== $right['score']) {
+                return $right['score'] <=> $left['score'];
+            }
+
+            /** @var Supplement $leftSupplement */
+            $leftSupplement = $left['entity'];
+            /** @var Supplement $rightSupplement */
+            $rightSupplement = $right['entity'];
+
+            return strcmp((string) $leftSupplement->getName(), (string) $rightSupplement->getName());
+        });
+
+        $suggestions = array_map(function (array $row): array {
+            /** @var Supplement $supplement */
+            $supplement = $row['entity'];
+
+            return [
+                'id' => (int) $supplement->getId(),
+                'name' => (string) $supplement->getName(),
+                'brand' => (string) $supplement->getBrand(),
+                'category' => (string) $supplement->getCategory(),
+                'price' => (float) $supplement->getPrice(),
+                'image' => $supplement->getImage()
+                    ? '/uploads/supplements/'.$supplement->getImage()
+                    : '/images/image_1.jpg',
+                'stock' => (int) $supplement->getStock(),
+                'score' => (float) $row['score'],
+                'reason' => (string) $row['reason'],
+                'source' => (string) $row['source'],
+            ];
+        }, array_slice($rows, 0, $limit));
+
+        return new JsonResponse(['suggestions' => $suggestions]);
     }
 
     #[Route('/my-progress', name: 'app_shop_progress', methods: ['GET'])]
@@ -733,34 +592,6 @@ class ShopController extends AbstractController
         return $this->render('shop/progress.html.twig', [
             'summary' => $dashboard['summary'],
             'cards' => $dashboard['cards'],
-        ]);
-    }
-
-    #[Route('/leaderboard', name: 'app_shop_leaderboard', methods: ['GET'])]
-    public function leaderboard(Request $request, MonthlyLeaderboardService $monthlyLeaderboardService): Response
-    {
-        $monthParam = $request->query->get('month');
-        try {
-            $month = $monthlyLeaderboardService->resolveMonth(is_string($monthParam) ? $monthParam : null);
-        } catch (\InvalidArgumentException) {
-            $month = $monthlyLeaderboardService->resolveMonth(null);
-            $this->addFlash('error', 'Invalid month format. Use YYYY-MM.');
-        }
-
-        $board = $monthlyLeaderboardService->buildMonthlyLeaderboard($month, 100);
-        $winner = $monthlyLeaderboardService->getWinnerForMonth($month);
-        $recentWinners = $monthlyLeaderboardService->getLatestWinners(6);
-
-        $currentUser = $this->getUser();
-        $currentUserId = $currentUser instanceof User ? $currentUser->getId() : null;
-
-        return $this->render('shop/leaderboard.html.twig', [
-            'monthKey' => $board['monthKey'],
-            'monthLabel' => $board['monthLabel'],
-            'entries' => $board['entries'],
-            'winner' => $winner,
-            'recentWinners' => $recentWinners,
-            'currentUserId' => $currentUserId,
         ]);
     }
 
@@ -785,132 +616,405 @@ class ShopController extends AbstractController
 
         if ($result['success']) {
             $this->addFlash('success', sprintf('Marked as taken today: %s', (string) $supplement->getName()));
-        } elseif ($result['reason'] === 'already_marked') {
-            $this->addFlash('success', sprintf('Already marked today for %s.', (string) $supplement->getName()));
-        } elseif ($result['reason'] === 'not_purchased') {
-            $this->addFlash('error', 'You can only track supplements that you purchased.');
         } else {
-            $this->addFlash('error', 'Could not update intake status. Please try again.');
+            $this->addFlash('error', 'Could not update intake status.');
         }
 
         return $this->redirectToRoute('app_shop_progress');
     }
 
-    #[Route('/product/{id}', name: 'app_shop_product_show', methods: ['GET'])]
-    public function showProduct(Supplement $supplement): Response
+    #[Route('/leaderboard', name: 'app_shop_leaderboard', methods: ['GET'])]
+    public function leaderboard(Request $request): Response
     {
-        $reviewRepository = $this->entityManager->getRepository(Review::class);
-        $reviews = method_exists($reviewRepository, 'findBySupplement')
-            ? $reviewRepository->findBySupplement($supplement->getId(), 30)
+        $monthKey = trim((string) $request->query->get('month', (new \DateTimeImmutable('first day of this month'))->format('Y-m')));
+        if (!preg_match('/^\d{4}-\d{2}$/', $monthKey)) {
+            $monthKey = (new \DateTimeImmutable('first day of this month'))->format('Y-m');
+        }
+
+        $monthStart = new \DateTimeImmutable($monthKey.'-01');
+        $monthEnd = $monthStart->modify('last day of this month');
+        $evaluationDate = $monthEnd > new \DateTimeImmutable('today')
+            ? new \DateTimeImmutable('today')
+            : $monthEnd;
+
+        $logRepository = $this->entityManager->getRepository(\App\Entity\SupplementIntakeLog::class);
+        $plans = method_exists($logRepository, 'findActivePlanRows')
+            ? $logRepository->findActivePlanRows()
             : [];
-        $summary = method_exists($reviewRepository, 'getSummaryForSupplement')
-            ? $reviewRepository->getSummaryForSupplement($supplement->getId())
-            : ['avg' => 0.0, 'count' => 0];
-        $substituteSuggestions = ($supplement->getStock() ?? 0) <= 0
-            ? $this->smartSubstituteEngine->suggestForSupplement($supplement, 1, 4)
+        $displayNames = method_exists($logRepository, 'findOrderDisplayNames')
+            ? $logRepository->findOrderDisplayNames()
             : [];
 
-        return $this->render('pages/supplements.html.twig', [
-            'mode' => 'product',
-            'supplements' => $this->supplementRepository->findCatalogLimited(),
-            'categories' => [],
-            'brands' => [],
-            'ratingSummary' => [],
-            'supplement' => $supplement,
-            'reviews' => $reviews,
-            'ratingAverage' => $summary['avg'],
-            'ratingCount' => $summary['count'],
-            'substituteSuggestions' => $substituteSuggestions,
+        $entries = [];
+        if ($plans !== []) {
+            $globalStart = $monthStart;
+            foreach ($plans as $plan) {
+                $planStart = $this->normalizeLeaderboardDate($plan['startDate'] ?? null);
+                if ($planStart instanceof \DateTimeImmutable && $planStart < $globalStart) {
+                    $globalStart = $planStart;
+                }
+            }
+
+            $planIds = array_values(array_filter(array_map(
+                static fn (array $plan): int => (int) ($plan['planId'] ?? 0),
+                $plans
+            )));
+            $loggedRows = method_exists($logRepository, 'findLoggedUnitsByPlanIdsBetween')
+                ? $logRepository->findLoggedUnitsByPlanIdsBetween($planIds, $globalStart, $evaluationDate)
+                : [];
+
+            $unitsByPlan = [];
+            foreach ($loggedRows as $row) {
+                $planId = (int) ($row['planId'] ?? 0);
+                $logDate = $this->normalizeLeaderboardDate($row['logDate'] ?? null);
+                if ($planId <= 0 || !$logDate instanceof \DateTimeImmutable) {
+                    continue;
+                }
+
+                $unitsByPlan[$planId][$logDate->format('Y-m-d')] = max(0, (int) ($row['units'] ?? 0));
+            }
+
+            $plansByUser = [];
+            foreach ($plans as $plan) {
+                $email = mb_strtolower(trim((string) ($plan['userEmail'] ?? '')));
+                if ($email === '') {
+                    continue;
+                }
+                $plansByUser[$email][] = $plan;
+            }
+
+            foreach ($plansByUser as $email => $userPlans) {
+                $longestActiveStreak = 0;
+                $totalMonthExpectedDays = 0;
+                $totalMonthAdherentDays = 0;
+                $goalCompletionAccumulator = 0.0;
+                $goalCompletionCount = 0;
+
+                foreach ($userPlans as $plan) {
+                    $planId = (int) ($plan['planId'] ?? 0);
+                    $planStart = $this->normalizeLeaderboardDate($plan['startDate'] ?? null) ?? $monthStart;
+                    $plannedDays = max(1, (int) ($plan['plannedDays'] ?? 1));
+                    $dailyTargetUnits = max(1, (int) ($plan['dailyTargetUnits'] ?? 1));
+                    $planExpectedEnd = $planStart->modify(sprintf('+%d days', max(0, $plannedDays - 1)));
+                    $dayUnits = $unitsByPlan[$planId] ?? [];
+
+                    $activeStreak = $this->computeLeaderboardActiveStreak($planStart, $planExpectedEnd, $dayUnits, $dailyTargetUnits, $evaluationDate);
+                    $longestActiveStreak = max($longestActiveStreak, $activeStreak);
+
+                    $monthExpected = $this->countLeaderboardExpectedDays($planStart, $planExpectedEnd, $monthStart, $evaluationDate);
+                    $monthAdherent = $this->countLeaderboardAdherentDays($planStart, $planExpectedEnd, $dayUnits, $dailyTargetUnits, $monthStart, $evaluationDate);
+                    $totalMonthExpectedDays += $monthExpected;
+                    $totalMonthAdherentDays += $monthAdherent;
+
+                    $goalCompletionAccumulator += $this->computeLeaderboardGoalCompletion($planStart, $planExpectedEnd, $plannedDays, $dayUnits, $dailyTargetUnits, $evaluationDate);
+                    $goalCompletionCount++;
+                }
+
+                $entries[] = [
+                    'email' => $email,
+                    'displayName' => $this->resolveLeaderboardDisplayName($displayNames, $email),
+                    'longestActiveStreak' => $longestActiveStreak,
+                    'consistencyPercent' => $this->computeLeaderboardPercentage($totalMonthAdherentDays, $totalMonthExpectedDays),
+                    'goalCompletionPercent' => $goalCompletionCount > 0 ? round($goalCompletionAccumulator / $goalCompletionCount, 1) : 0.0,
+                ];
+            }
+        }
+
+        usort($entries, static function (array $a, array $b): int {
+            if ($a['longestActiveStreak'] !== $b['longestActiveStreak']) {
+                return $b['longestActiveStreak'] <=> $a['longestActiveStreak'];
+            }
+            if ($a['consistencyPercent'] !== $b['consistencyPercent']) {
+                return $b['consistencyPercent'] <=> $a['consistencyPercent'];
+            }
+            if ($a['goalCompletionPercent'] !== $b['goalCompletionPercent']) {
+                return $b['goalCompletionPercent'] <=> $a['goalCompletionPercent'];
+            }
+
+            return strcasecmp((string) $a['displayName'], (string) $b['displayName']);
+        });
+
+        foreach ($entries as $index => &$entry) {
+            $entry['rank'] = $index + 1;
+        }
+        unset($entry);
+
+        $currentUser = $this->getUser();
+        $currentUserEmail = $currentUser instanceof User
+            ? mb_strtolower(trim((string) $currentUser->getEmail()))
+            : null;
+
+        $notifications = ['Ranking is based on active streak, consistency %, then goal completion.'];
+        if ($currentUserEmail !== null) {
+            foreach ($entries as $entry) {
+                if (($entry['email'] ?? null) !== $currentUserEmail) {
+                    continue;
+                }
+
+                if (($entry['rank'] ?? 999) <= 5) {
+                    $notifications = [
+                        sprintf("You're top %d in consistency this month.", (int) $entry['rank']),
+                        'Ranking is based on active streak, consistency %, then goal completion.',
+                    ];
+                } else {
+                    $notifications = [
+                        sprintf('You are currently ranked #%d.', (int) $entry['rank']),
+                        'Ranking is based on active streak, consistency %, then goal completion.',
+                    ];
+                }
+
+                break;
+            }
+        }
+
+        return $this->render('shop/leaderboard.html.twig', [
+            'monthKey' => $monthKey,
+            'monthLabel' => $monthStart->format('F Y'),
+            'entries' => $entries,
+            'notifications' => $notifications,
+            'currentUserEmail' => $currentUserEmail,
         ]);
     }
 
-    #[Route('/product/{id}/review', name: 'app_shop_product_review', methods: ['POST'])]
-    public function addReview(Request $request, Supplement $supplement): Response
+    private function normalizeLeaderboardDate(mixed $value): ?\DateTimeImmutable
     {
-        $user = $this->getUser();
-        if (!$user) {
-            $this->addFlash('error', 'Please sign in to leave a review.');
-            return $this->redirectToRoute('app_login');
+        if ($value instanceof \DateTimeImmutable) {
+            return $value->setTime(0, 0);
         }
 
-        if (!$this->isCsrfTokenValid('review' . $supplement->getId(), $request->request->get('_token'))) {
-            $this->addFlash('error', 'Invalid form submission.');
-            return $this->redirectToRoute('app_shop_product_show', ['id' => $supplement->getId()]);
+        if ($value instanceof \DateTimeInterface) {
+            return \DateTimeImmutable::createFromInterface($value)->setTime(0, 0);
         }
 
-        $name = trim((string) $user->getUsername());
-        $email = trim((string) $user->getEmail());
-        $rating = (int) $request->request->get('rating');
-        $comment = trim((string) $request->request->get('comment'));
-
-        if ($rating < 1 || $rating > 5 || $comment === '') {
-            $this->addFlash('error', 'Please provide a rating and comment.');
-            return $this->redirectToRoute('app_shop_product_show', ['id' => $supplement->getId()]);
+        if (!is_string($value) || trim($value) === '') {
+            return null;
         }
 
-        $name = substr(strip_tags($name), 0, 100);
-        $email = $email !== '' ? substr(strip_tags($email), 0, 180) : null;
-        $comment = substr(strip_tags($comment), 0, 2000);
-
-        $review = new Review();
-        $review->setSupplement($supplement);
-        $review->setName($name);
-        $review->setEmail($email);
-        $review->setRating($rating);
-        $review->setComment($comment);
-
-        $this->entityManager->persist($review);
-        $this->entityManager->flush();
-
-        $this->addFlash('success', 'Thank you for your review!');
-
-        return $this->redirectToRoute('app_shop_product_show', ['id' => $supplement->getId()]);
+        try {
+            return (new \DateTimeImmutable($value))->setTime(0, 0);
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
-    #[Route('/notifications', name: 'app_shop_notifications', methods: ['GET'])]
-    public function notifications(Request $request, NotificationRepository $notificationRepository): JsonResponse
-    {
-        $email = $request->query->get('email');
-        if (!$email) {
-            return new JsonResponse(['success' => false, 'message' => 'Email is required.'], 400);
+    /**
+     * @param array<string, int> $dayUnits
+     */
+    private function computeLeaderboardActiveStreak(
+        \DateTimeImmutable $planStart,
+        \DateTimeImmutable $planExpectedEnd,
+        array $dayUnits,
+        int $dailyTargetUnits,
+        \DateTimeImmutable $evaluationDate
+    ): int {
+        $endDate = $evaluationDate < $planExpectedEnd ? $evaluationDate : $planExpectedEnd;
+        if ($endDate < $planStart) {
+            return 0;
         }
 
-        $notifications = $notificationRepository->findByEmail($email, 20);
-        $unreadCount = $notificationRepository->countUnreadByEmail($email);
+        $streak = 0;
+        for ($cursor = $endDate; $cursor >= $planStart; $cursor = $cursor->modify('-1 day')) {
+            $units = (int) ($dayUnits[$cursor->format('Y-m-d')] ?? 0);
+            if ($units < $dailyTargetUnits) {
+                break;
+            }
+            $streak++;
+        }
 
-        $data = array_map(function ($notification) {
-            return [
-                'id' => $notification->getId(),
-                'orderNumber' => $notification->getOrderNumber(),
-                'status' => $notification->getStatus(),
-                'message' => $notification->getMessage(),
-                'createdAt' => $notification->getCreatedAt()?->format(DATE_ATOM),
-                'readAt' => $notification->getReadAt()?->format(DATE_ATOM),
-            ];
-        }, $notifications);
+        return $streak;
+    }
 
-        return new JsonResponse([
-            'success' => true,
-            'unreadCount' => $unreadCount,
-            'notifications' => $data,
+    private function countLeaderboardExpectedDays(
+        \DateTimeImmutable $planStart,
+        \DateTimeImmutable $planExpectedEnd,
+        \DateTimeImmutable $fromDate,
+        \DateTimeImmutable $toDate
+    ): int {
+        $start = $planStart > $fromDate ? $planStart : $fromDate;
+        $end = $planExpectedEnd < $toDate ? $planExpectedEnd : $toDate;
+        if ($start > $end) {
+            return 0;
+        }
+
+        return ((int) $start->diff($end)->days) + 1;
+    }
+
+    /**
+     * @param array<string, int> $dayUnits
+     */
+    private function countLeaderboardAdherentDays(
+        \DateTimeImmutable $planStart,
+        \DateTimeImmutable $planExpectedEnd,
+        array $dayUnits,
+        int $dailyTargetUnits,
+        \DateTimeImmutable $fromDate,
+        \DateTimeImmutable $toDate
+    ): int {
+        $start = $planStart > $fromDate ? $planStart : $fromDate;
+        $end = $planExpectedEnd < $toDate ? $planExpectedEnd : $toDate;
+        if ($start > $end) {
+            return 0;
+        }
+
+        $adherentDays = 0;
+        for ($cursor = $start; $cursor <= $end; $cursor = $cursor->modify('+1 day')) {
+            $units = (int) ($dayUnits[$cursor->format('Y-m-d')] ?? 0);
+            if ($units >= $dailyTargetUnits) {
+                $adherentDays++;
+            }
+        }
+
+        return $adherentDays;
+    }
+
+    /**
+     * @param array<string, int> $dayUnits
+     */
+    private function computeLeaderboardGoalCompletion(
+        \DateTimeImmutable $planStart,
+        \DateTimeImmutable $planExpectedEnd,
+        int $plannedDays,
+        array $dayUnits,
+        int $dailyTargetUnits,
+        \DateTimeImmutable $evaluationDate
+    ): float {
+        $endDate = $evaluationDate < $planExpectedEnd ? $evaluationDate : $planExpectedEnd;
+        if ($endDate < $planStart) {
+            return 0.0;
+        }
+
+        $elapsedDays = ((int) $planStart->diff($endDate)->days) + 1;
+        $expectedDays = min($plannedDays, max($elapsedDays, 0));
+        $completedDays = $this->countLeaderboardAdherentDays(
+            $planStart,
+            $planExpectedEnd,
+            $dayUnits,
+            $dailyTargetUnits,
+            $planStart,
+            $endDate
+        );
+
+        return $this->computeLeaderboardPercentage($completedDays, $expectedDays);
+    }
+
+    private function computeLeaderboardPercentage(int $completed, int $expected): float
+    {
+        if ($expected <= 0) {
+            return 0.0;
+        }
+
+        return round(($completed / $expected) * 100, 1);
+    }
+
+    /**
+     * @param array<string, string> $displayNames
+     */
+    private function resolveLeaderboardDisplayName(array $displayNames, string $email): string
+    {
+        $normalizedEmail = mb_strtolower(trim($email));
+        $displayName = trim((string) ($displayNames[$normalizedEmail] ?? ''));
+        if ($displayName !== '') {
+            return $displayName;
+        }
+
+        $localPart = strstr($normalizedEmail, '@', true);
+        return $localPart !== false && $localPart !== '' ? $localPart : $normalizedEmail;
+    }
+
+    #[Route('/order/success/{orderNumber}', name: 'app_shop_order_success', methods: ['GET'])]
+    public function orderSuccess(string $orderNumber, OrderRepository $orderRepository): Response
+    {
+        $order = $orderRepository->findOneByOrderNumber($orderNumber);
+        if (!$order instanceof Order) {
+            throw $this->createNotFoundException('Order not found.');
+        }
+
+        return $this->render('shop/order_success.html.twig', [
+            'order' => $order,
         ]);
     }
 
-    #[Route('/notifications/mark-read', name: 'app_shop_notifications_mark_read', methods: ['POST'])]
-    public function markNotificationsRead(Request $request, NotificationRepository $notificationRepository): JsonResponse
+    /**
+     * @return array{label: string, keywords: string[], preferredCategories: string[]}
+     */
+    private function buildGoalProfile(string $queryLower): array
     {
-        $data = json_decode($request->getContent(), true);
-        $email = $data['email'] ?? null;
+        $profiles = [
+            [
+                'label' => 'lean muscle',
+                'keywords' => ['muscle', 'lean', 'strength', 'protein', 'mass', 'recovery'],
+                'preferredCategories' => ['whey protein', 'mass gainer', 'creatine', 'bcaa / eaa'],
+            ],
+            [
+                'label' => 'recovery',
+                'keywords' => ['recovery', 'fatigue', 'soreness', 'repair', 'rest', 'post workout'],
+                'preferredCategories' => ['bcaa / eaa', 'whey protein', 'vitamins & minerals', 'creatine'],
+            ],
+            [
+                'label' => 'endurance',
+                'keywords' => ['endurance', 'cardio', 'stamina', 'energy', 'long workout'],
+                'preferredCategories' => ['pre-workout', 'bcaa / eaa', 'vitamins & minerals'],
+            ],
+            [
+                'label' => 'fat loss',
+                'keywords' => ['fat loss', 'cut', 'lean', 'diet', 'weight loss', 'burn'],
+                'preferredCategories' => ['pre-workout', 'whey protein', 'vitamins & minerals'],
+            ],
+            [
+                'label' => 'daily health',
+                'keywords' => ['health', 'daily', 'wellness', 'immunity', 'vitamin', 'mineral'],
+                'preferredCategories' => ['vitamins & minerals'],
+            ],
+        ];
 
-        if (!$email) {
-            return new JsonResponse(['success' => false, 'message' => 'Email is required.'], 400);
+        $selected = [
+            'label' => $queryLower !== '' ? 'your goal' : 'daily performance',
+            'keywords' => [],
+            'preferredCategories' => [],
+        ];
+        $bestMatches = 0;
+
+        foreach ($profiles as $profile) {
+            $matches = 0;
+            foreach ($profile['keywords'] as $keyword) {
+                if ($keyword !== '' && str_contains($queryLower, $keyword)) {
+                    $matches++;
+                }
+            }
+
+            if ($matches > $bestMatches) {
+                $bestMatches = $matches;
+                $selected = $profile;
+            }
         }
 
-        $updated = $notificationRepository->markAllReadForEmail($email);
+        $tokens = preg_split('/[^a-z0-9]+/', $queryLower) ?: [];
+        foreach ($tokens as $token) {
+            $token = trim((string) $token);
+            if ($token !== '' && strlen($token) >= 3 && !in_array($token, $selected['keywords'], true)) {
+                $selected['keywords'][] = $token;
+            }
+        }
 
-        return new JsonResponse([
-            'success' => true,
-            'updated' => $updated,
-        ]);
+        return $selected;
+    }
+
+    /**
+     * @param string[] $reasonParts
+     */
+    private function buildSuggestionReason(array $reasonParts, string $goalLabel): string
+    {
+        $reasonParts = array_values(array_unique(array_filter(array_map(
+            static fn (mixed $part): string => trim((string) $part),
+            $reasonParts
+        ))));
+
+        if ($reasonParts === []) {
+            return sprintf('Selected as a balanced Fitopia recommendation for %s.', $goalLabel);
+        }
+
+        $summary = implode(', ', array_slice($reasonParts, 0, 3));
+
+        return sprintf('Recommended for %s: %s.', $goalLabel, $summary);
     }
 }

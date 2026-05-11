@@ -5,444 +5,479 @@
 {% block stylesheets %}
 <style>
   :root {
-    --about-bg: #f5f7fb;
-    --about-card: #ffffff;
-    --about-border: #e6edf5;
-    --about-text: #1f2937;
-    --about-muted: #5f6b7a;
-    --about-accent: #0b3a3d;
-    --about-accent-2: #0f7a5f;
+    --f-green: #15996a;
+    --f-dark: #13231d;
+    --f-muted: #5f756d;
+    --f-bg-light: #f7fbf8;
+    --f-card-bg: #ffffff;
+    --f-border: #e3eee7;
   }
-  .about-page { background: var(--about-bg); padding: 2.5rem 0 3.5rem; }
-  .about-wrap { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
-  .about-hero {
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 2rem;
-    align-items: center;
-    background: var(--about-card);
-    border-radius: 18px;
-    border: 1px solid var(--about-border);
-    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+
+  .about-container {
+    background-color: #ffffff;
+    padding: 40px 0;
+  }
+
+  .about-shell {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  .about-hero-box {
+    display: flex;
+    background: linear-gradient(to bottom right, #f8fcfa, #edf5f0);
+    border-radius: 28px;
+    border: 1px solid var(--f-border);
     overflow: hidden;
+    box-shadow: 0 24px 48px rgba(15, 23, 42, 0.08);
   }
-  .about-hero img { width: 100%; height: 100%; object-fit: cover; }
-  .hero-copy { padding: 2rem; }
-  .hero-copy h1 { font-weight: 800; color: var(--about-text); }
-  .hero-copy h3 { color: var(--about-accent); font-weight: 700; }
-  .hero-copy p { color: var(--about-muted); margin-top: 1rem; }
-  .section {
-    margin-top: 2.5rem;
+
+  .hero-copy-box {
+    padding: 50px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
   }
-  .section-title {
+
+  .hero-kicker {
+    color: var(--f-green);
+    font-size: 13px;
     font-weight: 800;
-    color: var(--about-text);
-    margin-bottom: 1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
   }
-  .section-sub {
-    color: var(--about-muted);
-    margin-bottom: 1.25rem;
+
+  .hero-title {
+    color: var(--f-dark);
+    font-size: 50px;
+    font-weight: 400;
+    line-height: 1.2;
   }
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.25rem;
+
+  .hero-subtitle {
+    color: var(--f-muted);
+    font-size: 18px;
+    font-weight: 600;
   }
-  .card {
-    background: var(--about-card);
+
+  .hero-desc {
+    color: var(--f-muted);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .hero-visual {
+    width: 520px;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 18px;
+  }
+
+  .stat-pill {
+    flex: 1;
+    background: linear-gradient(to bottom, #ffffff, #f8fcfa);
+    border-radius: 22px;
+    border: 1px solid var(--f-border);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .stat-number {
+    color: var(--f-green);
+    font-size: 26px;
+    font-weight: 800;
+  }
+
+  .stat-label {
+    color: var(--f-muted);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .story-box {
+    display: flex;
+    gap: 22px;
+    background: linear-gradient(to bottom, #f7f9fc, #eff3f8);
+    border-radius: 28px;
+    border: 1px solid #e1e8f0;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .story-visual {
+    width: 320px;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .story-copy {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .section-title-dark {
+    color: #172554;
+    font-size: 34px;
+    font-weight: 800;
+  }
+
+  .section-copy {
+    color: #5b6777;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .points-grid {
+    display: flex;
+    gap: 16px;
+    margin-top: 10px;
+  }
+
+  .point-card {
+    flex: 1;
+    background: #ffffff;
     border-radius: 16px;
-    border: 1px solid var(--about-border);
-    padding: 1.4rem;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #e6edf5;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
-  .card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
-  }
-  .icon-badge {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
+
+  .mini-badge {
     background: #e8f3f0;
-    color: var(--about-accent);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    color: #0b3a3d;
+    padding: 4px 12px;
+    border-radius: 12px;
     font-weight: 800;
-    margin-bottom: 0.6rem;
-    box-shadow: 0 8px 18px rgba(11, 58, 61, 0.12);
+    width: fit-content;
+    font-size: 12px;
   }
-  .icon-badge i {
-    font-size: 1rem;
+
+  .dual-grid {
+    display: flex;
+    gap: 18px;
   }
-  .story-wrap {
-    display: grid;
-    grid-template-columns: 0.9fr 1.1fr;
-    gap: 2rem;
-    align-items: center;
+
+  .dual-card {
+    flex: 1;
+    background: linear-gradient(to bottom, #ffffff, #f8fcfa);
+    border-radius: 22px;
+    border: 1px solid var(--f-border);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
-  .story-img img {
-    width: 100%;
-    border-radius: 16px;
-    object-fit: cover;
+
+  .features-shell {
+    background: linear-gradient(to bottom, #f7fcf9, #eef8f2);
+    border-radius: 24px;
+    border: 1px solid #e0ede5;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
   }
-  .value-list {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
+
+  .features-grid {
+    display: flex;
+    gap: 18px;
   }
-  .value-list li {
-    padding: 0.45rem 0;
-    color: var(--about-muted);
+
+  .feature-card-clean {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 22px;
+    border: 1px solid #e5efe9;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.05);
   }
+
+  .team-shell {
+    background: linear-gradient(to bottom, #f7f9fc, #eff3f8);
+    border-radius: 24px;
+    border: 1px solid #e1e8f0;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
   .team-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: center;
   }
+
   .team-card {
-    background: var(--about-card);
-    border-radius: 16px;
-    border: 1px solid var(--about-border);
-    padding: 1.4rem;
+    width: calc(33.333% - 12px);
+    min-width: 200px;
+    background: #ffffff;
+    border-radius: 22px;
+    border: 1px solid #e6edf5;
+    padding: 24px;
     text-align: center;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.05);
   }
-  .team-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
-  }
+
   .team-avatar {
     width: 90px;
     height: 90px;
     border-radius: 50%;
-    margin: 0 auto 0.8rem;
     object-fit: cover;
-    border: 4px solid #eef6f4;
+    border: 4px solid #f1f5f9;
   }
-  .cta {
-    margin-top: 2.5rem;
-    background: linear-gradient(135deg, #0b3a3d, #0f7a5f);
-    color: #fff;
-    border-radius: 16px;
-    padding: 2rem;
+
+  .team-name {
+    color: #172554;
+    font-weight: 800;
+    font-size: 18px;
+  }
+
+  .team-role {
+    color: var(--f-green);
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .team-copy {
+    color: #5b6777;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .cta-banner {
+    background: linear-gradient(to right, #0b3a3d, #0f7a5f);
+    border-radius: 24px;
+    padding: 40px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
+    gap: 20px;
+    color: white;
   }
-  .cta h3 { margin: 0; font-weight: 800; }
-  .cta a {
-    background: #fff;
-    color: var(--about-accent);
-    border-radius: 999px;
-    padding: 0.6rem 1.3rem;
-    font-weight: 700;
-    text-decoration: none;
-  }
-  .cta button {
-    background: #fff;
-    color: var(--about-accent);
-    border-radius: 999px;
-    padding: 0.6rem 1.3rem;
-    font-weight: 700;
-    border: none;
-  }
-  .cta-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.55);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 1100;
-  }
-  .cta-modal.show {
-    display: flex;
-    animation: fadeIn 0.25s ease;
-  }
-  .cta-modal-card {
-    background: #fff;
-    border-radius: 18px;
-    padding: 2rem;
-    width: min(560px, 92vw);
-    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
-    text-align: center;
-    transform: translateY(10px);
-    animation: slideUp 0.35s ease forwards;
-  }
-  .cta-modal-card h4 {
+
+  .cta-title {
+    font-size: 30px;
     font-weight: 800;
-    color: var(--about-accent);
-    margin-bottom: 0.5rem;
   }
-  .cta-modal-card p {
-    color: var(--about-muted);
-    margin-bottom: 1.5rem;
+
+  .cta-copy {
+    font-size: 15px;
+    opacity: 0.9;
   }
-  .cta-actions {
-    display: flex;
-    gap: 0.75rem;
-    justify-content: center;
-    flex-wrap: wrap;
+
+  .cta-btn {
+    background: #ffffff;
+    color: #16384c;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 28px;
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
   }
-  .cta-actions a {
-    border-radius: 10px;
-    padding: 0.6rem 1.2rem;
-    font-weight: 700;
+
+  .cta-btn:hover {
+    background: #f1f5f9;
     text-decoration: none;
   }
-  .cta-login {
-    background: var(--about-accent);
-    color: #fff;
-  }
-  .cta-register {
-    background: #fff;
-    border: 1px solid var(--about-accent);
-    color: var(--about-accent);
-  }
-  .cta-close {
-    position: absolute;
-    right: 16px;
-    top: 14px;
-    background: transparent;
-    border: none;
-    font-size: 1.2rem;
-    color: #64748b;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  @keyframes slideUp {
-    to { transform: translateY(0); }
-  }
+
   @media (max-width: 991px) {
-    .about-hero,
-    .story-wrap,
-    .card-grid,
-    .team-grid {
-      grid-template-columns: 1fr;
-    }
+    .about-hero-box, .story-box { flex-direction: column; }
+    .hero-visual, .story-visual { width: 100%; height: 300px; }
+    .stats-row, .points-grid, .dual-grid, .features-grid { flex-direction: column; }
+    .team-card { width: 100%; }
   }
 </style>
 {% endblock %}
 
 {% block body %}
-<section class="about-page">
-  <div class="about-wrap">
-    <div class="about-hero">
-      <img src="{{ asset('images/FITOPIA_logo_2000x1333.png') }}" alt="Fitopia hero">
-      <div class="hero-copy">
-        <h1>About Fitopia</h1>
-        <h3>Where your well-being takes shape</h3>
-        <p>
-          Fitopia is a digital health and well-being platform designed to help people
-          adopt sustainable, healthy habits by centralizing nutrition, fitness, and
-          personal progress in one intuitive solution.
-        </p>
+<div class="about-container">
+  <div class="about-shell">
+    
+    <!-- Hero Section -->
+    <div class="about-hero-box">
+      <div class="hero-copy-box">
+        <span class="hero-kicker">ABOUT FITOPIA</span>
+        <h1 class="hero-title">A calmer and smarter way to stay healthy every day</h1>
+        <p class="hero-subtitle">Fitopia combines nutrition, fitness and supportive coaching in one elegant wellness platform.</p>
+        <p class="hero-desc">We designed Fitopia for people who want a healthier routine without jumping between disconnected tools. Everything is brought together in one simple and motivating experience.</p>
+        <div style="display: flex; gap: 12px; margin-top: 10px;">
+          <a href="{{ path('app_register') }}" class="cta-btn" style="background: #16384c; color: white;">Get Started</a>
+          <a href="{{ path('home') }}" class="cta-btn" style="border: 1px solid #e9edf3;">Back to Home</a>
+        </div>
+      </div>
+      <div class="hero-visual" style="background-image: url('{{ asset('images/coach-1.jpg') }}');"></div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-row">
+      <div class="stat-pill">
+        <span class="stat-number">3 in 1</span>
+        <span class="stat-label">Nutrition, movement and coaching brought together.</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-number">Daily</span>
+        <span class="stat-label">Healthy habits that feel easier to follow every day.</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-number">One place</span>
+        <span class="stat-label">A clearer wellness journey from start to progress.</span>
       </div>
     </div>
 
-    <div class="section">
-      <div class="story-wrap">
-        <div class="story-img">
-          <img src="{{ asset('images/image_2.jpg') }}" alt="Our story">
-        </div>
-        <div>
-          <h2 class="section-title">Our Story</h2>
-          <p class="section-sub">
-            Fitopia was born from a simple observation: managing health today often means
-            using multiple disconnected apps. Nutrition here, workouts there, motivation
-            lost along the way. We created Fitopia to unify everything into one personalized,
-            motivating, and human-centered platform.
-          </p>
-          <div class="card-grid">
-            <div class="card">
-              <div class="icon-badge"><i class="fa fa-puzzle-piece"></i></div>
-              <strong>Fragmented tools</strong>
-              <p class="section-sub">Nutrition here, fitness there, motivation suffers.</p>
-            </div>
-            <div class="card">
-              <div class="icon-badge"><i class="fa fa-battery-half"></i></div>
-              <strong>Motivation drops</strong>
-              <p class="section-sub">Without personalization, engagement fades.</p>
-            </div>
-            <div class="card">
-              <div class="icon-badge"><i class="fa fa-link"></i></div>
-              <strong>No central hub</strong>
-              <p class="section-sub">No easy way to connect with professionals in one place.</p>
-            </div>
-            <div class="card">
-              <div class="icon-badge"><i class="fa fa-users"></i></div>
-              <strong>No central hub</strong>
-              <p class="section-sub">No easy way to connect with professionals in one place.</p>
-            </div>
+    <!-- Story Section -->
+    <div class="story-box">
+      <div class="story-visual" style="background-image: url('{{ asset('images/services-2.jpg') }}');"></div>
+      <div class="story-copy">
+        <span class="hero-kicker">OUR STORY</span>
+        <h2 class="section-title-dark">Fitopia was created to remove the friction from healthy living</h2>
+        <p class="section-copy">Most people use one app for food, another for workouts and somewhere else for motivation. Fitopia unifies that journey into a single digital space that feels easier to use and easier to stay consistent with.</p>
+        
+        <div class="points-grid">
+          <div class="point-card">
+            <span class="mini-badge">01</span>
+            <span class="team-name" style="font-size: 16px;">Less fragmentation</span>
+            <span class="section-copy" style="font-size: 13px;">One place for meals, workouts and progress tracking.</span>
+          </div>
+          <div class="point-card">
+            <span class="mini-badge">02</span>
+            <span class="team-name" style="font-size: 16px;">More consistency</span>
+            <span class="section-copy" style="font-size: 13px;">A routine that feels simpler to maintain over time.</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="section">
-      <h2 class="section-title">Our Mission &amp; Vision</h2>
-      <div class="card-grid">
-        <div class="card">
-          <div class="icon-badge"><i class="fa fa-bullseye"></i></div>
-          <strong>Our Mission</strong>
-          <p class="section-sub">
-            To help users improve their health sustainably by offering a personalized,
-            centralized, and motivating digital experience.
-          </p>
+    <!-- Mission & Vision -->
+    <div class="dual-grid">
+      <div class="dual-card">
+        <span class="hero-kicker">MISSION</span>
+        <h3 class="team-name" style="font-size: 21px;">Make healthy change easier to sustain</h3>
+        <p class="section-copy">Fitopia helps users improve their well-being through a centralized, motivating and personalized digital experience.</p>
+      </div>
+      <div class="dual-card">
+        <span class="hero-kicker">VISION</span>
+        <h3 class="team-name" style="font-size: 21px;">Become a trusted everyday wellness companion</h3>
+        <p class="section-copy">We believe technology should simplify healthier lifestyles and make progress feel natural, supportive and beautiful.</p>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="features-shell">
+      <div>
+        <span class="hero-kicker">WHY FITOPIA</span>
+        <h2 class="section-title-dark">What makes the experience different</h2>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card-clean">
+          <span class="mini-badge">01</span>
+          <span class="team-name" style="font-size: 16px;">All-in-one wellness</span>
+          <span class="section-copy" style="font-size: 13px;">Nutrition, movement and progress tracking in one space.</span>
         </div>
-        <div class="card">
-          <div class="icon-badge"><i class="fa fa-globe"></i></div>
-          <strong>Our Vision</strong>
-          <p class="section-sub">
-            We believe technology should empower healthier lifestyles, not complicate them.
-            Fitopia aims to become a trusted companion for everyday well-being.
-          </p>
+        <div class="feature-card-clean">
+          <span class="mini-badge">02</span>
+          <span class="team-name" style="font-size: 16px;">Personalized guidance</span>
+          <span class="section-copy" style="font-size: 13px;">A rhythm and goals adapted specifically to the user.</span>
+        </div>
+        <div class="feature-card-clean">
+          <span class="mini-badge">03</span>
+          <span class="team-name" style="font-size: 16px;">Supportive experts</span>
+          <span class="section-copy" style="font-size: 13px;">Guidance that stays practical, motivating and reachable.</span>
+        </div>
+        <div class="feature-card-clean">
+          <span class="mini-badge">04</span>
+          <span class="team-name" style="font-size: 16px;">Inspiring community</span>
+          <span class="section-copy" style="font-size: 13px;">Stories, content and encouragement that keep energy high.</span>
         </div>
       </div>
     </div>
 
-    <div class="section">
-      <h2 class="section-title">What Makes Fitopia Different</h2>
-      <div class="card-grid">
-        <div class="card">
-          <div class="icon-badge"><i class="fa fa-th-large"></i></div>
-          <strong>All-in-one platform</strong>
-          <p class="section-sub">Nutrition, fitness, and progress tracking.</p>
-        </div>
-        <div class="card">
-          <div class="icon-badge"><i class="fa fa-sliders"></i></div>
-          <strong>Personalized goals &amp; tracking</strong>
-          <p class="section-sub">Custom plans adapted to each user.</p>
-        </div>
-        <div class="card">
-          <div class="icon-badge"><i class="fa fa-life-ring"></i></div>
-          <strong>Professional support</strong>
-          <p class="section-sub">Coaches and nutritionists just a click away.</p>
-        </div>
-        <div class="card">
-          <div class="icon-badge"><i class="fa fa-comments"></i></div>
-          <strong>Community interaction</strong>
-          <p class="section-sub">Forum and blog for support and inspiration.</p>
-        </div>
-        <div class="card">
-          <div class="icon-badge"><i class="fa fa-desktop"></i></div>
-          <strong>Web + Desktop</strong>
-          <p class="section-sub">Synchronized experience across platforms.</p>
-        </div>
+    <!-- Team Section -->
+    <div class="team-shell">
+      <div>
+        <span class="hero-kicker">MEET THE TEAM</span>
+        <h2 class="section-title-dark">The people behind Fitopia</h2>
       </div>
-    </div>
-
-    <div class="section">
-      <h2 class="section-title">Our Impact &amp; Values</h2>
-      <div class="card-grid">
-        <div class="card">
-          <strong>Our Values</strong>
-          <ul class="value-list">
-            <li>Health &amp; well-being</li>
-            <li>Motivation &amp; consistency</li>
-            <li>Accessibility</li>
-            <li>Data security &amp; trust</li>
-          </ul>
-        </div>
-        <div class="card">
-          <strong>Sustainable Development</strong>
-          <p class="section-sub">
-            Fitopia contributes to the UN Sustainable Development Goal 3: Good Health and
-            Well-Being, by encouraging healthy habits through accessible digital solutions.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="section">
-      <h2 class="section-title">Meet the Team</h2>
       <div class="team-grid">
         <div class="team-card">
-          <img class="team-avatar" src="{{ asset('images/person-1.jpg') }}" alt="Med Omar Selmi">
-          <strong>Med Omar Selmi</strong>
-          <div class="section-sub">QA &amp; Testing</div>
-          <small class="text-muted">Responsible for ensuring a smooth project workflow and delivery.</small>
+          <img src="{{ asset('images/person-1.jpg') }}" class="team-avatar">
+          <span class="team-name">Med Omar Selmi</span>
+          <span class="team-role">QA &amp; Testing</span>
+          <p class="team-copy">Ensuring the platform stays smooth, reliable and bug-free.</p>
         </div>
         <div class="team-card">
-          <img class="team-avatar" src="{{ asset('images/person-2.jpg') }}" alt="Emna Ben Hassine">
-          <strong>Emna Ben Hassine</strong>
-          <div class="section-sub">Developer</div>
-          <small class="text-muted">Developing and maintaining the Fitopia platform.</small>
+          <img src="{{ asset('images/person-2.jpg') }}" class="team-avatar">
+          <span class="team-name">Emna Ben Hassine</span>
+          <span class="team-role">Platform Developer</span>
+          <p class="team-copy">Building and evolving the core Fitopia experience.</p>
         </div>
         <div class="team-card">
-          <img class="team-avatar" src="{{ asset('images/person-3.jpg') }}" alt="Sarah Jardak">
-          <strong>Sarah Jardak</strong>
-          <div class="section-sub">Project Manager</div>
-          <small class="text-muted">Responsible for ensuring a smooth project workflow and delivery.</small>
+          <img src="{{ asset('images/person-3.jpg') }}" class="team-avatar">
+          <span class="team-name">Sarah Jardak</span>
+          <span class="team-role">Project Lead</span>
+          <p class="team-copy">Keeping the product vision clear, aligned and on track.</p>
         </div>
         <div class="team-card">
-          <img class="team-avatar" src="{{ asset('images/staff-4.jpg') }}" alt="Ali Touati">
-          <strong>Ali Touati</strong>
-          <div class="section-sub">UI/UX Designer</div>
-          <small class="text-muted">Designing intuitive and user-friendly app experiences.</small>
+          <img src="{{ asset('images/staff-4.jpg') }}" class="team-avatar">
+          <span class="team-name">Ali Touati</span>
+          <span class="team-role">UI/UX Designer</span>
+          <p class="team-copy">Designing intuitive, elegant and user-centered journeys.</p>
         </div>
         <div class="team-card">
-          <img class="team-avatar" src="{{ asset('images/staff-5.jpg') }}" alt="Ahmed Chebbi">
-          <strong>Ahmed Chebbi</strong>
-          <div class="section-sub">Community &amp; Marketing</div>
-          <small class="text-muted">Building engagement and community growth.</small>
+          <img src="{{ asset('images/staff-5.jpg') }}" class="team-avatar">
+          <span class="team-name">Ahmed Chebbi</span>
+          <span class="team-role">Community Growth</span>
+          <p class="team-copy">Creating engagement and support around the Fitopia brand.</p>
         </div>
         <div class="team-card">
-          <img class="team-avatar" src="{{ asset('images/staff-6.jpg') }}" alt="Rania Landolsi">
-          <strong>Rania Landolsi</strong>
-          <div class="section-sub">Documentation &amp; Content</div>
-          <small class="text-muted">Creating clear documentation and content experiences.</small>
+          <img src="{{ asset('images/staff-6.jpg') }}" class="team-avatar">
+          <span class="team-name">Rania Landolsi</span>
+          <span class="team-role">Content &amp; Documentation</span>
+          <p class="team-copy">Shaping helpful content and clearer user communication.</p>
         </div>
       </div>
     </div>
 
-    <div class="cta">
+    <!-- CTA Banner -->
+    <div class="cta-banner">
       <div>
-        <h3>Ready to shape your well-being with Fitopia?</h3>
-        <p class="mb-0">Join the community and start your personalized journey today.</p>
+        <h2 class="cta-title">Ready to experience Fitopia for yourself?</h2>
+        <p class="cta-copy">Start a cleaner, more consistent wellness journey today with our all-in-one platform.</p>
       </div>
-      <button type="button" id="cta-get-started-btn">Get Started</button>
+      <a href="{{ path('app_register') }}" class="cta-btn">Get Started Now</a>
     </div>
-  </div>
-</section>
-<div class="cta-modal" id="cta-modal">
-  <div class="cta-modal-card">
-    <button class="cta-close" type="button" id="cta-close-btn">&times;</button>
-    <h4>Welcome to Fitopia</h4>
-    <p>Do you already have an account, or would you like to join us?</p>
-    <div class="cta-actions">
-      <a class="cta-login" href="{{ path('app_login') }}">I have an account</a>
-      <a class="cta-register" href="{{ path('app_register') }}">Create new account</a>
-    </div>
+
   </div>
 </div>
 {% endblock %}
 
-{% block footer %}{% endblock %}
-
-{% block javascripts %}
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('cta-get-started-btn');
-    const modal = document.getElementById('cta-modal');
-    const closeBtn = document.getElementById('cta-close-btn');
-    if (!btn || !modal || !closeBtn) return;
-    btn.addEventListener('click', () => {
-      modal.classList.add('show');
-    });
-    closeBtn.addEventListener('click', () => {
-      modal.classList.remove('show');
-    });
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) modal.classList.remove('show');
-    });
-  });
-</script>
+{% block footer %}
+{% include 'partials/footer_fitopia.html.twig' %}
 {% endblock %}

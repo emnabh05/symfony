@@ -1,464 +1,699 @@
-﻿{% extends 'base.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Diet & Eating Planner | Fitopia{% endblock %}
 
 {% block stylesheets %}
 <style>
   :root {
-    --dp-bg: #f3f6fb;
-    --dp-card: #ffffff;
-    --dp-border: #e2e8f0;
-    --dp-text: #1f2937;
-    --dp-muted: #6b7280;
-    --dp-accent: #0c3f44;
-    --dp-accent-2: #0b5d66;
-    --dp-soft: #eef6f5;
-    --dp-danger: #d64545;
-    --dp-danger-soft: #fff1f1;
+    --diet-bg: #f4f7fd;
+    --diet-card: #ffffff;
+    --diet-border: #dfe7f3;
+    --diet-text: #0f2541;
+    --diet-muted: #6f84a0;
+    --diet-green: #12c48b;
+    --diet-green-dark: #0f4a5a;
+    --diet-green-soft: #ecfbf4;
+    --diet-shadow: 0 18px 40px rgba(15, 37, 65, 0.08);
+    --diet-page-gutter: clamp(18px, 2.8vw, 52px);
   }
-  .diet-page { background: var(--dp-bg); padding: 2.5rem 0 3.5rem; }
-  .diet-wrap { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
-  .diet-hero { font-weight: 800; font-size: 2.4rem; color: var(--dp-text); }
-  .diet-sub { color: var(--dp-muted); margin-top: 0.35rem; }
-  .diet-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 1.6rem; margin-top: 1.6rem; }
-  .diet-col { display: grid; gap: 1.3rem; }
+
+  .diet-page {
+    background: var(--diet-bg);
+    padding: 2rem 0 3rem;
+  }
+
+  .diet-wrap {
+    width: calc(100% - (var(--diet-page-gutter) * 2));
+    max-width: none;
+    margin: 0 auto;
+    padding: 0;
+  }
+
   .diet-card {
-    background: var(--dp-card);
-    border-radius: 14px;
-    border: 1px solid var(--dp-border);
-    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+    background: var(--diet-card);
+    border: 1px solid var(--diet-border);
+    border-radius: 28px;
+    box-shadow: var(--diet-shadow);
+  }
+
+  .diet-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.12fr) minmax(360px, 0.88fr);
+    gap: 2rem;
+    background: #eef8f1;
+    border: 1px solid #d9ece0;
+    border-radius: 32px;
+    padding: 2.1rem;
+    box-shadow: 0 22px 40px rgba(14, 39, 64, 0.08);
+  }
+
+  .diet-hero-media {
+    position: relative;
+    min-height: 470px;
+    border-radius: 28px;
     overflow: hidden;
   }
-  .diet-card .icon-title {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 800;
+
+  .diet-hero-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
-  .icon-pill {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    background: #e8f3f0;
-    color: var(--dp-accent);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-  }
-  .regime-grid {
-    display: grid;
-    grid-template-columns: 1.4fr 0.9fr;
-    gap: 1.2rem;
-    align-items: start;
-  }
-  .regime-stats {
-    display: grid;
-    gap: 0.45rem;
-  }
-  .regime-row {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    color: var(--dp-text);
-  }
-  .regime-row i {
-    color: var(--dp-accent);
-    width: 18px;
-  }
-  .mini-image {
-    border: 1px dashed #d1dae6;
-    border-radius: 14px;
-    background: #f8fafc;
-    height: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #94a3b8;
-    font-weight: 600;
-    text-align: center;
-    padding: 0.75rem;
-  }
-  .card-header {
-    padding: 0.85rem 1.1rem;
-    border-bottom: 1px solid var(--dp-border);
-    font-weight: 700;
-    color: var(--dp-text);
-  }
-  .card-body { padding: 1rem 1.1rem 1.2rem; }
-  .sub-title { font-weight: 700; margin-bottom: 0.35rem; color: var(--dp-text); }
-  .muted { color: var(--dp-muted); }
-  .pill {
-    display: inline-block;
-    padding: 0.2rem 0.6rem;
-    border-radius: 999px;
-    background: var(--dp-soft);
-    color: var(--dp-accent);
-    font-weight: 700;
-    font-size: 0.78rem;
-    margin-right: 0.4rem;
-  }
-  .btn-fit {
-    background: var(--dp-accent);
+
+  .diet-hero-overlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 1.6rem;
     color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-    font-weight: 700;
+    background: linear-gradient(to top, rgba(14, 31, 41, 0.78), rgba(14, 31, 41, 0.08));
   }
-  .btn-soft {
-    background: #f0f4f8;
-    color: var(--dp-accent);
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-    font-weight: 700;
-  }
-  .btn-danger {
-    background: var(--dp-danger-soft);
-    color: var(--dp-danger);
-    border: 1px solid #f5c2c2;
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-    font-weight: 700;
-  }
-  .form-control {
-    border-radius: 8px;
-    border: 1px solid #d9e2ef;
-  }
-  .input-group-mini {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.6rem;
-  }
-  .form-label-icon {
+
+  .diet-hero-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    font-weight: 700;
-    color: var(--dp-text);
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    background: #fff;
+    color: #0f2541;
+    font-weight: 800;
+    font-size: 0.8rem;
+    margin-bottom: 0.8rem;
   }
-  .form-label-icon i {
-    color: var(--dp-accent);
-  }
-  .meal-form .form-control {
-    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
-  }
-  .label-mini { font-size: 0.75rem; color: var(--dp-muted); }
-  .summary-grid {
+
+  .diet-hero-copy {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    align-content: center;
+    gap: 1rem;
+  }
+
+  .diet-kicker {
+    color: #00b978;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 900;
+    font-size: 0.82rem;
+  }
+
+  .diet-title {
+    margin: 0;
+    font-size: clamp(2.2rem, 3vw, 3.1rem);
+    line-height: 1.05;
+    color: #08263a;
+    font-weight: 900;
+  }
+
+  .diet-lead {
+    margin: 0;
+    color: #50677e;
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  .diet-hero-actions,
+  .diet-dashboard-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .diet-btn,
+  .diet-btn-outline,
+  .diet-btn-soft {
+    border-radius: 999px;
+    padding: 0.82rem 1.35rem;
+    font-weight: 800;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .diet-btn {
+    background: var(--diet-green);
+    color: #fff;
+    box-shadow: 0 14px 28px rgba(18, 196, 139, 0.25);
+  }
+
+  .diet-btn-outline {
+    background: #fff;
+    color: var(--diet-green);
+    border-color: var(--diet-green);
+  }
+
+  .diet-btn-soft {
+    background: #eff4f8;
+    color: #0f2541;
+    border-color: #eff4f8;
+  }
+
+  .diet-hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .diet-hero-stat {
+    background: #fff;
+    border: 1px solid #e4efe8;
+    border-radius: 18px;
+    padding: 1rem 1.1rem;
+  }
+
+  .diet-hero-stat strong {
+    display: block;
+    color: #08263a;
+    font-weight: 900;
+    font-size: 1.85rem;
+  }
+
+  .diet-hero-stat span {
+    color: #60778b;
+    font-size: 0.92rem;
+  }
+
+  .diet-stack {
+    display: grid;
+    gap: 1.4rem;
+    margin-top: 1.6rem;
+  }
+
+  .diet-dashboard {
+    padding: 2rem;
+  }
+
+  .diet-dashboard-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .diet-section-title {
+    display: flex;
+    align-items: center;
     gap: 0.9rem;
   }
-  .summary-item {
+
+  .diet-icon-box {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    background: #edf8f1;
+    color: #0f2541;
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    color: var(--dp-muted);
+    justify-content: center;
+    font-size: 1.4rem;
   }
-  .summary-item i {
-    color: var(--dp-accent);
+
+  .diet-section-title h2,
+  .diet-panel-title h3 {
+    margin: 0;
+    color: #0f2541;
+    font-weight: 900;
   }
-  .summary-item { font-size: 0.85rem; color: var(--dp-muted); }
-  .progress-bar { height: 8px; background: #e5e7eb; border-radius: 999px; overflow: hidden; }
-  .progress-bar span { display: block; height: 100%; background: var(--dp-accent); }
-  .table-sm th, .table-sm td { padding: 0.45rem; }
-  .actions-btns .btn {
-    border-radius: 10px;
-    padding: 0.35rem 0.6rem;
+
+  .diet-section-title p,
+  .diet-panel-header p {
+    margin: 0.2rem 0 0;
+    color: var(--diet-muted);
   }
-  .ai-card {
-    border: 1px dashed #d1dae6;
-    border-radius: 12px;
-    background: #f7fafc;
-    padding: 1rem;
+
+  .diet-metric-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .diet-metric-card,
+  .diet-target-card {
+    background: #f3f6fb;
+    border-radius: 20px;
+    padding: 1.2rem 1rem;
     text-align: center;
   }
+
+  .diet-metric-card small,
+  .diet-target-card small {
+    display: block;
+    color: var(--diet-muted);
+    font-size: 0.92rem;
+    margin-bottom: 0.35rem;
+    font-weight: 700;
+  }
+
+  .diet-metric-card strong,
+  .diet-target-card strong {
+    display: block;
+    color: #0f2541;
+    font-size: 1.1rem;
+    font-weight: 900;
+  }
+
+  .diet-target-card {
+    background: var(--diet-green-soft);
+    border: 1px solid #28d29b;
+  }
+
+  .diet-target-card strong {
+    color: #00795d;
+    font-size: 1.3rem;
+  }
+
+  .diet-progress-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 1.8rem;
+    align-items: end;
+    margin-top: 1.6rem;
+  }
+
+  .diet-progress-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    font-weight: 900;
+    color: #0f2541;
+    margin-bottom: 0.8rem;
+  }
+
+  .diet-progress-title .diet-progress-text {
+    color: #00b978;
+    font-weight: 900;
+  }
+
+  .diet-progress-track {
+    width: 100%;
+    height: 24px;
+    background: #eef3f8;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .diet-progress-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #0f4a5a, #12c48b);
+    border-radius: 999px;
+  }
+
+  .diet-quick-add {
+    border-left: 1px solid #e6edf5;
+    padding-left: 1.6rem;
+  }
+
+  .diet-quick-add label {
+    display: block;
+    margin-bottom: 0.7rem;
+    color: #476078;
+    font-weight: 800;
+  }
+
+  .diet-input {
+    width: 100%;
+    border: 1px solid #cdd9e7;
+    border-radius: 16px;
+    background: #fff;
+    padding: 0.95rem 1rem;
+    color: #163149;
+  }
+
+  .diet-inline-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 120px;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .diet-suggestion {
+    margin-top: 1.5rem;
+    border-radius: 20px;
+    background: #eefaf2;
+    color: #00795d;
+    padding: 1rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 1rem;
+  }
+
+  .diet-suggestion strong {
+    color: #0f2541;
+  }
+
+  .diet-panel-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.4rem;
+  }
+
+  .diet-panel {
+    padding: 1.8rem;
+  }
+
+  .diet-panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .diet-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #edf3f8;
+    color: #00b978;
+    padding: 0.45rem 0.9rem;
+    font-weight: 800;
+    font-size: 0.9rem;
+  }
+
+  .diet-macro-bar {
+    border-radius: 18px;
+    background: #f3f6fb;
+    padding: 0.9rem 1rem;
+    color: #0f2541;
+    font-weight: 800;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .diet-achievement-list,
+  .diet-journal-list,
+  .diet-regime-list,
+  .diet-catalog-list {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .diet-achievement-item,
+  .diet-journal-item,
+  .diet-regime-item,
+  .diet-catalog-item {
+    background: #f7faff;
+    border: 1px solid #e8eef7;
+    border-radius: 18px;
+    padding: 1rem 1.1rem;
+  }
+
+  .diet-achievement-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .diet-achievement-item strong,
+  .diet-journal-item strong,
+  .diet-regime-item strong,
+  .diet-catalog-item strong {
+    color: #0f2541;
+    font-weight: 900;
+  }
+
+  .diet-achievement-item p,
+  .diet-journal-item p,
+  .diet-regime-item p,
+  .diet-catalog-item p {
+    margin: 0.25rem 0 0;
+    color: var(--diet-muted);
+  }
+
+  .diet-lock {
+    color: #a5b3c3;
+  }
+
+  .diet-unlock {
+    color: #0fb67d;
+  }
+
+  .diet-journal-top,
+  .diet-regime-top,
+  .diet-catalog-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .diet-journal-meta,
+  .diet-regime-meta,
+  .diet-catalog-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 0.6rem;
+  }
+
+  .diet-mini-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 999px;
+    padding: 0.3rem 0.7rem;
+    background: #fff;
+    border: 1px solid #dbe6f2;
+    color: #3e566e;
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+
+  .diet-actions-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    align-items: center;
+  }
+
+  .diet-small-btn {
+    border-radius: 12px;
+    border: 1px solid #d6e1ed;
+    background: #fff;
+    color: #0f2541;
+    padding: 0.5rem 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .diet-small-btn-danger {
+    border-color: #f0c2c2;
+    color: #bc3e3e;
+    background: #fff5f5;
+  }
+
+  .diet-hidden-edit {
+    display: none;
+    margin-top: 0.9rem;
+    padding-top: 0.9rem;
+    border-top: 1px dashed #d8e3ef;
+  }
+
+  .diet-manage-card {
+    display: none;
+  }
+
+  .diet-form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.9rem;
+  }
+
+  .diet-form-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.9rem;
+  }
+
+  .diet-form-group {
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .diet-form-group label {
+    color: #445d74;
+    font-weight: 800;
+    font-size: 0.92rem;
+  }
+
+  .diet-textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  .diet-empty {
+    border-radius: 18px;
+    background: #f5f8fc;
+    color: var(--diet-muted);
+    padding: 1.2rem;
+    font-weight: 700;
+  }
+
   .food-modal {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.55);
     display: none;
     align-items: center;
     justify-content: center;
+    background: rgba(9, 25, 40, 0.58);
     z-index: 1300;
-    overflow-y: auto;
     padding: 1rem;
+    overflow-y: auto;
   }
+
   .food-modal.show {
     display: flex;
-    animation: fadeIn 0.25s ease;
   }
+
   .food-modal-card {
+    width: min(960px, 95vw);
     background: #fff;
-    border-radius: 18px;
-    padding: 1.6rem;
-    width: min(520px, 92vw);
-    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
+    border-radius: 28px;
+    box-shadow: 0 24px 60px rgba(15, 37, 65, 0.24);
+    padding: 1.5rem;
     max-height: calc(100vh - 2rem);
     overflow-y: auto;
   }
-  .food-modal-card h4 {
-    font-weight: 800;
-    margin-bottom: 0.4rem;
-    color: var(--dp-accent);
+
+  .food-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
   }
+
+  .food-modal-head h4 {
+    margin: 0;
+    color: #0f2541;
+    font-size: 1.35rem;
+    font-weight: 900;
+  }
+
+  .food-modal-head p {
+    margin: 0.35rem 0 0;
+    color: var(--diet-muted);
+  }
+
+  .food-close {
+    border: none;
+    background: #f1f5f9;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    cursor: pointer;
+    color: #5f748b;
+    font-weight: 900;
+  }
+
   .food-modal-actions {
     display: flex;
-    gap: 0.75rem;
     justify-content: flex-end;
+    gap: 0.75rem;
     margin-top: 1rem;
   }
-  .food-modal-actions .btn {
-    border-radius: 999px;
-    padding: 0.45rem 1.1rem;
-    font-weight: 700;
-  }
-  .chat-launch-btn {
-    position: fixed;
-    right: 24px;
-    bottom: 24px;
-    z-index: 1200;
-    background: #0b3a3d;
-    color: #fff;
-    border-radius: 999px;
-    padding: 0.65rem 1.1rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.35);
-    border: none;
-    font-weight: 700;
-  }
-  .chat-launch-btn i { font-size: 1rem; }
-  .food-scan-launch-btn {
-    position: fixed;
-    right: 24px;
-    bottom: 78px;
-    z-index: 1200;
-    background: #0c3f44;
-    color: #fff;
-    border-radius: 999px;
-    padding: 0.6rem 1.05rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.28);
-    border: none;
-    font-weight: 700;
-  }
-  .food-scan-launch-btn i { font-size: 1rem; }
-  .ai-chat-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.55);
+
+  .diet-error-summary,
+  .diet-status-box {
     display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 1200;
-  }
-  .ai-chat-modal.show { display: flex; }
-  .ai-chat-card {
-    background: #fff;
-    border-radius: 18px;
-    padding: 1.25rem 1.4rem;
-    width: min(520px, 100vw - 2rem);
-    max-height: 80vh;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
-  }
-  .ai-chat-header {
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom:0.75rem;
-  }
-  .ai-chat-header-title {
-    display:flex;
-    align-items:center;
-    gap:0.5rem;
-    font-weight:800;
-    color:#0b3a3d;
-  }
-  .ai-chat-avatar {
-    width:32px;
-    height:32px;
-    border-radius:999px;
-    background:#e0f2fe;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    color:#0369a1;
-  }
-  .ai-chat-body {
-    flex:1;
-    border-radius: 12px;
-    border:1px solid #e2e8f0;
-    padding:0.75rem;
-    overflow-y:auto;
-    background:#f8fafc;
-    margin-bottom:0.75rem;
-  }
-  .ai-chat-msg {
-    max-width:85%;
-    padding:0.45rem 0.7rem;
-    border-radius:12px;
-    margin-bottom:0.4rem;
-    font-size:0.9rem;
-    line-height:1.3;
-  }
-  .ai-chat-msg-bot {
-    background:#e0f2fe;
-    color:#0b3a3d;
-    align-self:flex-start;
-  }
-  .ai-chat-msg-user {
-    background:#0b3a3d;
-    color:#fff;
-    align-self:flex-end;
-  }
-  .ai-chat-suggestions {
-    display:flex;
-    flex-wrap:wrap;
-    gap:0.35rem;
-    margin-bottom:0.6rem;
-  }
-  .ai-chat-chip {
-    border-radius:999px;
-    border:1px solid #e2e8f0;
-    padding:0.25rem 0.6rem;
-    font-size:0.8rem;
-    background:#fff;
-    cursor:pointer;
-  }
-  .ai-chat-input-row {
-    display:flex;
-    gap:0.4rem;
-    align-items:center;
-  }
-  .ai-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    background: #eef2ff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #4338ca;
-    margin-bottom: 0.5rem;
-  }
-  .btn-full { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; }
-  .diet-intro {
-    background: linear-gradient(135deg, #f4fbf9 0%, #eef4ff 100%);
-    border: 1px solid #dbe7f4;
+    padding: 0.75rem 0.9rem;
     border-radius: 14px;
-    padding: 0.9rem 1rem;
-    margin-top: 0.9rem;
-    display: grid;
-    gap: 0.55rem;
-  }
-  .diet-intro-title {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    font-weight: 800;
-    color: var(--dp-accent);
-  }
-  .diet-intro-text {
-    margin: 0;
-    color: #334155;
-    font-size: 0.9rem;
-  }
-  .quick-steps {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-  }
-  .step-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.25rem 0.55rem;
-    border-radius: 999px;
-    background: #ffffff;
-    border: 1px solid #d7e2ef;
-    color: #0f172a;
-    font-size: 0.78rem;
-    font-weight: 600;
-  }
-  .section-help {
-    margin-bottom: 0.7rem;
-    padding: 0.55rem 0.7rem;
-    border-radius: 10px;
-    border: 1px dashed #d5e2ee;
-    background: #f8fbff;
-    color: #475569;
-    font-size: 0.86rem;
-    line-height: 1.35;
-  }
-  .help-text {
-    color: #64748b;
-    margin-bottom: 0.7rem;
-    font-size: 0.88rem;
-  }
-  .table-guidance {
-    margin-bottom: 0.65rem;
-    color: #64748b;
-    font-size: 0.83rem;
-  }
-  .table-sm thead th {
-    background: #f8fafc;
-    color: #334155;
-    border-top: 0;
-    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 1rem;
+    font-size: 0.92rem;
     font-weight: 700;
   }
-  .table-sm tbody tr:hover {
-    background: #fbfdff;
+
+  .diet-error-summary {
+    background: #fff2f2;
+    color: #b54141;
+    border: 1px solid #efc0c0;
   }
-  .modal-help {
-    margin: 0.2rem 0 0.75rem;
-    padding: 0.55rem 0.7rem;
-    border-left: 4px solid var(--dp-accent);
-    background: #f8fbfd;
-    border-radius: 8px;
-    color: #475569;
-    font-size: 0.86rem;
+
+  .diet-status-box {
+    background: #eefaf2;
+    color: #0a7d5c;
+    border: 1px solid #b6ecd3;
   }
-  .regime-error-summary {
-    display: none;
-    margin-bottom: 0.75rem;
-    border: 1px solid #fecaca;
-    background: #fff1f2;
-    color: #991b1b;
-    border-radius: 10px;
-    padding: 0.55rem 0.7rem;
-    font-size: 0.86rem;
+
+  .diet-field-error {
+    color: #c34747;
+    font-size: 0.8rem;
+    font-weight: 700;
   }
-  .regime-field-error {
-    color: #b91c1c;
-    font-size: 0.78rem;
-    margin-top: 0.3rem;
+
+  .diet-field-valid {
+    color: #089164;
+    font-size: 0.8rem;
+    font-weight: 700;
   }
-  .regime-field-valid {
-    color: #15803d;
-    font-size: 0.78rem;
-    margin-top: 0.3rem;
-  }
+
+  .diet-input.is-invalid,
   .form-control.is-invalid {
-    border-color: #ef4444;
-    box-shadow: 0 0 0 0.08rem rgba(239, 68, 68, 0.12);
+    border-color: #e06a6a;
+    box-shadow: 0 0 0 0.12rem rgba(224, 106, 106, 0.12);
   }
+
+  .diet-input.is-valid,
   .form-control.is-valid {
-    border-color: #22c55e;
-    box-shadow: 0 0 0 0.08rem rgba(34, 197, 94, 0.12);
+    border-color: #18bf87;
+    box-shadow: 0 0 0 0.12rem rgba(24, 191, 135, 0.12);
   }
-  @media (max-width: 991px) {
-    .diet-grid { grid-template-columns: 1fr; }
-    .quick-steps { flex-direction: column; }
-    .food-scan-launch-btn { bottom: 76px; right: 14px; padding: 0.55rem 0.9rem; }
-    .chat-launch-btn { right: 14px; bottom: 16px; }
+
+  @media (max-width: 1100px) {
+    .diet-hero,
+    .diet-progress-row,
+    .diet-panel-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .diet-quick-add {
+      border-left: none;
+      padding-left: 0;
+    }
+
+    .diet-metric-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .diet-form-grid,
+    .diet-form-grid-4 {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .diet-wrap {
+      width: calc(100% - 18px);
+    }
+
+    .diet-hero,
+    .diet-dashboard,
+    .diet-panel,
+    .diet-manage-card,
+    .food-modal-card {
+      padding: 1.1rem;
+    }
+
+    .diet-hero-stats,
+    .diet-metric-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .diet-inline-form {
+      grid-template-columns: 1fr;
+    }
+
   }
 </style>
 {% endblock %}
@@ -466,956 +701,730 @@
 {% block body %}
 <section class="diet-page">
   <div class="diet-wrap">
-    <h1 class="diet-hero">Diet &amp; Eating Planner</h1>
     {% for label, messages in app.flashes %}
       {% for message in messages %}
-        <div
-          class="alert {% if label == 'success' %}alert-success{% elseif label == 'error' %}alert-danger{% elseif label == 'warning' %}alert-warning{% else %}alert-info{% endif %}"
-          style="margin-top:0.85rem;border-radius:10px;"
-        >
+        <div class="alert {% if label == 'success' %}alert-success{% elseif label == 'error' %}alert-danger{% elseif label == 'warning' %}alert-warning{% else %}alert-info{% endif %}" style="border-radius:18px;margin-bottom:1rem;">
           {{ message }}
         </div>
       {% endfor %}
     {% endfor %}
-    {% if app.user %}
-      <p class="diet-sub">Welcome {{ app.user.firstName }} {{ app.user.lastName }}. This page is personalized for you.</p>
-    {% endif %}
-    <div class="diet-intro">
-      <div class="diet-intro-title"><i class="fa fa-map-signs"></i> Comment utiliser cette page</div>
-      <p class="diet-intro-text">Cette interface vous guide pas a pas pour definir votre regime, suivre vos repas du jour et verifier votre progression nutritionnelle.</p>
-      <div class="quick-steps">
-        <span class="step-chip"><i class="fa fa-plus-circle"></i> 1. Ajoutez ou selectionnez un regime</span>
-        <span class="step-chip"><i class="fa fa-cutlery"></i> 2. Ajoutez vos repas du jour</span>
-        <span class="step-chip"><i class="fa fa-line-chart"></i> 3. Suivez vos calories et macros</span>
-        <span class="step-chip"><i class="fa fa-check-square-o"></i> 4. Utilisez checklist et liste de courses</span>
-      </div>
-    </div>
 
-    <div class="diet-grid">
-      <div class="diet-col">
-        <div class="diet-card">
-          <div class="card-header">
-            <span class="icon-title"><span class="icon-pill"><i class="fa fa-heartbeat"></i></span> My Diet &amp; Daily Tracking</span>
-          </div>
-          <div class="card-body">
-            <div class="sub-title">My Regime <span class="muted" style="font-weight:500;">(Gérez vos régimes alimentaires)</span></div>
-            <p class="help-text">Consultez ici votre profil nutritionnel actif. Le système calcule automatiquement IMC, type de santé et calories cibles selon vos données.</p>
-            <div class="regime-grid">
-              <div class="regime-stats">
-                {% if regime %}
-                  <div class="regime-row"><i class="fa fa-arrows-v"></i><strong>Taille:</strong> {{ regime.taille ? regime.taille ~ ' cm' : '—' }}</div>
-                  <div class="regime-row"><i class="fa fa-balance-scale"></i><strong>Poids:</strong> {{ regime.poids ? regime.poids ~ ' kg' : '—' }}</div>
-                  <div class="regime-row"><i class="fa fa-birthday-cake"></i><strong>Âge:</strong> {{ regime.age ?? '—' }}</div>
-                  <div class="regime-row"><i class="fa fa-heartbeat"></i><strong>IMC:</strong> {{ regime.bmi ?? '—' }}</div>
-                  <div class="regime-row"><i class="fa fa-leaf"></i><strong>Type santé:</strong> {{ regime.typeSante ?? '—' }}</div>
-                  <div class="regime-row"><i class="fa fa-fire"></i><strong>Calories cibles:</strong> {{ regime.caloriesCibles ?? '—' }} kcal/j</div>
-                  <div class="regime-row">
-                    <i class="fa fa-cutlery"></i>
-                    <strong>Repas adéquats:</strong>
-                    {% if regime.repasAdequats %}
-                      <span class="muted">{{ regime.repasAdequats }}</span>
-                    {% else %}
-                      <span class="muted">—</span>
-                    {% endif %}
-                  </div>
-                  {% if regime and regime.caloriesCibles %}
-                    {% set used = totals.calories %}
-                    {% set target = regime.caloriesCibles %}
-                    {% set pct = target > 0 ? (used / target * 100) : 0 %}
-                    <div style="margin-top:0.75rem;">
-                      <div class="form-label-icon"><i class="fa fa-fire"></i> Suivi des calories du jour</div>
-                      <div class="progress-bar" id="regime-calorie-gauge" data-current="{{ used }}" data-target="{{ target }}">
-                        <span id="regime-calorie-fill" style="width:{{ pct }}%"></span>
-                      </div>
-                      <small class="text-muted" id="regime-calorie-text">{{ used }} / {{ target }} kcal</small>
-                      <button type="button" class="btn-soft btn-sm mt-1" id="regime-add-meal-btn">+ Ajouter un repas</button>
-                    </div>
-                  {% endif %}
-                {% else %}
-                  <div class="muted">Aucun régime actif. Créez-en un ci-dessous.</div>
-                {% endif %}
-              </div>
-              <div class="mini-image" style="padding:0; overflow:hidden;">
-                <img src="{{ asset('images/nutrition_plan.jpeg') }}" alt="Nutrition plan" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">
-              </div>
-            </div>
-
-            {# Formulaire de création de régime déplacé dans le dialogue modal en bas de page #}
-            {% if regimes is not empty %}
-            {% endif %}
-          </div>
-        </div>
-
-        <div class="diet-card">
-          <div class="card-header">
-            <span class="icon-title"><span class="icon-pill"><i class="fa fa-line-chart"></i></span> Today's Summary</span>
-          </div>
-          <div class="card-body">
-            <div class="section-help">
-              Cette section montre votre progression du jour. Les pourcentages indiquent votre avancement par rapport à vos objectifs.
-            </div>
-            <div class="summary-grid">
-              <div class="summary-item"><i class="fa fa-fire"></i> Calories</div>
-              <div class="summary-item"><i class="fa fa-bolt"></i> Proteins</div>
-              <div class="summary-item"><i class="fa fa-leaf"></i> Carbs</div>
-              <div class="summary-item"><i class="fa fa-tint"></i> Fats</div>
-            </div>
-            <div class="summary-grid mt-2">
-              {% set calPct = regime and regime.caloriesCibles ? (totals.calories / regime.caloriesCibles * 100) : 0 %}
-              {% set proPct = regime and regime.caloriesCibles ? (totals.proteines / 50 * 100) : 0 %}
-              {% set carbPct = regime and regime.caloriesCibles ? (totals.glucides / 200 * 100) : 0 %}
-              {% set fatPct = regime and regime.caloriesCibles ? (totals.lipides / 65 * 100) : 0 %}
-              <div>
-                <div class="progress-bar"><span style="width:{{ calPct }}%"></span></div>
-                <small class="text-muted">{{ calPct|round(0, 'floor') }}%</small>
-              </div>
-              <div>
-                <div class="progress-bar"><span style="width:{{ proPct }}%"></span></div>
-                <small class="text-muted">{{ proPct|round(0, 'floor') }}%</small>
-              </div>
-              <div>
-                <div class="progress-bar"><span style="width:{{ carbPct }}%"></span></div>
-                <small class="text-muted">{{ carbPct|round(0, 'floor') }}%</small>
-              </div>
-              <div>
-                <div class="progress-bar"><span style="width:{{ fatPct }}%"></span></div>
-                <small class="text-muted">{{ fatPct|round(0, 'floor') }}%</small>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="diet-card">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <span class="icon-title"><span class="icon-pill"><i class="fa fa-list-alt"></i></span> Today's Meals List</span>
-            <div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;">
-              <button
-                type="button"
-                class="btn-soft btn-sm"
-                id="dp-open-checklist-dialog"
-              >
-                Checklist du jour
-              </button>
-              <button
-                type="button"
-                class="btn-soft btn-sm"
-                id="dp-open-shopping-dialog"
-                data-url="{{ path('diet_shopping_list') }}"
-              >
-                Liste de courses intelligente
-              </button>
-              <button
-                type="button"
-                class="btn-soft btn-sm"
-                id="dp-open-scan-dialog"
-                data-url="{{ path('diet_food_recognition') }}"
-                data-token="{{ csrf_token('food_recognition') }}"
-              >
-                Scanner photo IA
-              </button>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="section-help">
-              Ajoutez vos repas depuis "Ajouter un repas", puis utilisez les actions pour modifier ou supprimer une ligne. Le total nutritionnel est mis à jour automatiquement.
-            </div>
-            {% if repas is not empty %}
-              <div class="table-guidance">Lecture rapide: <strong>P</strong> = protéines, <strong>C</strong> = glucides, <strong>F</strong> = lipides.</div>
-              <div class="table-responsive">
-                <table class="table table-sm">
-                  <thead>
-                    <tr>
-                      <th>Type</th>
-                      <th>Meal</th>
-                      <th>Calories</th>
-                      <th>Macros</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for r in repas %}
-                      <tr>
-                        <td>{{ r.typeRepas }}</td>
-                        <td>{{ r.nomRepas }}</td>
-                        <td>{{ r.calories ?: '—' }}</td>
-                        <td>P {{ r.proteines ?: 0 }} / C {{ r.glucides ?: 0 }} / F {{ r.lipides ?: 0 }}</td>
-                        <td class="actions-btns">
-                          <button class="btn btn-outline-primary btn-sm" type="button" onclick="document.getElementById('meal-edit-{{ r.id }}').style.display='table-row';">
-                            <i class="fa fa-pencil"></i>
-                          </button>
-                          <form method="post" action="{{ path('diet_meal_delete', {'id': r.id}) }}" style="display:inline;" onsubmit="return confirm('Delete this meal?');">
-                            <input type="hidden" name="_token" value="{{ csrf_token('meal_delete_' ~ r.id) }}">
-                            <button class="btn btn-outline-danger btn-sm" type="submit">
-                              <i class="fa fa-trash"></i>
-                            </button>
-                          </form>
-                        </td>
-                      </tr>
-                      <tr id="meal-edit-{{ r.id }}" style="display:none;">
-                        <td colspan="5">
-                          <form method="post" action="{{ path('diet_meal_update', {'id': r.id}) }}">
-                            <input type="hidden" name="_token" value="{{ csrf_token('meal_update_' ~ r.id) }}">
-                            <div class="form-row">
-                              <div class="form-group col-md-3">
-                                <input class="form-control" name="type_repas" value="{{ r.typeRepas }}">
-                              </div>
-                              <div class="form-group col-md-3">
-                                <input class="form-control" name="nom_repas" value="{{ r.nomRepas }}">
-                              </div>
-                              <div class="form-group col-md-2">
-                                <input class="form-control" name="calories" value="{{ r.calories }}">
-                              </div>
-                              <div class="form-group col-md-2">
-                                <input class="form-control" name="proteines" value="{{ r.proteines }}">
-                              </div>
-                              <div class="form-group col-md-2">
-                                <input class="form-control" name="glucides" value="{{ r.glucides }}">
-                              </div>
-                              <div class="form-group col-md-2">
-                                <input class="form-control" name="lipides" value="{{ r.lipides }}">
-                              </div>
-                            </div>
-                            <button class="btn-fit">Save</button>
-                          </form>
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            {% else %}
-              <p class="muted">No meals logged yet.</p>
-            {% endif %}
-          </div>
+    <div class="diet-hero">
+      <div class="diet-hero-media">
+        <img src="{{ asset('images/diet-hero-reference.png') }}" alt="Diet and eating planner">
+        <div class="diet-hero-overlay">
+          <span class="diet-hero-badge">HEALTH &amp; NUTRITION</span>
+          <div style="font-size: 1.95rem; font-weight: 900; line-height: 1.15;">Prenez le contr&ocirc;le de votre alimentation.</div>
         </div>
       </div>
-
-      <div class="diet-col">
-        {# Badges du jour pour le régime actif #}
-        <div class="diet-card" style="margin-bottom:1rem;">
-          <div class="card-header">
-            <span class="icon-title">
-              <span class="icon-pill"><i class="fa fa-trophy"></i></span> Badges du jour
-            </span>
-          </div>
-          <div class="card-body">
-            {% if regime and todayBadges %}
-              <div class="summary-grid" style="margin-bottom:0.5rem;">
-                <div class="summary-item"><i class="fa fa-fire"></i>{{ todayBadges.totals.calories }} kcal</div>
-                <div class="summary-item"><i class="fa fa-bolt"></i>P {{ todayBadges.totals.proteines }} g</div>
-                <div class="summary-item"><i class="fa fa-leaf"></i>C {{ todayBadges.totals.glucides }} g</div>
-                <div class="summary-item"><i class="fa fa-tint"></i>F {{ todayBadges.totals.lipides }} g</div>
-              </div>
-              <div class="row" style="row-gap:0.5rem;">
-                {% set badges = {
-                  'perfect_week': {
-                    'label': 'Semaine parfaite',
-                    'description': 'Calories dans la cible aujourd\'hui.',
-                    'unlocked': todayBadges.calories_ok
-                  },
-                  'hydration_7_days': {
-                    'label': 'Hydratation OK',
-                    'description': 'Au moins 3 repas / collations enregistrés aujourd\'hui.',
-                    'unlocked': todayBadges.hydration_ok
-                  },
-                  'calories_10_days': {
-                    'label': 'Calories respectées',
-                    'description': 'Journée avec calories proches de l\'objectif.',
-                    'unlocked': todayBadges.calories_ok
-                  }
-                } %}
-                {% for key, badge in badges %}
-                  <div class="col-12">
-                    <div class="diet-card" style="border-radius:10px;padding:0.4rem 0.7rem;border-style:dashed;{% if badge.unlocked %}background:#ecfdf5;border-color:#22c55e;{% else %}background:#f9fafb;border-color:#e5e7eb;opacity:0.85;{% endif %}">
-                      <div style="display:flex;align-items:center;gap:0.5rem;">
-                        {% if badge.unlocked %}
-                          <i class="fa fa-check-circle" style="color:#16a34a;"></i>
-                        {% else %}
-                          <i class="fa fa-lock" style="color:#9ca3af;"></i>
-                        {% endif %}
-                        <div>
-                          <div class="label-mini" style="font-weight:700;color:#111827;">{{ badge.label }}</div>
-                          <div class="label-mini">{{ badge.description }}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                {% endfor %}
-              </div>
-            {% else %}
-              <p class="muted">Sélectionnez ou créez un régime et ajoutez des repas pour débloquer vos badges du jour.</p>
-            {% endif %}
-          </div>
+      <div class="diet-hero-copy">
+        <div class="diet-kicker">Fitopia Performance Platform</div>
+        <h1 class="diet-title">Diet &amp; Eating Planner</h1>
+        <p class="diet-lead">
+          Cette page est personnalis&eacute;e pour vous. Planifiez vos repas, suivez vos macros et atteignez vos objectifs avec pr&eacute;cision.
+        </p>
+        <div class="diet-hero-actions">
+          <button type="button" class="diet-btn" id="dp-open-create-regime-hero">Cr&eacute;er mon r&eacute;gime</button>
+          <button type="button" class="diet-btn-outline" id="dp-open-daily-plan-hero">Planning 7j</button>
         </div>
-
-        {# Liste de tous les régimes sous forme de cards #}
-        <div class="diet-card">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <span class="icon-title">
-              <span class="icon-pill"><i class="fa fa-list-alt"></i></span> Mes régimes
-            </span>
-            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
-              <div class="explore-toolbar" style="margin:0;gap:0.4rem;">
-                <select id="regime-sort" title="Tri par calories" style="min-width:140px;">
-                  <option value="calories-desc">Calories ↓</option>
-                  <option value="calories-asc">Calories ↑</option>
-                </select>
-                <select id="regime-filter" title="Filtrer par type" style="min-width:140px;">
-                  <option value="">Tous les types</option>
-                  <option value="sous_poids">Sous-poids</option>
-                  <option value="normal">Normal</option>
-                  <option value="surpoids">Surpoids</option>
-                  <option value="obesite">Obésité</option>
-                </select>
-                <input type="text" id="regime-search" placeholder="Rechercher régime, type, calories..." style="min-width:220px;">
-              </div>
-              <button type="button" class="btn-soft btn-sm" id="dp-open-daily-plan-dialog">
-                Daily plan de repas
-              </button>
-              <button type="button" class="btn-soft btn-sm" id="dp-open-create-regime-dialog">
-                + Ajouter un régime
-              </button>
-            </div>
+        <div class="diet-hero-stats">
+          <div class="diet-hero-stat">
+            <strong>98%</strong>
+            <span>Pr&eacute;cision calories</span>
           </div>
-          <div class="card-body">
-            <div class="section-help">
-              Gérez tous vos régimes ici: tri, filtre, recherche, édition et suppression. Utilisez "Voir" pour activer un régime.
-            </div>
-            {% if regimes is not empty %}
-              <div class="row" id="regime-list" style="row-gap: 0.75rem;">
-                {% for r in regimes %}
-                  <div class="col-12 regime-item" data-calories="{{ r.caloriesCibles ?? 0 }}" data-type="{{ r.typeSante ?? '' }}" data-search="{{ ('regime ' ~ r.id ~ ' ' ~ (r.typeSante ?? '') ~ ' ' ~ (r.caloriesCibles ?? 0) ~ ' kcal')|lower }}">
-                    <div class="diet-card">
-                      <div class="card-body" style="display:flex;align-items:center;justify-content:space-between;gap:0.75rem;">
-                        <div>
-                          <div class="icon-title" style="margin-bottom:0.15rem;">
-                            <span class="icon-pill"><i class="fa fa-heartbeat"></i></span>
-                            Régime #{{ r.id }}
-                          </div>
-                          <div class="muted" style="font-size:0.85rem;">
-                            {{ r.typeSante ?? '—' }} · {{ r.caloriesCibles ?? '—' }} kcal/j
-                          </div>
-                        </div>
-                        <div style="display:flex;gap:0.35rem;justify-content:flex-end;align-items:center;flex-wrap:nowrap;">
-                          <a href="{{ path('diet_planner', {'regime_id': r.id}) }}" class="btn-soft btn-sm" style="text-decoration:none;white-space:nowrap;">Voir</a>
-                          <button
-                            type="button"
-                            class="btn-soft btn-sm"
-                            data-regime-edit-open="{{ r.id }}"
-                            style="white-space:nowrap;"
-                          >
-                            Modifier
-                          </button>
-                          <form method="post" action="{{ path('diet_regime_delete', {'id': r.id}) }}" style="display:inline-block;margin:0;" onsubmit="return confirm('Supprimer ce régime ?');">
-                            <input type="hidden" name="_token" value="{{ csrf_token('regime_delete_' ~ r.id) }}">
-                            <button class="btn-danger btn-sm" type="submit" style="white-space:nowrap;">Supprimer</button>
-                          </form>
-                        </div>
-                      </div>
-                    </div>
-
-                    {# Dialogue modal de modification pour ce régime #}
-                    <div class="food-modal" id="dp-edit-regime-modal-{{ r.id }}">
-                      <div class="food-modal-card">
-                        <div style="display:flex;align-items:center;justify-content:space-between;">
-                          <h4>Modifier le régime #{{ r.id }}</h4>
-                          <button
-                            type="button"
-                            class="btn btn-link text-muted"
-                            data-regime-edit-close="{{ r.id }}"
-                            style="text-decoration:none;"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                        <p class="text-muted">Ajustez vos informations pour mettre à jour ce régime.</p>
-                        <div class="mt-2">
-                          {{ form_start(regimeEditForms[r.id], {'attr': {'class': 'js-regime-form', 'data-user-gender': app.user and app.user.gender ? app.user.gender : 'male', 'novalidate': 'novalidate'}}) }}
-                            <div class="regime-error-summary" data-regime-error-summary></div>
-                            <div class="form-row">
-                              <div class="form-group col-md-4">
-                                <label class="form-label-icon">Taille (cm)</label>
-                                {{ form_widget(regimeEditForms[r.id].taille, {'attr': {'class': 'form-control js-regime-taille', 'placeholder': 'Taille', 'required': 'required', 'min': '100', 'max': '250', 'step': '0.1', 'inputmode': 'decimal'}}) }}
-                              </div>
-                              <div class="form-group col-md-4">
-                                <label class="form-label-icon">Poids (kg)</label>
-                                {{ form_widget(regimeEditForms[r.id].poids, {'attr': {'class': 'form-control js-regime-poids', 'placeholder': 'Poids', 'required': 'required', 'min': '25', 'max': '300', 'step': '0.1', 'inputmode': 'decimal'}}) }}
-                              </div>
-                              <div class="form-group col-md-4">
-                                <label class="form-label-icon">Âge</label>
-                                {{ form_widget(regimeEditForms[r.id].age, {'attr': {'class': 'form-control js-regime-age', 'placeholder': 'Âge', 'required': 'required', 'min': '10', 'max': '100', 'step': '1', 'inputmode': 'numeric'}}) }}
-                              </div>
-                            </div>
-                            <div class="form-row">
-                              <div class="form-group col-md-4">
-                                <label class="form-label-icon">IMC (auto)</label>
-                                {{ form_widget(regimeEditForms[r.id].bmi, {'attr': {'class': 'form-control js-regime-bmi', 'placeholder': 'IMC', 'readonly': 'readonly'}}) }}
-                              </div>
-                              <div class="form-group col-md-4">
-                                <label class="form-label-icon">Type santé (auto)</label>
-                                {{ form_widget(regimeEditForms[r.id].typeSante, {'attr': {'class': 'form-control js-regime-type-sante', 'placeholder': 'Type santé'}}) }}
-                              </div>
-                              <div class="form-group col-md-4">
-                                <label class="form-label-icon">Calories cibles (auto)</label>
-                                {{ form_widget(regimeEditForms[r.id].caloriesCibles, {'attr': {'class': 'form-control js-regime-calories', 'placeholder': 'Calories'}}) }}
-                              </div>
-                            </div>
-                            <div class="form-group">
-                              <label class="form-label-icon">Repas adéquats (auto)</label>
-                              {{ form_widget(regimeEditForms[r.id].repasAdequats, {'attr': {'class': 'form-control js-regime-repas', 'placeholder': 'Repas adéquats'}}) }}
-                            </div>
-                            <div class="food-modal-actions">
-                              <button type="button" class="btn btn-outline-secondary" data-regime-edit-close="{{ r.id }}">Annuler</button>
-                              <button type="submit" class="btn btn-primary">Enregistrer</button>
-                            </div>
-                          {{ form_end(regimeEditForms[r.id]) }}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                {% endfor %}
-              </div>
-              <p class="muted" id="regime-empty-state" style="display:none;margin-top:0.4rem;">Aucun régime ne correspond à votre recherche.</p>
-            {% else %}
-              <p class="muted">Aucun régime enregistré pour le moment.</p>
-            {% endif %}
+          <div class="diet-hero-stat">
+            <strong>12 sem.</strong>
+            <span>Planification</span>
+          </div>
+          <div class="diet-hero-stat">
+            <strong>5000+</strong>
+            <span>repas analyses</span>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  </section>
 
-  <button type="button" class="food-scan-launch-btn" id="dp-open-add-meal-bottom">
-    <i class="fa fa-camera"></i>
-    Scanner un repas
-  </button>
+    <div class="diet-stack">
+      <div class="diet-card diet-dashboard">
+        <div class="diet-dashboard-top">
+          <div class="diet-section-title">
+            <span class="diet-icon-box"><i class="fa fa-heart"></i></span>
+            <div>
+              <h2>My Regime</h2>
+              <p>Consultez votre profil nutritionnel et suivez votre progression du jour.</p>
+            </div>
+          </div>
+          <div class="diet-dashboard-actions">
+            <button
+              type="button"
+              class="diet-btn"
+              id="dp-open-scan-dialog"
+              data-url="{{ path('diet_scan_analyze') }}"
+              data-token="{{ csrf_token('diet_scan_analyze') }}"
+            >
+              <i class="fa fa-camera"></i>
+              Scanner repas
+            </button>
+            <button type="button" class="diet-btn-soft" id="dp-open-add-meal-hero">+ Ajouter repas</button>
+            <button type="button" class="diet-btn-soft" id="dp-open-daily-plan-dialog">Planning 7j</button>
+            <button type="button" class="diet-btn-outline" id="dp-open-shopping-dialog" data-url="{{ path('diet_shopping_list') }}">Courses</button>
+            <a href="{{ path('diet_pdf_export') }}" class="diet-btn-outline">
+              <i class="fa fa-file-text"></i>
+              PDF
+            </a>
+          </div>
+        </div>
 
-  {# Bouton flottant pour ouvrir le chat IA #}
-  <button type="button" class="chat-launch-btn" id="ai-chat-open">
-    <i class="fa fa-comments"></i>
-    Chat r&eacute;gime IA
-  </button>
+        <div class="diet-metric-grid">
+          <div class="diet-metric-card">
+            <small><i class="fa fa-arrows-v"></i> Taille</small>
+            <strong>{{ regime and regime.taille ? regime.taille|number_format(1, '.', '') ~ ' cm' : '--' }}</strong>
+          </div>
+          <div class="diet-metric-card">
+            <small><i class="fa fa-balance-scale"></i> Poids</small>
+            <strong>{{ regime and regime.poids ? regime.poids|number_format(1, '.', '') ~ ' kg' : '--' }}</strong>
+          </div>
+          <div class="diet-metric-card">
+            <small><i class="fa fa-calendar"></i> Age</small>
+            <strong>{{ regime and regime.age ? regime.age ~ ' ans' : '--' }}</strong>
+          </div>
+          <div class="diet-metric-card">
+            <small><i class="fa fa-heartbeat"></i> IMC</small>
+            <strong>{{ regime and regime.bmi ? regime.bmi|number_format(0, '.', '') : '--' }}</strong>
+          </div>
+          <div class="diet-metric-card">
+            <small><i class="fa fa-leaf"></i> Sant&eacute;</small>
+            <strong>{{ regime and regime.typeSante ? regime.typeSante|replace({'_': ' '})|title : 'N/A' }}</strong>
+          </div>
+          <div class="diet-target-card">
+            <small><i class="fa fa-fire"></i> Calories Cibles</small>
+            <strong>{{ regime and regime.caloriesCibles ? regime.caloriesCibles ~ ' kcal/j' : '0 kcal/j' }}</strong>
+          </div>
+        </div>
 
-  {# Modal de chat IA conseiller nutrition #}
-  <div class="ai-chat-modal" id="ai-chat-modal" data-url="{{ path('diet_ai_chat') }}" data-token="{{ csrf_token('diet_ai_chat') }}">
-    <div class="ai-chat-card">
-      <div class="ai-chat-header">
-        <div class="ai-chat-header-title">
-          <span class="ai-chat-avatar"><i class="fa fa-heartbeat"></i></span>
+        <div class="diet-progress-row">
           <div>
-            <div>Conseiller nutrition IA</div>
-            <small class="muted">Choisis une suggestion ou &eacute;cris ta question, je te propose un plan.</small>
+            <div class="diet-progress-title">
+              <span><i class="fa fa-fire"></i> Calories du jour</span>
+              <span class="diet-progress-text">
+                {{ totals.calories }} / {{ regime and regime.caloriesCibles ? regime.caloriesCibles : 0 }} kcal
+                {% if regime and regime.caloriesCibles %}
+                  ({{ remainingCalories }} restantes)
+                {% endif %}
+              </span>
+            </div>
+            <div class="diet-progress-track">
+              <div class="diet-progress-fill" style="width: {{ calorieProgress }}%;"></div>
+            </div>
+          </div>
+          <div class="diet-quick-add">
+            <label for="dp-barcode-input">Ajout Rapide</label>
+            <form id="dp-barcode-form" class="diet-inline-form" data-url="{{ path('diet_barcode_lookup') }}">
+              <input class="diet-input" id="dp-barcode-input" type="text" placeholder="Saisir code-barres..." inputmode="numeric">
+              <button type="submit" class="diet-btn">Ajouter</button>
+            </form>
+            <div id="dp-barcode-status" style="margin-top:0.6rem;color:#5c7288;font-weight:700;"></div>
           </div>
         </div>
-        <button type="button" id="ai-chat-close" class="btn btn-link text-muted" style="text-decoration:none;">&#10005;</button>
-      </div>
-      <div class="ai-chat-body" id="ai-chat-body">
-        <div class="ai-chat-msg ai-chat-msg-bot">
-          Bonjour {{ app.user ? app.user.firstName : 'sportif(ve)' }} &#128075;<br>
-          Dis-moi ton objectif (perte de poids, prise de masse, &eacute;quilibre...) et je te sugg&egrave;re un r&eacute;gime adapt&eacute;
-          avec des exemples de repas sur la journ&eacute;e.
+
+        <div class="diet-suggestion">
+          <i class="fa fa-lightbulb-o"></i>
+          <div><strong>Suggestions:</strong> {{ suggestionLine }}</div>
         </div>
       </div>
-      <div class="ai-chat-suggestions" id="ai-chat-suggestions">
-        <span class="ai-chat-chip" data-msg="Je veux perdre du poids progressivement.">Perdre du poids progressivement</span>
-        <span class="ai-chat-chip" data-msg="Je veux prendre de la masse musculaire.">Prendre de la masse musculaire</span>
-        <span class="ai-chat-chip" data-msg="Je veux un r&eacute;gime &eacute;quilibr&eacute; pour rester en forme.">Rester en forme</span>
-        <span class="ai-chat-chip" data-msg="Je suis diab&eacute;tique, que me conseilles-tu ?">R&eacute;gime et diab&egrave;te</span>
-        <span class="ai-chat-chip" data-msg="Propose-moi des id&eacute;es de repas pour aujourd'hui.">Id&eacute;es de repas pour aujourd'hui</span>
+
+      <div class="diet-panel-grid">
+        <div class="diet-card diet-panel">
+          <div class="diet-panel-header">
+            <div class="diet-panel-title">
+              <h3><i class="fa fa-trophy"></i> Mes r&eacute;ussites</h3>
+            </div>
+          </div>
+          <div class="diet-macro-bar">
+            <span><i class="fa fa-fire"></i> {{ totals.calories }} kcal</span>
+            <span><i class="fa fa-bolt"></i> P {{ totals.proteines }} g</span>
+            <span><i class="fa fa-leaf"></i> C {{ totals.glucides }} g</span>
+            <span><i class="fa fa-tint"></i> F {{ totals.lipides }} g</span>
+          </div>
+          <div class="diet-achievement-list">
+            {% for achievement in achievements %}
+              <div class="diet-achievement-item">
+                <div>
+                  <strong>{{ achievement.label }}</strong>
+                  <p>{{ achievement.description }}</p>
+                </div>
+                <div class="diet-actions-row">
+                  {% if achievement.kind == 'hydration' %}
+                    <button
+                      type="button"
+                      class="diet-btn"
+                      id="dp-hydration-add"
+                      data-url="{{ path('diet_hydration_add') }}"
+                      data-token="{{ csrf_token('diet_hydration_add') }}"
+                      style="padding:0.7rem 1rem;"
+                    >
+                      +
+                    </button>
+                  {% endif %}
+                  <i class="fa {% if achievement.unlocked %}fa-check-circle diet-unlock{% else %}fa-lock diet-lock{% endif %}"></i>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="diet-card diet-panel">
+          <div class="diet-panel-header">
+            <div class="diet-panel-title">
+              <h3><i class="fa fa-cutlery"></i> Mon Journal Alimentaire</h3>
+              <p>{% if repas is empty %}Aucun repas aujourd'hui.{% else %}{{ repas|length }} repas enregistr&eacute;s aujourd'hui.{% endif %}</p>
+            </div>
+            <button type="button" class="diet-chip" id="dp-open-checklist-dialog">Checklist</button>
+          </div>
+          {% if repas is not empty %}
+            <div class="diet-journal-list">
+              {% for r in repas %}
+                <div class="diet-journal-item">
+                  <div class="diet-journal-top">
+                    <div>
+                      <strong>{{ r.nomRepas }}</strong>
+                      <p>{{ r.typeRepas }}{% if r.dateRepas %} · {{ r.dateRepas|date('H:i') }}{% endif %}</p>
+                    </div>
+                    <div class="diet-actions-row">
+                      <span class="diet-chip">{{ r.calories ?: 0 }} kcal</span>
+                      <button type="button" class="diet-small-btn" data-meal-edit-open="{{ r.id }}">Modifier</button>
+                      <form method="post" action="{{ path('diet_meal_delete', {'id': r.id}) }}" style="margin:0;" onsubmit="return confirm('Supprimer ce repas ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('meal_delete_' ~ r.id) }}">
+                        <button type="submit" class="diet-small-btn diet-small-btn-danger">Supprimer</button>
+                      </form>
+                    </div>
+                  </div>
+                  <div class="diet-journal-meta">
+                    <span class="diet-mini-pill">P {{ r.proteines ?: 0 }} g</span>
+                    <span class="diet-mini-pill">C {{ r.glucides ?: 0 }} g</span>
+                    <span class="diet-mini-pill">F {{ r.lipides ?: 0 }} g</span>
+                  </div>
+                  <div class="diet-hidden-edit" id="meal-edit-{{ r.id }}">
+                    <form method="post" action="{{ path('diet_meal_update', {'id': r.id}) }}">
+                      <input type="hidden" name="_token" value="{{ csrf_token('meal_update_' ~ r.id) }}">
+                      <div class="diet-form-grid">
+                        <div class="diet-form-group">
+                          <label>Type de repas</label>
+                          <input class="diet-input" name="type_repas" value="{{ r.typeRepas }}">
+                        </div>
+                        <div class="diet-form-group">
+                          <label>Nom du repas</label>
+                          <input class="diet-input" name="nom_repas" value="{{ r.nomRepas }}">
+                        </div>
+                        <div class="diet-form-group">
+                          <label>Calories</label>
+                          <input class="diet-input" type="number" name="calories" value="{{ r.calories }}">
+                        </div>
+                      </div>
+                      <div class="diet-form-grid-4" style="margin-top:0.9rem;">
+                        <div class="diet-form-group">
+                          <label>Proteines</label>
+                          <input class="diet-input" type="number" name="proteines" value="{{ r.proteines }}">
+                        </div>
+                        <div class="diet-form-group">
+                          <label>Glucides</label>
+                          <input class="diet-input" type="number" name="glucides" value="{{ r.glucides }}">
+                        </div>
+                        <div class="diet-form-group">
+                          <label>Lipides</label>
+                          <input class="diet-input" type="number" name="lipides" value="{{ r.lipides }}">
+                        </div>
+                        <div class="diet-form-group">
+                          <label>Commentaire</label>
+                          <input class="diet-input" name="commentaire" value="{{ r.commentaire }}">
+                        </div>
+                      </div>
+                      <div class="food-modal-actions">
+                        <button type="submit" class="diet-btn">Enregistrer</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="diet-empty">Aucun repas disponible.</div>
+          {% endif %}
+        </div>
       </div>
-      <div class="ai-chat-input-row">
-        <input type="text" id="ai-chat-input" class="form-control" placeholder="&Eacute;cris ta question ici..." />
-        <button type="button" class="btn-fit btn-sm" id="ai-chat-send">Envoyer</button>
+
+      <div class="diet-card diet-manage-card">
+        <div class="diet-panel-header">
+          <div class="diet-panel-title">
+            <h3>Mes Regimes</h3>
+            <p>Retrouvez ici vos profils nutritionnels, vos calories cibles et vos recommandations de repas dans un affichage proche du planner principal.</p>
+          </div>
+          <div class="diet-dashboard-actions">
+            <button type="button" class="diet-btn-soft" id="dp-open-add-meal-manage">+ Ajouter repas</button>
+            <button type="button" class="diet-btn-soft" id="dp-open-daily-plan-manage">Planning 7j</button>
+            <button type="button" class="diet-btn" id="dp-open-create-regime-dialog">+ Ajouter un regime</button>
+          </div>
+        </div>
+        {% if regimes is not empty %}
+          <div class="diet-regime-list">
+            {% for r in regimes %}
+              <div class="diet-regime-item">
+                <div class="diet-regime-top">
+                  <div>
+                    <strong>Regime #{{ r.id }}</strong>
+                    <p>{{ r.typeSante ? r.typeSante|replace({'_': ' '})|title : 'N/A' }} &middot; {{ r.caloriesCibles ?: 0 }} kcal/j</p>
+                    <div class="diet-regime-meta">
+                      <span class="diet-mini-pill">Taille {{ r.taille ? r.taille|number_format(1, '.', '') : '--' }} cm</span>
+                      <span class="diet-mini-pill">Poids {{ r.poids ? r.poids|number_format(1, '.', '') : '--' }} kg</span>
+                      <span class="diet-mini-pill">IMC {{ r.bmi ?: '--' }}</span>
+                    </div>
+                  </div>
+                  <div class="diet-actions-row">
+                    <a href="{{ path('diet_planner', {'regime_id': r.id}) }}" class="diet-small-btn">Voir</a>
+                    <button type="button" class="diet-small-btn" data-regime-edit-open="{{ r.id }}">Modifier</button>
+                    <form method="post" action="{{ path('diet_regime_delete', {'id': r.id}) }}" style="margin:0;" onsubmit="return confirm('Supprimer ce regime ?');">
+                      <input type="hidden" name="_token" value="{{ csrf_token('regime_delete_' ~ r.id) }}">
+                      <button type="submit" class="diet-small-btn diet-small-btn-danger">Supprimer</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="diet-empty">Aucun regime enregistre pour le moment.</div>
+        {% endif %}
       </div>
     </div>
   </div>
+
 </section>
-{# Dialogue modal pour créer un régime #}
+
 <div class="food-modal" id="dp-create-regime-modal">
   <div class="food-modal-card">
-    <div style="display:flex;align-items:center;justify-content:space-between;">
-      <h4>Ajouter un régime</h4>
-      <button type="button" id="dp-create-regime-close" class="btn btn-link text-muted" style="text-decoration:none;">✕</button>
+    <div class="food-modal-head">
+      <div>
+        <h4>Ajouter un regime</h4>
+        <p>Le calcul suit le meme metier que le projet Java: IMC, type sante, calories cibles et repas adequats.</p>
+      </div>
+      <button type="button" class="food-close" id="dp-create-regime-close">X</button>
     </div>
-    <p class="text-muted">Renseignez vos informations pour générer un nouveau régime personnalisé.</p>
-    <div class="modal-help">
-      Les champs IMC, type de santé, calories cibles et repas adéquats se mettent à jour automatiquement pendant la saisie.
-    </div>
-    <div class="mt-2">
-      {{ form_start(regimeCreateForm, {'attr': {'class': 'js-regime-form', 'data-user-gender': app.user and app.user.gender ? app.user.gender : 'male', 'novalidate': 'novalidate'}}) }}
-        <div class="regime-error-summary" data-regime-error-summary></div>
-        <div class="form-row">
-          <div class="form-group col-md-4">
-            <label class="form-label-icon">Taille (cm)</label>
-            {{ form_widget(regimeCreateForm.taille, {'attr': {'class': 'form-control js-regime-taille', 'required': 'required', 'min': '100', 'max': '250', 'step': '0.1', 'inputmode': 'decimal'}}) }}
-          </div>
-          <div class="form-group col-md-4">
-            <label class="form-label-icon">Poids (kg)</label>
-            {{ form_widget(regimeCreateForm.poids, {'attr': {'class': 'form-control js-regime-poids', 'required': 'required', 'min': '25', 'max': '300', 'step': '0.1', 'inputmode': 'decimal'}}) }}
-          </div>
-          <div class="form-group col-md-4">
-            <label class="form-label-icon">Âge</label>
-            {{ form_widget(regimeCreateForm.age, {'attr': {'class': 'form-control js-regime-age', 'required': 'required', 'min': '10', 'max': '100', 'step': '1', 'inputmode': 'numeric'}}) }}
-          </div>
+    <div class="diet-error-summary" data-regime-error-summary></div>
+    {{ form_start(regimeCreateForm, {'attr': {'class': 'js-regime-form', 'novalidate': 'novalidate'}}) }}
+      <div class="diet-form-grid">
+        <div class="diet-form-group">
+          <label>Taille (cm)</label>
+          {{ form_widget(regimeCreateForm.taille, {'attr': {'class': 'diet-input js-regime-taille', 'inputmode': 'decimal'}}) }}
         </div>
-        <div class="form-row">
-          <div class="form-group col-md-4">
-            <label class="form-label-icon">IMC (auto)</label>
-            {{ form_widget(regimeCreateForm.bmi, {'attr': {'class': 'form-control js-regime-bmi', 'readonly': 'readonly'}}) }}
-          </div>
-          <div class="form-group col-md-4">
-            <label class="form-label-icon">Type santé (auto)</label>
-            {{ form_widget(regimeCreateForm.typeSante, {'attr': {'class': 'form-control js-regime-type-sante'}}) }}
-          </div>
-          <div class="form-group col-md-4">
-            <label class="form-label-icon">Calories cibles (auto)</label>
-            {{ form_widget(regimeCreateForm.caloriesCibles, {'attr': {'class': 'form-control js-regime-calories'}}) }}
-          </div>
+        <div class="diet-form-group">
+          <label>Poids (kg)</label>
+          {{ form_widget(regimeCreateForm.poids, {'attr': {'class': 'diet-input js-regime-poids', 'inputmode': 'decimal'}}) }}
         </div>
-        <div class="form-group">
-          <label class="form-label-icon">Repas adéquats (auto)</label>
-          {{ form_widget(regimeCreateForm.repasAdequats, {'attr': {'class': 'form-control js-regime-repas'}}) }}
+        <div class="diet-form-group">
+          <label>Age</label>
+          {{ form_widget(regimeCreateForm.age, {'attr': {'class': 'diet-input js-regime-age', 'inputmode': 'numeric'}}) }}
         </div>
-        <div class="food-modal-actions">
-          <button type="button" class="btn btn-outline-secondary" id="dp-create-regime-cancel">Annuler</button>
-          <button type="submit" class="btn btn-primary">Créer le régime</button>
+      </div>
+      <div class="diet-form-grid" style="margin-top:0.9rem;">
+        <div class="diet-form-group">
+          <label>IMC (auto)</label>
+          {{ form_widget(regimeCreateForm.bmi, {'attr': {'class': 'diet-input js-regime-bmi', 'readonly': 'readonly'}}) }}
         </div>
-      {{ form_end(regimeCreateForm) }}
-    </div>
+        <div class="diet-form-group">
+          <label>Type sant&eacute; (auto)</label>
+          {{ form_widget(regimeCreateForm.typeSante, {'attr': {'class': 'diet-input js-regime-type-sante'}}) }}
+        </div>
+        <div class="diet-form-group">
+          <label>Calories cibles (auto)</label>
+          {{ form_widget(regimeCreateForm.caloriesCibles, {'attr': {'class': 'diet-input js-regime-calories'}}) }}
+        </div>
+      </div>
+      <div class="diet-form-group" style="margin-top:0.9rem;">
+        <label>Repas ad&eacute;quats (auto)</label>
+        {{ form_widget(regimeCreateForm.repasAdequats, {'attr': {'class': 'diet-input diet-textarea js-regime-repas'}}) }}
+      </div>
+      <div class="food-modal-actions">
+        <button type="button" class="diet-btn-soft" id="dp-create-regime-cancel">Annuler</button>
+        <button type="submit" class="diet-btn">Cr&eacute;er le r&eacute;gime</button>
+      </div>
+    {{ form_end(regimeCreateForm) }}
   </div>
 </div>
 
-{# Dialogue modal pour ajouter un repas à partir des repas existants #}
 <div class="food-modal" id="dp-add-meal-modal">
   <div class="food-modal-card">
-    <div style="display:flex;align-items:center;justify-content:space-between;">
-      <h4>Ajouter un repas existant</h4>
-      <button type="button" id="dp-add-meal-close" class="btn btn-link text-muted" style="text-decoration:none;">✕</button>
+    <div class="food-modal-head">
+      <div>
+        <h4>Ajouter repas</h4>
+        <p>Ajoutez un repas depuis votre catalogue existant pour ce regime.</p>
+      </div>
+      <button type="button" class="food-close" id="dp-add-meal-close">X</button>
     </div>
-    <p class="text-muted">Sélectionnez un repas déjà enregistré pour l'ajouter à la journée en cours. La jauge indique l’impact sur vos calories cibles.</p>
-    <div class="modal-help">
-      Choisissez un repas dans la liste, puis cliquez sur "Ajouter ce repas". Vous pouvez comparer l'impact calorique avant validation.
-    </div>
-    <div class="section-help" style="margin:0.65rem 0 0.75rem;">
-      Choisissez un repas depuis la liste ci-dessous pour un ajout rapide a la journee.
-    </div>
-    <div class="mt-2">
+
+    <form method="post" action="{{ path('diet_meal_add') }}" id="dp-manual-meal-form" style="display:none;">
+      <input type="hidden" name="_token" value="{{ csrf_token('meal_add') }}">
+      {% if regime %}
+        <input type="hidden" name="regime_id" value="{{ regime.id }}">
+      {% endif %}
+      <input type="hidden" name="type_repas" id="dp-manual-type" value="Extra meal">
+      <input type="hidden" name="nom_repas" id="dp-manual-name">
+      <input type="hidden" name="calories" id="dp-manual-calories">
+      <input type="hidden" name="proteines" id="dp-manual-protein">
+      <input type="hidden" name="glucides" id="dp-manual-carbs">
+      <input type="hidden" name="lipides" id="dp-manual-fat">
+      <input type="hidden" name="commentaire" id="dp-manual-comment">
+    </form>
+
+    <div style="margin-top:1.4rem;">
+      <h4 style="margin:0 0 0.8rem;color:#0f2541;">Catalogue repas</h4>
       {% if catalogMeals is not empty %}
-        <div class="row" style="row-gap: 0.75rem;">
-          {% for m in catalogMeals %}
-            {% set pct = (regime and regime.caloriesCibles) ? ((m.calories ?? 0) / regime.caloriesCibles * 100) : 0 %}
-            <div class="col-md-6">
-              <div class="diet-card" style="border-radius:12px; padding:0.8rem 0.9rem; border:1px solid #dce7f2;">
-                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.45rem;">
-                  <strong style="line-height:1.25;">{{ m.nomRepas }}</strong>
-                  <span class="pill" style="margin-right:0; white-space:nowrap;">{{ m.typeRepas ?: 'Repas' }}</span>
-                </div>
-                <div class="muted" style="font-size:0.85rem;margin-top:0.35rem;">
-                  <i class="fa fa-fire"></i> {{ m.calories ?? 0 }} kcal
-                </div>
-                <div style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:0.35rem;">
-                  <span class="pill" style="background:#eef2ff;color:#1e3a8a;">P {{ m.proteines ?? 0 }} g</span>
-                  <span class="pill" style="background:#ecfeff;color:#155e75;">C {{ m.glucides ?? 0 }} g</span>
-                  <span class="pill" style="background:#fff7ed;color:#9a3412;">F {{ m.lipides ?? 0 }} g</span>
-                </div>
-                {% if regime and regime.caloriesCibles %}
-                  <div style="margin-top:0.6rem;">
-                    <div class="form-label-icon" style="font-size:0.8rem;"><i class="fa fa-line-chart"></i> Impact sur la journée</div>
-                    <div class="progress-bar">
-                      <span style="width:{{ pct > 120 ? 120 : pct }}%; background: {{ pct > 100 ? '#d64545' : 'var(--dp-accent)' }};"></span>
-                    </div>
-                    <small class="text-muted">{{ (m.calories ?? 0) }} / {{ regime.caloriesCibles }} kcal</small>
+        <div class="diet-catalog-list">
+          {% for m in catalogMeals|slice(0, 12) %}
+            <div class="diet-catalog-item">
+              <div class="diet-catalog-top">
+                <div>
+                  <strong>{{ m.nomRepas }}</strong>
+                  <p>{{ m.typeRepas ?: 'Repas' }}</p>
+                  <div class="diet-catalog-meta">
+                    <span class="diet-mini-pill">{{ m.calories ?: 0 }} kcal</span>
+                    <span class="diet-mini-pill">P {{ m.proteines ?: 0 }} g</span>
+                    <span class="diet-mini-pill">C {{ m.glucides ?: 0 }} g</span>
+                    <span class="diet-mini-pill">F {{ m.lipides ?: 0 }} g</span>
                   </div>
-                {% endif %}
-                <form method="post" action="{{ path('diet_meal_add') }}" style="margin-top:0.65rem;">
+                </div>
+                <form method="post" action="{{ path('diet_meal_add') }}" style="margin:0;">
                   <input type="hidden" name="_token" value="{{ csrf_token('meal_add') }}">
                   <input type="hidden" name="source_repas_id" value="{{ m.id }}">
                   {% if regime %}
                     <input type="hidden" name="regime_id" value="{{ regime.id }}">
                   {% endif %}
-                  <button type="submit" class="btn-fit btn-sm btn-full">Ajouter ce repas</button>
+                  <button type="submit" class="diet-btn-soft">Ajouter ce repas</button>
                 </form>
               </div>
             </div>
           {% endfor %}
-    </div>
+        </div>
       {% else %}
-        <p class="muted">Aucun repas n'est encore enregistré. Créez d'abord des repas dans la section repas.</p>
+        <div class="diet-empty">Aucun repas enregistre dans le catalogue.</div>
       {% endif %}
     </div>
   </div>
 </div>
 
-{# Dialogue modal pour scanner un repas par photo (IA) #}
 <div class="food-modal" id="dp-scan-meal-modal">
   <div class="food-modal-card">
-    <div style="display:flex;align-items:center;justify-content:space-between;">
-      <h4>Scanner un repas (IA)</h4>
-      <button type="button" id="dp-scan-close" class="btn btn-link text-muted" style="text-decoration:none;">✕</button>
-    </div>
-    <p class="text-muted" style="margin-bottom:0.5rem;">
-      Prenez une photo de votre repas: l'IA detecte l'aliment et estime calories/macros automatiquement.
-    </p>
-    <div class="modal-help">
-      Conseil: prenez une photo nette, bien eclairee, avec le plat centré.
+    <div class="food-modal-head">
+      <div>
+        <h4>Scanner repas</h4>
+        <p>Chargez une photo du repas pour pre-remplir les champs avant ajout.</p>
+      </div>
+      <button type="button" class="food-close" id="dp-scan-close">X</button>
     </div>
 
-    <form method="post" action="{{ path('diet_meal_add') }}" class="meal-form" id="dp-scan-meal-form">
+    <form method="post" action="{{ path('diet_meal_add') }}" id="dp-scan-meal-form">
       <input type="hidden" name="_token" value="{{ csrf_token('meal_add') }}">
       {% if regime %}
         <input type="hidden" name="regime_id" value="{{ regime.id }}">
       {% endif %}
-
-      <div class="form-group" style="margin-bottom:0.55rem;">
-        <label class="label-mini">Photo du repas</label>
-        <input type="file" class="form-control" id="dp-scan-image-input" accept="image/*" required>
+      <div class="diet-form-group">
+        <label>Photo du repas</label>
+        <input class="diet-input" type="file" id="dp-scan-image-input" accept="image/*" required>
       </div>
-      <div class="form-group" style="margin-bottom:0.65rem;">
-        <button type="button" class="btn-soft btn-sm" id="dp-scan-analyze-btn">Analyser la photo</button>
+      <div style="margin-top:0.8rem;">
+        <button type="button" class="diet-btn-soft" id="dp-scan-analyze-btn">Analyser la photo</button>
       </div>
-      <div id="dp-scan-status" class="label-mini" style="min-height:1.2rem;margin-bottom:0.6rem;"></div>
-
-      <div class="form-row">
-        <div class="form-group col-md-4">
-          <label class="label-mini">Type de repas</label>
-          <select name="type_repas" id="dp-scan-type" class="form-control" required>
-            <option value="Petit-dejeuner">Petit-dejeuner</option>
-            <option value="Dejeuner" selected>Dejeuner</option>
-            <option value="Diner">Diner</option>
+      <div class="diet-status-box" id="dp-scan-status-box"></div>
+      <div class="diet-form-grid" style="margin-top:0.9rem;">
+        <div class="diet-form-group">
+          <label>Type de repas</label>
+          <select class="diet-input" name="type_repas" id="dp-scan-type" required>
+            <option value="Petit-dejeuner">Petit-d&eacute;jeuner</option>
+            <option value="Dejeuner" selected>D&eacute;jeuner</option>
+            <option value="Diner">D&icirc;ner</option>
             <option value="Collation">Collation</option>
           </select>
         </div>
-        <div class="form-group col-md-8">
-          <label class="label-mini">Nom du repas</label>
-          <input type="text" id="dp-scan-name" name="nom_repas" class="form-control" required>
+        <div class="diet-form-group">
+          <label>Nom du repas</label>
+          <input class="diet-input" type="text" name="nom_repas" id="dp-scan-name" required>
+        </div>
+        <div class="diet-form-group">
+          <label>Calories</label>
+          <input class="diet-input" type="number" name="calories" id="dp-scan-calories" min="0" required>
         </div>
       </div>
-
-      <div class="input-group-mini">
-        <div>
-          <label class="label-mini">Calories</label>
-          <input type="number" id="dp-scan-calories" name="calories" class="form-control" min="0" required>
+      <div class="diet-form-grid-4" style="margin-top:0.9rem;">
+        <div class="diet-form-group">
+          <label>Proteines</label>
+          <input class="diet-input" type="number" name="proteines" id="dp-scan-protein" min="0">
         </div>
-        <div>
-          <label class="label-mini">Proteines</label>
-          <input type="number" id="dp-scan-protein" name="proteines" class="form-control" min="0" step="1">
+        <div class="diet-form-group">
+          <label>Glucides</label>
+          <input class="diet-input" type="number" name="glucides" id="dp-scan-carbs" min="0">
         </div>
-        <div>
-          <label class="label-mini">Glucides</label>
-          <input type="number" id="dp-scan-carbs" name="glucides" class="form-control" min="0" step="1">
+        <div class="diet-form-group">
+          <label>Lipides</label>
+          <input class="diet-input" type="number" name="lipides" id="dp-scan-fat" min="0">
         </div>
-        <div>
-          <label class="label-mini">Lipides</label>
-          <input type="number" id="dp-scan-fat" name="lipides" class="form-control" min="0" step="1">
+        <div class="diet-form-group">
+          <label>Commentaire</label>
+          <input class="diet-input" type="text" name="commentaire" id="dp-scan-comment">
         </div>
       </div>
-
-      <div class="form-group" style="margin-top:0.6rem;">
-        <label class="label-mini">Commentaire</label>
-        <textarea name="commentaire" id="dp-scan-comment" class="form-control" rows="2" placeholder="Optionnel"></textarea>
-      </div>
-
       <div class="food-modal-actions">
-        <button type="button" class="btn btn-outline-secondary" id="dp-scan-cancel">Annuler</button>
-        <button type="submit" class="btn-fit">Ajouter ce repas</button>
+        <button type="button" class="diet-btn-soft" id="dp-scan-cancel">Annuler</button>
+        <button type="submit" class="diet-btn">Ajouter ce repas</button>
       </div>
     </form>
   </div>
 </div>
 
-{# Dialogue modal pour la liste de courses intelligente #}
 <div class="food-modal" id="dp-shopping-modal">
   <div class="food-modal-card">
-    <div style="display:flex;align-items:center;justify-content:space-between;">
-      <h4>Liste de courses intelligente</h4>
-      <button type="button" id="dp-shopping-close" class="btn btn-link text-muted" style="text-decoration:none;">✕</button>
+    <div class="food-modal-head">
+      <div>
+        <h4>Liste de courses intelligente</h4>
+        <p>G&eacute;n&eacute;r&eacute;e &agrave; partir de vos repas du jour et de leurs commentaires.</p>
+      </div>
+      <button type="button" class="food-close" id="dp-shopping-close">X</button>
     </div>
-    <p class="text-muted" style="margin-bottom:0.5rem;">
-      Générée automatiquement à partir de vos repas du jour (ingrédients listés dans les commentaires de vos repas).
-    </p>
-    <div class="modal-help">
-      Cochez les ingrédients déjà disponibles pour préparer vos achats plus facilement.
-    </div>
-    <div id="dp-shopping-body" class="mt-2">
-      <p class="muted">Cliquez sur le bouton dans la section des repas pour générer votre liste de courses.</p>
+    <div id="dp-shopping-body">
+      {% if shoppingPreview.items is not empty %}
+        <div class="diet-catalog-list">
+          {% for item in shoppingPreview.items %}
+            <div class="diet-catalog-item">
+              <strong>{{ item.name }}</strong>
+              <p>Quantite estimee: x{{ item.count }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="diet-empty">Aucun ingr&eacute;dient d&eacute;tect&eacute; pour le moment. Ajoutez des d&eacute;tails dans les commentaires de repas.</div>
+      {% endif %}
     </div>
   </div>
 </div>
 
-{# Dialogue modal pour la checklist du jour #}
 <div class="food-modal" id="dp-checklist-modal">
   <div class="food-modal-card">
-    <div style="display:flex;align-items:center;justify-content:space-between;">
-      <h4>Checklist du jour</h4>
-      <button type="button" id="dp-checklist-close" class="btn btn-link text-muted" style="text-decoration:none;">✕</button>
+    <div class="food-modal-head">
+      <div>
+        <h4>Checklist du jour</h4>
+        <p>Le suivi est calcul&eacute; automatiquement &agrave; partir des repas du jour et de l'hydratation.</p>
+      </div>
+      <button type="button" class="food-close" id="dp-checklist-close">X</button>
     </div>
-    <p class="text-muted" style="margin-bottom:0.5rem;">
-      Coche les éléments complétés pour ta journée (basé automatiquement sur tes repas du jour).
-    </p>
-    <div class="modal-help">
-      Cette checklist est informative: les cases se cochent selon les repas enregistrés, sans action manuelle nécessaire.
-    </div>
-    <div class="mt-2">
-      <ul class="list-unstyled" style="margin-bottom:0;">
-        <li style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.35rem;">
-          <input type="checkbox" {% if checklist.breakfast %}checked{% endif %} disabled>
-          <span>Petit‑déjeuner</span>
-        </li>
-        <li style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.35rem;">
-          <input type="checkbox" {% if checklist.lunch %}checked{% endif %} disabled>
-          <span>Déjeuner</span>
-        </li>
-        <li style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.35rem;">
-          <input type="checkbox" {% if checklist.dinner %}checked{% endif %} disabled>
-          <span>Dîner</span>
-        </li>
-        <li style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.35rem;">
-          <input type="checkbox" {% if checklist.snack %}checked{% endif %} disabled>
-          <span>Collation / snack</span>
-        </li>
-        <li style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.35rem;">
-          <input type="checkbox" {% if checklist.hydration %}checked{% endif %} disabled>
-          <span>Hydratation suffisante (≥ 3 prises dans la journée)</span>
-        </li>
-      </ul>
-      <p class="label-mini" style="margin-top:0.5rem;">
-        Les cases sont cochées automatiquement selon tes repas enregistrés aujourd'hui.
-      </p>
+    <div class="diet-achievement-list">
+      <div class="diet-achievement-item">
+        <div><strong>Petit-d&eacute;jeuner</strong><p>Repas du matin enregistr&eacute;.</p></div>
+        <i class="fa {% if checklist.breakfast %}fa-check-circle diet-unlock{% else %}fa-lock diet-lock{% endif %}"></i>
+      </div>
+      <div class="diet-achievement-item">
+        <div><strong>D&eacute;jeuner</strong><p>Repas du midi enregistr&eacute;.</p></div>
+        <i class="fa {% if checklist.lunch %}fa-check-circle diet-unlock{% else %}fa-lock diet-lock{% endif %}"></i>
+      </div>
+      <div class="diet-achievement-item">
+        <div><strong>D&icirc;ner</strong><p>Repas du soir enregistr&eacute;.</p></div>
+        <i class="fa {% if checklist.dinner %}fa-check-circle diet-unlock{% else %}fa-lock diet-lock{% endif %}"></i>
+      </div>
+      <div class="diet-achievement-item">
+        <div><strong>Collation</strong><p>Snack ou collation d&eacute;tect&eacute;.</p></div>
+        <i class="fa {% if checklist.snack %}fa-check-circle diet-unlock{% else %}fa-lock diet-lock{% endif %}"></i>
+      </div>
+      <div class="diet-achievement-item">
+        <div><strong>Hydratation</strong><p>Objectif : 1 L par jour ({{ hydrationCount }}/{{ hydrationGoal }} verres)</p></div>
+        <i class="fa {% if checklist.hydration %}fa-check-circle diet-unlock{% else %}fa-lock diet-lock{% endif %}"></i>
+      </div>
     </div>
   </div>
 </div>
 
-{# Dialogue modal pour le daily plan de repas (calendrier sur 7 jours du régime actif) #}
 <div class="food-modal" id="dp-daily-plan-modal">
   <div class="food-modal-card">
-    <div style="display:flex;align-items:center;justify-content:space-between;">
-      <h4>Daily plan de repas</h4>
-      <button type="button" id="dp-daily-plan-close" class="btn btn-link text-muted" style="text-decoration:none;">✕</button>
+    <div class="food-modal-head">
+      <div>
+        <h4>Planning 7j</h4>
+        <p>R&eacute;sum&eacute; hebdomadaire de votre r&eacute;gime et de votre journal alimentaire.</p>
+      </div>
+      <button type="button" class="food-close" id="dp-daily-plan-close">X</button>
     </div>
     {% if regime %}
-      <p class="text-muted" style="margin-bottom:0.5rem;">
-        Calendrier des 7 derniers jours pour votre régime
-        <strong>{{ regime.typeSante ?? 'N/A' }}</strong> ({{ regime.caloriesCibles ?? '—' }} kcal/j).
-      </p>
-      <div class="modal-help">
-        Comparez rapidement vos journées pour voir la régularité des repas et votre adhérence à l'objectif calorique.
-      </div>
-      <div class="row" style="row-gap:0.75rem;max-height:320px;overflow-y:auto;">
+      <div class="diet-regime-list">
         {% for day in dailyPlan %}
-          <div class="col-md-6">
-            <div class="diet-card" style="border-radius:12px;padding:0.6rem 0.8rem;">
-              <div class="sub-title" style="margin-bottom:0.25rem;">
-                {{ day.date|date('D d/m') }}
+          <div class="diet-regime-item">
+            <div class="diet-regime-top">
+              <div>
+                <strong>{{ day.date|date('D d/m') }}</strong>
+                <p>{{ day.totals.calories }} kcal · P {{ day.totals.proteines }} g · C {{ day.totals.glucides }} g · F {{ day.totals.lipides }} g</p>
               </div>
-              <div class="summary-grid" style="margin-bottom:0.35rem;">
-                <div class="summary-item"><i class="fa fa-fire"></i>{{ day.totals.calories }} kcal</div>
-                <div class="summary-item"><i class="fa fa-bolt"></i>P {{ day.totals.proteines }} g</div>
-                <div class="summary-item"><i class="fa fa-leaf"></i>C {{ day.totals.glucides }} g</div>
-                <div class="summary-item"><i class="fa fa-tint"></i>F {{ day.totals.lipides }} g</div>
+              <div class="diet-actions-row">
+                <span class="diet-mini-pill">{% if day.badges.calories_ok %}Calories OK{% else %}Calories a ajuster{% endif %}</span>
+                <span class="diet-mini-pill">{% if day.badges.hydration_ok %}Hydratation OK{% else %}Hydratation faible{% endif %}</span>
               </div>
-
-              {# Badges journaliers avec le même design que précédemment #}
-              <div class="row" style="row-gap:0.4rem;margin-bottom:0.4rem;">
-                {% set badges = {
-                  'perfect_week': {
-                    'label': 'Semaine parfaite',
-                    'description': 'Calories dans la cible sur cette journée.',
-                    'unlocked': day.badges.calories_ok
-                  },
-                  'hydration_7_days': {
-                    'label': 'Hydratation OK',
-                    'description': 'Au moins 3 repas / collations enregistrés aujourd\'hui.',
-                    'unlocked': day.badges.hydration_ok
-                  },
-                  'calories_10_days': {
-                    'label': 'Calories respectées',
-                    'description': 'Journée avec calories proches de l\'objectif.',
-                    'unlocked': day.badges.calories_ok
-                  }
-                } %}
-                {% for key, badge in badges %}
-                  <div class="col-12">
-                    <div class="diet-card" style="border-radius:10px;padding:0.35rem 0.6rem;border-style:dashed;{% if badge.unlocked %}background:#ecfdf5;border-color:#22c55e;{% else %}background:#f9fafb;border-color:#e5e7eb;opacity:0.85;{% endif %}">
-                      <div style="display:flex;align-items:center;gap:0.5rem;">
-                        {% if badge.unlocked %}
-                          <i class="fa fa-check-circle" style="color:#16a34a;"></i>
-                        {% else %}
-                          <i class="fa fa-lock" style="color:#9ca3af;"></i>
-                        {% endif %}
-                        <div>
-                          <div class="label-mini" style="font-weight:700;color:#111827;">{{ badge.label }}</div>
-                          <div class="label-mini">{{ badge.description }}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+            </div>
+            {% if day.meals is not empty %}
+              <div class="diet-journal-meta">
+                {% for m in day.meals %}
+                  <span class="diet-mini-pill">{{ m.dateRepas|date('H:i') }} · {{ m.nomRepas }}</span>
                 {% endfor %}
               </div>
-              {% if day.meals is not empty %}
-                <ul class="list-unstyled" style="margin-bottom:0;">
-                  {% for m in day.meals %}
-                    <li style="font-size:0.85rem;margin-bottom:0.15rem;">
-                      <strong>{{ m.dateRepas|date('H:i') }}</strong> ·
-                      {{ m.typeRepas }} – {{ m.nomRepas }}
-                      {% if m.calories is not null %}
-                        ({{ m.calories }} kcal)
-                      {% endif %}
-                    </li>
-                  {% endfor %}
-                </ul>
-              {% else %}
-                <p class="muted" style="font-size:0.8rem;margin-bottom:0;">Aucun repas enregistré ce jour-là.</p>
-              {% endif %}
-            </div>
+            {% else %}
+              <p style="margin-top:0.7rem;">Aucun repas enregistr&eacute; ce jour-l&agrave;.</p>
+            {% endif %}
           </div>
         {% endfor %}
       </div>
     {% else %}
-      <p class="muted">Aucun régime actif. Sélectionnez d'abord un régime pour voir le calendrier des repas.</p>
+      <div class="diet-empty">Aucun r&eacute;gime actif. Cr&eacute;ez d'abord votre profil nutritionnel.</div>
     {% endif %}
   </div>
 </div>
 
+{% for r in regimes %}
+  <div class="food-modal" id="dp-edit-regime-modal-{{ r.id }}">
+    <div class="food-modal-card">
+      <div class="food-modal-head">
+        <div>
+          <h4>Modifier le r&eacute;gime #{{ r.id }}</h4>
+          <p>Ajustez vos informations comme dans l'onboarding Java.</p>
+        </div>
+        <button type="button" class="food-close" data-regime-edit-close="{{ r.id }}">X</button>
+      </div>
+      <div class="diet-error-summary" data-regime-error-summary></div>
+      {{ form_start(regimeEditForms[r.id], {'attr': {'class': 'js-regime-form', 'novalidate': 'novalidate'}}) }}
+        <div class="diet-form-grid">
+          <div class="diet-form-group">
+            <label>Taille (cm)</label>
+            {{ form_widget(regimeEditForms[r.id].taille, {'attr': {'class': 'diet-input js-regime-taille'}}) }}
+          </div>
+          <div class="diet-form-group">
+            <label>Poids (kg)</label>
+            {{ form_widget(regimeEditForms[r.id].poids, {'attr': {'class': 'diet-input js-regime-poids'}}) }}
+          </div>
+          <div class="diet-form-group">
+            <label>Age</label>
+            {{ form_widget(regimeEditForms[r.id].age, {'attr': {'class': 'diet-input js-regime-age'}}) }}
+          </div>
+        </div>
+        <div class="diet-form-grid" style="margin-top:0.9rem;">
+          <div class="diet-form-group">
+            <label>IMC (auto)</label>
+            {{ form_widget(regimeEditForms[r.id].bmi, {'attr': {'class': 'diet-input js-regime-bmi', 'readonly': 'readonly'}}) }}
+          </div>
+          <div class="diet-form-group">
+            <label>Type sant&eacute; (auto)</label>
+            {{ form_widget(regimeEditForms[r.id].typeSante, {'attr': {'class': 'diet-input js-regime-type-sante'}}) }}
+          </div>
+          <div class="diet-form-group">
+            <label>Calories cibles (auto)</label>
+            {{ form_widget(regimeEditForms[r.id].caloriesCibles, {'attr': {'class': 'diet-input js-regime-calories'}}) }}
+          </div>
+        </div>
+        <div class="diet-form-group" style="margin-top:0.9rem;">
+          <label>Repas ad&eacute;quats (auto)</label>
+          {{ form_widget(regimeEditForms[r.id].repasAdequats, {'attr': {'class': 'diet-input diet-textarea js-regime-repas'}}) }}
+        </div>
+        <div class="food-modal-actions">
+          <button type="button" class="diet-btn-soft" data-regime-edit-close="{{ r.id }}">Annuler</button>
+          <button type="submit" class="diet-btn">Enregistrer</button>
+        </div>
+      {{ form_end(regimeEditForms[r.id]) }}
+    </div>
+  </div>
+{% endfor %}
 {% endblock %}
 
 {% block javascripts %}
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // Auto-calcul IMC, type santé, calories et repas adéquats
-    function calcRegime(form) {
-      const taille = parseFloat(form.querySelector('.js-regime-taille')?.value) || 0;
-      const poids = parseFloat(form.querySelector('.js-regime-poids')?.value) || 0;
-      const age = parseInt(form.querySelector('.js-regime-age')?.value, 10) || 0;
-      const gender = (form.dataset.userGender || 'male').toLowerCase();
-      const bmiEl = form.querySelector('.js-regime-bmi');
-      const typeEl = form.querySelector('.js-regime-type-sante');
-      const calEl = form.querySelector('.js-regime-calories');
-      const repasEl = form.querySelector('.js-regime-repas');
-
-      let bmi = null;
-      let typeSante = '';
-      let calories = null;
-      let repasAdequats = '';
-
-      if (taille > 0 && poids > 0) {
-        bmi = Math.round(poids / Math.pow(taille / 100, 2) * 100) / 100;
-        if (bmi < 18.5) typeSante = 'sous_poids';
-        else if (bmi < 25) typeSante = 'normal';
-        else if (bmi < 30) typeSante = 'surpoids';
-        else typeSante = 'obesite';
-
-        if (age > 0 && age <= 100) {
-          const bmr = gender === 'female' || gender === 'f'
-            ? 10 * poids + 6.25 * taille - 5 * age - 161
-            : 10 * poids + 6.25 * taille - 5 * age + 5;
-          calories = Math.round(bmr * 1.2);
-          if (typeSante === 'surpoids' || typeSante === 'obesite') calories = Math.round(calories * 0.9);
-          else if (typeSante === 'sous_poids') calories = Math.round(calories * 1.1);
-        }
-
-        const suggestions = {
-          sous_poids: 'Augmentez les calories, protéines et glucides. Repas riches: avocat, noix, viandes, œufs, riz complet.',
-          normal: 'Équilibrez protéines, glucides et lipides. Privilégiez légumes, viandes maigres, céréales complètes.',
-          surpoids: 'Réduisez les calories, évitez sucres raffinés. Légumes verts, protéines maigres, glucides complexes.',
-          obesite: 'Régime hypocalorique contrôlé. Légumes, viandes blanches, limitation des féculents et graisses.'
-        };
-        repasAdequats = suggestions[typeSante] || '';
+    function computeDietProfile(taille, poids, age) {
+      if (!(taille > 0) || !(poids > 0) || !(age > 0)) {
+        return { bmi: '', typeSante: '', calories: '', repas: '' };
       }
 
-      if (bmiEl) bmiEl.value = bmi !== null ? bmi : '';
-      if (typeEl) typeEl.value = typeSante;
-      if (calEl) calEl.value = calories !== null ? calories : '';
-      if (repasEl) repasEl.value = repasAdequats;
+      const bmi = Math.round((poids / Math.pow(taille / 100, 2)) * 100) / 100;
+      let typeSante = '';
+      if (bmi < 18.5) typeSante = 'sous_poids';
+      else if (bmi < 25) typeSante = 'normal';
+      else if (bmi < 30) typeSante = 'surpoids';
+      else typeSante = 'obesite';
+
+      let calories = Math.round(poids * 30);
+      if (typeSante === 'sous_poids') calories += 250;
+      else if (typeSante === 'obesite') calories -= 350;
+      else if (typeSante === 'surpoids') calories -= 200;
+      if (age > 45) calories -= 80;
+      calories = Math.max(1200, calories);
+
+      const suggestions = {
+        sous_poids: 'Augmentez les calories, proteines et glucides. Repas riches: avocat, noix, viandes, oeufs, riz complet.',
+        normal: 'Equilibrez proteines, glucides et lipides. Privilegiez legumes, viandes maigres et cereales completes.',
+        surpoids: 'Reduisez les calories, evitez les sucres raffines. Legumes verts, proteines maigres et glucides complexes.',
+        obesite: 'Regime hypocalorique controle. Legumes, viandes blanches, limitation des feculents et des graisses.',
+        diabetique: 'Repas a index glycemique modere, legumes, fibres et portions controlees.',
+        cardiaque: 'Limitez le sel et les graisses saturees. Favorisez poisson, huile d olive et legumes.',
+        autre: 'Choisissez des repas simples, frais et faciles a digerer selon votre tolerance.'
+      };
+
+      let repas = suggestions[typeSante] || '';
+      if (repas && age >= 45) repas += ' Hydratation et fibres renforcees.';
+
+      return { bmi, typeSante, calories, repas };
     }
 
-    function normalizeNumber(value) {
-      return (value || '').toString().trim().replace(',', '.');
-    }
-
-    function clearRegimeErrors(form) {
-      form.querySelectorAll('.regime-field-error').forEach((el) => el.remove());
-      form.querySelectorAll('.regime-field-valid').forEach((el) => el.remove());
-      form.querySelectorAll('.is-invalid').forEach((el) => el.classList.remove('is-invalid'));
-      form.querySelectorAll('.is-valid').forEach((el) => el.classList.remove('is-valid'));
-      const summary = form.querySelector('[data-regime-error-summary]');
+    function clearValidation(form) {
+      form.querySelectorAll('.diet-field-error, .diet-field-valid').forEach((node) => node.remove());
+      form.querySelectorAll('.is-invalid, .is-valid').forEach((node) => {
+        node.classList.remove('is-invalid', 'is-valid');
+      });
+      const summary = form.parentElement.querySelector('[data-regime-error-summary]');
       if (summary) {
         summary.style.display = 'none';
         summary.textContent = '';
       }
     }
 
-    function setRegimeFieldError(input, message) {
+    function appendValidation(input, message, valid) {
       if (!input) return;
-      input.classList.remove('is-valid');
-      input.classList.add('is-invalid');
-      const err = document.createElement('div');
-      err.className = 'regime-field-error';
-      err.textContent = message;
-      const group = input.closest('.form-group') || input.parentElement;
-      if (group) group.appendChild(err);
-    }
-
-    function setRegimeFieldValid(input, message) {
-      if (!input) return;
-      input.classList.remove('is-invalid');
-      input.classList.add('is-valid');
-      const ok = document.createElement('div');
-      ok.className = 'regime-field-valid';
-      ok.textContent = message;
-      const group = input.closest('.form-group') || input.parentElement;
-      if (group) group.appendChild(ok);
+      input.classList.add(valid ? 'is-valid' : 'is-invalid');
+      input.classList.remove(valid ? 'is-invalid' : 'is-valid');
+      const el = document.createElement('div');
+      el.className = valid ? 'diet-field-valid' : 'diet-field-error';
+      el.textContent = message;
+      input.parentElement.appendChild(el);
     }
 
     function validateRegimeForm(form) {
-      clearRegimeErrors(form);
-      const errors = [];
-
+      clearValidation(form);
       const fields = [
-        { selector: '.js-regime-taille', label: 'La taille', min: 100, max: 250 },
-        { selector: '.js-regime-poids', label: 'Le poids', min: 25, max: 300 },
+        { selector: '.js-regime-taille', label: 'La taille', min: 100, max: 250, integer: false },
+        { selector: '.js-regime-poids', label: 'Le poids', min: 25, max: 300, integer: false },
         { selector: '.js-regime-age', label: "L'age", min: 10, max: 100, integer: true }
       ];
 
+      const errors = [];
       fields.forEach((field) => {
         const input = form.querySelector(field.selector);
         if (!input) return;
-
-        const raw = normalizeNumber(input.value);
+        const raw = String(input.value || '').replace(',', '.').trim();
         if (!raw) {
-          const msg = field.label + ' est obligatoire.';
-          errors.push(msg);
-          setRegimeFieldError(input, msg);
+          errors.push(field.label + ' est obligatoire.');
+          appendValidation(input, field.label + ' est obligatoire.', false);
           return;
         }
 
         const value = field.integer ? parseInt(raw, 10) : parseFloat(raw);
-        if (Number.isNaN(value)) {
-          const msg = field.label + ' doit être un nombre valide.';
-          errors.push(msg);
-          setRegimeFieldError(input, msg);
+        if (Number.isNaN(value) || value < field.min || value > field.max) {
+          errors.push(field.label + ' doit etre entre ' + field.min + ' et ' + field.max + '.');
+          appendValidation(input, field.label + ' doit etre entre ' + field.min + ' et ' + field.max + '.', false);
           return;
         }
 
-        if (field.integer && !/^\d+$/.test(raw)) {
-          const msg = field.label + ' doit être un nombre entier.';
-          errors.push(msg);
-          setRegimeFieldError(input, msg);
-          return;
-        }
-
-        if (value < field.min || value > field.max) {
-          const msg = field.label + ' doit être entre ' + field.min + ' et ' + field.max + '.';
-          errors.push(msg);
-          setRegimeFieldError(input, msg);
-          return;
-        }
-
-        setRegimeFieldValid(input, field.label + ' est valide.');
+        appendValidation(input, field.label + ' est valide.', true);
       });
 
+      const summary = form.parentElement.querySelector('[data-regime-error-summary]');
       if (errors.length > 0) {
-        const summary = form.querySelector('[data-regime-error-summary]');
         if (summary) {
           summary.textContent = errors[0];
           summary.style.display = 'block';
@@ -1426,550 +1435,270 @@
       return true;
     }
 
-    document.querySelectorAll('.js-regime-form').forEach(form => {
-      ['taille', 'poids', 'age'].forEach(f => {
-        const el = form.querySelector('.js-regime-' + (f === 'taille' ? 'taille' : f === 'poids' ? 'poids' : 'age'));
-        if (!el) return;
-        el.addEventListener('input', () => {
-          calcRegime(form);
+    function refreshRegimeForm(form) {
+      const taille = parseFloat(String(form.querySelector('.js-regime-taille')?.value || '').replace(',', '.')) || 0;
+      const poids = parseFloat(String(form.querySelector('.js-regime-poids')?.value || '').replace(',', '.')) || 0;
+      const age = parseInt(form.querySelector('.js-regime-age')?.value || '0', 10) || 0;
+      const profile = computeDietProfile(taille, poids, age);
+
+      const bmiEl = form.querySelector('.js-regime-bmi');
+      const typeEl = form.querySelector('.js-regime-type-sante');
+      const calEl = form.querySelector('.js-regime-calories');
+      const repasEl = form.querySelector('.js-regime-repas');
+
+      if (bmiEl) bmiEl.value = profile.bmi !== '' ? profile.bmi : '';
+      if (typeEl) typeEl.value = profile.typeSante;
+      if (calEl) calEl.value = profile.calories;
+      if (repasEl) repasEl.value = profile.repas;
+    }
+
+    document.querySelectorAll('.js-regime-form').forEach((form) => {
+      ['.js-regime-taille', '.js-regime-poids', '.js-regime-age'].forEach((selector) => {
+        const input = form.querySelector(selector);
+        if (!input) return;
+        input.addEventListener('input', () => {
+          refreshRegimeForm(form);
           validateRegimeForm(form);
         });
-        el.addEventListener('blur', () => {
-          validateRegimeForm(form);
-        });
+        input.addEventListener('blur', () => validateRegimeForm(form));
       });
 
-      form.addEventListener('submit', (e) => {
-        calcRegime(form);
+      form.addEventListener('submit', (event) => {
+        refreshRegimeForm(form);
         if (!validateRegimeForm(form)) {
-          e.preventDefault();
-          e.stopPropagation();
+          event.preventDefault();
+          event.stopPropagation();
         }
       });
 
-      calcRegime(form);
+      refreshRegimeForm(form);
     });
 
-    // Bouton "Ajouter un repas" dans le bloc régime -> ouvre le dialogue de sélection de repas existants
-    const regimeAddMealBtn = document.getElementById('regime-add-meal-btn');
-    const bottomScanBtn = document.getElementById('dp-open-add-meal-bottom');
-    const addMealDialog = document.getElementById('dp-add-meal-modal');
-    const addMealClose = document.getElementById('dp-add-meal-close');
-    if (addMealDialog) {
-      const closeAddMeal = () => addMealDialog.classList.remove('show');
-      if (regimeAddMealBtn) {
-        regimeAddMealBtn.addEventListener('click', () => {
-          addMealDialog.classList.add('show');
-        });
-      }
-      if (addMealClose) {
-        addMealClose.addEventListener('click', closeAddMeal);
-      }
-      addMealDialog.addEventListener('click', (e) => {
-        if (e.target === addMealDialog) closeAddMeal();
+    function bindModal(triggerIds, modalId, closeIds) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+      const openers = triggerIds.map((id) => document.getElementById(id)).filter(Boolean);
+      const closers = closeIds.map((id) => document.getElementById(id)).filter(Boolean);
+      const open = () => modal.classList.add('show');
+      const close = () => modal.classList.remove('show');
+
+      openers.forEach((btn) => btn.addEventListener('click', open));
+      closers.forEach((btn) => btn.addEventListener('click', close));
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal) close();
       });
+
+      return { open, close, modal };
     }
 
-    // Dialogue scan IA de repas
-    const scanOpen = document.getElementById('dp-open-scan-dialog');
+    const createRegimeModal = bindModal(
+      ['dp-open-create-regime-dialog', 'dp-open-create-regime-hero'],
+      'dp-create-regime-modal',
+      ['dp-create-regime-close', 'dp-create-regime-cancel']
+    );
+    const addMealModal = bindModal(
+      ['dp-open-add-meal-hero', 'dp-open-add-meal-manage'],
+      'dp-add-meal-modal',
+      ['dp-add-meal-close']
+    );
+    const dailyPlanModal = bindModal(
+      ['dp-open-daily-plan-dialog', 'dp-open-daily-plan-manage', 'dp-open-daily-plan-hero'],
+      'dp-daily-plan-modal',
+      ['dp-daily-plan-close']
+    );
+    bindModal(['dp-open-shopping-dialog'], 'dp-shopping-modal', ['dp-shopping-close']);
+    bindModal(['dp-open-checklist-dialog'], 'dp-checklist-modal', ['dp-checklist-close']);
+
     const scanDialog = document.getElementById('dp-scan-meal-modal');
+    const scanOpen = document.getElementById('dp-open-scan-dialog');
     const scanClose = document.getElementById('dp-scan-close');
     const scanCancel = document.getElementById('dp-scan-cancel');
-    const scanAnalyze = document.getElementById('dp-scan-analyze-btn');
-    const scanInput = document.getElementById('dp-scan-image-input');
-    const scanStatus = document.getElementById('dp-scan-status');
-    const scanName = document.getElementById('dp-scan-name');
-    const scanCalories = document.getElementById('dp-scan-calories');
-    const scanProtein = document.getElementById('dp-scan-protein');
-    const scanCarbs = document.getElementById('dp-scan-carbs');
-    const scanFat = document.getElementById('dp-scan-fat');
-    const scanComment = document.getElementById('dp-scan-comment');
+    const openScan = () => scanDialog?.classList.add('show');
+    const closeScan = () => scanDialog?.classList.remove('show');
+    scanOpen?.addEventListener('click', openScan);
+    scanClose?.addEventListener('click', closeScan);
+    scanCancel?.addEventListener('click', closeScan);
+    scanDialog?.addEventListener('click', (event) => {
+      if (event.target === scanDialog) closeScan();
+    });
 
-    if (scanDialog) {
-      const closeScan = () => scanDialog.classList.remove('show');
-      if (scanOpen) {
-        scanOpen.addEventListener('click', () => scanDialog.classList.add('show'));
-      }
-      if (bottomScanBtn) {
-        bottomScanBtn.addEventListener('click', () => scanDialog.classList.add('show'));
-      }
-      if (scanClose) scanClose.addEventListener('click', closeScan);
-      if (scanCancel) scanCancel.addEventListener('click', closeScan);
-      scanDialog.addEventListener('click', (e) => {
-        if (e.target === scanDialog) closeScan();
-      });
+    const openIntent = new URLSearchParams(window.location.search).get('open');
+
+    if (openIntent === 'create-regime' && createRegimeModal) {
+      createRegimeModal.open();
+    } else if (openIntent === 'daily-plan' && dailyPlanModal) {
+      dailyPlanModal.open();
+    } else if ({{ showCreateRegimeOnboarding ? 'true' : 'false' }} && createRegimeModal) {
+      createRegimeModal.open();
     }
 
-    if (scanAnalyze && scanOpen && scanInput) {
-      const setStatus = (text, isError = false) => {
-        if (!scanStatus) return;
-        scanStatus.textContent = text;
-        scanStatus.style.color = isError ? '#b91c1c' : '#475569';
-      };
-
-      scanAnalyze.addEventListener('click', async () => {
-        const file = scanInput.files && scanInput.files[0] ? scanInput.files[0] : null;
-        if (!file) {
-          setStatus('Selectionnez une image avant analyse.', true);
-          return;
-        }
-
-        const apiUrl = scanOpen.dataset.url || '';
-        const csrf = scanOpen.dataset.token || '';
-        if (!apiUrl || !csrf) {
-          setStatus('Configuration API manquante.', true);
-          return;
-        }
-
-        const fd = new FormData();
-        fd.append('image', file);
-        fd.append('_token', csrf);
-
-        scanAnalyze.disabled = true;
-        setStatus('Analyse IA en cours...');
-        try {
-          const resp = await fetch(apiUrl, {
-            method: 'POST',
-            body: fd,
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest',
-              'Accept': 'application/json'
-            }
-          });
-
-          const raw = await resp.text();
-          let data = null;
-          try {
-            data = JSON.parse(raw);
-          } catch (_) {
-            const clean = String(raw || '')
-              .replace(/<[^>]*>/g, ' ')
-              .replace(/\s+/g, ' ')
-              .trim();
-            throw new Error(clean || ('Reponse serveur non-JSON (HTTP ' + resp.status + ')'));
-          }
-
-          if (!resp.ok || data.error) {
-            throw new Error(data.error || ('HTTP ' + resp.status));
-          }
-
-          if (scanName) scanName.value = data.food || '';
-          if (scanCalories) scanCalories.value = Math.round(data.calories || 0);
-          if (scanProtein) scanProtein.value = Math.round(data.protein || 0);
-          if (scanCarbs) scanCarbs.value = Math.round(data.carbs || 0);
-          if (scanFat) scanFat.value = Math.round(data.fat || 0);
-          if (scanComment) {
-            const confidence = data.confidence !== undefined ? ('Confiance IA: ' + data.confidence + '%. ') : '';
-            scanComment.value = confidence + 'Source: photo analysee automatiquement.';
-          }
-
-          setStatus('Analyse terminee. Verifiez les valeurs puis cliquez sur "Ajouter ce repas".');
-        } catch (err) {
-          setStatus('Erreur analyse IA: ' + (err.message || 'inconnue'), true);
-        } finally {
-          scanAnalyze.disabled = false;
-        }
-      });
-    }
-
-    // Jauge dynamique de calories pendant la saisie du repas
-    const gauge = document.getElementById('regime-calorie-gauge');
-    if (gauge) {
-      const target = parseInt(gauge.dataset.target || '0', 10) || 0;
-      const base = parseInt(gauge.dataset.current || '0', 10) || 0;
-      const fill = document.getElementById('regime-calorie-fill');
-      const text = document.getElementById('regime-calorie-text');
-      const caloriesInput = document.querySelector('.meal-form input[name="calories"]');
-      const submitBtn = document.querySelector('.meal-form button.btn-fit');
-
-      const updateGauge = (extra) => {
-        const add = Number.isFinite(extra) ? extra : 0;
-        const used = base + (add > 0 ? add : 0);
-        let pct = target > 0 ? (used / target * 100) : 0;
-        if (pct < 0) pct = 0;
-        if (pct > 120) pct = 120;
-        if (fill) {
-          fill.style.width = Math.min(pct, 100) + '%';
-          fill.style.backgroundColor = target && used > target ? '#d64545' : 'var(--dp-accent)';
-        }
-        if (text) {
-          if (target > 0) {
-            const remaining = target - used;
-            text.textContent = remaining >= 0
-              ? `${used} / ${target} kcal (${remaining} restantes)`
-              : `${used} / ${target} kcal (dépassement de ${Math.abs(remaining)} kcal)`;
-          } else {
-            text.textContent = `${used} kcal`;
-          }
-        }
-        if (submitBtn) {
-          submitBtn.disabled = !!(target && used > target);
-        }
-      };
-
-      updateGauge(0);
-
-      if (caloriesInput) {
-        caloriesInput.addEventListener('input', (e) => {
-          const v = parseInt(e.target.value || '0', 10);
-          updateGauge(Number.isNaN(v) ? 0 : v);
-        });
-      }
-    }
-
-    // Liaison avec la sélection de repas existant
-    // Ouverture / fermeture du dialogue "Ajouter un régime"
-    const createDialog = document.getElementById('dp-create-regime-modal');
-    const createOpen = document.getElementById('dp-open-create-regime-dialog');
-    const createClose = document.getElementById('dp-create-regime-close');
-    const createCancel = document.getElementById('dp-create-regime-cancel');
-    if (createDialog && createOpen) {
-      const closeDialog = () => createDialog.classList.remove('show');
-      createOpen.addEventListener('click', () => createDialog.classList.add('show'));
-      if (createClose) createClose.addEventListener('click', closeDialog);
-      if (createCancel) createCancel.addEventListener('click', closeDialog);
-      createDialog.addEventListener('click', (e) => {
-        if (e.target === createDialog) closeDialog();
-      });
-    }
-
-    // Dialogue "Liste de courses intelligente"
-    const shoppingDialog = document.getElementById('dp-shopping-modal');
-    const shoppingOpen = document.getElementById('dp-open-shopping-dialog');
-    const shoppingClose = document.getElementById('dp-shopping-close');
-    const shoppingBody = document.getElementById('dp-shopping-body');
-    if (shoppingDialog && shoppingOpen && shoppingBody) {
-      const closeShopping = () => shoppingDialog.classList.remove('show');
-      const renderShopping = (data) => {
-        if (!data || !Array.isArray(data.items) || data.items.length === 0) {
-          shoppingBody.innerHTML = '<p class="muted">Aucun ingrédient détecté à partir de vos repas. Ajoutez des détails dans les commentaires de vos repas (liste d\'aliments) pour générer une liste de courses.</p>';
-          return;
-        }
-        let html = '';
-        html += '<div class="muted" style="font-size:0.85rem;margin-bottom:0.5rem;">Basée sur vos repas du jour.</div>';
-        html += '<ul class="list-unstyled" style="max-height:260px;overflow-y:auto;margin-bottom:0.75rem;">';
-        data.items.forEach((item) => {
-          const count = item.count || 1;
-          const safeName = (item.name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          html += '<li style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">';
-          html += '<input type="checkbox" checked style="margin:0;">';
-          html += '<span style="flex:1;">' + safeName + (count > 1 ? ' <span class="label-mini">(x' + count + ')</span>' : '') + '</span>';
-          html += '</li>';
-        });
-        html += '</ul>';
-        if (data.totals) {
-          html += '<div class="summary-grid">';
-          html += '<div class="summary-item"><i class="fa fa-fire"></i>' + (data.totals.calories ?? 0) + ' kcal</div>';
-          html += '<div class="summary-item"><i class="fa fa-bolt"></i>P ' + (data.totals.proteines ?? 0) + ' g</div>';
-          html += '<div class="summary-item"><i class="fa fa-leaf"></i>C ' + (data.totals.glucides ?? 0) + ' g</div>';
-          html += '<div class="summary-item"><i class="fa fa-tint"></i>F ' + (data.totals.lipides ?? 0) + ' g</div>';
-          html += '</div>';
-        }
-        shoppingBody.innerHTML = html;
-      };
-
-      shoppingOpen.addEventListener('click', () => {
-        shoppingDialog.classList.add('show');
-        shoppingBody.innerHTML = '<p class="muted">Génération de votre liste de courses…</p>';
-        const url = shoppingOpen.dataset.url || '';
-        if (!url) {
-          shoppingBody.innerHTML = '<p class="text-danger">URL de l\'API manquante.</p>';
-          return;
-        }
-        fetch(url, {
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-          }
-        })
-          .then((res) => {
-            if (!res.ok) {
-              throw new Error('HTTP ' + res.status);
-            }
-            return res.json();
-          })
-          .then((data) => renderShopping(data))
-          .catch(() => {
-            shoppingBody.innerHTML = '<p class="text-danger">Impossible de générer la liste de courses pour le moment.</p>';
-          });
-      });
-      if (shoppingClose) shoppingClose.addEventListener('click', closeShopping);
-      shoppingDialog.addEventListener('click', (e) => {
-        if (e.target === shoppingDialog) closeShopping();
-      });
-    }
-
-    // Dialogue "Checklist du jour"
-    const checklistDialog = document.getElementById('dp-checklist-modal');
-    const checklistOpen = document.getElementById('dp-open-checklist-dialog');
-    const checklistClose = document.getElementById('dp-checklist-close');
-    if (checklistDialog && checklistOpen) {
-      const closeChecklist = () => checklistDialog.classList.remove('show');
-      checklistOpen.addEventListener('click', () => {
-        checklistDialog.classList.add('show');
-      });
-      if (checklistClose) checklistClose.addEventListener('click', closeChecklist);
-      checklistDialog.addEventListener('click', (e) => {
-        if (e.target === checklistDialog) closeChecklist();
-      });
-    }
-
-    // Dialogue "Daily plan de repas"
-    const dailyDialog = document.getElementById('dp-daily-plan-modal');
-    const dailyOpen = document.getElementById('dp-open-daily-plan-dialog');
-    const dailyClose = document.getElementById('dp-daily-plan-close');
-    if (dailyDialog && dailyOpen) {
-      const closeDaily = () => dailyDialog.classList.remove('show');
-      dailyOpen.addEventListener('click', () => {
-        dailyDialog.classList.add('show');
-      });
-      if (dailyClose) dailyClose.addEventListener('click', closeDaily);
-      dailyDialog.addEventListener('click', (e) => {
-        if (e.target === dailyDialog) closeDaily();
-      });
-    }
-
-    // Dialogues de modification de régime
-    document.querySelectorAll('[data-regime-edit-open]').forEach(btn => {
+    document.querySelectorAll('[data-regime-edit-open]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-regime-edit-open');
-        const modal = document.getElementById('dp-edit-regime-modal-' + id);
-        if (!modal) return;
-        modal.classList.add('show');
+        document.getElementById('dp-edit-regime-modal-' + id)?.classList.add('show');
       });
     });
 
-    document.querySelectorAll('[data-regime-edit-close]').forEach(btn => {
+    document.querySelectorAll('[data-regime-edit-close]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-regime-edit-close');
-        const modal = document.getElementById('dp-edit-regime-modal-' + id);
-        if (!modal) return;
-        modal.classList.remove('show');
+        document.getElementById('dp-edit-regime-modal-' + id)?.classList.remove('show');
       });
     });
 
-    document.querySelectorAll('[id^="dp-edit-regime-modal-"]').forEach(modal => {
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          modal.classList.remove('show');
-        }
+    document.querySelectorAll('[id^="dp-edit-regime-modal-"]').forEach((modal) => {
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal) modal.classList.remove('show');
       });
     });
 
-    // Tri / filtre / recherche dynamiques pour les régimes
-    const regimeList = document.getElementById('regime-list');
-    const sortSelect = document.getElementById('regime-sort');
-    const filterSelect = document.getElementById('regime-filter');
-    const searchInput = document.getElementById('regime-search');
+    document.querySelectorAll('[data-meal-edit-open]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-meal-edit-open');
+        const row = document.getElementById('meal-edit-' + id);
+        if (!row) return;
+        row.style.display = row.style.display === 'block' ? 'none' : 'block';
+      });
+    });
 
-    if (regimeList && sortSelect && filterSelect && searchInput) {
-      let sortOrder = sortSelect.value;
-      let filterType = '';
-      let searchText = '';
-      const regimeEmptyState = document.getElementById('regime-empty-state');
-
-      const getItems = () => Array.from(regimeList.querySelectorAll('.regime-item'));
-      const normalize = (value) => String(value || '')
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .trim();
-
-      function applyRegimeFilters() {
-        let items = getItems();
-        items.forEach(item => {
-          const type = normalize(item.dataset.type || '');
-          const searchData = normalize(item.dataset.search || '');
-          const cal = parseInt(item.dataset.calories || '0', 10) || 0;
-
-          let visible = true;
-          if (filterType) {
-            visible = visible && type === filterType;
-          }
-          if (searchText) {
-            visible = visible && searchData.includes(searchText);
-          }
-
-          item.style.display = visible ? '' : 'none';
-        });
-
-        // Tri après filtrage (on ne réordonne que les visibles)
-        let visibleItems = getItems().filter(i => i.style.display !== 'none');
-        visibleItems.sort((a, b) => {
-          const ca = parseInt(a.dataset.calories || '0', 10) || 0;
-          const cb = parseInt(b.dataset.calories || '0', 10) || 0;
-          return sortOrder === 'calories-asc' ? ca - cb : cb - ca;
-        });
-        visibleItems.forEach(item => regimeList.appendChild(item));
-
-        if (regimeEmptyState) {
-          regimeEmptyState.style.display = visibleItems.length === 0 ? 'block' : 'none';
+    const shoppingOpen = document.getElementById('dp-open-shopping-dialog');
+    const shoppingBody = document.getElementById('dp-shopping-body');
+    shoppingOpen?.addEventListener('click', async () => {
+      const url = shoppingOpen.dataset.url || '';
+      if (!url || !shoppingBody) return;
+      shoppingBody.innerHTML = '<div class="diet-empty">Generation de votre liste de courses...</div>';
+      try {
+        const response = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        const data = await response.json();
+        if (!response.ok || !Array.isArray(data.items) || data.items.length === 0) {
+          shoppingBody.innerHTML = '<div class="diet-empty">Aucun ingr&eacute;dient d&eacute;tect&eacute; pour le moment.</div>';
+          return;
         }
+        shoppingBody.innerHTML = data.items.map((item) => (
+          '<div class="diet-catalog-item"><strong>' + item.name + '</strong><p>Quantite estimee: x' + item.count + '</p></div>'
+        )).join('');
+      } catch (_) {
+        shoppingBody.innerHTML = '<div class="diet-empty">Impossible de generer la liste de courses pour le moment.</div>';
       }
+    });
 
-      sortSelect.addEventListener('change', (e) => {
-        sortOrder = e.target.value;
-        applyRegimeFilters();
-      });
-      filterSelect.addEventListener('change', (e) => {
-        filterType = normalize(e.target.value || '');
-        applyRegimeFilters();
-      });
-      searchInput.addEventListener('input', (e) => {
-        searchText = normalize(e.target.value || '');
-        applyRegimeFilters();
-      });
-
-      applyRegimeFilters();
-    }
-
-    // Chat IA régime : ouverture / fermeture
-    const chatOpenBtn = document.getElementById('ai-chat-open');
-    const chatModal = document.getElementById('ai-chat-modal');
-    const chatCloseBtn = document.getElementById('ai-chat-close');
-    const chatBody = document.getElementById('ai-chat-body');
-    const chatInput = document.getElementById('ai-chat-input');
-    const chatSend = document.getElementById('ai-chat-send');
-    const chatChips = document.querySelectorAll('.ai-chat-chip');
-
-    function openChat() {
-      if (!chatModal) return;
-      chatModal.classList.add('show');
-      if (chatInput) {
-        setTimeout(() => chatInput.focus(), 150);
-      }
-    }
-
-    function closeChat() {
-      if (!chatModal) return;
-      chatModal.classList.remove('show');
-    }
-
-    if (chatOpenBtn && chatModal) {
-      chatOpenBtn.addEventListener('click', openChat);
-      if (chatCloseBtn) chatCloseBtn.addEventListener('click', closeChat);
-      chatModal.addEventListener('click', (e) => {
-        if (e.target === chatModal) closeChat();
-      });
-    }
-
-    function escapeHtml(text) {
-      return String(text || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    function appendMessage(text, isUser = false, asHtml = false) {
-      if (!chatBody) return null;
-      const div = document.createElement('div');
-      div.className = 'ai-chat-msg ' + (isUser ? 'ai-chat-msg-user' : 'ai-chat-msg-bot');
-      if (asHtml) {
-        div.innerHTML = text;
-      } else {
-        div.textContent = text;
-      }
-      chatBody.appendChild(div);
-      chatBody.scrollTop = chatBody.scrollHeight;
-      return div;
-    }
-
-    function setChatBusy(busy) {
-      if (chatSend) chatSend.disabled = busy;
-      if (chatInput) chatInput.disabled = busy;
-      chatChips.forEach(chip => {
-        chip.style.pointerEvents = busy ? 'none' : 'auto';
-        chip.style.opacity = busy ? '0.6' : '1';
-      });
-    }
-
-    async function requestBotReply(message) {
-      const apiUrl = chatModal ? (chatModal.dataset.url || '') : '';
-      const csrf = chatModal ? (chatModal.dataset.token || '') : '';
-      if (!apiUrl || !csrf) {
-        throw new Error('Configuration API manquante.');
-      }
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 25000);
-
-      const resp = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        signal: controller.signal,
-        body: JSON.stringify({
-          message: message,
-          _token: csrf
-        })
-      });
-      clearTimeout(timeoutId);
-
-      const data = await resp.json().catch(() => ({}));
-      if (!resp.ok || data.error) {
-        throw new Error(data.error || ('HTTP ' + resp.status));
-      }
-
-      const reply = (data.reply || '').trim();
-      if (!reply) {
-        throw new Error('R�ponse vide.');
-      }
-
-      return reply;
-    }
-
-    async function handleUserMessage(text) {
-      const msg = (text || '').trim();
-      if (!msg) return;
-
-      appendMessage(msg, true);
-      const typing = appendMessage('...');
-      setChatBusy(true);
+    const hydrationBtn = document.getElementById('dp-hydration-add');
+    hydrationBtn?.addEventListener('click', async () => {
+      const url = hydrationBtn.dataset.url || '';
+      const token = hydrationBtn.dataset.token || '';
+      if (!url || !token) return;
 
       try {
-        const reply = await requestBotReply(msg);
-        if (typing && typing.parentNode) {
-          typing.parentNode.removeChild(typing);
-        }
-        appendMessage(escapeHtml(reply).replace(/\n/g, '<br>'), false, true);
-      } catch (err) {
-        if (typing && typing.parentNode) {
-          typing.parentNode.removeChild(typing);
-        }
-        appendMessage('Erreur API: ' + (err.message || 'inconnue'));
-      } finally {
-        setChatBusy(false);
-        if (chatInput) chatInput.focus();
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: new URLSearchParams({ _token: token })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.ok) return;
+        window.location.reload();
+      } catch (_) {
       }
-    }
+    });
 
-    if (chatSend && chatInput) {
-      chatSend.addEventListener('click', async () => {
-        await handleUserMessage(chatInput.value);
-        chatInput.value = '';
-      });
-      chatInput.addEventListener('keydown', async (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          await handleUserMessage(chatInput.value);
-          chatInput.value = '';
+    const barcodeForm = document.getElementById('dp-barcode-form');
+    const barcodeInput = document.getElementById('dp-barcode-input');
+    const barcodeStatus = document.getElementById('dp-barcode-status');
+    barcodeForm?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const barcode = String(barcodeInput?.value || '').trim();
+      const url = barcodeForm.dataset.url || '';
+      if (!barcode || !url) return;
+
+      barcodeStatus.textContent = 'Recherche du produit...';
+      try {
+        const response = await fetch(url + '?barcode=' + encodeURIComponent(barcode), {
+          headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.ok) {
+          barcodeStatus.textContent = data.message || 'Produit introuvable.';
+          return;
         }
-      });
-    }
 
-    chatChips.forEach(chip => {
-      chip.addEventListener('click', async () => {
-        const msg = chip.getAttribute('data-msg') || chip.textContent;
-        await handleUserMessage(msg);
-      });
+        const setValue = (id, value) => {
+          const input = document.getElementById(id);
+          if (input) input.value = value ?? '';
+        };
+
+        setValue('dp-manual-type', 'Extra meal');
+        setValue('dp-manual-name', data.food || '');
+        setValue('dp-manual-calories', Math.round(data.calories || 0));
+        setValue('dp-manual-protein', Math.round(data.protein || 0));
+        setValue('dp-manual-carbs', Math.round(data.carbs || 0));
+        setValue('dp-manual-fat', Math.round(data.fat || 0));
+        setValue('dp-manual-comment', data.comment || '');
+        barcodeStatus.textContent = 'Produit trouve. Ajout au regime en cours...';
+        document.getElementById('dp-manual-meal-form')?.submit();
+      } catch (_) {
+        barcodeStatus.textContent = 'OpenFoodFacts est temporairement indisponible.';
+      }
+    });
+
+    const scanAnalyzeBtn = document.getElementById('dp-scan-analyze-btn');
+    const scanStatusBox = document.getElementById('dp-scan-status-box');
+    const scanImageInput = document.getElementById('dp-scan-image-input');
+    scanAnalyzeBtn?.addEventListener('click', async () => {
+      const file = scanImageInput?.files && scanImageInput.files[0] ? scanImageInput.files[0] : null;
+      const url = scanOpen?.dataset.url || '';
+      const token = scanOpen?.dataset.token || '';
+      if (!file || !url || !token || !scanStatusBox) return;
+
+      const setStatus = (message, ok) => {
+        scanStatusBox.textContent = message;
+        scanStatusBox.style.display = 'block';
+        scanStatusBox.style.background = ok ? '#eefaf2' : '#fff2f2';
+        scanStatusBox.style.color = ok ? '#0a7d5c' : '#b54141';
+        scanStatusBox.style.border = ok ? '1px solid #b6ecd3' : '1px solid #efc0c0';
+      };
+
+      const payload = new FormData();
+      payload.append('image', file);
+      payload.append('_token', token);
+      setStatus('Analyse en cours...', true);
+      scanAnalyzeBtn.disabled = true;
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          body: payload,
+          headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || data.error) {
+          setStatus(data.error || 'Analyse indisponible.', false);
+          return;
+        }
+
+        const setValue = (id, value) => {
+          const input = document.getElementById(id);
+          if (input) input.value = value ?? '';
+        };
+
+        setValue('dp-scan-name', data.food || '');
+        setValue('dp-scan-calories', Math.round(data.calories || 0));
+        setValue('dp-scan-protein', Math.round(data.protein || 0));
+        setValue('dp-scan-carbs', Math.round(data.carbs || 0));
+        setValue('dp-scan-fat', Math.round(data.fat || 0));
+        setValue('dp-scan-comment', 'Source: analyse photo automatique.');
+        setStatus('Analyse terminee. Verifiez les champs puis ajoutez le repas.', true);
+      } catch (_) {
+        setStatus('Erreur pendant l analyse de la photo.', false);
+      } finally {
+        scanAnalyzeBtn.disabled = false;
+      }
     });
   });
 </script>
 {% endblock %}
 
 {% block footer %}{% endblock %}
-
-

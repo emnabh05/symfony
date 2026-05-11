@@ -1,204 +1,461 @@
-﻿{% set currentRoute = app.request.attributes.get('_route') %}
-{% set profileActive = currentRoute starts with 'app_profile' %}
+{% set currentRoute = app.request.attributes.get('_route')|default('') %}
+{% set isHome = currentRoute in ['home', 'home_public', 'home_public_slash', 'home_index_php', 'home_index_php_slash'] %}
+{% set isAbout = currentRoute == 'about' %}
+{% set isDiet = currentRoute == 'diet_planner' or currentRoute starts with 'diet_' %}
+{% set isSupplements = currentRoute == 'supplements' or currentRoute starts with 'app_shop_' %}
+{% set isFitness = currentRoute == 'fitness_planner' %}
+{% set isEvents = currentRoute == 'events' or currentRoute starts with 'reservation_' or currentRoute starts with 'waitlist_' or currentRoute starts with 'events_' %}
+{% set isCommunity = currentRoute == 'explore_forums_blogs' or currentRoute == 'blog' %}
+
+{% set dietHref = app.user ? path('diet_planner') : '#' %}
+{% set supplementsHref = app.user ? path('supplements') : '#' %}
+{% set fitnessHref = app.user ? path('fitness_planner') : '#' %}
+{% set eventsHref = app.user ? path('events') : '#' %}
+{% set communityHref = app.user ? path('explore_forums_blogs') : '#' %}
 
 <style>
-  #ftco-navbar.fitopia-navbar-modern {
-    background: #ffffff !important;
-    border-bottom: 1px solid #e5ecea;
-    box-shadow: 0 6px 18px rgba(16, 38, 45, 0.04);
-  }
-
-  .fitopia-navbar-modern .container {
-    max-width: 1320px;
-  }
-
-  .fitopia-navbar-modern .navbar-brand {
-    margin-right: 1.25rem;
-  }
-
-  .fitopia-navbar-modern .navbar-brand img {
-    width: 44px;
-    height: 44px;
-    object-fit: contain;
-  }
-
-  .fitopia-navbar-modern .navbar-nav {
-    align-items: center;
-    gap: .2rem;
-  }
-
-  .fitopia-navbar-modern .nav-link {
-    color: #18333f !important;
-    font-weight: 600;
-    padding: .9rem .8rem !important;
-    border-bottom: 2px solid transparent;
-    transition: color .18s ease, border-color .18s ease;
-  }
-
-  .fitopia-navbar-modern .nav-link:hover {
-    color: #0f7a5f !important;
-  }
-
-  .fitopia-navbar-modern .nav-item.active > .nav-link {
-    color: #0f7a5f !important;
-    border-bottom-color: #0f7a5f;
-  }
-
-  .fitopia-navbar-modern .fitopia-nav-right {
-    margin-left: auto;
+  .fitopia-global-topbar {
+    background: #0f7a5f;
+    color: #ffffff;
+    padding: 10px 38px;
     display: flex;
     align-items: center;
-    gap: .55rem;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 13px;
+    line-height: 1.35;
   }
 
-  .fitopia-navbar-modern .fitopia-login-link {
-    color: #0f7a5f;
-    font-weight: 700;
-    border: 1px solid #b9e0d3;
-    border-radius: 999px;
-    padding: .46rem .95rem;
-    text-decoration: none;
-    transition: all .18s ease;
-  }
-
-  .fitopia-navbar-modern .fitopia-login-link:hover {
-    background: #edf8f4;
-    color: #0d624c;
+  .fitopia-global-topbar a {
+    color: inherit;
     text-decoration: none;
   }
 
-  .fitopia-navbar-modern .fitopia-logout-link {
-    color: #b42340;
-    border-color: #f2ccd6;
-  }
-
-  .fitopia-navbar-modern .fitopia-logout-link:hover {
-    background: #fff1f4;
-    color: #9d1737;
-  }
-
-  .fitopia-navbar-modern .fitopia-user-toggle {
+  .fitopia-global-socials {
     display: inline-flex;
     align-items: center;
-    gap: .4rem;
-    max-width: 280px;
-    border: 1px solid #d4e3df;
+    gap: 26px;
+    flex-shrink: 0;
+  }
+
+  .fitopia-global-shell {
+    background: #ffffff;
+    border-bottom: 1px solid #d9e4ea;
+    box-shadow: 0 12px 30px rgba(15, 37, 65, 0.05);
+  }
+
+  .fitopia-global-shell .container-fluid {
+    padding: 0 18px;
+  }
+
+  .fitopia-main-nav {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 24px;
+    min-height: 128px;
+    padding: 18px 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+  }
+
+  .fitopia-main-nav::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .fitopia-main-nav::-webkit-scrollbar-thumb {
+    background: #d0dbe3;
     border-radius: 999px;
-    padding: .38rem .72rem;
-    color: #1f3a46 !important;
-    font-weight: 600;
+  }
+
+  .fitopia-brand {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-width: 84px;
     text-decoration: none;
-    background: #fff;
+    flex-shrink: 0;
   }
 
-  .fitopia-navbar-modern .fitopia-user-toggle span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .fitopia-brand img {
+    height: 40px;
+    width: auto;
+    display: block;
   }
 
-  .fitopia-navbar-modern .fitopia-user-toggle:hover,
-  .fitopia-navbar-modern .fitopia-user-toggle:focus {
-    background: #f5faf8;
-    color: #0f7a5f !important;
+  .fitopia-brand span {
+    color: #072f3f;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+  }
+
+  .fitopia-basic-links,
+  .fitopia-feature-links,
+  .fitopia-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    flex-shrink: 0;
+  }
+
+  .fitopia-feature-links {
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 14px;
+    flex-wrap: nowrap;
+  }
+
+  .fitopia-nav-spacer {
+    flex: 1 1 auto;
+    min-width: 20px;
+  }
+
+  .fitopia-basic-link {
+    position: relative;
+    color: #0f9b74;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.2;
+    text-decoration: none;
+    padding: 8px 0;
+  }
+
+  .fitopia-basic-link:hover {
+    color: #0f7a5f;
     text-decoration: none;
   }
 
-  @media (max-width: 991px) {
-    .fitopia-navbar-modern .navbar-nav {
-      align-items: stretch;
-      padding-top: .35rem;
+  .fitopia-basic-link.is-active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -10px;
+    height: 3px;
+    border-radius: 999px;
+    background: #0f9b74;
+  }
+
+  .fitopia-feature-link {
+    flex: 1 1 0;
+    min-width: 138px;
+    max-width: 168px;
+    min-height: 92px;
+    padding: 12px 12px;
+    border: 1px solid #cad9e3;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #08263a;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 11px;
+    line-height: 1.22;
+    font-weight: 900;
+    letter-spacing: 0.01em;
+    transition: border-color .2s ease, box-shadow .2s ease, color .2s ease, background .2s ease;
+  }
+
+  .fitopia-feature-link:hover {
+    text-decoration: none;
+    color: #0f7a5f;
+    border-color: #1cc48e;
+    box-shadow: 0 10px 24px rgba(20, 78, 66, 0.08);
+  }
+
+  .fitopia-feature-link.is-active {
+    border-color: #19c691;
+    box-shadow: inset 0 0 0 1px #19c691;
+  }
+
+  .fitopia-user-pill,
+  .fitopia-auth-link,
+  .fitopia-logout-link {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s ease;
+  }
+
+  .fitopia-user-pill {
+    min-width: 92px;
+    height: 64px;
+    padding: 0 22px;
+    border-radius: 999px;
+    background: #eef8f4;
+    border: 1px solid #cfe6db;
+    color: #0a6c59;
+    gap: 14px;
+    font-size: 22px;
+  }
+
+  .fitopia-user-pill:hover,
+  .fitopia-user-pill:focus {
+    color: #0a6c59;
+    text-decoration: none;
+    background: #e6f5ef;
+  }
+
+  .fitopia-logout-link {
+    min-width: 128px;
+    height: 74px;
+    padding: 0 24px;
+    border-radius: 18px;
+    border: 2px solid #f4c8d0;
+    background: #ffffff;
+    color: #ff3b30;
+    font-size: 16px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+  }
+
+  .fitopia-logout-link:hover {
+    color: #ff3b30;
+    text-decoration: none;
+    background: #fff8f9;
+  }
+
+  .fitopia-auth-link {
+    min-width: 118px;
+    height: 56px;
+    padding: 0 22px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .fitopia-auth-link.login {
+    border: 1px solid #cfe6db;
+    background: #eef8f4;
+    color: #0a6c59;
+  }
+
+  .fitopia-auth-link.register {
+    border: 1px solid #ffb9bc;
+    background: #ffffff;
+    color: #ff4b40;
+  }
+
+  .fitopia-auth-link:hover {
+    text-decoration: none;
+    opacity: .92;
+  }
+
+  .fitopia-profile-menu {
+    border: 0;
+    border-radius: 16px;
+    box-shadow: 0 16px 38px rgba(15, 37, 65, 0.12);
+    padding: 10px;
+    min-width: 240px;
+  }
+
+  .fitopia-profile-head {
+    padding: 10px 12px 12px;
+    border-bottom: 1px solid #edf2f7;
+    margin-bottom: 6px;
+  }
+
+  .fitopia-profile-head strong {
+    display: block;
+    color: #08263a;
+    font-size: 14px;
+  }
+
+  .fitopia-profile-head span {
+    display: block;
+    color: #6b7a8d;
+    font-size: 12px;
+    margin-top: 2px;
+    word-break: break-word;
+  }
+
+  .fitopia-profile-menu .dropdown-item {
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-weight: 700;
+    color: #123247;
+  }
+
+  .fitopia-profile-menu .dropdown-item:hover {
+    background: #f2f7fb;
+  }
+
+  .fitopia-nav-actions {
+    margin-left: auto;
+  }
+
+  .fitopia-user-pill::after {
+    display: none;
+  }
+
+  @media (max-width: 1760px) {
+    .fitopia-main-nav {
+      gap: 18px;
     }
 
-    .fitopia-navbar-modern .nav-link {
-      padding: .48rem .2rem !important;
-      border-bottom: 0;
+    .fitopia-basic-links,
+    .fitopia-nav-actions {
+      gap: 16px;
     }
 
-    .fitopia-navbar-modern .fitopia-nav-right {
-      margin-left: 0;
-      margin-top: .35rem;
+    .fitopia-feature-link {
+      min-width: 128px;
+      max-width: 156px;
+      min-height: 88px;
+      font-size: 10.5px;
+      padding: 10px 10px;
+    }
+  }
+
+  @media (max-width: 1280px) {
+    .fitopia-main-nav {
+      align-items: flex-start;
+      flex-wrap: wrap;
+      overflow-x: visible;
+    }
+
+    .fitopia-basic-links {
+      gap: 16px;
+    }
+
+    .fitopia-feature-links {
+      flex-basis: 100%;
+      order: 3;
+      flex-wrap: wrap;
+    }
+
+    .fitopia-nav-spacer {
+      display: none;
+    }
+
+    .fitopia-nav-actions {
+      order: 2;
+    }
+  }
+
+  @media (max-width: 991.98px) {
+    .fitopia-global-topbar {
+      padding: 10px 18px;
+      font-size: 12px;
+      flex-wrap: wrap;
+    }
+
+    .fitopia-main-nav {
+      min-height: auto;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      overflow-x: visible;
+    }
+
+    .fitopia-basic-links,
+    .fitopia-feature-links,
+    .fitopia-nav-actions {
       width: 100%;
       justify-content: flex-start;
+      flex-wrap: wrap;
     }
 
-    .fitopia-navbar-modern .fitopia-user-toggle,
-    .fitopia-navbar-modern .fitopia-login-link {
-      width: 100%;
-      border-radius: 10px;
-      justify-content: space-between;
-      padding: .55rem .75rem;
+    .fitopia-feature-link {
+      flex: 1 1 220px;
+      min-width: 220px;
+      max-width: none;
+    }
+
+    .fitopia-nav-actions {
+      margin-left: 0;
     }
   }
 </style>
 
-<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar fitopia-navbar-modern ftco-navbar-light" id="ftco-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="{{ path('home') }}">
-      <img src="{{ asset('images/logo.png') }}" alt="Fitopia Logo">
-    </a>
+<div class="fitopia-global-topbar">
+  <div>Phone no: +216 58 938 889 or email us: customerservice@fitopia.com</div>
+  <div class="fitopia-global-socials">
+    <a href="#">FB</a>
+    <a href="#">X</a>
+    <a href="#">IG</a>
+  </div>
+</div>
 
-    <button class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#ftco-nav" aria-controls="ftco-nav"
-            aria-expanded="false" aria-label="Toggle navigation">
-      <span class="fa fa-bars"></span> Menu
-    </button>
+<div class="fitopia-global-shell">
+  <div class="container-fluid">
+    <div class="fitopia-main-nav">
+      <a href="{{ path('home') }}" class="fitopia-brand" aria-label="Fitopia home">
+        <img src="{{ asset('images/logo.png') }}" alt="Fitopia logo">
+        <span>FITOPIA</span>
+      </a>
 
-    <div class="collapse navbar-collapse" id="ftco-nav">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item{% if currentRoute == 'home' %} active{% endif %}">
-          <a href="{{ path('home') }}" class="nav-link">Home</a>
-        </li>
-        <li class="nav-item{% if currentRoute == 'about' %} active{% endif %}">
-          <a href="{{ path('about') }}" class="nav-link">About Fitopia</a>
-        </li>
+      <div class="fitopia-basic-links">
+        <a href="{{ path('home') }}" class="fitopia-basic-link {{ isHome ? 'is-active' : '' }}">Home</a>
+        <a href="{{ path('about') }}" class="fitopia-basic-link {{ isAbout ? 'is-active' : '' }}">About<br>Fitopia</a>
+      </div>
 
+      <div class="fitopia-feature-links">
+        <a
+          href="{{ dietHref }}"
+          class="fitopia-feature-link {{ isDiet ? 'is-active' : '' }}"
+          {% if not app.user %}id="diet-planner-guest-btn"{% endif %}
+        >Explore<br>Our<br>Diet&amp;Eating<br>Planner</a>
+        <a
+          href="{{ supplementsHref }}"
+          class="fitopia-feature-link {{ isSupplements ? 'is-active' : '' }}"
+          {% if not app.user %}id="supplements-guest-btn"{% endif %}
+        >Explore<br>Our<br>Supplements</a>
+        <a
+          href="{{ fitnessHref }}"
+          class="fitopia-feature-link {{ isFitness ? 'is-active' : '' }}"
+          {% if not app.user %}id="fitness-planner-guest-btn"{% endif %}
+        >Explore<br>Our<br>Fitness<br>Planner</a>
+        <a
+          href="{{ eventsHref }}"
+          class="fitopia-feature-link {{ isEvents ? 'is-active' : '' }}"
+          {% if not app.user %}id="events-guest-btn"{% endif %}
+        >Explore<br>Our<br>Events</a>
+        <a
+          href="{{ communityHref }}"
+          class="fitopia-feature-link {{ isCommunity ? 'is-active' : '' }}"
+          {% if not app.user %}id="explore-guest-btn"{% endif %}
+        >Explore<br>Forums&amp;Blogs</a>
+      </div>
+
+      <div class="fitopia-nav-spacer"></div>
+
+      <div class="fitopia-nav-actions">
         {% if app.user %}
-          <li class="nav-item{% if currentRoute == 'diet_planner' or currentRoute starts with 'diet_' %} active{% endif %}">
-            <a class="nav-link" href="{{ path('diet_planner') }}" id="diet-planner-btn">Diet &amp; Eating Planner</a>
-          </li>
-          <li class="nav-item{% if currentRoute starts with 'fitness_planner' %} active{% endif %}">
-            <a class="nav-link" href="{{ path('fitness_planner') }}" id="fitness-planner-btn">Fitness Planner</a>
-          </li>
-          <li class="nav-item{% if currentRoute starts with 'app_supplement_' or currentRoute starts with 'app_shop_' %} active{% endif %}">
-            <a class="nav-link" href="{{ path('app_supplement_index') }}" id="supplements-btn">Supplements Shop</a>
-          </li>
-          <li class="nav-item{% if currentRoute == 'events' or currentRoute starts with 'events_' %} active{% endif %}">
-            <a class="nav-link" href="{{ path('events') }}" id="events-btn">Events</a>
-          </li>
-          <li class="nav-item{% if currentRoute starts with 'explore_' %} active{% endif %}">
-            <a class="nav-link" href="{{ path('explore_forums_blogs') }}">Forums &amp; Blogs</a>
-          </li>
+          <div class="dropdown">
+            <a
+              href="#"
+              class="fitopia-user-pill dropdown-toggle"
+              id="fitopiaUserMenu"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              <span class="fa fa-user"></span>
+              <span class="fa fa-angle-down" style="font-size:16px;"></span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right fitopia-profile-menu" aria-labelledby="fitopiaUserMenu">
+              <div class="fitopia-profile-head">
+                <strong>{{ app.user.userIdentifier }}</strong>
+                <span>{{ app.user.email }}</span>
+              </div>
+              <a class="dropdown-item" href="{{ path('diet_planner') }}">Open Diet Planner</a>
+            </div>
+          </div>
+          <a href="{{ path('app_logout') }}" class="fitopia-logout-link">Logout</a>
         {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="#" id="diet-planner-guest-btn">Diet &amp; Eating Planner</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" id="fitness-planner-guest-btn">Fitness Planner</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" id="supplements-guest-btn">Supplements Shop</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" id="events-guest-btn">Events</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" id="explore-guest-btn">Forums &amp; Blogs</a>
-          </li>
-        {% endif %}
-      </ul>
-
-      <div class="fitopia-nav-right">
-        {% if app.user %}
-          <a class="fitopia-user-toggle{% if profileActive %} active{% endif %}" href="{{ path('app_profile') }}">
-            <i class="fa fa-user-circle-o" aria-hidden="true"></i>
-            <span>{{ app.user.userIdentifier }}</span>
-          </a>
-          <a class="fitopia-login-link fitopia-logout-link" href="{{ path('app_logout') }}" id="global-logout-btn">Logout</a>
-        {% else %}
-          <a href="{{ path('app_login') }}" class="fitopia-login-link">Get Started</a>
+          <a href="{{ path('app_login') }}" class="fitopia-auth-link login">Login</a>
+          <a href="{{ path('app_register') }}" class="fitopia-auth-link register">Register</a>
         {% endif %}
       </div>
     </div>
   </div>
-</nav>
+</div>

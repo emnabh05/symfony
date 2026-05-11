@@ -17,6 +17,7 @@
       --events-brand-dark: #0b3a3d;
       --events-border: #dde6ef;
       --events-shadow: 0 20px 40px rgba(15, 32, 48, 0.08);
+      --events-page-gutter: clamp(18px, 2.8vw, 52px);
     }
     .events-shell {
       background: radial-gradient(circle at 18% 10%, #e5fff3 0%, transparent 32%),
@@ -27,7 +28,8 @@
       color: var(--events-text);
     }
     .events-container {
-      width: min(1180px, calc(100% - 32px));
+      width: calc(100% - (var(--events-page-gutter) * 2));
+      max-width: none;
       margin: 0 auto;
     }
     .events-hero {
@@ -618,31 +620,6 @@
       font-weight: 700;
       background: #fff;
     }
-    .social-proof {
-      margin-top: 26px;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-    }
-    .proof-card {
-      background: #fff;
-      border: 1px solid var(--events-border);
-      border-radius: 14px;
-      padding: 14px;
-      box-shadow: 0 12px 22px rgba(15, 32, 48, 0.06);
-    }
-    .proof-card p {
-      margin: 0;
-      color: #44526a;
-      line-height: 1.6;
-      font-size: 14px;
-    }
-    .proof-author {
-      margin-top: 10px;
-      font-size: 12px;
-      font-weight: 800;
-      color: #0f2b45;
-    }
     .empty-note {
       background: #fff;
       border: 1px solid var(--events-border);
@@ -660,7 +637,6 @@
       .events-grid { grid-template-columns: 1fr; }
       .details-header { grid-template-columns: 1fr; }
       .reviews-grid { grid-template-columns: 1fr; }
-      .social-proof { grid-template-columns: 1fr; }
       .loyalty-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .loyalty-benefits { grid-template-columns: 1fr; }
     }
@@ -672,6 +648,951 @@
       .recommend-grid { grid-template-columns: 1fr; }
       .event-title { font-size: 19px; }
       .event-description { min-height: 0; font-size: 15px; }
+    }
+
+    .events-shell {
+      background: radial-gradient(circle at 12% 0%, #effcf6 0%, transparent 27%),
+                  radial-gradient(circle at 94% 5%, #eff7ff 0%, transparent 23%),
+                  #f7fbf8;
+      padding: 18px 0 78px;
+    }
+
+    .events-container {
+      width: calc(100% - (var(--events-page-gutter) * 2));
+    }
+
+    .events-command-bar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .events-command-left,
+    .events-command-right,
+    .events-command-pills {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .events-command-right {
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .events-command-label {
+      color: #6a7d73;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+    }
+
+    .command-heart-btn,
+    .command-recommend-btn {
+      border: 1px solid #d9ebe2;
+      background: #fff;
+      color: #153f33;
+      text-decoration: none;
+      box-shadow: 0 10px 20px rgba(12, 45, 41, 0.05);
+    }
+
+    .command-heart-btn {
+      width: 58px;
+      height: 58px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #f43f5e;
+    }
+
+    .command-recommend-btn {
+      border-radius: 999px;
+      padding: 14px 28px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease;
+    }
+
+    .command-recommend-btn.is-active,
+    .command-recommend-btn:hover,
+    .command-heart-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 28px rgba(12, 45, 41, 0.08);
+    }
+
+    .command-pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 0;
+      color: #24453a;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .events-dock {
+      border: 1px solid #d9ebe2;
+      background: #ffffff;
+      border-radius: 28px;
+      padding: 24px;
+      margin-bottom: 18px;
+      box-shadow: 0 18px 36px rgba(11, 58, 61, 0.06);
+    }
+
+    .events-dock.is-hidden {
+      display: none;
+    }
+
+    .dock-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .dock-title {
+      margin: 0;
+      color: #153f33;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .dock-subtitle {
+      margin: 4px 0 0;
+      color: #667d73;
+      font-size: 14px;
+    }
+
+    .dock-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 114px;
+      min-height: 44px;
+      border-radius: 999px;
+      border: 1px solid #d9ebe2;
+      background: #f8fdfb;
+      color: #153f33;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .dock-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .dock-card {
+      border: 1px solid #e5edea;
+      border-radius: 20px;
+      background: #fbfefd;
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+      min-height: 210px;
+    }
+
+    .dock-card strong {
+      color: #0c2b22;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .dock-card p {
+      margin: 0;
+      color: #5d6d68;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .dock-chip-row,
+    .passport-chip-row,
+    .featured-chip-row,
+    .card-chip-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .dock-chip,
+    .passport-chip,
+    .featured-chip,
+    .card-chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .dock-chip {
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #bbf7d0;
+    }
+
+    .dock-action {
+      margin-top: auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      border-radius: 14px;
+      text-decoration: none;
+      background: #10b981;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      padding: 10px 14px;
+    }
+
+    .dock-action.is-disabled {
+      opacity: .55;
+      pointer-events: none;
+    }
+
+    .events-hero {
+      background: #ebf5ef;
+      border-radius: 32px;
+      padding: 36px;
+      box-shadow: 0 18px 36px rgba(11, 58, 61, 0.06);
+      margin-bottom: 28px;
+    }
+
+    .events-hero::after {
+      display: none;
+    }
+
+    .events-hero-grid {
+      display: grid;
+      grid-template-columns: minmax(560px, 820px) minmax(380px, 1fr);
+      gap: 32px;
+      align-items: center;
+    }
+
+    .events-hero-visual {
+      position: relative;
+      min-height: 470px;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 18px 32px rgba(8, 20, 28, 0.16);
+      background: #dce8e3 center/cover no-repeat;
+    }
+
+    .events-hero-visual::before {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 58%;
+      background: linear-gradient(to top, rgba(10, 27, 37, 0.82), rgba(10, 27, 37, 0.08));
+    }
+
+    .events-hero-overlay {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      max-width: 345px;
+      padding: 24px;
+      z-index: 1;
+    }
+
+    .events-story-chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 14px;
+      background: #ffffff;
+      color: #0c2b22;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .events-hero-overlay h2 {
+      margin: 0;
+      color: #ffffff;
+      font-size: clamp(28px, 2.3vw, 42px);
+      font-weight: 900;
+      line-height: 1.05;
+    }
+
+    .events-hero-copy {
+      display: grid;
+      gap: 18px;
+      align-content: center;
+    }
+
+    .events-mini-kicker {
+      color: #10b981;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+    }
+
+    .events-hero-copy h1 {
+      margin: 0;
+      color: #0c2b22;
+      font-size: clamp(38px, 3.7vw, 64px);
+      font-weight: 900;
+      line-height: 0.98;
+      max-width: 15ch;
+    }
+
+    .events-hero-text {
+      margin: 0;
+      color: #475a61;
+      font-size: 15px;
+      line-height: 1.7;
+      max-width: 60ch;
+    }
+
+    .events-hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .hero-btn {
+      min-height: 50px;
+      border-radius: 999px;
+      padding: 0 28px;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      box-shadow: none;
+    }
+
+    .hero-btn-primary {
+      background: #10b981;
+      color: #ffffff;
+    }
+
+    .hero-btn-secondary {
+      background: transparent;
+      border: 1px solid #10b981;
+      color: #10b981;
+    }
+
+    .hero-btn.is-disabled {
+      opacity: .55;
+      pointer-events: none;
+    }
+
+    .hero-link-btn {
+      color: #64748b;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      padding: 10px 4px;
+    }
+
+    .hero-signal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      padding-top: 10px;
+    }
+
+    .hero-signal-card {
+      border: 1px solid #e5edea;
+      border-radius: 18px;
+      background: #ffffff;
+      padding: 18px 22px;
+      min-height: 116px;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    .hero-signal-card strong {
+      color: #0c2b22;
+      font-size: 19px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .hero-signal-card span {
+      color: #617770;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .events-passport {
+      display: grid;
+      grid-template-columns: minmax(290px, .95fr) minmax(350px, 1.05fr) minmax(280px, .8fr) minmax(320px, .95fr);
+      gap: 24px;
+      background: #ffffff;
+      border: 1px solid #d9ebe2;
+      border-radius: 30px;
+      padding: 26px;
+      box-shadow: 0 18px 36px rgba(11, 58, 61, 0.05);
+      margin-bottom: 26px;
+    }
+
+    .passport-title,
+    .featured-kicker,
+    .stat-block-label,
+    .vip-progress-label {
+      color: #10b981;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .passport-identity {
+      color: #0c2b22;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.2;
+      margin: 12px 0 4px;
+      word-break: break-word;
+    }
+
+    .passport-subtitle {
+      color: #64748b;
+      font-size: 14px;
+      margin: 0 0 16px;
+    }
+
+    .passport-chip {
+      border: 1px solid transparent;
+      font-weight: 800;
+    }
+
+    .passport-chip.tier-bronze { background: #fff7ed; color: #c2410c; border-color: #fdba74; }
+    .passport-chip.tier-silver { background: #eef2ff; color: #334155; border-color: #cbd5e1; }
+    .passport-chip.tier-vip { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+    .passport-chip.access-active { background: #ecfdf5; color: #059669; border-color: #bbf7d0; }
+    .passport-chip.access-locked { background: #f8fafc; color: #64748b; border-color: #dbe3ea; }
+
+    .events-featured-card {
+      border: 1px solid #bff2db;
+      background: #fbfefd;
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 16px 30px rgba(16, 185, 129, 0.08);
+      display: grid;
+      gap: 16px;
+    }
+
+    .featured-title {
+      margin: 0;
+      color: #0c2b22;
+      font-size: 44px;
+      font-weight: 900;
+      line-height: 1;
+      text-transform: lowercase;
+    }
+
+    .featured-chip {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+    }
+
+    .featured-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      border-radius: 14px;
+      text-decoration: none;
+      background: #10b981;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 800;
+      padding: 10px 18px;
+    }
+
+    .featured-action.is-muted {
+      background: #9ca3af;
+      color: #ffffff;
+    }
+
+    .featured-action.is-disabled {
+      background: #d6dfe8;
+      color: #5c6a7f;
+      pointer-events: none;
+    }
+
+    .featured-description {
+      margin: 0;
+      color: #475a61;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .passport-insights {
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .stat-block {
+      border: 1px solid #eef2f7;
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 16px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .stat-block strong {
+      color: #0c2b22;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .vip-progress-card {
+      background: #f0faf5;
+      border: 1px solid rgba(16, 185, 129, 0.12);
+      border-radius: 22px;
+      padding: 16px 18px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .vip-progress-bar {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: #dbe9e2;
+      overflow: hidden;
+    }
+
+    .vip-progress-bar > span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #0f7a5f, #10b981);
+    }
+
+    .vip-progress-main {
+      margin: 0;
+      color: #065f46;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    .vip-progress-sub {
+      margin: 0;
+      color: #34d399;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.55;
+    }
+
+    .events-browse-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin: 8px 0 20px;
+    }
+
+    .events-browse-head h2 {
+      margin: 0;
+      color: #123d3a;
+      font-size: clamp(34px, 3vw, 58px);
+      font-weight: 900;
+      line-height: 0.96;
+    }
+
+    .events-browse-head p {
+      margin: 10px 0 0;
+      max-width: 58ch;
+      color: #72867b;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .result-count-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 108px;
+      min-height: 46px;
+      padding: 0 22px;
+      border-radius: 999px;
+      border: 1px solid #d7e8de;
+      background: #ffffff;
+      color: #123d3a;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 10px 24px rgba(11, 58, 61, 0.05);
+    }
+
+    .events-toolbar {
+      grid-template-columns: minmax(320px, 2.2fr) repeat(4, minmax(0, .92fr)) auto;
+      align-items: center;
+      gap: 14px;
+      border-radius: 34px;
+      padding: 18px;
+      border: 1px solid #d7e8de;
+      background: linear-gradient(180deg, #ffffff 0%, #fcfffd 100%);
+      box-shadow: 0 20px 38px rgba(11, 58, 61, 0.06);
+    }
+
+    .toolbar-search-slot,
+    .toolbar-filter-slot {
+      min-width: 0;
+    }
+
+    .toolbar-filter-slot--sort {
+      min-width: 220px;
+    }
+
+    .toolbar-pill {
+      display: flex;
+      align-items: stretch;
+      min-height: 60px;
+      border: 1px solid #cfe5d9;
+      border-radius: 24px;
+      background: #ffffff;
+      overflow: hidden;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+
+    .toolbar-pill .events-input,
+    .toolbar-pill .events-select {
+      min-height: 58px;
+      border: 0;
+      border-radius: 0;
+      font-size: 15px;
+      font-weight: 800;
+      padding: 0 18px;
+      color: #173f35;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .toolbar-pill .events-input:focus,
+    .toolbar-pill .events-select:focus {
+      outline: none;
+      border: 0;
+      box-shadow: none;
+    }
+
+    .toolbar-pill .events-select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      padding-right: 10px;
+    }
+
+    .toolbar-pill-tail {
+      flex: 0 0 54px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-left: 1px solid #d7eadf;
+      background: #eef8f2;
+      color: #4f7d6a;
+      font-size: 16px;
+    }
+
+    .events-date-input {
+      color: #173f35;
+    }
+
+    .events-input::placeholder {
+      color: #7e9489;
+      opacity: 1;
+      font-weight: 700;
+    }
+
+    .events-reset-btn {
+      min-height: 52px;
+      border: 0;
+      border-radius: 999px;
+      background: #194f43;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 900;
+      padding: 0 28px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.01em;
+      box-shadow: 0 14px 26px rgba(25, 79, 67, 0.16);
+    }
+
+    .events-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 28px;
+      align-items: start;
+      margin-top: 22px;
+    }
+
+    .event-card {
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid #dbe9e2;
+      box-shadow: 0 16px 30px rgba(15, 32, 48, 0.09);
+      background: #ffffff;
+    }
+
+    .event-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 42px rgba(15, 32, 48, 0.14);
+    }
+
+    .event-media-frame {
+      position: relative;
+      min-height: 312px;
+      overflow: hidden;
+      border-radius: 22px 22px 0 0;
+    }
+
+    .event-media {
+      aspect-ratio: auto;
+      width: 100%;
+      height: 312px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .event-media-frame::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 48%;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0));
+    }
+
+    .event-card-ribbon {
+      position: absolute;
+      top: 18px;
+      left: -31px;
+      z-index: 2;
+      transform: rotate(-45deg);
+      min-width: 120px;
+      text-align: center;
+      background: #e24031;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 7px 0;
+      letter-spacing: 0.02em;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+    }
+
+    .event-media-title {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 18px;
+      z-index: 2;
+      margin: 0;
+      color: #ffffff;
+      font-size: clamp(24px, 2vw, 38px);
+      font-weight: 900;
+      line-height: 1.05;
+      text-transform: uppercase;
+    }
+
+    .event-card-body {
+      padding: 16px 18px 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .card-chip-row {
+      gap: 8px;
+    }
+
+    .card-chip {
+      background: #f7faf8;
+      border: 1px solid #e4ece7;
+      color: #587067;
+    }
+
+    .event-mini-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .event-mini-note {
+      background: #fbfefd;
+      border: 1px solid #e4ece7;
+      border-radius: 14px;
+      padding: 10px 12px;
+      display: grid;
+      gap: 3px;
+    }
+
+    .event-mini-note strong {
+      color: #20443a;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .event-mini-note span {
+      color: #617770;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .event-actions-bar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1.2fr);
+      gap: 10px;
+      align-items: center;
+    }
+
+    .event-action-btn,
+    .event-book-btn,
+    .event-favorite-icon {
+      min-height: 44px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 900;
+      border: 0;
+    }
+
+    .event-action-btn {
+      background: #f1f5f9;
+      color: #31465f;
+    }
+
+    .event-favorite-icon {
+      width: 44px;
+      background: #f8fafc;
+      color: #64748b;
+      cursor: pointer;
+      border: 1px solid #e2e8f0;
+    }
+
+    .event-favorite-icon.active {
+      background: #fff1f2;
+      border-color: #fecdd3;
+      color: #ef4444;
+    }
+
+    .event-favorite-icon:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .event-actions-bar form {
+      margin: 0;
+    }
+
+    .event-book-btn {
+      background: #8d8d8d;
+      color: #ffffff !important;
+      text-transform: uppercase;
+      letter-spacing: 0.01em;
+      padding: 0 14px;
+    }
+
+    .event-book-btn:hover,
+    .event-book-btn:focus,
+    .event-book-btn:visited {
+      color: #ffffff !important;
+    }
+
+    .event-book-btn.is-muted {
+      background: #9ca3af;
+      color: #ffffff;
+    }
+
+    .event-book-btn.is-disabled {
+      background: #d6dfe8;
+      color: #5c6a7f;
+      pointer-events: none;
+    }
+
+    .selected-event-shell {
+      margin-top: 30px;
+    }
+
+    @media (max-width: 1480px) {
+      .events-hero-grid { grid-template-columns: 1fr; }
+      .events-passport { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .events-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .dock-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 1040px) {
+      .events-toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .toolbar-filter-slot--sort { min-width: 0; }
+      .hero-signal-grid { grid-template-columns: 1fr; }
+      .events-passport { grid-template-columns: 1fr; }
+      .events-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .events-container {
+        width: calc(100% - 18px);
+      }
+
+      .events-command-bar,
+      .events-browse-head,
+      .dock-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .events-hero,
+      .events-passport,
+      .events-dock {
+        padding: 20px;
+      }
+      .events-hero-grid {
+        gap: 20px;
+      }
+      .events-hero-visual {
+        min-height: 360px;
+      }
+      .events-hero-copy h1 {
+        max-width: 100%;
+      }
+      .events-toolbar {
+        grid-template-columns: 1fr;
+        padding: 16px;
+      }
+      .toolbar-pill {
+        min-height: 56px;
+      }
+      .toolbar-pill .events-input,
+      .toolbar-pill .events-select {
+        min-height: 54px;
+      }
+      .event-actions-bar {
+        grid-template-columns: 1fr 44px 1fr;
+      }
+      .dock-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 {% endblock %}
@@ -695,10 +1616,19 @@
 {% set canAccessVipEvents = canAccessVipEvents|default(false) %}
 {% set vipReservationThreshold = vipReservationThreshold|default(5) %}
 {% set recommendedEvents = recommendedEvents|default([]) %}
+{% set favoriteEvents = favoriteEvents|default([]) %}
 {% set popularityScores = popularityScores|default({}) %}
 {% set waitlistEntriesByEvent = waitlistEntriesByEvent|default({}) %}
 {% set eventIsFullById = eventIsFullById|default({}) %}
 {% set eventRemainingPlacesById = eventRemainingPlacesById|default({}) %}
+{% set eventImageUrls = eventImageUrls|default({}) %}
+{% set heroPulse = heroPulse|default({'score': 0, 'openCount': 0, 'savedCount': 0, 'totalCount': 0}) %}
+{% set heroSignals = heroSignals|default({'dnaValue': '84% match', 'dnaHint': 'Recommendation logic aligned this event with your current activity pattern.', 'energyValue': 'Explorer mode', 'energyHint': 'A flexible match for discovery and broad exploration.', 'vipPathValue': vipReservationThreshold ~ ' steps to VIP', 'vipPathHint': 'Connect a member account to activate loyalty memory and VIP tracking.'}) %}
+{% set featuredEvent = featuredEvent|default(null) %}
+{% set loyaltyIdentity = loyaltyIdentity|default(participantEmail ?? 'No connected member') %}
+{% set loyaltyAccessLabel = loyaltyAccessLabel|default(canAccessVipEvents ? 'VIP access active' : 'VIP access locked') %}
+{% set loyaltyMood = loyaltyMood|default('Discovery mode is well underway') %}
+{% set loyaltyBenefitsCopy = loyaltyBenefitsCopy|default('Priority access locked') %}
 {% set typeImages = {
   'Yoga': 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1400&q=80',
   'Nutrition': 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1400&q=80',
@@ -712,152 +1642,272 @@
     {% for message in app.flashes('error') %}<div class="alert alert-danger">{{ message }}</div>{% endfor %}
     {% for message in app.flashes('info') %}<div class="alert alert-info">{{ message }}</div>{% endfor %}
 
-    <header class="events-hero">
-      <div class="events-hero-content">
-        <div>
-          <span class="hero-kicker">Fitopia Events 2026</span>
-          <h1>Move With Purpose. Book Your Next Wellness Event.</h1>
-          <p class="hero-copy">
-            Premium coaching experiences, real community energy, and a fast secure registration flow.
-            Find the right event and reserve your spot in under a minute.
-          </p>
-          <div class="hero-ctas">
-            <a class="hero-btn hero-btn-primary" href="#events-catalog"><i class="fa fa-bolt"></i> Explore Events</a>
-            {% if upcomingEvent %}
-              {% set isUpcomingVipLocked = upcomingEvent.isPremium and not canAccessVipEvents %}
-              <a class="hero-btn hero-btn-secondary" {% if isUpcomingVipLocked %}style="opacity:.6;pointer-events:none;"{% endif %} href="{% if isUpcomingVipLocked %}#{% else %}{{ path('app_event_reservation_new', {id: upcomingEvent.id}) }}{% endif %}"><i class="fa fa-calendar-check-o"></i> Register Next Event</a>
-            {% endif %}
-          </div>
-        </div>
-        <aside class="featured-panel">
-          <h3><i class="fa fa-star"></i> Next Upcoming Event</h3>
-          {% if upcomingEvent %}
-            {% set featuredCount = stats[upcomingEvent.id].participants|default(0) %}
-            <div class="featured-meta">
-              <div><strong>{{ upcomingEvent.titre }}</strong></div>
-              <div><i class="fa fa-calendar"></i> {{ upcomingEvent.dateEvent|date('Y-m-d') }}</div>
-              <div><i class="fa fa-map-marker"></i> {{ upcomingEvent.lieu }}</div>
-              <div><i class="fa fa-users"></i> {{ featuredCount }}/{{ upcomingEvent.capacite }} participants</div>
-              <div><i class="fa fa-money"></i> {% if upcomingEvent.prixEvent|default('0') > 0 %}{{ upcomingEvent.prixEvent }} DT{% else %}Free{% endif %}</div>
-            </div>
-          {% else %}
-            <div class="featured-meta"><div>No event is scheduled yet.</div></div>
-          {% endif %}
-        </aside>
+    <div class="events-command-bar">
+      <div class="events-command-left">
+        <button type="button" class="command-heart-btn" id="favoritesDockButton" aria-expanded="false" aria-controls="favoritesDockSection" aria-label="Mes favoris">
+          <i class="fa fa-heart-o"></i>
+        </button>
+        <button type="button" class="command-recommend-btn" id="recommendationDockButton" aria-expanded="false" aria-controls="recommendationDockSection">
+          RECOMMENDATIONS
+        </button>
       </div>
-    </header>
-
-    <div class="trust-row">
-      <span class="trust-badge"><i class="fa fa-check-circle"></i> Verified Coaches</span>
-      <span class="trust-badge"><i class="fa fa-lock"></i> Secure Registration</span>
-      <span class="trust-badge"><i class="fa fa-shield"></i> GDPR Ready</span>
-      <span class="trust-badge"><i class="fa fa-star"></i> Rated 4.8/5 by Members</span>
-      <a class="trust-badge" href="{{ path('app_event_favorites') }}"><i class="fa fa-heart"></i> Mes favoris</a>
+      <div class="events-command-right">
+        <span class="events-command-label">Event pulse</span>
+        <div class="events-command-pills">
+          <span class="command-pill">Score {{ heroPulse.score|default(0) }}</span>
+          <span class="command-pill">{{ heroPulse.openCount|default(0) }} open</span>
+          <span class="command-pill">{{ heroPulse.savedCount|default(0) }} saved</span>
+        </div>
+      </div>
     </div>
-    <section aria-label="Recommandations IA">
-      <h3 class="h5 mb-2">Recommande pour vous</h3>
-      {% if recommendedEvents is not empty %}
-        <div class="recommend-grid">
-          {% for item in recommendedEvents %}
-            {% set recEvent = item.event %}
-            {% set isRecVipLocked = recEvent.isPremium and not canAccessVipEvents %}
-            {% set recImage = (recEvent.imageEvent and recEvent.imageEvent starts with 'event-') ? asset('uploads/events/' ~ recEvent.imageEvent) : typeImages[recEvent.typeEvent]|default('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1400&q=80') %}
-            <article class="recommend-card">
-              <img class="recommend-image" src="{{ recImage }}" alt="{{ recEvent.titre }}">
-              <div class="recommend-body">
-                <div class="recommend-top">
-                  <span class="recommend-score">Score {{ item.score }}</span>
-                  {% if recEvent.isPremium %}
-                    <span class="badge-insight badge-premium"><i class="fa fa-certificate"></i> Premium</span>
-                  {% endif %}
-                </div>
-                <h4>{{ recEvent.titre }}</h4>
-                <p class="recommend-meta">
-                  <span><i class="fa fa-calendar"></i> {{ recEvent.dateEvent|date('Y-m-d') }}</span>
-                  <span><i class="fa fa-map-marker"></i> {{ recEvent.lieu }}</span>
-                </p>
-                <a class="recommend-action {% if isRecVipLocked %}disabled{% endif %}" href="{% if isRecVipLocked %}#{% else %}{{ path('app_event_reservation_new', {id: recEvent.id}) }}{% endif %}">
-                  <i class="fa fa-check-circle"></i> {{ isRecVipLocked ? 'Reserve aux VIP' : 'Reserver' }}
-                </a>
+
+    <section class="events-dock is-hidden" id="favoritesDockSection" aria-label="Favorites dock">
+      <div class="dock-header">
+        <div>
+          <h3 class="dock-title">My favorites</h3>
+          <p class="dock-subtitle">Your saved picks appear here in a compact format for quick access.</p>
+        </div>
+        <span class="dock-count">{{ favoriteEvents|length }} favorites</span>
+      </div>
+      {% if favoriteEvents is not empty %}
+        <div class="dock-grid">
+          {% for favoriteEvent in favoriteEvents|slice(0, 4) %}
+            {% set favoritePrice = favoriteEvent.prixEvent|default('0') + 0 %}
+            {% set favoriteFull = eventIsFullById[favoriteEvent.id]|default(false) %}
+            {% set favoriteVipLocked = favoriteEvent.isPremium and not canAccessVipEvents %}
+            <article class="dock-card">
+              <div class="dock-chip-row">
+                <span class="dock-chip">{{ favoriteEvent.dateEvent|date('Y-m-d') }}</span>
+                <span class="dock-chip">{{ favoriteEvent.lieu }}</span>
               </div>
+              <strong>{{ favoriteEvent.titre }}</strong>
+              <p>{{ favoriteEvent.typeEvent }} | {{ favoritePrice > 0 ? favoriteEvent.prixEvent ~ ' DT' : 'Free' }}</p>
+              <a class="dock-action {% if favoriteVipLocked %}is-disabled{% endif %}" href="{% if favoriteVipLocked or favoriteFull %}{{ path('app_event_show', {id: favoriteEvent.id}) }}{% else %}{{ path('app_event_reservation_new', {id: favoriteEvent.id}) }}{% endif %}">
+                {% if favoriteVipLocked %}
+                  VIP ONLY
+                {% elseif favoriteFull %}
+                  VIEW DETAILS
+                {% else %}
+                  BOOK NOW
+                {% endif %}
+              </a>
             </article>
           {% endfor %}
         </div>
       {% else %}
-        <p class="recommend-empty">Aucune recommandation disponible pour le moment.</p>
+        <div class="empty-note">Add an event with the heart button to build your personal shortcut.</div>
       {% endif %}
     </section>
 
-    <section class="loyalty-overview">
-      <div class="loyalty-top">
-        <h3 class="loyalty-title"><i class="fa fa-trophy"></i> Mon statut fidelite</h3>
-        <span class="loyalty-badge loyalty-{{ loyaltyTier }}">{{ loyaltyTier }}</span>
+    <section class="events-dock is-hidden" id="recommendationDockSection" aria-label="Recommendations dock">
+      <div class="dock-header">
+        <div>
+          <h3 class="dock-title">My recommendations</h3>
+          <p class="dock-subtitle">A clean list with same-size cards so you can compare quickly.</p>
+        </div>
+        <span class="dock-count">{{ recommendedEvents|length }} recommendations</span>
       </div>
-      <div class="loyalty-grid">
-        <div class="loyalty-metric">
-          <strong>Reservations confirmees</strong>
-          <span>{{ loyaltyStats.countConfirmed|default(0) }}</span>
-        </div>
-        <div class="loyalty-metric">
-          <strong>Total depense</strong>
-          <span>{{ loyaltyStats.totalAmount|default(0)|number_format(2, '.', ' ') }} DT</span>
-        </div>
-        <div class="loyalty-metric">
-          <strong>Progression</strong>
-          <span>{{ loyaltyProgress.current|default(0) }}/{{ loyaltyProgress.needed|default(1) }} vers {{ loyaltyProgress.nextTier|default('Bronze') }}</span>
-        </div>
-        <div class="loyalty-metric">
-          <strong>Acces VIP</strong>
-          <span>{{ canAccessVipEvents ? 'Actif' : 'Non debloque' }}</span>
-        </div>
-      </div>
-      {% if loyaltyBenefits is not empty %}
-        <div class="loyalty-benefits">
-          {% for benefit in loyaltyBenefits %}
-            <article class="loyalty-benefit">
-              <strong>{{ benefit.title }}</strong>
-              <p>{{ benefit.text }}</p>
+      {% if recommendedEvents is not empty %}
+        <div class="dock-grid">
+          {% for item in recommendedEvents %}
+            {% set recEvent = item.event %}
+            {% set isRecVipLocked = recEvent.isPremium and not canAccessVipEvents %}
+            <article class="dock-card">
+              <div class="dock-chip-row">
+                <span class="dock-chip">Score {{ item.score }}</span>
+                {% if recEvent.isPremium %}
+                  <span class="dock-chip">Premium</span>
+                {% endif %}
+              </div>
+              <strong>{{ recEvent.titre }}</strong>
+              <p>{{ item.reason }}</p>
+              <div class="card-chip-row">
+                <span class="card-chip">{{ recEvent.dateEvent|date('Y-m-d') }}</span>
+                <span class="card-chip">{{ recEvent.lieu }}</span>
+              </div>
+              <a class="dock-action {% if isRecVipLocked %}is-disabled{% endif %}" href="{% if isRecVipLocked %}#{% else %}{{ path('app_event_show', {id: recEvent.id}) }}{% endif %}">
+                {{ isRecVipLocked ? 'VIP ONLY' : 'OPEN DETAILS' }}
+              </a>
             </article>
           {% endfor %}
         </div>
+      {% else %}
+        <div class="empty-note">Book or save events to unlock more personal suggestions.</div>
       {% endif %}
     </section>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="mb-0">Nos evenements</h2>
-      <a href="{{ path('app_reservation_history_index') }}" class="btn btn-outline-dark">
-        <i class="fa fa-book mr-1"></i> Mes reservations
-        {% if reservationsCount > 0 %}
-          <span class="badge bg-dark text-white ms-2">{{ reservationsCount }}</span>
+    <header class="events-hero">
+      <div class="events-hero-grid">
+        <div class="events-hero-visual" style="background-image:url('{{ asset('images/events/hero-collage.png') }}');">
+          <div class="events-hero-overlay">
+            <span class="events-story-chip">EVENT STORIES</span>
+            <h2>Move with the city, discover standout sessions, and keep your calendar full of energy.</h2>
+          </div>
+        </div>
+        <div class="events-hero-copy">
+          <span class="events-mini-kicker">FITOPIA EVENTS</span>
+          <h1>Discover events with premium energy and real vibe</h1>
+          <p class="events-hero-text">
+            Explore standout events, book faster, and keep your favorites and member benefits inside one clean white-and-green experience.
+          </p>
+          <div class="events-hero-actions">
+            <a class="hero-btn hero-btn-primary" href="#events-catalog">VIEW EVENTS</a>
+            {% if featuredEvent %}
+              {% set featuredVipLocked = featuredEvent.isPremium and not canAccessVipEvents %}
+              <a class="hero-btn hero-btn-secondary {% if featuredVipLocked %}is-disabled{% endif %}" href="{% if featuredVipLocked %}#{% else %}{{ path('app_event_reservation_new', {id: featuredEvent.id}) }}{% endif %}">
+                BOOK THE NEXT ONE
+              </a>
+            {% endif %}
+            <a class="hero-link-btn" href="{{ path('app_reservation_history_index') }}">MY BOOKINGS</a>
+          </div>
+          <div class="hero-signal-grid">
+            <article class="hero-signal-card">
+              <strong>{{ heroSignals.dnaValue|default('84% match') }}</strong>
+              <span>{{ heroSignals.dnaHint|default('Recommendation logic aligned this event with your current activity pattern.') }}</span>
+            </article>
+            <article class="hero-signal-card">
+              <strong>{{ heroSignals.energyValue|default('Explorer mode') }}</strong>
+              <span>{{ heroSignals.energyHint|default('A flexible match for discovery and broad exploration.') }}</span>
+            </article>
+            <article class="hero-signal-card">
+              <strong>{{ heroSignals.vipPathValue|default(vipReservationThreshold ~ ' steps to VIP') }}</strong>
+              <span>{{ heroSignals.vipPathHint|default('Connect a member account to activate loyalty memory and VIP tracking.') }}</span>
+            </article>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    {% set heroEvent = featuredEvent ?? upcomingEvent %}
+    {% set heroEventId = heroEvent and heroEvent.id ? heroEvent.id : 0 %}
+    {% set heroParticipants = heroEventId ? stats[heroEventId].participants|default(0) : 0 %}
+    {% set heroRemaining = heroEventId ? eventRemainingPlacesById[heroEventId]|default(heroEvent.capacite|default(0)) : 0 %}
+    {% set heroPrice = heroEvent ? (heroEvent.prixEvent|default('0') + 0) : 0 %}
+    {% set heroWaitlistEntry = heroEventId ? waitlistEntriesByEvent[heroEventId]|default(null) : null %}
+    {% set heroIsFull = heroEventId ? eventIsFullById[heroEventId]|default(false) : false %}
+    {% set heroVipLocked = heroEvent ? (heroEvent.isPremium and not canAccessVipEvents) : false %}
+
+    <section class="events-passport">
+      <div>
+        <span class="passport-title">LOYALTY PASSPORT</span>
+        <div class="passport-identity">{{ loyaltyIdentity|default('No connected member') }}</div>
+        <p class="passport-subtitle">Personal member profile</p>
+        <div class="passport-chip-row">
+          <span class="passport-chip {% if loyaltyTier == 'VIP' %}tier-vip{% elseif loyaltyTier == 'Silver' %}tier-silver{% else %}tier-bronze{% endif %}">{{ loyaltyTier }}</span>
+          <span class="passport-chip {% if canAccessVipEvents %}access-active{% else %}access-locked{% endif %}">{{ loyaltyAccessLabel|default(canAccessVipEvents ? 'VIP access active' : 'VIP access locked') }}</span>
+        </div>
+      </div>
+
+      <article class="events-featured-card" id="event-featured-card">
+        <div class="featured-chip-row">
+          <span class="featured-kicker">FEATURED EVENT</span>
+          {% if recommendedEvents is not empty %}
+            <span class="dock-chip">DNA {{ recommendedEvents[0].score }}%</span>
+          {% endif %}
+        </div>
+        <h3 class="featured-title">{{ heroEvent ? heroEvent.titre : 'No upcoming event' }}</h3>
+        {% if heroEvent %}
+          <div class="featured-chip-row">
+            <span class="featured-chip">Date: {{ heroEvent.dateEvent|date('Y-m-d') }}</span>
+            <span class="featured-chip">Location: {{ heroEvent.lieu }}</span>
+          </div>
+          <div class="featured-chip-row">
+            <span class="featured-chip">Participants: {{ heroParticipants }}/{{ heroEvent.capacite }}</span>
+            <span class="featured-chip">Price: {{ heroPrice > 0 ? heroEvent.prixEvent ~ ' DT' : 'Free' }}</span>
+          </div>
+          <p class="featured-description">{{ heroEvent.description|length > 160 ? heroEvent.description|slice(0, 160) ~ '...' : heroEvent.description }}</p>
+          {% if heroVipLocked %}
+            <span class="featured-action is-disabled">VIP ONLY</span>
+          {% elseif heroIsFull %}
+            {% if heroWaitlistEntry %}
+              <span class="featured-action is-muted">WAITLISTED</span>
+            {% else %}
+              <a class="featured-action is-muted" href="{{ path('app_waitlist_join_form', {id: heroEvent.id}) }}">JOIN WAITLIST</a>
+            {% endif %}
+          {% else %}
+            <a class="featured-action" href="{{ path('app_event_reservation_new', {id: heroEvent.id}) }}">BOOK THIS EVENT</a>
+          {% endif %}
+        {% else %}
+          <p class="featured-description">The next event will appear here.</p>
         {% endif %}
-      </a>
-    </div>
+      </article>
+
+      <div class="passport-insights">
+        <article class="stat-block">
+          <span class="stat-block-label">VALID BOOKINGS</span>
+          <strong>{{ loyaltyStats.countConfirmed|default(0) }} confirmed/used booking{{ loyaltyStats.countConfirmed|default(0) > 1 ? 's' : '' }}</strong>
+        </article>
+        <article class="stat-block">
+          <span class="stat-block-label">TOTAL SPENT</span>
+          <strong>{{ loyaltyStats.totalAmount|default(0)|number_format(2, '.', ' ') }} DT spent</strong>
+        </article>
+      </div>
+
+      <article class="vip-progress-card">
+        <span class="vip-progress-label">PROGRESS TO VIP</span>
+        <div class="vip-progress-bar">
+          <span style="width: {{ ((loyaltyProgress.ratio|default(0)) * 100)|number_format(0, '.', '') }}%;"></span>
+        </div>
+        <p class="vip-progress-main">{{ loyaltyProgress.current|default(0) }} valid booking(s) tracked | {{ loyaltyProgress.remaining|default(vipReservationThreshold) }} more to unlock VIP.</p>
+        <p class="vip-progress-main">{{ loyaltyMood|default('Discovery mode is well underway') }}</p>
+        <p class="vip-progress-sub">{{ loyaltyBenefitsCopy|default('Priority access locked') }}</p>
+      </article>
+    </section>
+
+    <section class="events-browse-head">
+      <div>
+        <h2>Explore events</h2>
+        <p>A clearer grid to compare seats, ratings, prices, and book without losing your flow.</p>
+      </div>
+      <span class="result-count-chip" id="resultCountLabel">{{ events|length }} events</span>
+    </section>
 
     <section class="events-toolbar" id="events-catalog" aria-label="Events filters">
-      <input id="eventSearch" class="events-input" type="search" placeholder="Search by title, location, or category..." value="{{ search|default('') }}">
-      <select id="eventCategory" class="events-select">
-        <option value="">All categories</option>
-        {% for type in types|default([]) %}<option value="{{ type }}">{{ type }}</option>{% endfor %}
-      </select>
-      <select id="eventDateFilter" class="events-select">
-        <option value="">All dates</option>
-        <option value="upcoming">Upcoming only</option>
-        <option value="this_month">This month</option>
-      </select>
-      <select id="eventPriceFilter" class="events-select">
-        <option value="">All prices</option>
-        <option value="free">Free</option>
-        <option value="paid">Paid</option>
-        <option value="under25">Under 25 DT</option>
-        <option value="under50">Under 50 DT</option>
-      </select>
-      <select id="eventSort" class="events-select">
-        <option value="date_asc">Sort: Date (soonest)</option>
-        <option value="date_desc">Sort: Date (latest)</option>
-        <option value="price_asc">Sort: Price (low-high)</option>
-        <option value="price_desc">Sort: Price (high-low)</option>
-        <option value="popularity_desc">Sort: Most popular</option>
-      </select>
+      <div class="toolbar-search-slot">
+        <div class="toolbar-pill">
+          <input id="eventSearch" class="events-input" type="search" placeholder="Search by title, location or category..." value="{{ search|default('') }}">
+        </div>
+      </div>
+      <div class="toolbar-filter-slot">
+        <div class="toolbar-pill">
+          <select id="eventCategory" class="events-select">
+            <option value="">All categories</option>
+            {% for type in types|default([]) %}<option value="{{ type }}" {% if selectedType|default('') == type %}selected{% endif %}>{{ type }}</option>{% endfor %}
+          </select>
+          <span class="toolbar-pill-tail" aria-hidden="true"><i class="fa fa-caret-down"></i></span>
+        </div>
+      </div>
+      <div class="toolbar-filter-slot">
+        <div class="toolbar-pill">
+          <input id="eventDateFilter" class="events-input events-date-input" type="date" aria-label="Filter by date">
+          <span class="toolbar-pill-tail" aria-hidden="true"><i class="fa fa-calendar"></i></span>
+        </div>
+      </div>
+      <div class="toolbar-filter-slot">
+        <div class="toolbar-pill">
+          <select id="eventPriceFilter" class="events-select">
+            <option value="">All prices</option>
+            <option value="free">Free</option>
+            <option value="paid">Paid</option>
+            <option value="under25">Under 25 DT</option>
+            <option value="under50">Under 50 DT</option>
+          </select>
+          <span class="toolbar-pill-tail" aria-hidden="true"><i class="fa fa-caret-down"></i></span>
+        </div>
+      </div>
+      <div class="toolbar-filter-slot toolbar-filter-slot--sort">
+        <div class="toolbar-pill">
+          <select id="eventSort" class="events-select">
+            <option value="date_asc">Sort: Date (soonest)</option>
+            <option value="date_desc">Sort: Date (latest)</option>
+            <option value="price_asc">Sort: Price (low-high)</option>
+            <option value="price_desc">Sort: Price (high-low)</option>
+            <option value="popularity_desc">Sort: Most popular</option>
+          </select>
+          <span class="toolbar-pill-tail" aria-hidden="true"><i class="fa fa-caret-down"></i></span>
+        </div>
+      </div>
+      <button type="button" class="events-reset-btn" id="eventClearFilters">Clear filters</button>
     </section>
 
     <div class="events-grid" id="eventsGrid">
@@ -891,7 +1941,7 @@
         {% set isVipLocked = isVipEvent and not canAccessVipEvents %}
         {% set waitlistEntry = waitlistEntriesByEvent[event.id]|default(null) %}
         {% set price = event.prixEvent|default('0') + 0 %}
-        {% set imageSrc = (event.imageEvent and event.imageEvent starts with 'event-') ? asset('uploads/events/' ~ event.imageEvent) : typeImages[event.typeEvent]|default('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1400&q=80') %}
+        {% set imageSrc = eventImageUrls[event.id]|default(typeImages[event.typeEvent]|default('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1400&q=80')) %}
         <article class="event-card js-event-card"
           data-title="{{ event.titre|lower }}"
           data-location="{{ event.lieu|lower }}"
@@ -899,77 +1949,49 @@
           data-date="{{ event.dateEvent|date('Y-m-d') }}"
           data-price="{{ price }}"
           data-popularity="{{ participants }}">
-          <img class="event-media" src="{{ imageSrc }}" alt="{{ event.titre }}">
-          <div class="event-body">
-            <div class="event-top">
-              <h3 class="event-title">
-                {{ event.titre }}
-                {% if badgeLabel %}
-                  <span class="badge-insight {{ badgeClass }}">{{ badgeLabel }}</span>
-                {% endif %}
-                {% if popularityScore > 20 %}
-                  <span class="badge-insight badge-recommended"><i class="fa fa-fire"></i> Tendance</span>
-                {% endif %}
-                {% if avgRating >= 4.5 %}
-                  <span class="badge-insight badge-premium"><i class="fa fa-star"></i> Top Note</span>
-                {% endif %}
-              </h3>
-              <span class="state-badge {% if isFull %}state-full{% else %}state-open{% endif %}">{% if isFull %}Complet{% else %}Ouvert{% endif %}</span>
+          {% set ribbonText = isFull ? 'FULL' : (event.isPremium ? 'PREMIUM' : 'EVENTS') %}
+          <div class="event-media-frame">
+            <img class="event-media" src="{{ imageSrc }}" alt="{{ event.titre }}">
+            <span class="event-card-ribbon">{{ ribbonText }}</span>
+            <h3 class="event-media-title">{{ event.titre }}</h3>
+          </div>
+          <div class="event-card-body">
+            <div class="card-chip-row">
+              <span class="card-chip">{{ event.typeEvent }}</span>
+              <span class="card-chip">{{ event.dateEvent|date('d M Y') }}</span>
+              <span class="card-chip">{{ event.lieu }}</span>
+              <span class="card-chip">{{ remainingPlaces }} spots left</span>
             </div>
-            <div class="event-engagement">
-              <span class="engage-chip"><i class="fa fa-heart text-danger"></i> {{ favoritesCount }} favoris</span>
-              <span class="engage-chip">
-                <span class="rating-stars">
-                  {% for i in 1..5 %}
-                    <i class="fa {% if avgRating >= i %}fa-star{% elseif avgRating >= (i - 0.5) %}fa-star-half-o{% else %}fa-star-o{% endif %}"></i>
-                  {% endfor %}
-                </span>
-                {{ avgRating|number_format(1, '.', ',') }}/5 ({{ reviewCount }})
-              </span>
+            <div class="event-mini-meta">
+              <div class="event-mini-note">
+                <strong>Rating</strong>
+                <span>{{ avgRating|number_format(1, '.', ',') }}/5 ({{ reviewCount }})</span>
+              </div>
+              <div class="event-mini-note">
+                <strong>Price</strong>
+                <span>{{ price > 0 ? event.prixEvent ~ ' DT' : 'Free' }}</span>
+              </div>
             </div>
-            <div class="event-meta">
-              <span class="event-pill"><i class="fa fa-calendar"></i> {{ event.dateEvent|date('Y-m-d') }}</span>
-              <span class="event-pill"><i class="fa fa-map-marker"></i> {{ event.lieu }}</span>
-              <span class="event-pill"><i class="fa fa-tag"></i> {{ event.typeEvent }}</span>
-              <span class="event-pill"><i class="fa fa-ticket"></i> {{ remainingPlaces }} places restantes</span>
-            </div>
-            <p class="event-description">{{ event.description|length > 170 ? event.description|slice(0, 170) ~ '...' : event.description }}</p>
-            <div class="event-actions">
+            <div class="event-actions-bar">
+              <a class="event-action-btn" href="{{ path('app_event_show', {id: event.id}) }}">DETAILS</a>
               <form method="post" action="{{ path('app_event_favorite_toggle', {id: event.id}) }}">
                 <input type="hidden" name="_token" value="{{ csrf_token('event_favorite_' ~ event.id) }}">
                 <input type="hidden" name="redirect_url" value="{{ app.request.uri }}">
-                <button type="submit" class="favorite-btn {% if isFavorited %}active{% endif %}" {% if not participantEmail %}disabled title="Connectez-vous ou reservez d'abord pour activer les favoris"{% endif %}>
-                  {% if isFavorited %}💔 Retirer{% else %}❤️ Favori{% endif %}
+                <button type="submit" class="event-favorite-icon {% if isFavorited %}active{% endif %}" {% if not participantEmail %}disabled title="Connectez-vous ou reservez d'abord pour activer les favoris"{% endif %}>
+                  <i class="fa {% if isFavorited %}fa-heart{% else %}fa-heart-o{% endif %}"></i>
                 </button>
               </form>
-              <div class="event-footer">
-                <div class="event-price">{% if price > 0 %}{{ event.prixEvent }} DT{% else %}Free{% endif %}</div>
-                <a class="register-btn" href="{{ path('app_event_show', {id: event.id}) }}">
-                  <i class="fa fa-info-circle"></i> Informations
-                </a>
-                {% if isFull and not isVipLocked %}
-                  {% if waitlistEntry %}
-                    <span class="engage-chip">Deja inscrit en waitlist ({{ waitlistEntry.status }})</span>
-                  {% else %}
-                    <form method="post" action="{{ path('app_waitlist_join', {id: event.id}) }}" class="d-flex flex-wrap gap-2 align-items-center">
-                      <input type="hidden" name="_token" value="{{ csrf_token('waitlist_join_' ~ event.id) }}">
-                      <input type="text" name="nom" class="events-input" style="min-height:38px;max-width:170px;" placeholder="Votre nom" required maxlength="150">
-                      <input type="email" name="email" class="events-input" style="min-height:38px;max-width:190px;" placeholder="Votre email" value="{{ participantEmail|default('') }}" required maxlength="150">
-                      <button type="submit" class="register-btn"><i class="fa fa-hourglass-half"></i> Rejoindre la liste d attente</button>
-                    </form>
-                  {% endif %}
+              {% if isVipLocked %}
+                <span class="event-book-btn is-disabled">VIP ONLY</span>
+              {% elseif isFull %}
+                {% if waitlistEntry %}
+                  <span class="event-book-btn is-muted">WAITLISTED</span>
                 {% else %}
-                  <a class="register-btn {% if loyaltyTier in ['Silver', 'Gold', 'VIP'] %}priority{% endif %} {% if isVipLocked %}disabled{% endif %}" href="{% if isVipLocked %}#{% else %}{{ path('app_event_reservation_new', {id: event.id}) }}{% endif %}">
-                    <i class="fa fa-check-circle"></i> {{ isVipLocked ? 'Reserve aux VIP' : 'Reserver' }}
-                  </a>
+                  <a class="event-book-btn is-muted" href="{{ path('app_waitlist_join_form', {id: event.id}) }}">JOIN WAITLIST</a>
                 {% endif %}
-                {% if loyaltyTier in ['Silver', 'Gold', 'VIP'] %}
-                  <span class="engage-chip">Reservation prioritaire</span>
-                {% endif %}
-                {% if isVipLocked %}
-                  <span class="vip-lock-note">Reserve aux VIP. Deviens VIP a partir de {{ vipReservationThreshold }} reservations.</span>
-                {% endif %}
-              </div>
+              {% else %}
+                <a class="event-book-btn" href="{{ path('app_event_reservation_new', {id: event.id}) }}">BOOK NOW</a>
+              {% endif %}
             </div>
           </div>
         </article>
@@ -991,7 +2013,7 @@
       {% set isSelectedVipLocked = isSelectedVipEvent and not canAccessVipEvents %}
       {% set selectedWaitlistEntry = waitlistEntriesByEvent[selectedEvent.id]|default(null) %}
       {% set selectedPrice = selectedEvent.prixEvent|default('0') + 0 %}
-      {% set selectedImage = (selectedEvent.imageEvent and selectedEvent.imageEvent starts with 'event-') ? asset('uploads/events/' ~ selectedEvent.imageEvent) : typeImages[selectedEvent.typeEvent]|default('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1400&q=80') %}
+      {% set selectedImage = eventImageUrls[selectedEvent.id]|default(typeImages[selectedEvent.typeEvent]|default('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1400&q=80')) %}
       <section class="details-panel" id="event-register">
         <div class="details-header">
           <div>
@@ -1157,20 +2179,6 @@
       </section>
     {% endif %}
 
-    <section class="social-proof">
-      <article class="proof-card">
-        <p>"Fitopia events are the first wellness sessions I never miss. Coaching quality is elite."</p>
-        <div class="proof-author">Nadia H. • Member</div>
-      </article>
-      <article class="proof-card">
-        <p>"Registration is fast and clear. I always know what to expect before I arrive."</p>
-        <div class="proof-author">Karim B. • Athlete</div>
-      </article>
-      <article class="proof-card">
-        <p>"Great balance between nutrition and training events. The platform feels premium."</p>
-        <div class="proof-author">Sarra M. • Coach</div>
-      </article>
-    </section>
   </div>
 </section>
 {% endblock %}
@@ -1187,6 +2195,19 @@
       const sortSelect = document.getElementById('eventSort');
       const reviewSortSelect = document.getElementById('reviewSortSelect');
       const grid = document.getElementById('eventsGrid');
+      const clearFiltersBtn = document.getElementById('eventClearFilters');
+      const resultCountLabel = document.getElementById('resultCountLabel');
+      const favoritesDockButton = document.getElementById('favoritesDockButton');
+      const favoritesDockSection = document.getElementById('favoritesDockSection');
+      const recommendationDockButton = document.getElementById('recommendationDockButton');
+      const recommendationDockSection = document.getElementById('recommendationDockSection');
+
+      const toggleDock = (button, section) => {
+        if (!button || !section) return;
+        const isHidden = section.classList.toggle('is-hidden');
+        button.classList.toggle('is-active', !isHidden);
+        button.setAttribute('aria-expanded', String(!isHidden));
+      };
 
       reviewSortSelect?.addEventListener('change', () => {
         const url = new URL(window.location.href);
@@ -1194,13 +2215,7 @@
         window.location.href = url.toString();
       });
 
-      if (!grid || cards.length === 0) return;
-
       const getDateNum = (value) => new Date(value + 'T00:00:00').getTime();
-      const now = new Date();
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).getTime();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
       function matchesFilters(card) {
         const q = (searchInput?.value || '').trim().toLowerCase();
@@ -1218,8 +2233,7 @@
         const catOk = cat === '' || category === cat.toLowerCase();
         const dateOk =
           dateMode === '' ||
-          (dateMode === 'upcoming' && eventDate >= today) ||
-          (dateMode === 'this_month' && eventDate >= monthStart && eventDate <= monthEnd);
+          eventDate >= getDateNum(dateMode);
         const priceOk =
           priceMode === '' ||
           (priceMode === 'free' && price === 0) ||
@@ -1252,6 +2266,9 @@
         const visible = sortCards(cards.filter(matchesFilters));
         grid.innerHTML = '';
         visible.forEach((card) => grid.appendChild(card));
+        if (resultCountLabel) {
+          resultCountLabel.textContent = `${visible.length} event${visible.length > 1 ? 's' : ''}`;
+        }
         if (visible.length === 0) {
           const note = document.createElement('div');
           note.className = 'empty-note';
@@ -1265,10 +2282,25 @@
         el?.addEventListener('change', applyFilters);
       });
 
+      clearFiltersBtn?.addEventListener('click', () => {
+        if (searchInput) searchInput.value = '';
+        if (categorySelect) categorySelect.value = '';
+        if (dateSelect) dateSelect.value = '';
+        if (priceSelect) priceSelect.value = '';
+        if (sortSelect) sortSelect.value = 'date_asc';
+        applyFilters();
+      });
+
+      favoritesDockButton?.addEventListener('click', () => toggleDock(favoritesDockButton, favoritesDockSection));
+      recommendationDockButton?.addEventListener('click', () => {
+        toggleDock(recommendationDockButton, recommendationDockSection);
+      });
+
+      if (!grid || cards.length === 0) return;
+
       applyFilters();
     });
   </script>
 {% endblock %}
 
 {% block footer %}{% endblock %}
-

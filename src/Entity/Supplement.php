@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SupplementRepository::class)]
-#[ORM\Table(name: 'supplement')]
+#[ORM\Table(name: 'supplements')]
 #[ORM\HasLifecycleCallbacks]
 class Supplement
 {
@@ -31,7 +31,7 @@ class Supplement
     )]
     private string $name = '';
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Category is required.')]
     #[Assert\Length(
         max: 100,
@@ -39,7 +39,7 @@ class Supplement
     )]
     private string $category = '';
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Brand is required.')]
     #[Assert\Length(
         max: 100,
@@ -79,15 +79,21 @@ class Supplement
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
-    #[ORM\Column(options: ['default' => 56])]
+    #[ORM\Column(name: 'recommended_duration_days', options: ['default' => 30])]
     #[Assert\Positive(message: 'Recommended duration must be greater than 0 days.')]
-    private int $recommendedDurationDays = 56;
+    private int $recommendedDurationDays = 30;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(name: 'created_at', type: Types::DATETIME_MUTABLE)]
     private \DateTimeInterface $createdAt;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(name: 'updated_at', type: Types::DATETIME_MUTABLE)]
     private \DateTimeInterface $updatedAt;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $manufacturer = null;
+
+    #[ORM\Column(name: 'minimum_stock_threshold', options: ['default' => 10])]
+    private int $minimumStockThreshold = 10;
 
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
@@ -134,4 +140,12 @@ class Supplement
     public function setCreatedAt(\DateTimeInterface $createdAt): static { $this->createdAt = $createdAt; return $this; }
     public function getUpdatedAt(): \DateTimeInterface { return $this->updatedAt; }
     public function setUpdatedAt(\DateTimeInterface $updatedAt): static { $this->updatedAt = $updatedAt; return $this; }
+    public function getManufacturer(): ?string { return $this->manufacturer; }
+    public function setManufacturer(?string $manufacturer): static { $this->manufacturer = $manufacturer; return $this; }
+    public function getMinimumStockThreshold(): int { return $this->minimumStockThreshold; }
+    public function setMinimumStockThreshold(int $minimumStockThreshold): static
+    {
+        $this->minimumStockThreshold = max(0, $minimumStockThreshold);
+        return $this;
+    }
 }

@@ -1,0 +1,214 @@
+.diet-setup-root {
+    -fx-background-color:
+        radial-gradient(center 18% 8%, radius 30%, rgba(185, 241, 212, 0.34), transparent 60%),
+        radial-gradient(center 88% 10%, radius 24%, rgba(224, 246, 233, 0.72), transparent 52%),
+        linear-gradient(to bottom, #f7fcf9, #eef7f1);
+}
+
+.diet-setup-page {
+    -fx-background-color: transparent;
+}
+
+.diet-setup-hero {
+    -fx-background-color:
+        radial-gradient(center 88% 14%, radius 26%, rgba(193, 243, 213, 0.44), transparent 58%),
+        linear-gradient(to bottom right, #fbfffc 0%, #f1faf5 100%);
+    -fx-background-radius: 34px;
+    -fx-border-color: rgba(39, 137, 93, 0.14);
+    -fx-border-radius: 34px;
+    -fx-padding: 28;
+    -fx-effect: dropshadow(gaussian, rgba(13, 74, 52, 0.08), 28, 0.12, 0, 8);
+}
+
+.diet-setup-hero-copy {
+    -fx-padding: 10 6 10 4;
+}
+
+.diet-setup-kicker {
+    -fx-text-fill: #12a166;
+    -fx-font-size: 13px;
+    -fx-font-weight: 900;
+    -fx-letter-spacing: 1.3px;
+}
+
+.diet-setup-title {
+    -fx-text-fill: #083d2e;
+    -fx-font-size: 42px;
+    -fx-font-weight: 900;
+    -fx-line-spacing: 4px;
+}
+
+.diet-setup-subtitle {
+    -fx-text-fill: #557468;
+    -fx-font-size: 15px;
+    -fx-line-spacing: 3px;
+}
+
+.diet-setup-note-card {
+    -fx-background-color:
+        radial-gradient(center 84% 18%, radius 32%, rgba(255,255,255,0.12), transparent 58%),
+        linear-gradient(to right, #169964 0%, #0f6d48 100%);
+    -fx-background-radius: 26px;
+    -fx-border-radius: 26px;
+    -fx-padding: 18 18 18 18;
+}
+
+.diet-setup-note-title {
+    -fx-text-fill: rgba(239, 251, 244, 0.82);
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+}
+
+.diet-setup-note-text {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-line-spacing: 2px;
+}
+
+.diet-setup-form-shell {
+    -fx-background-color: rgba(255, 255, 255, 0.92);
+    -fx-background-radius: 30px;
+    -fx-border-color: #d7eadf;
+    -fx-border-radius: 30px;
+    -fx-padding: 24;
+}
+
+.diet-setup-form-title {
+    -fx-text-fill: #0e4333;
+    -fx-font-size: 28px;
+    -fx-font-weight: 900;
+}
+
+.diet-setup-form-subtitle {
+    -fx-text-fill: #71837a;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+}
+
+.diet-setup-grid {
+    -fx-padding: 6 0 0 0;
+}
+
+.diet-setup-field-card {
+    -fx-background-color: linear-gradient(to bottom, #f7fbf8 0%, #f2f7f4 100%);
+    -fx-background-radius: 24px;
+    -fx-border-color: #dbe9e1;
+    -fx-border-radius: 24px;
+    -fx-padding: 18 18 18 18;
+}
+
+.diet-setup-field-card-large {
+    -fx-padding: 18 18 20 18;
+}
+
+.diet-setup-field-label {
+    -fx-text-fill: #173d31;
+    -fx-font-size: 15px;
+    -fx-font-weight: 900;
+}
+
+.diet-setup-text-field,
+.diet-setup-combo,
+.diet-setup-text-area {
+    -fx-background-color: #ffffff, #ffffff, #ffffff;
+    -fx-control-inner-background: #ffffff;
+    -fx-border-color: #d7e6de;
+    -fx-text-fill: #173d31;
+    -fx-prompt-text-fill: #8aa095;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 18px;
+    -fx-border-radius: 18px;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+    -fx-padding: 13 16 13 16;
+}
+
+.diet-setup-text-field-readonly {
+    -fx-opacity: 1;
+    -fx-background-color: #ffffff, #ffffff, #ffffff;
+    -fx-control-inner-background: #ffffff;
+    -fx-background-insets: 0;
+}
+
+.diet-setup-combo .list-cell {
+    -fx-text-fill: #173d31;
+    -fx-font-weight: 700;
+    -fx-background-color: transparent;
+}
+
+.diet-setup-combo .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.diet-setup-combo .arrow {
+    -fx-background-color: #7d968a;
+}
+
+.diet-setup-text-area {
+    -fx-padding: 0;
+}
+
+.diet-setup-text-area .content {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 18px;
+    -fx-padding: 14 16 14 16;
+}
+
+.diet-setup-combo,
+.diet-setup-combo:disabled,
+.diet-setup-combo:focused,
+.diet-setup-combo-base,
+.diet-setup-combo-base:disabled {
+    -fx-opacity: 1;
+    -fx-background-color: #ffffff, #ffffff, #ffffff;
+    -fx-control-inner-background: #ffffff;
+    -fx-border-color: #d7e6de;
+}
+
+.diet-setup-combo:disabled .arrow,
+.diet-setup-combo-base:disabled .arrow {
+    -fx-background-color: #7d968a;
+}
+
+.diet-setup-text-field-readonly,
+.diet-setup-text-field-readonly:focused,
+.diet-setup-text-field-readonly:readonly {
+    -fx-background-color: #ffffff, #ffffff, #ffffff;
+    -fx-control-inner-background: #ffffff;
+    -fx-text-fill: #173d31;
+    -fx-highlight-fill: #dff4e8;
+    -fx-highlight-text-fill: #173d31;
+}
+
+.diet-setup-auto-field,
+.diet-setup-auto-field:focused,
+.diet-setup-auto-field:readonly,
+.diet-setup-auto-field.text-input,
+.diet-setup-auto-field.text-input:focused,
+.diet-setup-auto-field.text-input:readonly {
+    -fx-background-color: #ffffff, #ffffff, #ffffff;
+    -fx-background-insets: 0, 0, 0;
+    -fx-border-color: #d7e6de;
+    -fx-border-width: 1;
+    -fx-border-radius: 18px;
+    -fx-background-radius: 18px;
+    -fx-control-inner-background: #ffffff;
+    -fx-text-fill: #173d31;
+    -fx-prompt-text-fill: #8aa095;
+    -fx-highlight-fill: #dff4e8;
+    -fx-highlight-text-fill: #173d31;
+    -fx-opacity: 1;
+}
+
+.diet-setup-status {
+    -fx-background-color: #f3faf6;
+    -fx-background-radius: 18px;
+    -fx-border-color: #d7eadf;
+    -fx-border-radius: 18px;
+    -fx-padding: 12 14 12 14;
+    -fx-text-fill: #4e7264;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+}

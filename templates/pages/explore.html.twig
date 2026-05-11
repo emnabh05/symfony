@@ -1,504 +1,1796 @@
-﻿{% extends 'base.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block title %}Explore Forums & Blogs | Fitopia{% endblock %}
+{% block title %}Fitopia Community | Blog & Forum{% endblock %}
 
 {% block stylesheets %}
 <style>
-  :root{
-    --primary-500:#17966f;
-    --primary-600:#117e5d;
-    --primary-700:#0d644a;
-    --neutral-0:#ffffff;
-    --neutral-50:#f8fbfa;
-    --neutral-100:#eef3f2;
-    --neutral-200:#d9e2e0;
-    --neutral-400:#5f6f69;
-    --neutral-700:#213038;
-    --accent-500:#2d6cdf;
-    --accent-100:#eaf1ff;
-    --danger-100:#ffe9ef;
-    --danger-500:#d84367;
-    --radius-lg:18px;
-    --radius-md:14px;
-    --shadow-soft:0 10px 30px rgba(20,42,36,.08);
-    --shadow-hover:0 20px 40px rgba(20,42,36,.14);
+  :root {
+    --explore-bg: #f5fbf8;
+    --explore-surface: #ffffff;
+    --explore-border: #d9ebe2;
+    --explore-border-strong: #cfe5dc;
+    --explore-text: #12343b;
+    --explore-muted: #6e8b82;
+    --explore-brand: #1f9d6f;
+    --explore-brand-dark: #0d6a4f;
+    --explore-pill: #f5f7fb;
+    --explore-shadow: 0 18px 40px rgba(17, 58, 46, 0.08);
+    --explore-shadow-hover: 0 22px 42px rgba(17, 58, 46, 0.12);
+    --explore-gutter: clamp(6px, 0.8vw, 18px);
   }
 
-  .container-fluid.py-5{
+  .community-page {
+    min-height: 100vh;
     background:
-      radial-gradient(circle at 0% 0%,rgba(23,150,111,.14) 0%,transparent 26%),
-      radial-gradient(circle at 100% 12%,rgba(45,108,223,.12) 0%,transparent 30%),
-      linear-gradient(180deg,#f7fbf9 0%,#f4f8f7 100%);
-    min-height:100vh;
-    padding-top:2.2rem!important;
-    padding-bottom:4rem!important;
+      radial-gradient(circle at top left, rgba(34, 197, 94, 0.12), transparent 24%),
+      radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 22%),
+      linear-gradient(180deg, #f8fcfb 0%, #f3faf7 100%);
+    padding-bottom: 46px;
   }
 
-  .explore-shell{max-width:1320px;margin:0 auto;display:grid;gap:1.4rem}
-  .explore-layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:1.1rem;align-items:start}
-  .feed-column{display:grid;gap:1.2rem}
-
-  .explore-hero{
-    background:linear-gradient(130deg,#0e6b50 0%,#17966f 56%,#2ba486 100%);
-    color:#fff;
-    border-radius:24px;
-    padding:1.5rem 1.6rem;
-    position:relative;
-    overflow:hidden;
-    box-shadow:var(--shadow-hover);
-  }
-  .explore-hero::after{content:"";position:absolute;right:-70px;top:-70px;width:220px;height:220px;border-radius:999px;background:rgba(255,255,255,.13)}
-  .hero-logo-badge{position:absolute;right:20px;top:16px;width:56px;height:56px;border-radius:16px;border:1px solid rgba(255,255,255,.38);background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center}
-  .hero-logo-badge img{width:32px;height:32px}
-  .hero-horizontal{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:1rem}
-  .explore-hero h2{font-size:clamp(1.45rem,2.8vw,2rem);line-height:1.2;margin:0 0 .55rem;font-weight:800}
-  .explore-hero p{margin:0;line-height:1.55;max-width:60ch;opacity:.95}
-  .hero-points{margin:.9rem 0 0;padding-left:1rem;display:grid;gap:.25rem;font-size:.9rem}
-  .image-holder{border-radius:16px;height:180px;overflow:hidden;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.14)}
-  .hero-actions-inline{display:flex;gap:.55rem;flex-wrap:wrap;margin-top:.7rem}
-
-  .btn{border-radius:999px;font-weight:700;transition:all .2s ease}
-  .btn:focus-visible,.link-btn:focus-visible,.dm-item:focus-visible,.dm-start-btn:focus-visible{outline:2px solid var(--accent-500);outline-offset:2px}
-  .btn-primary{background:linear-gradient(130deg,var(--primary-600),var(--primary-500));border-color:var(--primary-600)}
-  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(17,126,93,.24);background:linear-gradient(130deg,var(--primary-700),var(--primary-600))}
-  .btn-outline-light{border-color:rgba(255,255,255,.7)}
-  .btn-outline-light:hover{background:#fff;color:var(--primary-700)}
-  .btn-outline-primary{border-color:var(--primary-500);color:var(--primary-600)}
-  .btn-outline-primary:hover{background:var(--primary-600);color:#fff}
-
-  .dm-panel{background:var(--neutral-0);border-radius:22px;border:1px solid var(--neutral-200);box-shadow:var(--shadow-soft);overflow:hidden;display:flex;flex-direction:column;min-height:560px;position:sticky;top:1rem}
-  .dm-header{padding:1rem;border-bottom:1px solid var(--neutral-100);background:linear-gradient(180deg,rgba(23,150,111,.1) 0%,rgba(23,150,111,0) 100%);display:flex;align-items:center;justify-content:space-between;gap:.75rem}
-  .dm-header h3{margin:0;font-size:1rem;font-weight:800;color:var(--neutral-700)}
-  .dm-header-sub{font-size:.79rem;color:var(--neutral-400)}
-  .dm-back-btn{display:inline-flex;align-items:center;gap:.35rem;border:1px solid var(--neutral-200);border-radius:999px;padding:.42rem .72rem;color:var(--neutral-700);background:#fff;font-weight:700;font-size:.8rem;text-decoration:none}
-  .dm-back-btn:hover{text-decoration:none;background:var(--neutral-50);color:var(--neutral-700)}
-  .dm-search{display:flex;align-items:center;gap:.35rem;border:1px solid var(--neutral-200);background:var(--neutral-50);border-radius:999px;padding:.3rem .66rem}
-  .dm-search input{border:none;background:transparent;outline:none;width:110px;color:var(--neutral-700);font-size:.82rem}
-  .dm-list{flex:1;overflow-y:auto;max-height:410px}
-  .dm-item{display:grid;grid-template-columns:1fr auto;gap:.65rem;padding:.8rem .9rem;border-bottom:1px solid var(--neutral-100);text-decoration:none;color:inherit;transition:background .2s ease,border-color .2s ease}
-  .dm-item:hover{background:var(--accent-100);border-color:#dce8ff}
-  .dm-item-name{display:block;font-weight:800;color:var(--neutral-700)}
-  .dm-item-preview{display:block;margin-top:.2rem;color:var(--neutral-400);font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:210px}
-  .dm-item-time{font-size:.72rem;color:var(--neutral-400)}
-  .dm-badge{min-width:20px;height:20px;border-radius:999px;background:var(--primary-500);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800}
-  .dm-chat{display:flex;flex-direction:column;flex:1;background:#f9fcfb}
-  .dm-thread{padding:.95rem;flex:1;overflow-y:auto;max-height:390px}
-  .dm-bubble{max-width:80%;padding:.62rem .86rem;border-radius:14px;margin-bottom:.55rem;background:#fff;color:var(--neutral-700);box-shadow:0 8px 20px rgba(33,48,56,.08);font-size:.88rem}
-  .dm-bubble.me{margin-left:auto;background:var(--primary-700);color:#fff}
-  .dm-bubble small{display:block;margin-top:.25rem;opacity:.72;font-size:.71rem}
-  .dm-input{border-top:1px solid var(--neutral-100);padding:.7rem .9rem;display:flex;gap:.55rem;background:#fff}
-  .dm-input input{flex:1;border:1px solid var(--neutral-200);border-radius:999px;padding:.5rem .85rem;font-size:.87rem}
-  .dm-input input:focus{border-color:var(--accent-500);box-shadow:0 0 0 3px rgba(45,108,223,.15)}
-  .dm-input button,.dm-start-btn{border:1px solid var(--primary-600);background:var(--primary-600);color:#fff;border-radius:999px;padding:.42rem .86rem;font-size:.8rem;font-weight:700;transition:all .2s ease}
-  .dm-input button:hover,.dm-start-btn:hover{background:var(--primary-700);border-color:var(--primary-700)}
-  .dm-user-list{padding:.72rem .9rem .9rem;border-top:1px dashed var(--neutral-200);max-height:210px;overflow-y:auto}
-  .dm-user-list-title{margin:0 0 .5rem;font-size:.82rem;color:var(--neutral-400);font-weight:800}
-  .dm-user-item{display:flex;align-items:center;justify-content:space-between;gap:.65rem;padding:.52rem 0;border-bottom:1px solid var(--neutral-100)}
-  .dm-user-item:last-child{border-bottom:none}
-
-  .offline-card,.form-panel,.cta-box,.feed-card{background:var(--neutral-0);border-radius:var(--radius-lg);border:1px solid var(--neutral-200);box-shadow:var(--shadow-soft)}
-  .offline-card{padding:1.2rem}
-  .offline-title{margin:0 0 .45rem;font-weight:800;color:var(--neutral-700)}
-  .form-panel{padding:1.2rem;display:none}
-  .form-panel.active{display:block}
-  .section-title{font-weight:800;margin:0 0 .8rem;color:var(--neutral-700)}
-  .section-subtitle{margin:0;color:var(--neutral-400);font-size:.92rem}
-  #express-form-panel.form-panel{
-    padding:1.35rem 1.35rem 1.2rem;
-    border-color:#d5e2de;
-    background:linear-gradient(180deg,#ffffff 0%,#fbfefd 100%);
-  }
-  .post-create-form{
-    margin-top:1rem;
-    display:grid;
-    gap:1.05rem;
-  }
-  .post-field{
-    display:grid;
-    gap:.42rem;
-  }
-  .post-label{
-    margin:0;
-    font-weight:700;
-    font-size:.92rem;
-    color:var(--neutral-700);
-    letter-spacing:.01em;
-  }
-  .post-input{
-    border:1px solid #d4e3df!important;
-    border-radius:12px!important;
-    min-height:48px;
-    background:#fdfefe;
-    color:var(--neutral-700);
-    font-size:.94rem;
-    padding:.72rem .82rem!important;
-    transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
-  }
-  .post-input:hover{
-    border-color:#bed2cc!important;
-    background:#fff;
-  }
-  .post-input:focus{
-    border-color:var(--accent-500)!important;
-    box-shadow:0 0 0 4px rgba(45,108,223,.14)!important;
-    background:#fff;
-  }
-  .post-input::placeholder{color:#8a9b95}
-  textarea.post-textarea{
-    min-height:180px;
-    resize:vertical;
-    line-height:1.55;
-  }
-  textarea.post-excerpt{
-    min-height:104px;
-    resize:vertical;
-  }
-  .post-file-wrap{
-    border:1px dashed #c6d8d2;
-    border-radius:14px;
-    padding:.72rem .78rem;
-    background:#f8fcfb;
-  }
-  .post-file-input{
-    border:none!important;
-    background:transparent!important;
-    min-height:auto;
-    padding:0!important;
-    box-shadow:none!important;
-  }
-  .post-file-help{
-    margin:.44rem 0 0;
-    font-size:.78rem;
-    color:#6d7f78;
-  }
-  .post-submit-btn{
-    justify-self:start;
-    min-width:128px;
-    padding:.65rem 1.05rem!important;
-    letter-spacing:.18em;
-    text-transform:uppercase;
-    font-size:.78rem!important;
-    border-radius:999px!important;
-    box-shadow:0 12px 24px rgba(13,100,74,.22);
-  }
-  .post-submit-btn:hover{
-    transform:translateY(-2px);
-    box-shadow:0 16px 26px rgba(13,100,74,.28);
+  .community-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #e3f0ea;
+    box-shadow: 0 6px 18px rgba(18, 52, 59, 0.04);
   }
 
-  .feed-header{display:flex;align-items:center;justify-content:space-between;gap:.9rem;margin-top:.2rem}
-  .feed-title{margin:0;font-size:1.6rem;font-weight:800;color:var(--neutral-700)}
-  .feed-sort{display:inline-flex;align-items:center;gap:.55rem;border:1px solid var(--neutral-200);border-radius:999px;padding:.42rem .68rem;background:#fff}
-  .feed-sort label{font-weight:700;color:var(--neutral-400)}
-  .feed-sort select{border:1px solid var(--neutral-200);border-radius:999px;padding:.3rem .72rem;font-weight:700;background:var(--neutral-50);color:var(--neutral-700);outline:none}
-  .feed-sort select:focus{border-color:var(--accent-500)}
-  .feed-wrap{display:grid;gap:1rem}
-  .feed-card{padding:1.1rem 1.15rem;transition:transform .2s ease,box-shadow .2s ease}
-  .feed-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
-  .post-top{display:flex;align-items:center;justify-content:space-between;gap:.8rem}
-  .user-row{display:flex;align-items:center;gap:.68rem}
-  .avatar-chip{width:44px;height:44px;border-radius:14px;background:linear-gradient(130deg,var(--primary-700),var(--primary-500));color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800}
-  .post-meta-name{color:var(--neutral-700);font-weight:800}
-  .post-meta-date{color:var(--neutral-400);font-size:.82rem}
-  .post-tags{display:flex;gap:.45rem;flex-wrap:wrap;margin:.75rem 0 .62rem}
-  .role-badge,.category-pill,.trending-badge{display:inline-flex;align-items:center;gap:.28rem;border-radius:999px;padding:.24rem .62rem;font-size:.72rem;font-weight:700}
-  .category-pill{background:#eaf8f3;color:var(--primary-700);border:1px solid #cfece1}
-  .role-badge{background:#ecf6ff;color:#1f4e9f;border:1px solid #d8e8ff}
-  .trending-badge{background:#fff4e8;color:#ad5c00;border:1px solid #ffe2bf}
-  .post-title{margin:0 0 .4rem;font-size:1.18rem;font-weight:800;line-height:1.35;color:var(--neutral-700)}
-  .post-preview{margin:0;color:var(--neutral-400);line-height:1.68;font-size:.95rem}
-  .post-preview.expanded{color:var(--neutral-700)}
-  .link-btn{border:none;background:none;padding:0;color:var(--accent-500);font-weight:700}
-  .link-btn:hover{text-decoration:underline}
-  .feed-image{width:100%;border-radius:var(--radius-md);margin:.72rem 0 .52rem;max-height:340px;object-fit:cover}
-  .image-holder.no-image{color:var(--primary-700);background:#ecf7f4;border:1px dashed #c9e3db;height:200px;display:flex;align-items:center;justify-content:center}
-  .post-actions{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
-  .post-actions form{margin:0}
-  .post-action-btn{border:1px solid var(--neutral-200)!important;background:#fff!important;color:var(--neutral-700)!important;border-radius:999px!important;padding:.42rem .84rem!important;font-size:.82rem!important;font-weight:700!important;display:inline-flex;align-items:center;gap:.36rem;transition:all .2s ease}
-  .post-action-btn:hover{background:var(--neutral-50)!important;border-color:#c9d8d4!important;transform:translateY(-1px)}
-  .post-action-btn.like-btn.is-active{border-color:#f5beca!important;background:var(--danger-100)!important;color:var(--danger-500)!important}
-  .post-action-btn.repost-btn.is-active{border-color:#bcd7ff!important;background:var(--accent-100)!important;color:var(--accent-500)!important}
-  .comment-toggle-btn:hover{background:#f3f7ff!important}
-  .summarize-btn{border:1px solid #d6e4ff!important;background:#f3f7ff!important;color:#264a9b!important}
-  .summarize-btn:hover{background:#e6efff!important;border-color:#bfd6ff!important}
-  .summary-panel{
-    margin-top:.7rem;
-    border-radius:14px;
-    border:1px solid var(--neutral-200);
-    background:#f9fbff;
-    padding:.65rem .8rem;
-    font-size:.88rem;
-    color:var(--neutral-700);
-    display:none;
+  .community-topbar-inner {
+    width: calc(100% - (var(--explore-gutter) * 2));
+    max-width: none;
+    margin: 0 auto;
+    min-height: 88px;
+    display: grid;
+    grid-template-columns: 380px 1fr 180px;
+    align-items: center;
+    gap: 24px;
   }
-  .summary-panel.show{display:block}
-  .summary-status{color:var(--neutral-400);font-size:.8rem;margin-bottom:.4rem}
-  .interaction-counts{margin-top:.6rem;display:flex;gap:.82rem;flex-wrap:wrap;color:var(--neutral-400);font-size:.83rem;font-weight:700}
-  .comment-form{margin-top:.72rem}
-  .comment-list{margin-top:.68rem;list-style:none;border:1px solid var(--neutral-100);background:var(--neutral-50);border-radius:var(--radius-md);padding:.44rem .75rem}
-  .comment-item{padding:.42rem 0;border-bottom:1px solid #e8efed}
-  .comment-item:last-child{border-bottom:none}
-  .comment-author{font-weight:700;color:var(--neutral-700)}
-  .comment-text{color:#4b5a55}
-  .comments-link{display:block;margin-top:.64rem;text-align:left;color:var(--neutral-400)}
 
-  .cta-box{padding:1.2rem}
-  .cta-box p{margin:0 0 .7rem;color:var(--neutral-400)}
+  .brand-search {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
 
-  .floating-create-btn{position:fixed;right:20px;bottom:22px;z-index:1050;border:0;border-radius:999px;padding:.72rem 1rem;background:linear-gradient(130deg,var(--primary-700),var(--primary-500));color:#fff;font-weight:800;box-shadow:0 16px 28px rgba(13,100,74,.34)}
-  .floating-create-btn:hover{transform:translateY(-1px)}
+  .brand-logo-wrap {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
 
-  @media (max-width:1180px){.explore-layout{grid-template-columns:1fr}.dm-panel{position:relative;top:auto;min-height:520px}}
-  @media (max-width:920px){.hero-horizontal{grid-template-columns:1fr}.image-holder{height:220px}.feed-header{flex-direction:column;align-items:flex-start}}
-  @media (max-width:768px){.explore-hero{padding:1.2rem 1rem}.hero-logo-badge{display:none}.feed-card{padding:.95rem}.post-actions{gap:.42rem}.post-action-btn{padding:.4rem .7rem!important}.floating-create-btn{left:14px;right:14px;display:flex;justify-content:center}}
+  .brand-logo-wrap img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .community-search {
+    flex: 1 1 auto;
+    min-height: 58px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 20px;
+    border-radius: 999px;
+    background: #f5f7fb;
+    border: 1px solid #edf1f6;
+  }
+
+  .community-search i {
+    color: #5f7080;
+    font-size: 17px;
+  }
+
+  .community-search input {
+    width: 100%;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: var(--explore-text);
+    font-size: 15px;
+  }
+
+  .community-search input::placeholder {
+    color: #7b8e9a;
+  }
+
+  .community-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 42px;
+  }
+
+  .community-nav-link {
+    position: relative;
+    min-width: 46px;
+    min-height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #5f6670;
+    text-decoration: none;
+    font-size: 28px;
+  }
+
+  .community-nav-link:hover,
+  .community-nav-link.is-active {
+    color: #344150;
+    text-decoration: none;
+  }
+
+  .community-nav-link.is-active::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -16px;
+    width: 104px;
+    height: 4px;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: #3b82f6;
+  }
+
+  .community-tools {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    position: relative;
+  }
+
+  .tool-badge {
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    background: #edf1f7;
+    color: #263445;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    position: relative;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .tool-dot {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #1f9d6f;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .notifications-panel {
+    position: absolute;
+    top: calc(100% + 14px);
+    right: 0;
+    width: min(360px, 90vw);
+    border-radius: 24px;
+    border: 1px solid #dce9e3;
+    background: #ffffff;
+    box-shadow: 0 24px 48px rgba(18, 52, 59, 0.16);
+    padding: 16px;
+    display: none;
+    z-index: 60;
+  }
+
+  .notifications-panel.is-open {
+    display: block;
+  }
+
+  .notifications-title {
+    margin: 0 0 6px;
+    color: var(--explore-text);
+    font-size: 24px;
+    font-weight: 800;
+  }
+
+  .notifications-hint {
+    margin: 0 0 12px;
+    color: var(--explore-muted);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .notifications-list {
+    max-height: 420px;
+    overflow-y: auto;
+    display: grid;
+    gap: 10px;
+  }
+
+  .notification-card {
+    border-radius: 18px;
+    border: 1px solid #dce9e3;
+    background: #ffffff;
+    padding: 12px 14px;
+  }
+
+  .notification-card.is-unread {
+    background: #f0fdf4;
+  }
+
+  .notification-card strong {
+    display: block;
+    color: #1e293b;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .notification-card p {
+    margin: 6px 0 0;
+    color: #48656d;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .notification-card small {
+    display: block;
+    margin-top: 8px;
+    color: #15803d;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .community-shell {
+    width: calc(100% - (var(--explore-gutter) * 2));
+    max-width: none;
+    margin: 16px auto 0;
+    display: grid;
+    grid-template-columns: 400px minmax(0, 1fr) 360px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .community-card {
+    background: var(--explore-surface);
+    border: 1px solid var(--explore-border);
+    border-radius: 34px;
+    box-shadow: var(--explore-shadow);
+  }
+
+  .left-panel {
+    padding: 18px 14px 18px;
+    position: sticky;
+    top: 108px;
+    border-radius: 32px;
+    background: #ffffff;
+  }
+
+  .shortcut-list {
+    display: grid;
+    gap: 14px;
+  }
+
+  .shortcut-item {
+    min-height: 58px;
+    border: 1px solid #dfe8f0;
+    border-radius: 24px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 20px;
+    color: #0b4a46;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 18px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+  }
+
+  .shortcut-item:hover {
+    text-decoration: none;
+    color: #0b4a46;
+    border-color: #cfe0ec;
+    background: #fbfefd;
+  }
+
+  .shortcut-item.is-active {
+    background: #ffffff;
+    border-color: #cfe0ec;
+    color: #0b4a46;
+  }
+
+  .shortcut-item.is-active .shortcut-icon,
+  .shortcut-item.is-active span {
+    color: inherit !important;
+  }
+
+  .shortcut-icon {
+    width: 28px;
+    text-align: center;
+    font-size: 22px;
+    flex: 0 0 28px;
+  }
+
+  .shortcut-divider {
+    margin: 20px 10px 16px;
+    height: 1px;
+    background: #152533;
+    opacity: 0.45;
+  }
+
+  .shortcut-label {
+    margin: 0 10px 14px;
+    color: #6d8f95;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .shortcut-card {
+    margin: 0 0 10px;
+    min-height: 60px;
+    border: 1px solid #dfe8f0;
+    border-radius: 24px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 18px;
+    color: #0b4a46;
+    font-weight: 800;
+    font-size: 16px;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+  }
+
+  .shortcut-card:hover {
+    text-decoration: none;
+    color: #0b4a46;
+    border-color: #cfe0ec;
+    background: #fbfefd;
+  }
+
+  .shortcut-card-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .feed-column {
+    display: grid;
+    gap: 22px;
+  }
+
+  .composer-card {
+    padding: 26px 24px 22px;
+  }
+
+  .composer-topline {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+  }
+
+  .composer-plus {
+    width: 58px;
+    height: 58px;
+    border-radius: 999px;
+    border: 0;
+    background: linear-gradient(135deg, #1a8f68 0%, #20a66f 100%);
+    color: #fff;
+    font-size: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 14px 26px rgba(31, 157, 111, 0.25);
+  }
+
+  .composer-title {
+    width: 100%;
+    min-height: 54px;
+    border-radius: 999px;
+    border: 1px solid var(--explore-border-strong);
+    background: #fcfffd;
+    color: var(--explore-text);
+    padding: 0 22px;
+    font-size: 17px;
+    outline: none;
+  }
+
+  .composer-title::placeholder {
+    color: #879a92;
+  }
+
+  .composer-divider {
+    height: 1px;
+    margin: 22px 0 22px;
+    background: rgba(18, 52, 59, 0.75);
+  }
+
+  .composer-content {
+    width: 100%;
+    min-height: 108px;
+    border-radius: 28px;
+    border: 1px solid var(--explore-border-strong);
+    background: #fcfffd;
+    color: var(--explore-text);
+    padding: 18px 22px;
+    font-size: 17px;
+    resize: vertical;
+    outline: none;
+    line-height: 1.55;
+  }
+
+  .composer-content::placeholder {
+    color: #879a92;
+  }
+
+  .composer-media-row {
+    margin-top: 18px;
+    padding: 12px 14px;
+    border: 1px solid var(--explore-border-strong);
+    border-radius: 26px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 14px;
+    align-items: center;
+    background: #fcfffd;
+  }
+
+  .media-selected {
+    min-height: 54px;
+    border-radius: 20px;
+    border: 1px solid #d7e7df;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    color: #7d9188;
+    font-size: 16px;
+  }
+
+  .media-btn,
+  .media-clear {
+    min-height: 50px;
+    border-radius: 20px;
+    border: 1px solid #dbe9e1;
+    background: #ffffff;
+    color: var(--explore-text);
+    font-size: 15px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 18px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .media-clear {
+    width: 54px;
+    padding: 0;
+    font-size: 22px;
+  }
+
+  .media-clear.is-hidden {
+    visibility: hidden;
+  }
+
+  .composer-hidden-fields {
+    display: none;
+  }
+
+  .composer-submit {
+    width: 100%;
+    min-height: 54px;
+    margin-top: 18px;
+    border: 0;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #1b855d 0%, #259969 100%);
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 800;
+    box-shadow: 0 18px 28px rgba(31, 157, 111, 0.2);
+  }
+
+  .flash-stack {
+    display: grid;
+    gap: 10px;
+  }
+
+  .feed-panel {
+    display: grid;
+    gap: 22px;
+  }
+
+  .feed-card {
+    padding: 22px 24px 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .feed-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--explore-shadow-hover);
+  }
+
+  .post-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .post-author-wrap {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .post-avatar {
+    width: 58px;
+    height: 58px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #1b7b5a 0%, #28996e 100%);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 800;
+    overflow: hidden;
+    flex: 0 0 auto;
+  }
+
+  .post-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .post-author-name {
+    margin: 0;
+    color: var(--explore-text);
+    font-size: 15px;
+    font-weight: 800;
+  }
+
+  .post-author-meta {
+    margin: 6px 0 0;
+    color: #6b8790;
+    font-size: 14px;
+  }
+
+  .post-owner-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .post-owner-pill {
+    min-height: 40px;
+    border-radius: 999px;
+    border: 1px solid #dce9e2;
+    background: #ffffff;
+    color: #406b60;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .post-owner-pill.btn-link {
+    text-decoration: none;
+  }
+
+  .post-title {
+    margin: 18px 0 10px;
+    color: var(--explore-text);
+    font-size: clamp(28px, 2vw, 42px);
+    font-weight: 800;
+    line-height: 1.18;
+  }
+
+  .post-excerpt {
+    margin: 0;
+    color: #3d5962;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .post-hidden-content {
+    display: none;
+    margin-top: 12px;
+    color: #29444d;
+    line-height: 1.75;
+  }
+
+  .post-hidden-content.is-open {
+    display: block;
+  }
+
+  .post-read-more {
+    margin-top: 8px;
+    border: 0;
+    background: transparent;
+    color: #2768cf;
+    font-weight: 800;
+    padding: 0;
+  }
+
+  .post-media-stage,
+  .post-image-placeholder {
+    position: relative;
+    margin-top: 18px;
+    border-radius: 28px;
+    padding: 4px;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(27, 123, 90, 0.88), rgba(46, 211, 156, 0.58));
+    box-shadow:
+      0 0 0 1px rgba(31, 157, 111, 0.16),
+      0 16px 30px rgba(17, 58, 46, 0.12);
+  }
+
+  .post-media-stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--post-media-preview) center/cover no-repeat;
+    filter: blur(30px) saturate(1.15);
+    transform: scale(1.08);
+    opacity: 0.62;
+  }
+
+  .post-media-stage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(9, 24, 32, 0.1), rgba(9, 24, 32, 0.32));
+  }
+
+  .post-media-frame {
+    position: relative;
+    z-index: 1;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(178, 245, 214, 0.58);
+    background: rgba(8, 23, 30, 0.36);
+    min-height: clamp(260px, 34vw, 560px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+  }
+
+  .post-image {
+    width: 100%;
+    height: 100%;
+    min-height: clamp(260px, 34vw, 560px);
+    display: block;
+    object-fit: contain;
+    object-position: center;
+    margin-top: 0;
+    border: 0;
+  }
+
+  .post-image-placeholder {
+    min-height: 240px;
+    background:
+      linear-gradient(145deg, rgba(31, 157, 111, 0.18), rgba(59, 130, 246, 0.08)),
+      #f8fcfb;
+    border: 1px dashed #d3e6dd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5f7b72;
+    font-weight: 700;
+    padding: 24px;
+  }
+
+  .post-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+
+  .post-tag {
+    min-height: 32px;
+    border-radius: 999px;
+    border: 1px solid #dce9e1;
+    background: #f8fbfa;
+    color: #4a6b61;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .post-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .post-actions form {
+    margin: 0;
+  }
+
+  .post-btn {
+    min-height: 44px;
+    border-radius: 999px !important;
+    border: 1px solid #dce8e2 !important;
+    background: #ffffff !important;
+    color: var(--explore-text) !important;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    box-shadow: none !important;
+  }
+
+  .post-btn.like-btn.is-active {
+    border-color: #f8c5d1 !important;
+    background: #fff0f4 !important;
+    color: #d14c73 !important;
+  }
+
+  .post-btn.repost-btn.is-active {
+    border-color: #c9dfff !important;
+    background: #eef5ff !important;
+    color: #2563eb !important;
+  }
+
+  .post-btn.ai-btn {
+    border-color: #cfe1ff !important;
+    background: #f2f7ff !important;
+    color: #2857b4 !important;
+  }
+
+  .post-counts {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    color: #69827a;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .summary-box {
+    margin-top: 12px;
+    border: 1px solid #d8e7ff;
+    background: #f7faff;
+    border-radius: 18px;
+    padding: 14px 16px;
+    display: none;
+  }
+
+  .summary-box.show {
+    display: block;
+  }
+
+  .summary-status {
+    margin: 0 0 6px;
+    color: #6c7d91;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .comment-form {
+    display: none;
+    margin-top: 14px;
+  }
+
+  .comment-form textarea {
+    width: 100%;
+    min-height: 84px;
+    border-radius: 18px;
+    border: 1px solid #d8e6de;
+    padding: 14px 16px;
+    resize: vertical;
+    outline: none;
+  }
+
+  .comment-form button {
+    margin-top: 10px;
+  }
+
+  .comments-toggle {
+    display: inline-block;
+    margin-top: 12px;
+    border: 0;
+    background: transparent;
+    color: #6b8790;
+    font-weight: 800;
+    padding: 0;
+  }
+
+  .comment-list {
+    display: none;
+    margin-top: 12px;
+    list-style: none;
+    padding: 0;
+    border: 1px solid #e5efea;
+    border-radius: 20px;
+    background: #f9fcfb;
+  }
+
+  .comment-list.is-open {
+    display: block;
+  }
+
+  .comment-item {
+    padding: 14px 16px;
+    border-bottom: 1px solid #e8f0ec;
+  }
+
+  .comment-item:last-child {
+    border-bottom: 0;
+  }
+
+  .comment-author {
+    color: var(--explore-text);
+    font-weight: 800;
+  }
+
+  .comment-text {
+    margin-top: 5px;
+    color: #476068;
+  }
+
+  .comment-date {
+    display: block;
+    margin-top: 4px;
+    color: #7b8c90;
+    font-size: 12px;
+  }
+
+  .comment-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .comment-action-btn {
+    min-height: 32px;
+    border-radius: 999px;
+    border: 1px solid #dce8e2;
+    background: #ffffff;
+    color: #56746d;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 0 12px;
+  }
+
+  .comment-edit-form {
+    display: none;
+    margin-top: 10px;
+  }
+
+  .comment-edit-form.is-open {
+    display: block;
+  }
+
+  .comment-edit-form textarea {
+    width: 100%;
+    min-height: 80px;
+    border-radius: 16px;
+    border: 1px solid #d8e6de;
+    padding: 12px 14px;
+    resize: vertical;
+    outline: none;
+  }
+
+  .connections-panel {
+    padding: 18px 16px 16px;
+    position: sticky;
+    top: 108px;
+  }
+
+  .connections-kicker {
+    margin: 0 0 12px;
+    color: #6e8b82;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .connections-card {
+    border: 1px solid #e0ece6;
+    border-radius: 28px;
+    background: #ffffff;
+    overflow: hidden;
+  }
+
+  .connections-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 22px 20px 8px;
+  }
+
+  .connections-head h3 {
+    margin: 0;
+    color: #436b6d;
+    font-size: 17px;
+    font-weight: 800;
+  }
+
+  .connections-count {
+    min-width: 88px;
+    min-height: 36px;
+    border-radius: 999px;
+    background: #eaf8f3;
+    border: 1px solid #d2ebdf;
+    color: #1b9168;
+    font-size: 14px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .connections-copy {
+    padding: 0 20px;
+    color: #6f8a84;
+    font-size: 14px;
+  }
+
+  .connections-search {
+    padding: 10px 20px 18px;
+  }
+
+  .connections-search input {
+    width: 100%;
+    min-height: 46px;
+    border-radius: 999px;
+    border: 1px solid #edf0f5;
+    background: #f3f5fa;
+    color: var(--explore-text);
+    padding: 0 18px;
+    outline: none;
+    font-size: 14px;
+  }
+
+  .connections-list {
+    max-height: 640px;
+    overflow-y: auto;
+    padding: 0 12px 12px;
+  }
+
+  .connection-entry {
+    border: 1px solid #dce9e3;
+    border-radius: 26px;
+    background: linear-gradient(180deg, #ffffff 0%, #fcfffd 100%);
+    box-shadow: 0 10px 22px rgba(17, 58, 46, 0.08);
+    padding: 16px 18px 14px;
+    margin-bottom: 14px;
+  }
+
+  .connection-entry:last-child {
+    margin-bottom: 0;
+  }
+
+  .connection-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .connection-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 999px;
+    background: #1c7358;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+    overflow: hidden;
+    flex: 0 0 auto;
+  }
+
+  .connection-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .connection-name {
+    margin: 0;
+    color: var(--explore-text);
+    font-size: 15px;
+    font-weight: 800;
+  }
+
+  .connection-email {
+    margin: 3px 0 0;
+    color: #617d86;
+    font-size: 14px;
+  }
+
+  .connection-copy {
+    margin: 14px 0 18px;
+    color: #50727a;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .connection-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .connection-actions span {
+    color: #7f9b93;
+    font-size: 14px;
+  }
+
+  .connection-btn {
+    min-height: 40px;
+    border-radius: 999px;
+    border: 0;
+    background: linear-gradient(135deg, #1b8a63 0%, #259d6a 100%);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+    padding: 0 18px;
+    box-shadow: 0 12px 22px rgba(31, 157, 111, 0.2);
+  }
+
+  .dm-live-card {
+    border: 1px solid #dce9e3;
+    border-radius: 28px;
+    background: linear-gradient(180deg, #ffffff 0%, #fbfefd 100%);
+    overflow: hidden;
+  }
+
+  .dm-live-head {
+    padding: 18px 20px;
+    border-bottom: 1px solid #e6f0eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .dm-live-head h3 {
+    margin: 0;
+    color: var(--explore-text);
+    font-size: 17px;
+    font-weight: 800;
+  }
+
+  .dm-back {
+    min-height: 38px;
+    border-radius: 999px;
+    border: 1px solid #dde8e2;
+    background: #ffffff;
+    color: #56746d;
+    padding: 0 14px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dm-back:hover {
+    text-decoration: none;
+    color: #56746d;
+  }
+
+  .dm-live-thread {
+    max-height: 440px;
+    overflow-y: auto;
+    padding: 18px 18px 6px;
+    background: #f8fcfa;
+  }
+
+  .dm-bubble {
+    max-width: 86%;
+    margin-bottom: 10px;
+    padding: 12px 14px;
+    border-radius: 18px;
+    background: #ffffff;
+    color: var(--explore-text);
+    box-shadow: 0 10px 18px rgba(18, 52, 59, 0.08);
+  }
+
+  .dm-bubble.me {
+    margin-left: auto;
+    background: linear-gradient(135deg, #146a52 0%, #1e8663 100%);
+    color: #ffffff;
+  }
+
+  .dm-bubble small {
+    display: block;
+    margin-top: 5px;
+    opacity: 0.75;
+    font-size: 11px;
+  }
+
+  .dm-form {
+    border-top: 1px solid #e6f0eb;
+    padding: 14px;
+    background: #ffffff;
+    display: flex;
+    gap: 10px;
+  }
+
+  .dm-form input {
+    flex: 1 1 auto;
+    min-height: 44px;
+    border-radius: 999px;
+    border: 1px solid #d6e5dc;
+    padding: 0 16px;
+    outline: none;
+  }
+
+  .dm-form button {
+    min-height: 44px;
+    border-radius: 999px;
+    border: 0;
+    background: #1b9168;
+    color: #ffffff;
+    font-weight: 800;
+    padding: 0 18px;
+  }
+
+  .empty-state-card {
+    padding: 20px 22px;
+    color: #6c8580;
+    font-weight: 700;
+  }
+
+  .reels-feed-title {
+    margin: 0 0 18px;
+    text-align: center;
+    color: #20242b;
+    font-size: 28px;
+    font-weight: 900;
+  }
+
+  .reels-feed-card {
+    position: relative;
+    min-height: 760px;
+    border-radius: 24px;
+    overflow: hidden;
+    background: #000000;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
+  }
+
+  .reels-feed-viewport {
+    position: relative;
+    width: 100%;
+    min-height: 760px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000000;
+  }
+
+  .reels-feed-video-shell {
+    position: relative;
+    width: min(100%, 480px);
+    min-height: 760px;
+    background: #050505;
+  }
+
+  .reels-feed-video {
+    width: 100%;
+    height: 760px;
+    object-fit: cover;
+    display: block;
+    background: #000000;
+  }
+
+  .reels-feed-actions {
+    position: absolute;
+    right: 22px;
+    bottom: 178px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    z-index: 3;
+  }
+
+  .reels-feed-action {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 0;
+    background: rgba(255,255,255,0.16);
+    color: #ffffff;
+    backdrop-filter: blur(6px);
+  }
+
+  .reels-feed-caption {
+    position: absolute;
+    left: 20px;
+    right: 100px;
+    bottom: 20px;
+    color: #ffffff;
+    z-index: 3;
+  }
+
+  .reels-feed-caption h3 {
+    margin: 0 0 6px;
+    font-size: 24px;
+    font-weight: 900;
+  }
+
+  .reels-feed-caption p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+    opacity: 0.92;
+  }
+
+  .reels-feed-meta {
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    opacity: 0.92;
+  }
+
+  .reels-feed-switchers {
+    position: absolute;
+    left: 22px;
+    right: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .reels-feed-switchers button {
+    pointer-events: auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 0;
+    background: rgba(255,255,255,0.12);
+    color: #ffffff;
+    backdrop-filter: blur(6px);
+  }
+
+  .reels-feed-band {
+    margin-bottom: 18px;
+    padding: 18px 0 8px;
+    text-align: center;
+  }
+
+  @media (max-width: 1500px) {
+    .community-shell {
+      grid-template-columns: 300px minmax(0, 1fr) 330px;
+    }
+
+    .community-topbar-inner {
+      grid-template-columns: 320px 1fr 150px;
+    }
+
+    .community-nav {
+      gap: 28px;
+    }
+  }
+
+  @media (max-width: 1240px) {
+    .community-shell {
+      grid-template-columns: 1fr;
+    }
+
+    .left-panel,
+    .connections-panel {
+      position: static;
+      top: auto;
+    }
+  }
+
+  @media (max-width: 980px) {
+    .community-topbar-inner {
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding: 16px 0;
+    }
+
+    .community-nav,
+    .community-tools {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .community-shell,
+    .community-topbar-inner {
+      width: calc(100% - 10px);
+    }
+
+    .composer-media-row {
+      grid-template-columns: 1fr;
+    }
+
+    .post-header,
+    .connections-head,
+    .connection-actions,
+    .dm-live-head {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .post-owner-actions {
+      width: 100%;
+    }
+
+  }
 </style>
 {% endblock %}
 
 {% block body %}
-<section class="container-fluid py-5">
-  <div class="explore-shell">
-    <div class="explore-layout">
-      <div class="feed-column">
-        <div class="explore-hero">
-          <div class="hero-logo-badge"><img src="{{ asset('images/logo.png') }}" alt="Fitopia logo"></div>
-          <div class="hero-horizontal">
-            <div>
-              <h2>Fitopia Community: Learn Faster, Grow Together</h2>
-              <p>Share your progress, ask better questions, and get real feedback from a motivated health-focused community.</p>
-              <ul class="hero-points">
-                <li>Ask questions and receive practical answers from members and coaches.</li>
-                <li>Turn your small wins into motivation for others.</li>
-                <li>Build momentum through forums, feed interactions, and direct messages.</li>
-              </ul>
-            </div>
-            <div>
-              <div class="image-holder"><img src="{{ asset('images/forum.png') }}" alt="Forum inspiration" style="width:100%;height:100%;object-fit:cover;border-radius:14px;"></div>
-              <div class="hero-actions-inline">
-                <button class="btn btn-primary" id="btn-express">Express Yourself Now</button>
-                <button class="btn btn-outline-light" id="btn-my-posts">My posts</button>
-              </div>
-            </div>
-          </div>
-        </div>
+{% set currentName = app.user ? app.user.displayName : 'Fitopia member' %}
+{% set currentRole = app.user and app.user.role ? app.user.role : 'Member' %}
+{% set currentEmail = app.user and app.user.email ? app.user.email|lower : '' %}
+{% set connectionsCount = (dmUsers|length) + (dmConversationItems|length) %}
+{% set activeExploreView = activeExploreView|default('feed') %}
+{% set composerAction = editingPost
+  ? path('explore_forums_blogs', savedOnly ? {'edit': editingPost.id, 'saved': 1} : {'edit': editingPost.id})
+  : path('explore_forums_blogs', savedOnly ? {'saved': 1} : {}) %}
 
-        {% if not app.user %}
-          <div class="offline-card">
-            <h4 class="offline-title">You are offline</h4>
-            <p>Please connect first to explore and share with the Fitopia community.</p>
-            <div class="hero-actions-inline">
-              <a href="{{ path('app_login') }}" class="btn btn-primary">Sign in</a>
-              <a href="{{ path('app_register') }}" class="btn btn-outline-primary">Don't have an account? Register now for free</a>
-            </div>
-          </div>
-        {% endif %}
-
-        <div class="form-panel" id="express-form-panel">
-          <h3 class="section-title">Share your post</h3>
-          <p class="section-subtitle">Post your progress, a question, or a helpful tip for the community.</p>
-          {{ form_start(blogForm, {'attr': {'class': 'post-create-form'}}) }}
-            <div class="post-field">
-              {{ form_label(blogForm.title, null, {'label_attr': {'class': 'post-label'}}) }}
-              {{ form_widget(blogForm.title, {'attr': {'class': 'form-control post-input', 'placeholder': 'Give your post a clear title'}}) }}
-            </div>
-            <div class="post-field">
-              {{ form_label(blogForm.content, null, {'label_attr': {'class': 'post-label'}}) }}
-              {{ form_widget(blogForm.content, {'attr': {'class': 'form-control post-input post-textarea', 'rows': 7, 'placeholder': 'Share details, context, and what you learned...'}}) }}
-            </div>
-            <div class="post-field">
-              {{ form_label(blogForm.excerpt, null, {'label_attr': {'class': 'post-label'}}) }}
-              {{ form_widget(blogForm.excerpt, {'attr': {'class': 'form-control post-input post-excerpt', 'rows': 4, 'placeholder': 'Write a short summary for the feed preview'}}) }}
-            </div>
-            <div class="post-field">
-              {{ form_label(blogForm.category, null, {'label_attr': {'class': 'post-label'}}) }}
-              {{ form_widget(blogForm.category, {'attr': {'class': 'form-control post-input'}}) }}
-            </div>
-            <div class="post-field">
-              {{ form_label(blogForm.featuredImageFile, 'Featured image', {'label_attr': {'class': 'post-label'}}) }}
-              <div class="post-file-wrap">
-                {{ form_widget(blogForm.featuredImageFile, {'attr': {'class': 'form-control post-file-input'}}) }}
-                <p class="post-file-help">PNG, JPG, or WEBP. A clear image gets more engagement.</p>
-              </div>
-            </div>
-            <button class="btn btn-primary post-submit-btn">Publish</button>
-          {{ form_end(blogForm) }}
-        </div>
-
-        <div class="form-panel" id="my-posts-panel">
-          <h3 class="section-title">My Posts</h3>
-          {% if app.user is not defined or not app.user %}
-            <p>Please login to see your posts.</p>
-          {% else %}
-            {% if userPosts is empty %}
-              <p>You have not any post. Let's start our first post.</p>
-              <button class="btn btn-primary" id="btn-open-form">Create first post</button>
-            {% else %}
-              {% for p in userPosts %}
-                <div class="feed-card mt-2">
-                  <strong>{{ p.title }}</strong>
-                  <div class="post-meta-date mt-1">{{ p.createdAt|date('Y-m-d') }}</div>
-                  {% if p.featuredImage %}<img src="{{ asset('uploads/blog/' ~ p.featuredImage) }}" alt="Post image" class="feed-image">{% endif %}
-                  <p class="post-preview">{{ p.excerpt }}</p>
-                </div>
-              {% endfor %}
-            {% endif %}
-          {% endif %}
-        </div>
-
-        <div class="feed-header">
-          <h3 class="feed-title">Explore Feed</h3>
-          <div class="feed-sort">
-            <i class="fa fa-filter" aria-hidden="true"></i>
-            <label for="feed-sort" class="mb-0">Sort by</label>
-            <select id="feed-sort"><option value="newest">Newest</option><option value="liked">Most Liked</option><option value="commented">Most Commented</option><option value="trending">Trending</option></select>
-          </div>
-        </div>
-
-        <div class="feed-wrap" id="feed-wrap">
-          {% if items is empty %}
-            <div class="feed-card"><p>No posts yet. Be the first to share your experience.</p></div>
-          {% else %}
-            {% for item in items %}
-              <div class="feed-card" data-post-date="{{ item.date }}" data-likes="{{ item.likes.count }}" data-comments="{{ item.comments.count }}" data-trending="{{ loop.first ? 1 : 0 }}">
-                <div class="post-top">
-                  <div class="user-row">
-                    <div class="avatar-chip">{{ item.email ? item.email|slice(0,1)|upper : 'U' }}</div>
-                    <div>
-                      <div class="post-meta-name">{{ item.email ?: 'Fitopia member' }}</div>
-                      <div class="post-meta-date">{{ item.date }}</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="post-tags">
-                  {% if item.category %}<span class="category-pill">{{ item.category }}</span>{% endif %}
-                  <span class="role-badge"><i class="fa fa-id-badge"></i> {{ item.role }}</span>
-                  {% if loop.first %}<span class="trending-badge"><i class="fa fa-fire"></i> Trending</span>{% endif %}
-                </div>
-                <h4 class="post-title">{{ item.title }}</h4>
-                <p class="post-preview">{{ item.excerpt ? item.excerpt : 'No preview available yet.' }}</p>
-                <div class="post-content" style="display:none;">{{ item.content|default('')|e|nl2br }}</div>
-                <button class="link-btn js-read-more" type="button">Read more</button>
-                {% if item.image %}
-                  <img src="{{ asset('uploads/blog/' ~ item.image) }}" alt="Post image" class="feed-image">
-                {% else %}
-                  <div class="image-holder no-image">No image</div>
-                {% endif %}
-                <div class="post-actions">
-                  <form method="post" action="{{ path('explore_interact', {'id': item.id}) }}">
-                    <input type="hidden" name="_token" value="{{ csrf_token('interact_like_' ~ item.id) }}"><input type="hidden" name="type" value="like">
-                    <button class="btn btn-sm post-action-btn like-btn{% if item.likedByMe %} is-active{% endif %}" type="submit"><i class="fa fa-heart"></i> Like</button>
-                  </form>
-                  <button class="btn btn-sm post-action-btn comment-toggle-btn js-toggle-comment" type="button" data-post-id="{{ item.id }}"><i class="fa fa-comment"></i> Comment</button>
-                  <form method="post" action="{{ path('explore_interact', {'id': item.id}) }}">
-                    <input type="hidden" name="_token" value="{{ csrf_token('interact_repost_' ~ item.id) }}"><input type="hidden" name="type" value="repost">
-                    <button class="btn btn-sm post-action-btn repost-btn{% if item.repostedByMe %} is-active{% endif %}" type="submit"><i class="fa fa-retweet"></i> Repost</button>
-                  </form>
-                  <button
-                    class="btn btn-sm post-action-btn summarize-btn js-summarize"
-                    type="button"
-                    data-post-id="{{ item.id }}"
-                    data-url="{{ path('explore_summarize', {'id': item.id}) }}"
-                    data-token="{{ csrf_token('explore_summarize_' ~ item.id) }}"
-                  >
-                    <i class="fa fa-magic"></i> Summarize with AI
-                  </button>
-                </div>
-                <div class="interaction-counts"><span><i class="fa fa-heart"></i> {{ item.likes.count }} likes</span><span><i class="fa fa-comment"></i> {{ item.comments.count }} comments</span><span><i class="fa fa-retweet"></i> {{ item.reposts.count }} reposts</span></div>
-                <div class="summary-panel" id="summary-{{ item.id }}">
-                  <div class="summary-status" id="summary-status-{{ item.id }}"></div>
-                  <div class="summary-text" id="summary-text-{{ item.id }}"></div>
-                </div>
-                <div class="comment-form" id="comment-form-{{ item.id }}" style="display:none;">
-                  <form method="post" action="{{ path('explore_interact', {'id': item.id}) }}">
-                    <input type="hidden" name="_token" value="{{ csrf_token('interact_comment_' ~ item.id) }}"><input type="hidden" name="type" value="comment">
-                    <textarea name="comment_text" class="form-control mb-2" rows="2" placeholder="Write your comment..."></textarea>
-                    <button class="btn btn-primary btn-sm" type="submit">Post comment</button>
-                  </form>
-                </div>
-                <button class="link-btn comments-link js-toggle-comments" type="button" data-post-id="{{ item.id }}">View all {{ item.comments.count }} comments</button>
-                <ul class="comment-list" id="comment-list-{{ item.id }}" style="display:none;">
-                  {% for c in item.comments.items|slice(0,5) %}
-                    <li class="comment-item"><div class="comment-author">{{ c.user }}</div><div class="comment-text">{{ c.text }}</div><small class="text-muted">{{ c.date }}</small></li>
-                  {% else %}
-                    <li class="comment-item text-muted">No comments yet.</li>
-                  {% endfor %}
-                </ul>
-              </div>
-            {% endfor %}
-          {% endif %}
-        </div>
-
-        <h3 class="section-title">Share your story</h3>
-        <div class="cta-box">
-          <p>Your voice matters. Share a question, a tip, or a win to inspire the community.</p>
-          {% if app.user %}<a href="{{ path('app_profile') }}" class="btn btn-primary">My profile</a>{% else %}<a href="{{ path('app_register') }}" class="btn btn-primary">Join Fitopia</a>{% endif %}
+<section class="community-page">
+  <header class="community-topbar">
+    <div class="community-topbar-inner">
+      <div class="brand-search">
+        <a class="brand-logo-wrap" href="{{ path('home') }}">
+          <img src="{{ asset('images/logo.png') }}" alt="Fitopia">
+        </a>
+        <div class="community-search">
+          <i class="fa fa-search"></i>
+          <input type="text" id="explore-page-search" placeholder="Search Fitopia...">
         </div>
       </div>
 
-      <aside class="dm-panel">
-        {% if app.user and dmSelectedConversation %}
-          <div class="dm-header">
-            <div>
-              <h3><i class="fa fa-commenting"></i> {{ dmOtherName ?: 'Conversation' }}</h3>
-              <div class="dm-header-sub">{{ dmStatusLine ?: 'Direct message' }}</div>
-            </div>
-            <a class="dm-back-btn" href="{{ path('explore_forums_blogs') }}"><i class="fa fa-arrow-left"></i> Back to list</a>
+      <nav class="community-nav" aria-label="Fitopia sections">
+        <a href="{{ path('home') }}" class="community-nav-link"><i class="fa fa-home"></i></a>
+        <a href="{{ path('explore_forums_blogs', {'view': 'reels'}) }}" class="community-nav-link {{ activeExploreView == 'reels' ? 'is-active' : '' }}"><i class="fa fa-film"></i></a>
+        <a href="{{ path('app_shop_index') }}" class="community-nav-link"><i class="fa fa-shopping-bag"></i></a>
+        <a href="{{ path('explore_forums_blogs') }}" class="community-nav-link {{ activeExploreView == 'feed' ? 'is-active' : '' }}"><i class="fa fa-users"></i></a>
+        <a href="{{ path('fitopia_games') }}" class="community-nav-link"><i class="fa fa-gamepad"></i></a>
+      </nav>
+
+      <div class="community-tools">
+        <button type="button" class="tool-badge" id="forum-notifications-toggle" data-read-url="{{ path('explore_notifications_read') }}" data-read-token="{{ csrf_token('explore_notifications_read') }}">
+          <i class="fa fa-bell"></i>
+          {% if forumNotificationUnread|default(0) > 0 %}
+            <span class="tool-dot" id="forum-notification-dot">{{ forumNotificationUnread > 9 ? '9+' : forumNotificationUnread }}</span>
+          {% endif %}
+        </button>
+        <a class="tool-badge" href="{{ dmConversationItems is not empty ? path('explore_forums_blogs', {'dm': dmConversationItems|first.id}) : '#dm-connections-list' }}">
+          <i class="fa fa-comment"></i>
+          {% if dmUnreadTotal|default(0) > 0 %}
+            <span class="tool-dot">{{ dmUnreadTotal > 9 ? '9+' : dmUnreadTotal }}</span>
+          {% endif %}
+        </a>
+
+        <div class="notifications-panel" id="forum-notifications-panel">
+          <p class="notifications-title">Notifications</p>
+          <p class="notifications-hint">{{ forumNotifications is empty ? 'Aucune notification' : forumNotifications|length ~ ' recent notification(s).' }}</p>
+          <div class="notifications-list">
+            {% for notification in forumNotifications %}
+              <article class="notification-card{% if not notification.isRead %} is-unread{% endif %}">
+                <strong>{{ notification.fromName }}</strong>
+                <p>{{ notification.content }}</p>
+                <small>{{ notification.createdAt }}</small>
+              </article>
+            {% else %}
+              <article class="notification-card">
+                <p>No notifications yet.</p>
+              </article>
+            {% endfor %}
           </div>
-          <div class="dm-chat">
-            <div class="dm-thread">
-              {% for m in dmMessages %}
-                <div class="dm-bubble {% if m.sender.id == app.user.id %}me{% endif %}">
-                  {{ m.body }}
-                  <small>{{ m.createdAt|date('H:i') }}{% if m.sender.id == app.user.id %} &middot; {{ m.status|capitalize }}{% endif %}</small>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="community-shell">
+    <aside class="community-card left-panel">
+      <div class="shortcut-list">
+        <a href="{{ app.user ? path('diet_planner') : path('app_login') }}" class="shortcut-item">
+          <span class="shortcut-icon" style="color:#2874ff;"><i class="fa fa-user"></i></span>
+          <span>{{ currentName }}</span>
+        </a>
+        <div class="shortcut-item">
+          <span class="shortcut-icon" style="color:#8b5cf6;"><i class="fa fa-magic"></i></span>
+          <span>Meta AI</span>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-icon" style="color:#22c55e;"><i class="fa fa-hand-paper-o"></i></span>
+          <span>IA Manus</span>
+        </div>
+        <a href="{{ path('explore_forums_blogs') }}" class="shortcut-item">
+          <span class="shortcut-icon" style="color:#2874ff;"><i class="fa fa-users"></i></span>
+          <span>Friends</span>
+        </a>
+        <a href="{{ path('services') }}" class="shortcut-item">
+          <span class="shortcut-icon" style="color:#f59e0b;"><i class="fa fa-flag"></i></span>
+          <span>Pages</span>
+        </a>
+        <a href="{{ path('events') }}" class="shortcut-item">
+          <span class="shortcut-icon" style="color:#2563eb;"><i class="fa fa-clock-o"></i></span>
+          <span>Souvenirs</span>
+        </a>
+        <a href="{{ path('explore_forums_blogs', {'saved': 1}) }}" class="shortcut-item{% if savedOnly %} is-active{% endif %}">
+          <span class="shortcut-icon" style="color:#e11d48;"><i class="fa fa-bookmark"></i></span>
+          <span>Enregistrements</span>
+        </a>
+        <a href="{{ path('fitness_planner') }}" class="shortcut-item">
+          <span class="shortcut-icon" style="color:#2874ff;"><i class="fa fa-user-secret"></i></span>
+          <span>Groups</span>
+        </a>
+      </div>
+
+      <div class="shortcut-divider"></div>
+      <p class="shortcut-label">Your shortcuts</p>
+      <a href="#" class="shortcut-card">
+        <span class="shortcut-icon" style="color:#11856b;"><i class="fa fa-building"></i></span>
+        <span class="shortcut-card-text">ESPRIT : Ecole Sup Privee...</span>
+      </a>
+    </aside>
+
+    <main class="feed-column">
+      {% if app.flashes('success') or app.flashes('error') or app.flashes('info') %}
+        <div class="flash-stack">
+          {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+          {% endfor %}
+          {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">{{ message }}</div>
+          {% endfor %}
+          {% for message in app.flashes('info') %}
+            <div class="alert alert-info">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if activeExploreView == 'feed' and (not savedOnly or editingPost) %}
+      <section class="community-card composer-card" id="composer-card">
+        {% if app.user %}
+          {{ form_start(blogForm, {'action': composerAction, 'attr': {'class': 'community-composer-form'}, 'multipart': true}) }}
+            <div class="composer-topline">
+              <span class="composer-plus"><i class="fa fa-plus"></i></span>
+              {{ form_widget(blogForm.title, {'attr': {'class': 'composer-title', 'placeholder': 'Give your post a strong title...'}}) }}
+            </div>
+
+            <div class="composer-divider"></div>
+
+            {{ form_widget(blogForm.content, {'attr': {'class': 'composer-content', 'placeholder': 'Share your idea, question, or highlight...'}}) }}
+
+            <div class="composer-media-row">
+              <div class="media-selected" id="blog-media-selected" data-existing-media="{{ editingPost and editingPost.imagePath ? '1' : '0' }}">{{ editingPost and editingPost.imagePath ? editingPost.imagePath|replace({'\\':'/'})|split('/')|last : 'No media selected' }}</div>
+              <label class="media-btn" for="{{ blogForm.featuredImageFile.vars.id }}">
+                <i class="fa fa-camera"></i>
+                <span>Photo / Video</span>
+              </label>
+              <button type="button" class="media-clear is-hidden" id="blog-media-clear" aria-label="Clear selected file">
+                <i class="fa fa-times"></i>
+              </button>
+            </div>
+            <input type="hidden" name="remove_image" id="blog-remove-image" value="0">
+
+            <div class="composer-hidden-fields">
+              {{ form_widget(blogForm.excerpt, {'attr': {'placeholder': 'Short excerpt'}}) }}
+              {{ form_widget(blogForm.category) }}
+              {{ form_widget(blogForm.featuredImageFile, {'attr': {'style': 'display:none;'}}) }}
+            </div>
+
+            <button type="submit" class="composer-submit">{{ editingPost ? 'Update post' : 'Publish post' }}</button>
+            {% if editingPost %}
+              <div style="margin-top:14px;">
+                <a href="{{ path('explore_forums_blogs', savedOnly ? {'saved': 1} : {}) }}" class="post-owner-pill btn-link">Cancel edit</a>
+              </div>
+            {% endif %}
+            {{ form_rest(blogForm) }}
+          {{ form_end(blogForm) }}
+        {% else %}
+          <div class="empty-state-card">
+            Connecte-toi pour publier, aimer, commenter et discuter avec la communaute Fitopia.
+            <div style="margin-top:14px;">
+              <a href="{{ path('app_login') }}" class="connection-btn" style="text-decoration:none;">Se connecter</a>
+            </div>
+          </div>
+        {% endif %}
+      </section>
+      {% endif %}
+
+      {% if activeExploreView == 'reels' %}
+      <section class="feed-panel" id="feed-wrap">
+        <div class="reels-feed-band">
+          <h2 class="reels-feed-title">Fitopia Reels</h2>
+        </div>
+        <div class="reels-feed-card">
+          <div class="reels-feed-viewport">
+            <div class="reels-feed-video-shell">
+              <video id="explore-reels-video" class="reels-feed-video" autoplay muted playsinline loop preload="metadata"></video>
+
+              <div class="reels-feed-switchers">
+                <button type="button" id="explore-reels-prev"><i class="fa fa-angle-left"></i></button>
+                <button type="button" id="explore-reels-next"><i class="fa fa-angle-right"></i></button>
+              </div>
+
+              <div class="reels-feed-actions">
+                <button type="button" class="reels-feed-action" id="explore-reels-like"><i class="fa fa-heart"></i></button>
+                <button type="button" class="reels-feed-action"><i class="fa fa-comment"></i></button>
+                <button type="button" class="reels-feed-action"><i class="fa fa-share"></i></button>
+              </div>
+
+              <div class="reels-feed-caption">
+                <div class="reels-feed-meta" id="explore-reels-author"></div>
+                <h3 id="explore-reels-title"></h3>
+                <p id="explore-reels-caption"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      {% else %}
+      <section class="feed-panel" id="feed-wrap">
+        {% if items is empty %}
+          <article class="community-card empty-state-card">
+            Aucun post pour le moment. Publie le premier pour lancer le feed.
+          </article>
+        {% else %}
+          {% for item in items %}
+            {% set isMine = item.ownedByMe %}
+            {% set authorInitials = item.authorName ? item.authorName|split(' ')|map(v => v|slice(0,1)|upper)|join('')|slice(0,2) : 'FM' %}
+            <article class="community-card feed-card" data-post-date="{{ item.date }}" data-likes="{{ item.likes.count }}" data-comments="{{ item.comments.count }}" data-trending="{{ loop.first ? 1 : 0 }}">
+              <div class="post-header">
+                <div class="post-author-wrap">
+                  <div class="post-avatar">
+                    {% if item.avatar %}
+                      <img src="{{ item.avatar starts with 'http' ? item.avatar : asset(item.avatar) }}" alt="{{ item.authorName }}" loading="lazy" decoding="async">
+                    {% else %}
+                      {{ authorInitials }}
+                    {% endif %}
+                  </div>
+                  <div>
+                    <p class="post-author-name">{{ item.authorName ?: 'Fitopia member' }}</p>
+                    <p class="post-author-meta">Post #{{ item.id }} | {{ isMine ? 'your post' : item.role|default('Member') }} | {{ item.email ?: 'community@fitopia.local' }}</p>
+                  </div>
+                </div>
+                {% if isMine %}
+                  <div class="post-owner-actions">
+                    <span class="post-owner-pill">My post</span>
+                    <a href="{{ path('explore_forums_blogs', savedOnly ? {'edit': item.id, 'saved': 1} : {'edit': item.id}) }}#composer-card" class="post-owner-pill btn-link">Edit</a>
+                    <form method="post" action="{{ path('explore_post_delete', {'id': item.id}) }}">
+                      <input type="hidden" name="_token" value="{{ csrf_token('delete_post_' ~ item.id) }}">
+                      <button type="submit" class="post-owner-pill">Delete</button>
+                    </form>
+                  </div>
+                {% endif %}
+              </div>
+
+              <h2 class="post-title">{{ item.title }}</h2>
+              <p class="post-excerpt">{{ item.excerpt ?: 'Share a short update with the Fitopia community.' }}</p>
+              <div class="post-hidden-content">{{ item.content|default('')|e|nl2br }}</div>
+              <button class="post-read-more js-read-more" type="button">Read more</button>
+
+              {% if item.image %}
+                <div class="post-media-stage" style="--post-media-preview: url('{{ item.image|e('html_attr') }}');">
+                  <div class="post-media-frame">
+                    <img src="{{ item.image }}" alt="{{ item.title }}" class="post-image" loading="lazy" decoding="async">
+                  </div>
                 </div>
               {% else %}
-                <div class="text-muted">Say hello to start the conversation.</div>
-              {% endfor %}
-              <div id="dm-typing-indicator" class="text-muted" style="display:none;margin-top:.5rem;">Typing...</div>
+                <div class="post-image-placeholder">No media attached</div>
+              {% endif %}
+
+              <div class="post-tags">
+                {% if item.category %}
+                  <span class="post-tag"><i class="fa fa-tag"></i> {{ item.category }}</span>
+                {% endif %}
+                <span class="post-tag"><i class="fa fa-calendar-o"></i> {{ item.date }}</span>
+                <span class="post-tag"><i class="fa fa-id-badge"></i> {{ item.role }}</span>
+              </div>
+
+              <div class="post-actions">
+                <form method="post" action="{{ path('explore_interact', {'id': item.id}) }}">
+                  <input type="hidden" name="_token" value="{{ csrf_token('interact_like_' ~ item.id) }}">
+                  <input type="hidden" name="type" value="like">
+                  <button class="btn post-btn like-btn{% if item.likedByMe %} is-active{% endif %}" type="submit"><i class="fa fa-heart"></i> Like</button>
+                </form>
+
+                <button class="btn post-btn js-toggle-comment" type="button" data-post-id="{{ item.id }}"><i class="fa fa-comment"></i> Comment</button>
+
+                <form method="post" action="{{ path('explore_interact', {'id': item.id}) }}">
+                  <input type="hidden" name="_token" value="{{ csrf_token('interact_repost_' ~ item.id) }}">
+                  <input type="hidden" name="type" value="repost">
+                  <button class="btn post-btn repost-btn{% if item.repostedByMe %} is-active{% endif %}" type="submit"><i class="fa fa-retweet"></i> Repost</button>
+                </form>
+
+                <form method="post" action="{{ path('explore_interact', {'id': item.id}) }}">
+                  <input type="hidden" name="_token" value="{{ csrf_token('interact_save_' ~ item.id) }}">
+                  <input type="hidden" name="type" value="save">
+                  <button class="btn post-btn{% if item.savedByMe %} like-btn is-active{% endif %}" type="submit"><i class="fa fa-bookmark"></i> {{ item.savedByMe ? 'Saved' : 'Save' }}</button>
+                </form>
+
+                <button
+                  class="btn post-btn ai-btn js-summarize"
+                  type="button"
+                  data-post-id="{{ item.id }}"
+                  data-url="{{ path('explore_summarize', {'id': item.id}) }}"
+                  data-token="{{ csrf_token('explore_summarize_' ~ item.id) }}"
+                >
+                  <i class="fa fa-magic"></i> AI Summary
+                </button>
+              </div>
+
+              <div class="post-counts">
+                <span><i class="fa fa-heart"></i> {{ item.likes.count }} likes</span>
+                <span><i class="fa fa-comment"></i> {{ item.comments.count }} comments</span>
+                <span><i class="fa fa-retweet"></i> {{ item.reposts.count }} reposts</span>
+              </div>
+
+              <div class="summary-box" id="summary-{{ item.id }}">
+                <p class="summary-status" id="summary-status-{{ item.id }}"></p>
+                <div id="summary-text-{{ item.id }}"></div>
+              </div>
+
+              <div class="comment-form" id="comment-form-{{ item.id }}">
+                <form method="post" action="{{ path('explore_interact', {'id': item.id}) }}">
+                  <input type="hidden" name="_token" value="{{ csrf_token('interact_comment_' ~ item.id) }}">
+                  <input type="hidden" name="type" value="comment">
+                  <textarea name="comment_text" placeholder="Write your comment..."></textarea>
+                  <button class="connection-btn" type="submit" style="margin-top:10px;">Post comment</button>
+                </form>
+              </div>
+
+              <button class="comments-toggle js-toggle-comments" type="button" data-post-id="{{ item.id }}">View all {{ item.comments.count }} comments</button>
+              <ul class="comment-list" id="comment-list-{{ item.id }}">
+                {% for c in item.comments.items|slice(0, 6) %}
+                  <li class="comment-item">
+                    <div class="comment-author">{{ c.user }}</div>
+                    <div class="comment-text">{{ c.text }}</div>
+                    <span class="comment-date">{{ c.date }}</span>
+                    {% if app.user and c.userId == app.user.id %}
+                      <div class="comment-actions">
+                        <button type="button" class="comment-action-btn js-comment-edit-toggle" data-comment-id="{{ c.id }}">Edit</button>
+                        <form method="post" action="{{ path('explore_comment_delete', {'id': c.id}) }}">
+                          <input type="hidden" name="_token" value="{{ csrf_token('comment_delete_' ~ c.id) }}">
+                          <button type="submit" class="comment-action-btn">Delete</button>
+                        </form>
+                      </div>
+                      <div class="comment-edit-form" id="comment-edit-{{ c.id }}">
+                        <form method="post" action="{{ path('explore_comment_update', {'id': c.id}) }}">
+                          <input type="hidden" name="_token" value="{{ csrf_token('comment_update_' ~ c.id) }}">
+                          <textarea name="comment_text">{{ c.text }}</textarea>
+                          <button class="connection-btn" type="submit" style="margin-top:10px;">Save changes</button>
+                        </form>
+                      </div>
+                    {% endif %}
+                  </li>
+                {% else %}
+                  <li class="comment-item">
+                    <div class="comment-text">No comments yet.</div>
+                  </li>
+                {% endfor %}
+              </ul>
+            </article>
+          {% endfor %}
+        {% endif %}
+      </section>
+      {% endif %}
+    </main>
+
+    <aside class="connections-panel">
+      <p class="connections-kicker">Connections</p>
+      <div class="connections-card">
+        {% if app.user and dmSelectedConversation %}
+          <div class="dm-live-card">
+            <div class="dm-live-head">
+              <div>
+                <h3>{{ dmOtherName ?: 'Private messages' }}</h3>
+                <div class="connections-copy" style="padding:0;margin-top:4px;">{{ dmStatusLine ?: 'Active conversation' }}</div>
+              </div>
+              <a href="{{ path('explore_forums_blogs') }}" class="dm-back"><i class="fa fa-arrow-left"></i> Back</a>
             </div>
-            <form class="dm-input" method="post" action="{{ path('explore_dm_send', {'id': dmSelectedConversation.id}) }}" enctype="multipart/form-data">
-              <input type="text" name="body" placeholder="Write a message..." id="dm-input-field" autocomplete="off">
+
+            <div class="dm-live-thread">
+              {% for m in dmMessages %}
+                <div class="dm-bubble {% if m.sender and app.user and m.sender.email|lower == app.user.email|lower %}me{% endif %}">
+                  {{ m.body }}
+                  <small>{{ m.createdAt|date('H:i') }}{% if m.sender and app.user and m.sender.email|lower == app.user.email|lower %} · {{ m.status|capitalize }}{% endif %}</small>
+                </div>
+              {% else %}
+                <div class="comment-text">Say hello to start the conversation.</div>
+              {% endfor %}
+              <div id="dm-typing-indicator" class="comment-date" style="display:none;">Typing...</div>
+            </div>
+
+            <form class="dm-form" method="post" action="{{ path('explore_dm_send', {'id': dmSelectedConversation.id}) }}" enctype="multipart/form-data">
+              <input type="text" name="body" id="dm-input-field" placeholder="Write a message..." autocomplete="off">
               <button type="submit">Send</button>
             </form>
           </div>
         {% else %}
-          <div class="dm-header">
-            <div>
-              <h3><i class="fa fa-commenting"></i> Direct Messages</h3>
-              <div class="dm-header-sub">Select a conversation to open it in full view.</div>
-            </div>
-            <div class="dm-search"><i class="fa fa-search"></i><input type="text" placeholder="Search" id="dm-search-input" aria-label="Search conversations"></div>
+          <div class="connections-head">
+            <h3>Private messages</h3>
+            <span class="connections-count">{{ connectionsCount }} users</span>
           </div>
-          <div class="dm-list" id="dm-conversation-list">
+          <p class="connections-copy">Browse users, open a conversation, and stay inside the forum sidebar.</p>
+          <div class="connections-search">
+            <input type="text" id="dm-search-input" placeholder="Search people by name or email">
+          </div>
+
+          <div class="connections-list" id="dm-connections-list">
             {% for conv in dmConversationItems %}
-              <a class="dm-item" href="{{ path('explore_forums_blogs', {'dm': conv.id}) }}" data-user="{{ conv.displayName }}">
-                <div>
-                  <span class="dm-item-name">{{ conv.displayName }}</span>
-                  <span class="dm-item-preview">{{ dmLastMessage[conv.id]|default('No messages yet') }}</span>
+              {% set badge = conv.displayName|split(' ')|map(v => v|slice(0,1)|upper)|join('')|slice(0,2) %}
+              <div class="connection-entry dm-search-target" data-user="{{ conv.displayName|lower }} {{ conv.otherEmail|lower }}">
+                <div class="connection-head">
+                  <div class="connection-avatar">{{ badge }}</div>
+                  <div>
+                    <p class="connection-name">{{ conv.displayName }}</p>
+                    <p class="connection-email">{{ conv.otherEmail }}</p>
+                  </div>
                 </div>
-                <div class="d-flex flex-column align-items-end" style="gap:.28rem;">
-                  <span class="dm-item-time">{{ dmLastMessageTime[conv.id]|default('') }}</span>
-                  {% if dmUnreadCounts[conv.id]|default(0) > 0 %}<span class="dm-badge">{{ dmUnreadCounts[conv.id] }}</span>{% endif %}
+                <p class="connection-copy">{{ dmLastMessage[conv.id]|default('Start a private conversation from the forum sidebar.') }}</p>
+                <div class="connection-actions">
+                  <span>{{ dmUnreadCounts[conv.id]|default(0) > 0 ? dmUnreadCounts[conv.id] ~ ' unread' : 'Open chat' }}</span>
+                  <a href="{{ path('explore_forums_blogs', {'dm': conv.id}) }}" class="connection-btn" style="text-decoration:none;">Message</a>
                 </div>
-              </a>
-            {% else %}
-              <div class="p-3 text-muted">No conversations yet. Start one below.</div>
+              </div>
             {% endfor %}
-          </div>
-          <div class="dm-user-list">
-            <p class="dm-user-list-title">Start a new chat</p>
-            {% for u in dmUsers|slice(0,4) %}
-              <div class="dm-user-item">
-                <div><strong>{{ (u.firstName ~ ' ' ~ u.lastName)|trim ?: u.email }}</strong><div class="text-muted">{{ u.email }}</div></div>
-                <form method="post" action="{{ path('explore_dm_start', {'id': u.id}) }}"><button class="dm-start-btn" type="submit">Message</button></form>
+
+            {% for u in dmUsers %}
+              {% set displayName = u.displayName %}
+              {% set initials = displayName|split(' ')|map(v => v|slice(0,1)|upper)|join('')|slice(0,2) %}
+              <div class="connection-entry dm-search-target" data-user="{{ displayName|lower }} {{ u.email|lower }}">
+                <div class="connection-head">
+                  <div class="connection-avatar">{{ initials }}</div>
+                  <div>
+                    <p class="connection-name">{{ displayName }}</p>
+                    <p class="connection-email">{{ u.email }}</p>
+                  </div>
+                </div>
+                <p class="connection-copy">Start a private conversation from the forum sidebar.</p>
+                <div class="connection-actions">
+                  <span>New chat</span>
+                  <form method="post" action="{{ path('explore_dm_start', {'id': u.id}) }}" style="margin:0;">
+                    <button class="connection-btn" type="submit">Message</button>
+                  </form>
+                </div>
               </div>
             {% else %}
-              <div class="text-muted">No users available right now.</div>
+              {% if dmConversationItems is empty %}
+                <div class="empty-state-card">No users available right now.</div>
+              {% endif %}
             {% endfor %}
           </div>
         {% endif %}
-      </aside>
-    </div>
-    {% if app.user %}<button type="button" class="floating-create-btn" id="floating-create-post"><i class="fa fa-plus-circle"></i> Create Post</button>{% endif %}
+      </div>
+    </aside>
   </div>
 </section>
 {% endblock %}
@@ -508,55 +1800,135 @@
 {% block javascripts %}
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const expressBtn = document.getElementById('btn-express');
-    const myPostsBtn = document.getElementById('btn-my-posts');
-    const openFormBtn = document.getElementById('btn-open-form');
-    const floatingCreateBtn = document.getElementById('floating-create-post');
-    const expressPanel = document.getElementById('express-form-panel');
-    const myPostsPanel = document.getElementById('my-posts-panel');
+    const composerCard = document.getElementById('composer-card');
+    const pageSearch = document.getElementById('explore-page-search');
+    const dmSearchInput = document.getElementById('dm-search-input');
+    const notificationsToggle = document.getElementById('forum-notifications-toggle');
+    const notificationsPanel = document.getElementById('forum-notifications-panel');
+    const notificationDot = document.getElementById('forum-notification-dot');
+    const mediaInput = document.getElementById('{{ blogForm.featuredImageFile.vars.id|default('blog_post_featuredImageFile') }}');
+    const mediaSelected = document.getElementById('blog-media-selected');
+    const mediaClear = document.getElementById('blog-media-clear');
+    const removeImageInput = document.getElementById('blog-remove-image');
+    const reelsVideo = document.getElementById('explore-reels-video');
+    const reelsTitle = document.getElementById('explore-reels-title');
+    const reelsAuthor = document.getElementById('explore-reels-author');
+    const reelsCaption = document.getElementById('explore-reels-caption');
+    const reelsPrev = document.getElementById('explore-reels-prev');
+    const reelsNext = document.getElementById('explore-reels-next');
+    const reelsLike = document.getElementById('explore-reels-like');
 
-    const show = (panel) => {
-      if (!panel) {
-        return;
-      }
+    const reelsFeed = [
+      {% for reel in reelsFeed|default([]) %}
+      {
+        title: {{ reel.title|json_encode|raw }},
+        author: {{ reel.author|json_encode|raw }},
+        caption: {{ reel.caption|json_encode|raw }},
+        video: {{ asset(reel.video)|json_encode|raw }},
+        likes: {{ reel.likes|json_encode|raw }},
+        comments: {{ reel.comments|json_encode|raw }}
+      }{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ];
 
-      expressPanel.classList.remove('active');
-      myPostsPanel.classList.remove('active');
-      panel.classList.add('active');
-      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
+    if (reelsVideo && reelsTitle && reelsAuthor && reelsCaption && reelsPrev && reelsNext && reelsLike && reelsFeed.length > 0) {
+      let currentReelIndex = 0;
+      const likedReels = new Map();
 
-    expressBtn && expressBtn.addEventListener('click', () => show(expressPanel));
-    myPostsBtn && myPostsBtn.addEventListener('click', () => show(myPostsPanel));
-    openFormBtn && openFormBtn.addEventListener('click', () => show(expressPanel));
-    floatingCreateBtn && floatingCreateBtn.addEventListener('click', () => show(expressPanel));
+      const renderReel = () => {
+        const reel = reelsFeed[currentReelIndex];
+        if (!reel) return;
+        reelsVideo.src = reel.video;
+        reelsVideo.play().catch(() => {});
+        reelsTitle.textContent = reel.title;
+        reelsAuthor.textContent = reel.author;
+        reelsCaption.textContent = reel.caption;
+        reelsLike.style.color = likedReels.get(currentReelIndex) ? '#ff7a90' : '#ffffff';
+      };
+
+      const goToReel = (index) => {
+        currentReelIndex = (index + reelsFeed.length) % reelsFeed.length;
+        renderReel();
+      };
+
+      reelsPrev.addEventListener('click', () => goToReel(currentReelIndex - 1));
+      reelsNext.addEventListener('click', () => goToReel(currentReelIndex + 1));
+      reelsLike.addEventListener('click', () => {
+        likedReels.set(currentReelIndex, !likedReels.get(currentReelIndex));
+        renderReel();
+      });
+
+      renderReel();
+    }
+
+    if (mediaInput && mediaSelected && mediaClear) {
+      const updateMediaState = () => {
+        const file = mediaInput.files && mediaInput.files[0] ? mediaInput.files[0] : null;
+        const hasExistingMedia = mediaSelected.getAttribute('data-existing-media') === '1';
+        mediaSelected.textContent = file
+          ? file.name
+          : (hasExistingMedia ? mediaSelected.textContent : 'No media selected');
+        mediaClear.classList.toggle('is-hidden', !file && !hasExistingMedia);
+        if (file && removeImageInput) {
+          removeImageInput.value = '0';
+        }
+      };
+
+      mediaInput.addEventListener('change', updateMediaState);
+      mediaClear.addEventListener('click', () => {
+        mediaInput.value = '';
+        if (removeImageInput) {
+          removeImageInput.value = '1';
+        }
+        mediaSelected.setAttribute('data-existing-media', '0');
+        updateMediaState();
+      });
+      updateMediaState();
+    }
+
+    if (notificationsToggle && notificationsPanel) {
+      notificationsToggle.addEventListener('click', async (event) => {
+        event.preventDefault();
+        const willOpen = !notificationsPanel.classList.contains('is-open');
+        notificationsPanel.classList.toggle('is-open');
+
+        if (willOpen) {
+          const url = notificationsToggle.getAttribute('data-read-url');
+          const token = notificationsToggle.getAttribute('data-read-token');
+          if (url && token) {
+            try {
+              const form = new FormData();
+              form.append('_token', token);
+              await fetch(url, {
+                method: 'POST',
+                body: form,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+              });
+              if (notificationDot) {
+                notificationDot.remove();
+              }
+            } catch (_) {}
+          }
+        }
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!notificationsPanel.contains(event.target) && !notificationsToggle.contains(event.target)) {
+          notificationsPanel.classList.remove('is-open');
+        }
+      });
+    }
 
     document.querySelectorAll('.js-read-more').forEach((btn) => {
       btn.addEventListener('click', () => {
         const card = btn.closest('.feed-card');
-        const preview = card?.querySelector('.post-preview');
-        const content = card?.querySelector('.post-content');
-        if (!preview || !content) {
+        const content = card ? card.querySelector('.post-hidden-content') : null;
+        if (!content) {
           return;
         }
 
-        const expanded = preview.classList.toggle('expanded');
-        content.style.display = expanded ? 'block' : 'none';
-        btn.textContent = expanded ? 'Show less' : 'Read more';
-      });
-    });
-
-    document.querySelectorAll('.js-toggle-comments').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const id = btn.getAttribute('data-post-id');
-        const list = document.getElementById('comment-list-' + id);
-        if (!list) {
-          return;
-        }
-
-        const hidden = list.style.display === 'none' || list.style.display === '';
-        list.style.display = hidden ? 'block' : 'none';
-        btn.textContent = hidden ? 'Hide comments' : 'View all comments';
+        content.classList.toggle('is-open');
+        btn.textContent = content.classList.contains('is-open') ? 'Show less' : 'Read more';
       });
     });
 
@@ -568,8 +1940,32 @@
           return;
         }
 
-        const hidden = form.style.display === 'none' || form.style.display === '';
-        form.style.display = hidden ? 'block' : 'none';
+        form.style.display = form.style.display === 'block' ? 'none' : 'block';
+      });
+    });
+
+    document.querySelectorAll('.js-toggle-comments').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-post-id');
+        const list = document.getElementById('comment-list-' + id);
+        if (!list) {
+          return;
+        }
+
+        const open = list.classList.toggle('is-open');
+        btn.textContent = open ? 'Hide comments' : 'View all comments';
+      });
+    });
+
+    document.querySelectorAll('.js-comment-edit-toggle').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-comment-id');
+        const form = document.getElementById('comment-edit-' + id);
+        if (!form) {
+          return;
+        }
+
+        form.classList.toggle('is-open');
       });
     });
 
@@ -600,7 +1996,7 @@
           const form = new FormData();
           form.append('_token', token);
 
-          const resp = await fetch(url, {
+          const response = await fetch(url, {
             method: 'POST',
             body: form,
             headers: {
@@ -609,75 +2005,46 @@
             }
           });
 
-          const raw = await resp.text();
+          const raw = await response.text();
           let data = null;
           try {
             data = JSON.parse(raw);
           } catch (_) {
-            throw new Error('Invalid response (HTTP ' + resp.status + ').');
+            throw new Error('Invalid response (HTTP ' + response.status + ').');
           }
 
-          if (!resp.ok || data.error) {
-            throw new Error(data.error || ('HTTP ' + resp.status));
+          if (!response.ok || data.error) {
+            throw new Error(data.error || ('HTTP ' + response.status));
           }
 
-          const sourceLabel = data.source === 'fallback' ? 'Quick summary' : 'AI summary';
-          statusEl.textContent = sourceLabel;
+          statusEl.textContent = data.source === 'fallback' ? 'Quick summary' : 'AI summary';
           textEl.textContent = data.summary || '';
-        } catch (err) {
+        } catch (error) {
           statusEl.textContent = 'Summary failed';
-          textEl.textContent = err.message || 'Unknown error';
+          textEl.textContent = error.message || 'Unknown error';
         } finally {
           btn.disabled = false;
         }
       });
     });
 
-    const dmSearchInput = document.getElementById('dm-search-input');
-    if (dmSearchInput) {
-      dmSearchInput.addEventListener('input', () => {
-        const q = dmSearchInput.value.trim().toLowerCase();
-        document.querySelectorAll('#dm-conversation-list .dm-item').forEach((item) => {
-          const name = (item.getAttribute('data-user') || '').toLowerCase();
-          item.style.display = name.includes(q) ? 'grid' : 'none';
+    if (pageSearch) {
+      pageSearch.addEventListener('input', () => {
+        const q = pageSearch.value.trim().toLowerCase();
+        document.querySelectorAll('#feed-wrap .feed-card[data-post-date]').forEach((card) => {
+          const haystack = card.textContent.toLowerCase();
+          card.style.display = haystack.includes(q) ? '' : 'none';
         });
       });
     }
 
-    const feedSort = document.getElementById('feed-sort');
-    const feedWrap = document.getElementById('feed-wrap');
-    if (feedSort && feedWrap) {
-      feedSort.addEventListener('change', () => {
-        const cards = Array.from(feedWrap.querySelectorAll('.feed-card[data-post-date]'));
-        const mode = feedSort.value;
-        const parseDate = (v) => {
-          const d = new Date(v);
-          return Number.isNaN(d.getTime()) ? 0 : d.getTime();
-        };
-
-        cards.sort((a, b) => {
-          const likesA = Number(a.dataset.likes || 0);
-          const likesB = Number(b.dataset.likes || 0);
-          const commentsA = Number(a.dataset.comments || 0);
-          const commentsB = Number(b.dataset.comments || 0);
-          const trendA = Number(a.dataset.trending || 0);
-          const trendB = Number(b.dataset.trending || 0);
-          const dateA = parseDate(a.dataset.postDate || '');
-          const dateB = parseDate(b.dataset.postDate || '');
-
-          if (mode === 'liked') {
-            return likesB - likesA;
-          }
-          if (mode === 'commented') {
-            return commentsB - commentsA;
-          }
-          if (mode === 'trending') {
-            return trendB - trendA || (likesB + commentsB) - (likesA + commentsA);
-          }
-          return dateB - dateA;
+    if (dmSearchInput) {
+      dmSearchInput.addEventListener('input', () => {
+        const q = dmSearchInput.value.trim().toLowerCase();
+        document.querySelectorAll('.dm-search-target').forEach((entry) => {
+          const haystack = (entry.getAttribute('data-user') || '').toLowerCase();
+          entry.style.display = haystack.includes(q) ? '' : 'none';
         });
-
-        cards.forEach((card) => feedWrap.appendChild(card));
       });
     }
   });

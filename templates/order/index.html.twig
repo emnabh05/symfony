@@ -29,7 +29,7 @@
         <a href="{{ path('app_order_index', {status: 'delivered'}) }}" class="btn {% if currentStatus == 'delivered' %}btn-success{% else %}btn-secondary{% endif %}">
             Delivered
         </a>
-        <a href="{{ path('app_order_index', {status: 'cancelled'}) }}" class="btn {% if currentStatus == 'cancelled' %}btn-danger{% else %}btn-secondary{% endif %}">
+        <a href="{{ path('app_order_index', {status: 'canceled'}) }}" class="btn {% if currentStatus == 'canceled' %}btn-danger{% else %}btn-secondary{% endif %}">
             Cancelled
         </a>
     </div>
@@ -76,7 +76,7 @@
                                 {% elseif order.status == 'processing' %}badge-info
                                 {% elseif order.status == 'on_way' %}badge-primary
                                 {% elseif order.status == 'delivered' %}badge-success
-                                {% elseif order.status == 'cancelled' %}badge-danger
+                                {% elseif order.status == 'canceled' %}badge-danger
                                 {% else %}badge-secondary{% endif %}">
                                 {{ order.status|upper }}
                             </span>

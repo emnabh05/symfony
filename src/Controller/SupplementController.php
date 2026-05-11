@@ -232,7 +232,7 @@ class SupplementController extends AbstractController
     #[Route('/{id}/delete', name: 'app_supplement_delete', methods: ['POST'])]
     public function delete(Request $request, Supplement $supplement): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$supplement->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$supplement->getId(), (string) $request->request->get('_token'))) {
             $orderItemCount = $this->orderItemRepository->count(['supplement' => $supplement]);
             if ($orderItemCount > 0) {
                 $this->addFlash('error', 'Cannot delete this supplement because it is linked to existing orders.');

@@ -238,7 +238,7 @@ class ReservationHistoryController extends AbstractController
     {
         $ids = [];
         foreach ($reservations as $reservation) {
-            if ($reservation instanceof Reservation && $this->canCancelReservation($reservation) && $reservation->getId() !== null) {
+            if ($this->canCancelReservation($reservation) && $reservation->getId() !== null) {
                 $ids[] = (int) $reservation->getId();
             }
         }
@@ -252,7 +252,7 @@ class ReservationHistoryController extends AbstractController
             return false;
         }
         $event = $reservation->getEvent();
-        if ($event === null || $event->getDateEvent() === null) {
+        if ($event === null) {
             return false;
         }
 

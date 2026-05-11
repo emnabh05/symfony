@@ -1,0 +1,339 @@
+<style>
+  .fitopia-footer-v2 {
+    background: #1f7b54;
+    color: #f2fbf5;
+    padding: 34px 0 12px;
+    margin-top: 0;
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-shell {
+    max-width: 1860px;
+    margin: 0 auto;
+    padding: 0 38px;
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-newsletter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 42px;
+    padding: 34px 38px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-kicker {
+    display: inline-block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-title {
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(30px, 3vw, 54px);
+    font-weight: 700;
+    line-height: 1.12;
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-subscribe {
+    flex: 0 0 min(100%, 575px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px;
+    border-radius: 24px;
+    background: #f6faf7;
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-subscribe input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    padding: 0 20px;
+    color: #567468;
+    font-size: 17px;
+    outline: none;
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-subscribe button {
+    border: 0;
+    border-radius: 18px;
+    background: #183d57;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 20px 34px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-subscribe button:hover {
+    background: #102f44;
+    transform: translateY(-1px);
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-grid {
+    display: grid;
+    grid-template-columns: minmax(320px, 2.1fr) repeat(4, minmax(180px, 1fr));
+    gap: 28px;
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-card {
+    min-height: 240px;
+    padding: 34px 28px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-brand {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-brand-mark {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-brand-name {
+    margin: 0;
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-brand-copy,
+  .fitopia-footer-v2 .fitopia-footer-column a,
+  .fitopia-footer-v2 .fitopia-footer-bottom-copy {
+    color: rgba(242, 251, 245, 0.82);
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-brand-link {
+    width: fit-content;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-brand-link:hover,
+  .fitopia-footer-v2 .fitopia-footer-column a:hover,
+  .fitopia-footer-v2 .fitopia-footer-legal a:hover {
+    color: #ffffff;
+    text-decoration: none;
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-column h3 {
+    margin: 0 0 16px;
+    color: #ffffff;
+    font-size: 30px;
+    font-weight: 700;
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-column ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-column a {
+    text-decoration: none;
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 42px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-bottom-copy {
+    margin: 0;
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-legal {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    flex-wrap: wrap;
+  }
+
+  .fitopia-footer-v2 .fitopia-footer-legal a {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  @media (max-width: 1399px) {
+    .fitopia-footer-v2 .fitopia-footer-grid {
+      grid-template-columns: minmax(280px, 1.8fr) repeat(2, minmax(180px, 1fr));
+    }
+  }
+
+  @media (max-width: 991px) {
+    .fitopia-footer-v2 .fitopia-footer-shell {
+      padding: 0 20px;
+    }
+
+    .fitopia-footer-v2 .fitopia-footer-newsletter,
+    .fitopia-footer-v2 .fitopia-footer-bottom {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .fitopia-footer-v2 .fitopia-footer-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .fitopia-footer-v2 .fitopia-footer-card {
+      min-height: auto;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .fitopia-footer-v2 {
+      padding-top: 26px;
+    }
+
+    .fitopia-footer-v2 .fitopia-footer-newsletter {
+      padding: 24px 20px;
+      border-radius: 24px;
+      margin-bottom: 28px;
+    }
+
+    .fitopia-footer-v2 .fitopia-footer-subscribe {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 10px;
+      border-radius: 20px;
+    }
+
+    .fitopia-footer-v2 .fitopia-footer-subscribe input {
+      padding: 12px 14px 4px;
+      font-size: 15px;
+    }
+
+    .fitopia-footer-v2 .fitopia-footer-subscribe button {
+      width: 100%;
+      padding: 16px 24px;
+    }
+
+    .fitopia-footer-v2 .fitopia-footer-grid {
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .fitopia-footer-v2 .fitopia-footer-card {
+      padding: 26px 20px;
+      border-radius: 22px;
+    }
+
+    .fitopia-footer-v2 .fitopia-footer-column h3 {
+      font-size: 24px;
+    }
+
+    .fitopia-footer-v2 .fitopia-footer-legal {
+      gap: 18px 24px;
+    }
+  }
+</style>
+
+<footer class="fitopia-footer-v2">
+  <div class="fitopia-footer-shell">
+    <div class="fitopia-footer-newsletter">
+      <div>
+        <span class="fitopia-footer-kicker">Fitopia Updates</span>
+        <h2 class="fitopia-footer-title">Stay inspired with wellness tips and new programs</h2>
+      </div>
+
+      <div class="fitopia-footer-subscribe">
+        <input type="email" placeholder="Enter your email address" aria-label="Email address">
+        <button type="button">Subscribe</button>
+      </div>
+    </div>
+
+    <div class="fitopia-footer-grid">
+      <div class="fitopia-footer-card fitopia-footer-brand">
+        <img src="{{ asset('images/logo.png') }}" alt="Fitopia" class="fitopia-footer-brand-mark">
+        <h3 class="fitopia-footer-brand-name">FITOPIA</h3>
+        <p class="fitopia-footer-brand-copy">
+          Fitopia brings nutrition, fitness and supportive coaching together in one elegant wellness experience.
+        </p>
+        <a href="{{ path('about') }}" class="fitopia-footer-brand-link">Discover more</a>
+      </div>
+
+      <div class="fitopia-footer-card fitopia-footer-column">
+        <h3>Services</h3>
+        <ul>
+          <li><a href="{{ path('diet_planner') }}">Nutrition Plans</a></li>
+          <li><a href="{{ path('fitness_planner') }}">Fitness Programs</a></li>
+          <li><a href="{{ path('services') }}">Healthy Routines</a></li>
+          <li><a href="{{ path('contact') }}">Coaching Support</a></li>
+        </ul>
+      </div>
+
+      <div class="fitopia-footer-card fitopia-footer-column">
+        <h3>About</h3>
+        <ul>
+          <li><a href="{{ path('about') }}">Our Story</a></li>
+          <li><a href="{{ path('about') }}">Our Team</a></li>
+          <li><a href="{{ path('explore_forums_blogs') }}">Success Stories</a></li>
+          <li><a href="{{ path('blog') }}">Blog</a></li>
+        </ul>
+      </div>
+
+      <div class="fitopia-footer-card fitopia-footer-column">
+        <h3>Resources</h3>
+        <ul>
+          <li><a href="{{ path('blog') }}">Wellness Guides</a></li>
+          <li><a href="{{ path('diet_planner') }}">Meal Inspiration</a></li>
+          <li><a href="{{ path('fitness_planner') }}">Training Advice</a></li>
+          <li><a href="{{ path('explore_forums_blogs') }}">Community Help</a></li>
+        </ul>
+      </div>
+
+      <div class="fitopia-footer-card fitopia-footer-column">
+        <h3>Social</h3>
+        <ul>
+          <li><a href="#">Facebook</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">LinkedIn</a></li>
+          <li><a href="#">YouTube</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="fitopia-footer-bottom">
+      <p class="fitopia-footer-bottom-copy">Copyright {{ "now"|date("Y") }} Fitopia. Designed for a healthier everyday life.</p>
+      <div class="fitopia-footer-legal">
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+        <a href="#">Compliance</a>
+      </div>
+    </div>
+  </div>
+</footer>
